@@ -45,7 +45,10 @@ const MyPages = ({ user }: any) => {
     console.log("allCoaches[0] : ", allCoaches[0]);
     console.log("botsData : ", botsData);
 
-    if (coachData?.profile_type == "coach" && !coachData.bot_ids) {
+    if (
+      coachData?.profile_type == "coach" &&
+      !coachData?.bot_ids?.includes("avatar-bot")
+    ) {
       console.log("JUST coach : ", coachData);
       setNoCopilotBot(coachData);
     }
@@ -192,20 +195,6 @@ const MyPages = ({ user }: any) => {
   return (
     <div id="directory-profile" className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
-      {/* <div className="pl-4 max-sm:pl-2 ">
-        <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
-          {" "}
-          <Info className="h-3 w-3 mr-2 inline" />
-          For editing profiles please email us at{" "}
-          <a
-            className="font-bold text-blue-400"
-            href="mailto: info@coachbots.com"
-          >
-            {" "}
-            info@coachbots.com
-          </a>
-        </p>
-      </div> */}
       <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 my-2 flex flex-row items-center">
         {" "}
         <Info className="h-3 w-3 mr-2 inline" />
@@ -245,7 +234,7 @@ const MyPages = ({ user }: any) => {
                     } `}
                   >
                     <>
-                      Coach -{" "}
+                      {botType.bot_type !== "feedback_bot" && <>Coach - </>}
                       <span className="font-semibold">
                         {BotTypesHeading(botType.bot_type)}
                       </span>
@@ -418,9 +407,9 @@ const MyPages = ({ user }: any) => {
         ))}
       </div>
       {!loading &&
-        ((userProfile &&
-          (userProfile.profile_type === "coachee" ||
-            userProfile.profile_type === "mentee")) ||
+        userProfile &&
+        (userProfile.profile_type === "coachee" ||
+          userProfile.profile_type === "mentee" ||
           noCopilotBot) && (
           <>
             <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
@@ -471,7 +460,13 @@ const MyPages = ({ user }: any) => {
                   <Button
                     variant={"secondary"}
                     className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
-                    disabled={!noCopilotBot?.is_approved}
+                    disabled={
+                      noCopilotBot
+                        ? noCopilotBot?.is_approved === true
+                          ? false
+                          : true
+                        : false
+                    }
                   >
                     <Link
                       className="flex flex-row gap-1 items-center "

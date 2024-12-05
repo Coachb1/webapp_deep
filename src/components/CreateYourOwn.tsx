@@ -299,7 +299,7 @@ const CreateYourOwn = ({
             backgroundColor: "white",
             color: "black",
             padding: "8px",
-            fontSize: "18px",
+            fontSize: "14px",
           }}
           title="Short scenarios are three questions long, while standard scenarios are in six questions conversational format."
         >
@@ -449,7 +449,7 @@ const CreateYourOwn = ({
                 <b className="my-1 text-gray-400">
                   {i === 0 ? "Simulation" : "Role play"}
                 </b>
-                <p className="text-xl max-sm:text-sm mt-3 font-semibold">
+                <p className="text-lg max-sm:text-sm mt-3 font-semibold">
                   {test?.title}
                 </p>
                 <p className="text-sm max-sm:text-xs mt-2 mb-2">

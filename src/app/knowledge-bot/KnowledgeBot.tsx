@@ -287,21 +287,12 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
               </div>
             </div>
             <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-              <Link href={"#howItWorks"}>
+              {/* <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   How Bot works
-                </Button>
-              </Link>
-
-              {/* <Link href={"#benefits"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Benefits
                 </Button>
               </Link> */}
             </div>
@@ -359,59 +350,6 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
                 </div>
               </div>
             </div>
-            {/* <div className="w-full" id="benefits">
-              <div className={`w-full flex justify-center`}>
-                <Badge
-                  variant={"secondary"}
-                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                >
-                  Benefits
-                </Badge>
-              </div>
-              <div className="w-full">
-                <div className="relative isolate mx-auto">
-                  <div>
-                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white w-full lg:rounded-2xl">
-                        <Div
-                          className="bg-white text-gray-800"
-                          containerClassName="w-full"
-                        >
-                          <BorderShadow>
-                            <Accordion
-                              type="single"
-                              collapsible
-                              className="w-full text-gray-500 max-sm:p-4 "
-                            >
-                              {benefitsData.map((test, i) => (
-                                <AccordionItem
-                                  key={i}
-                                  value={`item-${i + 1}`}
-                                  className={`${
-                                    i === benefitsData.length - 1
-                                      ? "border-none"
-                                      : "border-b"
-                                  } px-2`}
-                                >
-                                  <AccordionTrigger className="text-left max-sm:text-xs">
-                                    <div>
-                                      <b>{test.heading}</b>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent className="text-left max-sm:text-xs">
-                                    <p> {test.description}</p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              ))}
-                            </Accordion>
-                          </BorderShadow>
-                        </Div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
 
             <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
               <Badge
@@ -421,8 +359,9 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
                 Disclaimer
               </Badge>
               <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-              Knowledge Bots are created based on knowledge repositories offered by the individuals. 
-              AI can make mistakes, always double check the responses.
+                Knowledge Bots are created based on knowledge repositories
+                offered by the individuals. AI can make mistakes, always double
+                check the responses.
               </p>
             </div>
           </div>
@@ -441,13 +380,6 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
         </div>
       )}
       {(!isLoading || !loading) && <KnowlegeBotBody />}
-      {/* {!strictLoginRequired && user && <KnowlegeBotBody />}
-      {strictLoginRequired && user && <KnowlegeBotBody />}
-      {strictLoginRequired && !user && (
-        <>
-          <NoLoginFlag />
-        </>
-      )} */}
     </>
   );
 };

@@ -23,7 +23,7 @@ const MeetingPrefrences = () => {
   const [toAvailability, settoAvailibility] = useState("");
   const [schedullingLink, setSchedulingLink] = useState("");
   const [linkError, setLinkError] = useState(false);
-  const [daysSelected, setDaysSelected] = useState<string | null>("");
+  const [daysSelected, setDaysSelected] = useState<string | null>(null);
 
   const [priorData, setPriorData] = useState();
 

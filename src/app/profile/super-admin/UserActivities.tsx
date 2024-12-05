@@ -5,8 +5,8 @@ import Select, { SingleValue } from "react-select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { baseURL, basicAuth } from "@/lib/utils";
-import { Loader, PenBox, User, Wrench, X } from "lucide-react";
-import { Modal } from "antd";
+import { Check, Loader, PenBox, User, Wrench, X } from "lucide-react";
+import { Checkbox, Modal } from "antd";
 
 interface UserActivitiesProps {
   clientsData: { clientId: string; clientName: string }[];
@@ -21,6 +21,7 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
 }) => {
   const [userModificationInit, setUserModificationInit] = useState(false);
   const [userUpdateLoading, setUserUpdateLoading] = useState(false);
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(false);
   const [selectedUserForUpdate, setSelectedUserForUpdate] = useState<
     string | null
   >(null);
@@ -45,6 +46,7 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
           body: JSON.stringify({
             is_disable: newActiveStatus,
             user_email: selectedUserForUpdate,
+            send_email: sendWelcomeEmail
           }),
         }
       );
@@ -83,12 +85,12 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
         centered
         open={userModificationInit}
         onCancel={() => setUserModificationInit(false)}
-        width={window.innerWidth < 768 ? "80%" : "60%"}
+        width={window.innerWidth < 768 ? "80%" : "40%"}
         className="w-full"
         footer={false}
       >
         <div className="flex flex-col gap-4 w-full justify-end">
-          <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+          <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
             <div className="w-full flex flex-col gap-2 items-start">
               <p className="block text-sm font-medium">Select the user</p>
               <Select
@@ -163,6 +165,16 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
                 }
                 className="w-full text-sm"
               />
+            </div>
+            <div className="w-full flex flex-row gap-2 items-center py-2">
+              <Checkbox
+                id="sendWelcomeEmail"
+                className="h-4 w-4"
+                checked={sendWelcomeEmail}
+                onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+                disabled={!oldActiveStatus} // Disable when the user is already active
+              />
+              <p className="block text-sm font-medium">Send Welcome Email</p>
             </div>
           </div>
           <div className="self-end">

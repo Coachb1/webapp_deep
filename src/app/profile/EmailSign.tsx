@@ -3,19 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { BotDetailsType } from "@/lib/types";
-import {
-  applicationUrl,
-  baseURL,
-  basicAuth,
-  calculateTotalActionPoints,
-  findBotIds,
-  findCoachUID,
-  findCoacheeUID,
-  getUserAccount,
-} from "@/lib/utils";
+import { applicationUrl, findBotIds } from "@/lib/utils";
 import { Copy, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const EmailSign = ({ user }: any) => {
   const [totalActionPoints, setTotalActionPoints] = useState(0);
@@ -24,10 +14,9 @@ const EmailSign = ({ user }: any) => {
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // const [coachId, setCoachId] = useState("");
-  // const [coacheeId, setCoacheeId] = useState("");
   const [feedbackBots, setFeedbackBots] = useState<BotDetailsType[]>([]);
   const [avatarBots, setAvatarBots] = useState<BotDetailsType[]>([]);
+  const [botIds, setBotIds] = useState("");
 
   const [avatarBotId, setAvatarBotId] = useState("");
   const [feedbackBotId, setFeedbackBotId] = useState("");
@@ -46,8 +35,9 @@ const EmailSign = ({ user }: any) => {
       );
 
       const bot_ids = findBotIds(isApprovedData);
+      setBotIds(bot_ids);
 
-      if (bot_ids.split(", ").length > 0) {
+      if (bot_ids?.split(", ").length > 0) {
         const avatarBot = bot_ids
           .split(", ")
           .filter((id: string) => id.includes("avatar"))
@@ -73,121 +63,6 @@ const EmailSign = ({ user }: any) => {
       setFeedbackBots(FeedbackBot);
 
       setLoading(false);
-
-      // getUserAccount(user)
-      //   .then((response) => response.json())
-      //   .then((userdata) => {
-      //     console.log("USER FROM ACTIONS", userdata);
-      //     console.log(userdata.uid);
-      //     fetch(
-      //       `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${userdata.uid}`,
-      //       {
-      //         method: "GET",
-      //         headers: {
-      //           Authorization: basicAuth,
-      //         },
-      //       }
-      //     )
-      //       .then((res) => res.json())
-      //       .then((data) => {
-      //         console.log(data);
-      //         if (!data.msg) {
-      //           setTotalActionPoints(calculateTotalActionPoints(data));
-      //         }
-      //         // setLoading(false);
-      //       })
-      //       .catch((err) => {
-      //         console.log(err);
-      //         // setLoading(false);
-      //       });
-
-      //     fetch(
-      //       `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userdata.uid}`,
-      //       {
-      //         method: "GET",
-      //         headers: {
-      //           Authorization: basicAuth,
-      //         },
-      //       }
-      //     )
-      //       .then((res) => res.json())
-      //       .then((data) => {
-      //         console.log(data);
-
-      //         const isApprovedData = data.data.filter(
-      //           (coachData: any) => coachData.is_approved === true
-      //         );
-
-      //         if (isApprovedData.length > 0) {
-      //           setCoacheeId(findCoacheeUID(isApprovedData));
-      //           setCoachId(findCoachUID(isApprovedData));
-
-      //           const bot_ids = findBotIds(isApprovedData);
-      //           if (bot_ids.split(", ").length > 0) {
-      //             const avatarBot = bot_ids
-      //               .split(", ")
-      //               .filter((id: string) => id.includes("avatar"))
-      //               .join("");
-      //             setAvatarBotId(avatarBot);
-
-      //             const feedbackBot = bot_ids
-      //               .split(", ")
-      //               .filter((id: string) => id.includes("feedback"))
-      //               .join("");
-
-      //             setFeedbackBotId(feedbackBot);
-      //             console.log(feedbackBot);
-      //           }
-
-      //           fetch(`${baseURL}/accounts/get-bots/?user_id=${userdata.uid}`, {
-      //             headers: {
-      //               Authorization: basicAuth,
-      //             },
-      //           })
-      //             .then((res) => res.json())
-      //             .then((data) => {
-      //               console.log("Bot details", data);
-      //               const coachAvatarBot = data.data.filter(
-      //                 (data: any) =>
-      //                   data.signature_bot.bot_type === "avatar_bot"
-      //               );
-      //               setAvatarBots(coachAvatarBot);
-
-      //               // if (findCoacheeUID(isApprovedData)) {
-      //               const FeedbackBot = data.data.filter(
-      //                 (data: any) =>
-      //                   data.signature_bot.bot_type === "feedback_bot"
-      //               );
-
-      //               console.log(FeedbackBot, "FeedbackBot");
-      //               setFeedbackBots(FeedbackBot);
-      //               // }
-      //               setTimeout(() => {
-      //                 setLoading(false);
-      //               }, 1000);
-      //             })
-      //             .catch((err) => {
-      //               console.error(err);
-      //               setLoading(false);
-      //             });
-      //           // } else {
-      //           //   setTimeout(() => {
-      //           //     setLoading(false);
-      //           //   }, 1000);
-      //           // }
-      //         } else {
-      //           setTimeout(() => {
-      //             setLoading(false);
-      //           }, 1000);
-      //           setCoacheeId("");
-      //           setCoachId("");
-      //         }
-      //       })
-      //       .catch((err) => {
-      //         setLoading(false);
-      //         console.error(err);
-      //       });
-      //   });
     }
   }, []);
 
@@ -240,7 +115,7 @@ const EmailSign = ({ user }: any) => {
         )}
         {!loading && (
           <div className="m-4 flex flex-row gap-4 max-sm:flex-col max-lg:flex-col max-md:flex-col">
-            {coachId.length > 0 && (
+            {coachId.length > 0 && botIds?.includes("avatar-bot") && (
               <div>
                 <p className="text-sm my-1 text-gray-600 font-semibold">
                   Coach Profile
@@ -284,7 +159,7 @@ const EmailSign = ({ user }: any) => {
                 </div>
               </div>
             )}
-            {feedbackBots.length > 0 && (
+            {feedbackBots.length > 0 && botIds?.includes("feedback-bot") && (
               <div>
                 <p className="text-sm my-1 text-gray-600 font-semibold">
                   Feedback
@@ -328,11 +203,20 @@ const EmailSign = ({ user }: any) => {
                 </div>
               </div>
             )}
-            {coachId.length === 0 && feedbackBots.length === 0 && (
+            {coachId.length > 0 && !botIds?.includes("avatar_bot") && (
               <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
                 <div>Your custom email signature is currently not active.</div>{" "}
               </div>
             )}
+            {coachId.length === 0 &&
+              coacheeId.length === 0 &&
+              feedbackBots.length === 0 && (
+                <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
+                  <div>
+                    Your custom email signature is currently not active.
+                  </div>{" "}
+                </div>
+              )}
           </div>
         )}
       </>

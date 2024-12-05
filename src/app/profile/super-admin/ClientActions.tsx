@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { ClientDataType } from "@/lib/types";
 import { Loader, PenBox, Wrench, X } from "lucide-react";
-import { Modal } from "antd";
+import { Checkbox, Modal } from "antd";
 
 interface ClientActionsProps {
   clientsData: ClientDataType[];
@@ -25,6 +25,8 @@ const ClientActions: React.FC<ClientActionsProps> = ({
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [oldClientId, setOldClientId] = useState<string | null>(null);
   const [newClientId, setNewClientId] = useState<string | null>(null);
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true);
+
 
   const changeUsersClientHandler = async () => {
     setChangeLoading(true);
@@ -40,6 +42,7 @@ const ClientActions: React.FC<ClientActionsProps> = ({
           body: JSON.stringify({
             new_client_id: newClientId,
             user_email: selectedUser,
+            send_email: sendWelcomeEmail
           }),
         }
       );
@@ -78,12 +81,12 @@ const ClientActions: React.FC<ClientActionsProps> = ({
         centered
         open={changeClientInit}
         onCancel={() => setChangeClientInit(false)}
-        width={window.innerWidth < 768 ? "80%" : "60%"}
+        width={window.innerWidth < 768 ? "80%" : "40%"}
         className="w-full"
         footer={false}
       >
         <div className="flex flex-col gap-4 w-full justify-end">
-          <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+          <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
             <div className="w-full flex flex-col gap-2 items-start">
               <p className="block text-sm font-medium">Select the user</p>
               <Select
@@ -159,6 +162,19 @@ const ClientActions: React.FC<ClientActionsProps> = ({
                 }
                 className="w-full text-sm"
               />
+            </div>
+            <div className="w-full flex flex-row items-center gap-2 py-2">
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2">
+                  <Checkbox
+                    checked={sendWelcomeEmail}
+                    onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+                  />
+                </label>
+              </div>
+              <p className="block text-sm font-medium">
+                Send welcome email to user
+              </p>
             </div>
           </div>
           <div className="self-end">

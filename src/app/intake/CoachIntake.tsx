@@ -141,14 +141,10 @@ const CoachIntake = ({ user }: any) => {
     "Strengths-Based Coaching",
     "Emotional Intelligence Coaching",
     "Solution-Focused Coaching",
-    "Others",
   ];
   const [mentoringPreferencess, setMentoringPreferencess] = useState<string[]>(
     []
   );
-
-  const [otherMentoringFrameworkValue, setOtherMentoringFrameworkValue] =
-    useState("");
 
   const recordCoachmentFrameworks = (
     checked: boolean | string,
@@ -167,9 +163,6 @@ const CoachIntake = ({ user }: any) => {
         prevState?.filter((val) => val !== value)
       );
     }
-    setTimeout(() => {
-      console.log("mentoringPreferencess : ", mentoringPreferencess);
-    }, 100);
   };
 
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
@@ -570,8 +563,6 @@ const CoachIntake = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              // onCharacteristicsSelectLow(data.low_skill);
-              // onCharacteristicsSelectHigh(data.high_skill);
               setCharacteristicsRateLows(data.low_skill);
               setCharacteristicsRateHigh(data.high_skill);
             });
@@ -582,7 +573,6 @@ const CoachIntake = ({ user }: any) => {
           throw new Error("Error /accounts");
         });
     } else if (adminEdit && userEmailParams && userIdParams && userNameParams) {
-      // getClientInfoForUser(userEmailParams);
       setUserId(userIdParams);
       setName(userNameParams);
       userIdd = userIdParams;
@@ -603,7 +593,6 @@ const CoachIntake = ({ user }: any) => {
         });
     }
 
-    // if (formType === "coachee") {
     fetch(`${baseURL}/skills/get-characteristics-list/`, {
       method: "GET",
       headers: {
@@ -621,7 +610,6 @@ const CoachIntake = ({ user }: any) => {
         //@ts-ignore
         setCharacteristicsList(createLabelValuePairs);
       });
-    // }
 
     if (user) {
       getUserAccount(user)
@@ -710,8 +698,6 @@ const CoachIntake = ({ user }: any) => {
 
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log({});
 
     try {
       if (characteristicsRateHigh && characteristicsRateLows) {
@@ -951,6 +937,7 @@ const CoachIntake = ({ user }: any) => {
               `${coachMentInSameDep.toLowerCase() === "yes" ? true : false}`
             );
             formdata.append("problem_statement", `${challengesToHelp}`);
+            formdata.append("supported_outcome", outcomeSupported);
 
             referenceDocs.forEach(({ file, text, name }) => {
               if (name === "optional_file") {
@@ -987,45 +974,6 @@ const CoachIntake = ({ user }: any) => {
               .then((response) => response.json())
               .then((result) => {
                 console.log(result);
-
-                const fitmentData = {
-                  method: "post",
-                  qna: JSON.stringify({
-                    "1": {
-                      coach:
-                        "What level of coach/mentor do you want to interact with ?",
-                      cochee: participantLevel,
-                    },
-                    "2": {
-                      coach:
-                        "I want a coach & mentor someone from the same department.",
-                      cochee:
-                        coachMentInSameDep.toLowerCase() === "yes"
-                          ? true
-                          : false,
-                    },
-                    "3": {
-                      coach:
-                        "What kind of outcome do you want from these sessions the most?",
-                      cochee: outcomeSupported,
-                    },
-                  }),
-                  qna_type: "fitment",
-                  user_id: userId,
-                };
-                const queryparam = new URLSearchParams(fitmentData);
-
-                // const resp = fetch(
-                //   `${baseURL}/accounts/get-user-feedback-data/`,
-                //   {
-                //     method: "POST",
-                //     headers: {
-                //       Authorization: basicAuth,
-                //       "Content-Type": "application/json",
-                //     },
-                //     body: JSON.stringify(fitmentData),
-                //   }
-                // );
 
                 setProfileId(result.data.uid);
                 userProfileId = result.data.uid;
@@ -1259,12 +1207,22 @@ const CoachIntake = ({ user }: any) => {
                             console.log(data);
                             setCreateLoading(false);
                             if (!data.error && !data.detail) {
-                              toast.success(
-                                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                                {
-                                  duration: 6000,
-                                }
-                              );
+                              if (formVersion === "1") {
+                                toast.success(
+                                  "Your profile has been successfully created!",
+                                  {
+                                    duration: 6000,
+                                  }
+                                );
+                              } else {
+                                toast.success(
+                                  "Your request in is the AI review pipeline and will be available in Network Directory shortly. You will receive a email when its live.",
+                                  {
+                                    duration: 6000,
+                                  }
+                                );
+                              }
+
                               resetAllStates();
                               getAllDirectoryData();
                               setTimeout(() => {
@@ -1322,13 +1280,9 @@ const CoachIntake = ({ user }: any) => {
                 } else {
                   resetAllStates();
                   setCreateLoading(false);
-                  toast.success(
-                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                    {
-                      duration: 6000,
-                    }
-                  );
-                  // getAllDirectoryData();
+                  toast.success("Your profile has been successfully created!", {
+                    duration: 6000,
+                  });
                   setTimeout(() => {
                     getAllDirectoryData();
                     router.push("/");
@@ -1987,6 +1941,7 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
+    if (formVersion === null) return;
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
     const coachScribe = document.getElementsByClassName(
       "coachbots-coachscribe"
@@ -2202,7 +2157,7 @@ const CoachIntake = ({ user }: any) => {
                 //   resultingBot.signature_bot.data.additional_data
                 //     .fitment_answers?.coachmentSelect
                 // );
-
+                console.log("FORM version : ", formVersion);
                 if (formVersion === "3") {
                   setParticipantLevel(
                     resultingBot.signature_bot.data.additional_data
@@ -2410,7 +2365,7 @@ const CoachIntake = ({ user }: any) => {
           });
       }
     }
-  }, []);
+  }, [formVersion]);
 
   const [error, setError] = useState({});
 
@@ -2444,16 +2399,19 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
+        { LowCompetency: characteristicsRateLows},
+        { HighCompetency: characteristicsRateHigh}
       ];
     } else if (formVersion === "2") {
       console.log("here");
       coachFields = [
         { UseEmoji: provideAnswersUsingEmojis },
-        { UserMentoringPre: mentoringPreferences },
         { UserDepartment: department },
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
+        { LowCompetency: characteristicsRateLows},
+        { HighCompetency: characteristicsRateHigh}
       ];
     } else {
       coachFields = [
@@ -2462,11 +2420,13 @@ const CoachIntake = ({ user }: any) => {
         { ParticipantLevel: participantLevel },
         { UseEmoji: provideAnswersUsingEmojis },
         { MentoringFramework: mentoringPreferencess },
-        { UserMentoringPre: mentoringPreferences },
+        // { UserMentoringPre: mentoringPreferences },
         { UserDepartment: department },
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
+        { LowCompetency: characteristicsRateLows},
+        { HighCompetency: characteristicsRateHigh}
       ];
     }
 
@@ -2482,20 +2442,22 @@ const CoachIntake = ({ user }: any) => {
 
     const listOfFields = profile_type === "coach" ? coachFields : coacheeFields;
 
-    listOfFields.forEach((field) => {
-      Object.entries(field).forEach(([key, value]) => {
-        if (value?.length == 0) {
+    console.log(`list of fields for ${profile_type}`, listOfFields)
+    for (let field of listOfFields) {
+      // Using Object.entries to loop over the keys and values
+      for (let [key, value] of Object.entries(field)) {
+        // Check if value is empty
+        if (value?.length <= 0) {
           errors.push("field required");
         }
-        handleRequiredSelection(value, key);
-      });
-    });
 
-    if (errors.length > 0) {
-      return false;
-    } else {
-      return true;
+        // Await the asynchronous handleRequiredSelection function
+        await handleRequiredSelection(value, key);
+      }
     }
+
+    // Return the result based on whether there were any errors
+    return errors.length === 0;
 
     // if (experience.trim().length == 0){
     //   handleRequiredSelection(experience,'UserExperience')
@@ -2509,7 +2471,7 @@ const CoachIntake = ({ user }: any) => {
     // }
   };
 
-  const handleRequiredSelection = (
+  const handleRequiredSelection = async (
     input_value: string,
     fieldName: string,
     errorMessage = "This field is required."
@@ -3283,7 +3245,7 @@ const CoachIntake = ({ user }: any) => {
                                   "coachingArea"
                                 );
                               }}
-                              placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
+                              placeholder="Empowering growth through personalized coaching, goal-focused conversations, and transformative insights for continuous improvement..."
                               className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                             />
                             {Object.keys(error).includes("coachingArea") && (
@@ -3777,37 +3739,6 @@ const CoachIntake = ({ user }: any) => {
                               </div>
                             )}
                           </div>
-                          {/* <div className="my-3 ">
-                            <p className="text-sm my-1">
-                              Please add any document or file that supports the
-                              knowledge of your bot niche.{" "}
-                              {!checkIfEdit && (
-                                <span className="text-xl font-bold text-red-500">
-                                  *
-                                </span>
-                              )}
-                            </p>
-
-                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                              <input
-                                disabled={checkIfView === null ? false : true}
-                                required={
-                                  !checkIfEdit ||
-                                  mediaData?.extracted_from_pdf.filter(
-                                    (file) => !file.isDeleted
-                                  ).length === 0
-                                }
-                                type="file"
-                                className="w-full text-xs my-2"
-                                multiple
-                                name="bot_files"
-                                accept=".pdf,.docx"
-                                onChange={async (e) => {
-                                  handleFileChangeBotInput(e);
-                                }}
-                              />
-                            </div>
-                          </div> */}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
@@ -3828,58 +3759,6 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-2 border-none">
-                        {/* {formVersion !== "1" && (
-                          <div className="my-3">
-                            <p className="text-sm my-1">
-                              Which way do you want to help the program
-                              participants the most?{" "}
-                              <span className="text-xl font-bold text-red-500">
-                                *
-                              </span>
-                            </p>
-                            <div className="my-2 mb-3">
-                              <RadioGroup
-                                required
-                                disabled={checkIfView === null ? false : true}
-                                value={mentoringPreferences}
-                                onValueChange={(value) => {
-                                  setDataModified(true);
-                                  setMentoringPreferences(value);
-                                }}
-                              >
-                                {[
-                                  "Mentoring (Skills Enhancement)",
-                                  "Coaching (Reflection)",
-                                  "Both",
-                                ].map((val, i) => (
-                                  <div
-                                    key={i}
-                                    className="flex items-center space-x-2 "
-                                  >
-                                    <RadioGroupItem
-                                      value={val}
-                                      id={`r${i}+1 ${val}`}
-                                    />
-                                    <label
-                                      htmlFor={`r${i}+1 ${val}`}
-                                      className="text-xs text-gray-700"
-                                    >
-                                      {capitalizeText(val)}
-                                    </label>
-                                  </div>
-                                ))}
-                              </RadioGroup>
-                              {Object.keys(error).includes(
-                                "UserMentoringPre"
-                              ) && (
-                                <p className="text-red-500 text-xs mt-1">
-                                  {(error as any)["UserMentoringPre"]}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )} */}
-
                         {formVersion !== "1" && formVersion !== "2" && (
                           <>
                             <div className="my-3">
@@ -3891,46 +3770,49 @@ const CoachIntake = ({ user }: any) => {
                                 </span>
                               </p>
                               <div className="my-1">
-                                {models.map((model) => (
-                                  <div className="my-1">
-                                    {" "}
-                                    {model === "Others" ? (
-                                      <></>
-                                    ) : (
-                                      <>
-                                        <div className="flex items-center space-x-2 my-1.5 ">
-                                          <Checkbox
-                                            disabled={
-                                              (!mentoringPreferencess?.includes(
-                                                model
-                                              ) &&
-                                                mentoringPreferencess?.length >=
-                                                  3) ||
-                                              checkIfView === null
-                                                ? false
-                                                : true
-                                            }
-                                            id={model}
-                                            onCheckedChange={(checked) => {
-                                              console.log(checked, model);
-                                              recordCoachmentFrameworks(
-                                                checked,
-                                                model
-                                              );
-                                            }}
-                                            checked={mentoringPreferencess?.includes(
-                                              model
-                                            )}
-                                          />
-                                          <label
-                                            htmlFor={model}
-                                            className="text-xs text-gray-700"
-                                          >
-                                            {model}
-                                          </label>
-                                        </div>
-                                      </>
-                                    )}
+                                {" "}
+                                {models.map((model, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center space-x-2"
+                                  >
+                                    <Checkbox
+                                      id={`checkbox-${index}`}
+                                      checked={mentoringPreferencess.includes(
+                                        model
+                                      )}
+                                      disabled={
+                                        (mentoringPreferencess.length >= 3 &&
+                                          !mentoringPreferencess.includes(
+                                            model
+                                          )) ||
+                                        checkIfView === "true"
+                                      }
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          if (
+                                            mentoringPreferencess.length < 3
+                                          ) {
+                                            setMentoringPreferencess((prev) => [
+                                              ...prev,
+                                              model,
+                                            ]);
+                                          }
+                                        } else {
+                                          setMentoringPreferencess((prev) =>
+                                            prev.filter(
+                                              (item) => item !== model
+                                            )
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    <label
+                                      htmlFor={`checkbox-${index}`}
+                                      className="text-sm"
+                                    >
+                                      {model}
+                                    </label>
                                   </div>
                                 ))}
                               </div>
@@ -3997,6 +3879,13 @@ const CoachIntake = ({ user }: any) => {
                             onCharacteristicsSelect={onCharacteristicsSelectLow}
                             options={characteristicsList}
                           />
+                          {Object.keys(error).includes(
+                            "LowCompetency"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["LowCompetency"]}
+                            </p>
+                          )}
                         </div>
                         <div className="my-3">
                           <p className="text-sm my-1">
@@ -4014,6 +3903,13 @@ const CoachIntake = ({ user }: any) => {
                             }
                             options={characteristicsList}
                           />
+                          {Object.keys(error).includes(
+                            "HighCompetency"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["HighCompetency"]}
+                            </p>
+                          )}
                         </div>
 
                         {formVersion !== "1" && formVersion !== "2" && (
@@ -4156,24 +4052,11 @@ const CoachIntake = ({ user }: any) => {
                                     const inputValue = e.target.value;
 
                                     setPhrasesNExpressions(inputValue);
-                                    handleWordLimit(
-                                      inputValue,
-                                      50,
-                                      80,
-                                      "phrasesNExpressions"
-                                    );
                                   }}
                                   value={phrasesNExpressions}
                                   placeholder="Provide a few of your favorite quotes or catchphrases like 'Progress over perfection.'"
                                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                 />
-                                {Object.keys(error).includes(
-                                  "phrasesNExpressions"
-                                ) && (
-                                  <p className="text-red-500 text-xs mt-1">
-                                    {(error as any)["phrasesNExpressions"]}
-                                  </p>
-                                )}
                               </div>
                             </div>
 
@@ -4923,7 +4806,7 @@ const CoachIntake = ({ user }: any) => {
                                           "coachingProcessOverview"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Outline the steps, approach, and what clients can expect in terms of structure, feedback, and support during the sessions."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -4964,7 +4847,7 @@ const CoachIntake = ({ user }: any) => {
                                           "handlingSituations"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Describe the strategies and methods used to help clients navigate uncertainty, reframe challenges, and gain clarity in their next steps."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -5001,7 +4884,7 @@ const CoachIntake = ({ user }: any) => {
                                           "integratingLessons"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Provide actionable advice on how to apply insights and strategies gained from coaching into everyday routines and decision-making."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -5042,7 +4925,7 @@ const CoachIntake = ({ user }: any) => {
                                           "guidanceOnCoachingProcess"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Offer tips and strategies for managing both personal and professional aspirations, ensuring alignment and harmony between them throughout the coaching journey."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -5804,6 +5687,13 @@ const CoachIntake = ({ user }: any) => {
                       onCharacteristicsSelect={onCharacteristicsSelectLow}
                       options={characteristicsList}
                     />
+                    {Object.keys(error).includes(
+                      "LowCompetency"
+                    ) && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["LowCompetency"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -5817,6 +5707,13 @@ const CoachIntake = ({ user }: any) => {
                       onCharacteristicsSelect={onCharacteristicsSelectHigh}
                       options={characteristicsList}
                     />
+                    {Object.keys(error).includes(
+                      "HighCompetency"
+                    ) && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["HighCompetency"]}
+                      </p>
+                    )}
                   </div>
                   <hr className="mt-2" />
                   <div className="my-3 ">
@@ -6347,6 +6244,13 @@ const CoachIntake = ({ user }: any) => {
                     onCharacteristicsSelect={onCharacteristicsSelectLow}
                     options={characteristicsList}
                   />
+                  {Object.keys(error).includes(
+                            "LowCompetency"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["LowCompetency"]}
+                            </p>
+                          )}
                 </div>
                 <div className="my-3">
                   <p className="text-sm my-1">
@@ -6360,6 +6264,13 @@ const CoachIntake = ({ user }: any) => {
                     onCharacteristicsSelect={onCharacteristicsSelectHigh}
                     options={characteristicsList}
                   />
+                  {Object.keys(error).includes(
+                      "HighCompetency"
+                    ) && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["HighCompetency"]}
+                      </p>
+                    )}
                 </div>
 
                 {!checkIfView && (

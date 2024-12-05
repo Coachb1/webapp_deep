@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { Button } from "@/components/ui/button";
 import { Button as AtndButton } from "antd";
-import { Check, Edit, Search, Users, X } from "lucide-react";
+import { Edit, Search, Users, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { toast } from "sonner";
@@ -55,7 +55,7 @@ const ProfileActions = () => {
   const [directoryProfiles, setDirectoryProfiles] = useState<[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
 
-  const {getAllDirectoryData, getAllKnowledgeBotData} = useUser()
+  const { getAllDirectoryData, getAllKnowledgeBotData } = useUser();
   const ApproveComponent = ({
     id,
     isApproved,
@@ -65,7 +65,7 @@ const ProfileActions = () => {
     id: number;
     isApproved: boolean;
     isVisible: boolean;
-    botType : string
+    botType: string;
   }) => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [checked, setChecked] = useState<boolean>();
@@ -95,10 +95,10 @@ const ProfileActions = () => {
           const data = await response.json();
           setChecked(data.updated.is_approved);
           console.log(data);
-          if(botType.includes("user")){
-            getAllKnowledgeBotData()
+          if (botType.includes("user")) {
+            getAllKnowledgeBotData();
           } else {
-            getAllDirectoryData()
+            getAllDirectoryData();
           }
           toast.success("Succesfully saved the preferences.");
         }
@@ -128,12 +128,12 @@ const ProfileActions = () => {
     id,
     isApproved,
     isVisible,
-    botType
+    botType,
   }: {
     id: number;
     isApproved: boolean;
     isVisible: boolean;
-    botType : string
+    botType: string;
   }) => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [checked, setChecked] = useState<boolean>();
@@ -163,10 +163,10 @@ const ProfileActions = () => {
           const data = await response.json();
           setChecked(data.updated.is_visible);
           console.log(data);
-          if(botType.includes("user")){
-            getAllKnowledgeBotData()
+          if (botType.includes("user")) {
+            getAllKnowledgeBotData();
           } else {
-            getAllDirectoryData()
+            getAllDirectoryData();
           }
           toast.success("Succesfully saved the preferences.");
         }
@@ -180,6 +180,7 @@ const ProfileActions = () => {
     return (
       <div>
         <Switch
+          disabled={botType.includes("user")}
           className="flex flex-row items-center bg-gray-300"
           checked={checked}
           loading={saveLoading}

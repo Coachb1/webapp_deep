@@ -1478,7 +1478,7 @@ const getBotDetails2 = async (botId) => {
   
         shadowRoot.getElementById(
           "text-input"
-        ).innerText = `Please follow provided instructions and select "Begin session"`;
+        ).setAttribute("placeholder", `Please follow provided instructions and select "Begin session"`) 
 
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
@@ -5003,7 +5003,7 @@ async function setMcqVariablesStt() {
       appendMessage2(
         "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
       );
-
+      enableEndSessionButton()
       return;
     }
 
@@ -6367,9 +6367,9 @@ loadExternalModule().then(() => {
     <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
 `;
     instructionsPaneList.innerHTML = list;
+    const _ = getBotDetails2(botId);
   }
 
-  const _ = getBotDetails2(botId);
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
@@ -6840,18 +6840,21 @@ loadExternalModule().then(() => {
     }
   };
 
-  const updateClientInfoSTT = async (clientName, emails) => {
+  const updateClientInfoSTT = async (clientName, emails, demo_emails ) => {
     try {
+      const client_data = {
+        client_name: clientName,
+        member_emails: emails,
+        demo_ids: demo_emails
+      }
+
       const response = await fetch(`${baseURL2}/accounts/get-create-or-update-client-id/`, {
         method: "PATCH",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          client_name: clientName,
-          member_emails: emails,
-        }),
+        body: JSON.stringify(client_data),
       });
   
       if (response.ok) {
@@ -7486,6 +7489,7 @@ loadExternalModule().then(() => {
   }
 
   const enableEndSessionButton = () => {
+    if(!endSessionButton) return;
     endSessionButton.setAttribute(
       "onmouseover",
       "this.style.backgroundColor = '#bdbdbf'"
@@ -7840,6 +7844,7 @@ loadExternalModule().then(() => {
           nextModel
         );
       } else {
+        enableEndSessionButton()
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
         });
@@ -8167,7 +8172,7 @@ loadExternalModule().then(() => {
             // }
             if (latestMessage === clientuserInformationSTT?.widget_access_code){
               console.log("Access Code Matched",snnipetConfigSTT.isDemo)
-              updateClientInfoSTT(sttWidgetClientId,user_email2)
+              updateClientInfoSTT(sttWidgetClientId,user_email2,user_email2)
               askAccessBotCodeSTT = false
               if (snnipetConfigSTT.isDemo === 'true'){
                 handleOptionButtonClick2("",signals)
@@ -10805,6 +10810,7 @@ loadExternalModule().then(() => {
                     signals.onResponse({
                       html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                     });
+                    enableEndSessionButton()
                     return;
                   }
                   
@@ -10962,6 +10968,7 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                 });
+                enableEndSessionButton()
               }
             }
           }
@@ -10997,6 +11004,7 @@ loadExternalModule().then(() => {
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
         });
+        enableEndSessionButton()
       }
     },
   };

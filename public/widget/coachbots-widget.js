@@ -3606,7 +3606,7 @@ loadExternalModule().then(() => {
     }
   };
 
-  const updateClientInfo = async (clientName, emails) => {
+  const updateClientInfo = async (clientName, emails, demo_emails) => {
     try {
       const response = await fetch(`${baseURL}/accounts/get-create-or-update-client-id/`, {
         method: "PATCH",
@@ -3617,6 +3617,7 @@ loadExternalModule().then(() => {
         body: JSON.stringify({
           client_name: clientName,
           member_emails: emails,
+          demo_ids: demo_emails
         }),
       });
   
@@ -4632,7 +4633,7 @@ loadExternalModule().then(() => {
 
             if (latestMessage === ClientUserInformation?.widget_access_code){
               console.log("Access Code Matched")
-              updateClientInfo(widgetClientId,user_email)
+              updateClientInfo(widgetClientId,user_email, user_email)
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
                 LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)

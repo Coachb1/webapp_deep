@@ -204,14 +204,16 @@ export function ParticipantListItemCard({
             </div>
             <div className="text-sm w-full font-semibold text-neutral-600 dark:text-white flex flex-row max-sm:flex-col gap-2 items-center max-sm:items-start">
               {reviewComponent}
-              {(coach.profile_type === "coach" ||
-                coach.profile_type === "mentor") && (
+              {coach.total_without_question_count && (
                 <div className="max-sm:mt-2 flex flex-row items-center">
                   <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden  max-lg:hidden">
                     ●
                   </span>
-                  <p className="text-sm max-sm:text-xs max-sm:-ml-0 font-semibold text-gray-500">
-                    {coach.total_without_question_count} Engagements
+                  <p className="text-sm max-sm:text-xs max-sm:-ml-0 font-semibold text-gray-500 font-sans">
+                    <span className="text-base">
+                      {coach.total_without_question_count}
+                    </span>{" "}
+                    Engagements
                   </p>
                 </div>
               )}

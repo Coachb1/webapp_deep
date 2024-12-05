@@ -66,7 +66,6 @@ const Coach = ({ user, renderType }: any) => {
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
-  const [enrolled, SetEnrolled] = useState(true);
   const [feedbackBotId, setFeedbackBotId] = useState("");
   const [botScenarioCase, setBotScenarioCase] = useState<string | undefined>(
     ""
@@ -88,10 +87,6 @@ const Coach = ({ user, renderType }: any) => {
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
-
-  const [coachProfileLink, setCoachProfileLink] = useState(
-    "https://www.linkedin.com/"
-  );
 
   const [invalidId, setInValidCoach] = useState(false);
 
@@ -125,8 +120,10 @@ const Coach = ({ user, renderType }: any) => {
 
         setBotName(data.data.bot_name);
         setBotType(data.data.bot_type);
-        setBotAreaCoaching(data.data.additional_data.bot_area_of_coaching);
-        setBotDescription(data.data.additional_data.bot_description);
+        if (data.data.additional_data) {
+          setBotAreaCoaching(data.data.additional_data.bot_area_of_coaching);
+          setBotDescription(data.data.additional_data.bot_description);
+        }
 
         setBotScenarioCase(data.data.scenario_case);
         setFeedbackBotId(data.data.feedback_id);
@@ -394,8 +391,10 @@ const Coach = ({ user, renderType }: any) => {
                     validation.
                   </p>
                 ) : (
-                  <div className="p-2 pb-4 border mx-4 rounded-2xl border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs w-[85%] max-sm:w-full">
-                    <h4 className="text-sm font-semibold">Area of coaching</h4>
+                  <div className="p-3 pb-4 border mx-4 rounded-2xl border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs w-[85%] max-sm:w-full">
+                    <h4 className="text-base font-semibold">
+                      Area of Coaching
+                    </h4>
                     <p>{botAreaCoaching}</p>
                   </div>
                 )}
@@ -423,8 +422,8 @@ const Coach = ({ user, renderType }: any) => {
                         <div className="w-full rounded-2xl px-4 text-slate-900 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2">
                           {botType === "subject_specific_bot" ? (
                             <div className="text-center">
-                              <h4 className="text-sm font-semibold">
-                                Subject matter description
+                              <h4 className="text-base font-semibold">
+                                Subject Matter Description
                               </h4>
                               <p>{parseTextToJSX(botDescription)}</p>
                             </div>
@@ -474,142 +473,153 @@ const Coach = ({ user, renderType }: any) => {
                   </div>
                 )}
             </div>
-            {botType !== "subject_specific_bot" && (
-              <>
-                <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-                  {botScenarioCase !== "icons_by_ai" && (
-                    <Link href={"#howItWorks"}>
-                      <Button
-                        variant={"secondary"}
-                        className="border border-gray-200 h-8 hover:cursor-pointer"
-                      >
-                        How AI Frame works
-                      </Button>
-                    </Link>
-                  )}
+            <>
+              {botType !== "subject_specific_bot" && (
+                <>
+                  <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
+                    {botScenarioCase !== "icons_by_ai" && (
+                      <Link href={"#howItWorks"}>
+                        <Button
+                          variant={"secondary"}
+                          className="border border-gray-200 h-8 hover:cursor-pointer"
+                        >
+                          How AI Frame works
+                        </Button>
+                      </Link>
+                    )}
+
+                    {botScenarioCase !== "icons_by_ai" && (
+                      <Link href={"#benefits"}>
+                        <Button
+                          variant={"secondary"}
+                          className="border border-gray-200 h-8 hover:cursor-pointer"
+                        >
+                          Benefits
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
 
                   {botScenarioCase !== "icons_by_ai" && (
-                    <Link href={"#benefits"}>
-                      <Button
-                        variant={"secondary"}
-                        className="border border-gray-200 h-8 hover:cursor-pointer"
-                      >
-                        Benefits
-                      </Button>
-                    </Link>
-                  )}
-                </div>
-
-                {botScenarioCase !== "icons_by_ai" && (
-                  <div className="w-full" id="howItWorks">
-                    <div className={`w-full flex justify-center`}>
-                      <Badge
-                        variant={"secondary"}
-                        className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                      >
-                        How AI Frame works
-                      </Badge>
-                    </div>
-                    <div className="w-full">
-                      <div className="relative isolate mx-auto">
-                        <div>
-                          <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                            <div className="rounded-xl bg-white w-full lg:rounded-2xl">
-                              <Div
-                                className="bg-white text-gray-800"
-                                containerClassName="w-full"
-                              >
-                                <BorderShadow>
-                                  <Accordion
-                                    type="single"
-                                    collapsible
-                                    className="w-full text-gray-500 max-sm:p-4 "
-                                  >
-                                    {dynamicHowItWorks.map((test, i) => (
-                                      <AccordionItem
-                                        key={i}
-                                        value={`item-${i + 1}`}
-                                        className={`${
-                                          i === howItWorks.length - 1
-                                            ? "border-none"
-                                            : "border-b"
-                                        } px-2`}
-                                      >
-                                        <AccordionTrigger className="text-left max-sm:text-xs">
-                                          <div>
-                                            <b>{test.heading}</b>
-                                          </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="text-left max-sm:text-xs">
-                                          <p> {test.description}</p>
-                                        </AccordionContent>
-                                      </AccordionItem>
-                                    ))}
-                                  </Accordion>
-                                </BorderShadow>
-                              </Div>
+                    <div className="w-full" id="howItWorks">
+                      <div className={`w-full flex justify-center`}>
+                        <Badge
+                          variant={"secondary"}
+                          className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                        >
+                          How AI Frame works
+                        </Badge>
+                      </div>
+                      <div className="w-full">
+                        <div className="relative isolate mx-auto">
+                          <div>
+                            <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                              <div className="rounded-xl bg-white w-full lg:rounded-2xl">
+                                <Div
+                                  className="bg-white text-gray-800"
+                                  containerClassName="w-full"
+                                >
+                                  <BorderShadow>
+                                    <Accordion
+                                      type="single"
+                                      collapsible
+                                      className="w-full text-gray-500 max-sm:p-4 "
+                                    >
+                                      {dynamicHowItWorks.map((test, i) => (
+                                        <AccordionItem
+                                          key={i}
+                                          value={`item-${i + 1}`}
+                                          className={`${
+                                            i === howItWorks.length - 1
+                                              ? "border-none"
+                                              : "border-b"
+                                          } px-2`}
+                                        >
+                                          <AccordionTrigger className="text-left max-sm:text-xs">
+                                            <div>
+                                              <b>{test.heading}</b>
+                                            </div>
+                                          </AccordionTrigger>
+                                          <AccordionContent className="text-left max-sm:text-xs">
+                                            <p> {test.description}</p>
+                                          </AccordionContent>
+                                        </AccordionItem>
+                                      ))}
+                                    </Accordion>
+                                  </BorderShadow>
+                                </Div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                <div className="w-full" id="benefits">
-                  <div className={`w-full flex justify-center`}>
-                    <Badge
-                      variant={"secondary"}
-                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                    >
-                      Benefits
-                    </Badge>
-                  </div>
-                  <div className="w-full">
-                    <div className="relative isolate mx-auto">
-                      <div>
-                        <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                          <div className="rounded-xl bg-white w-full lg:rounded-2xl">
-                            <Div
-                              className="bg-white text-gray-800"
-                              containerClassName="w-full"
-                            >
-                              <BorderShadow>
-                                <Accordion
-                                  type="single"
-                                  collapsible
-                                  className="w-full text-gray-500 max-sm:p-4 "
-                                >
-                                  {dynamicBenefits.map((test, i) => (
-                                    <AccordionItem
-                                      key={i}
-                                      value={`item-${i + 1}`}
-                                      className={`${
-                                        i === dynamicBenefits.length - 1
-                                          ? "border-none"
-                                          : "border-b"
-                                      } p-2`}
-                                    >
-                                      <AccordionTrigger className="text-left max-sm:text-xs">
-                                        <div>
-                                          <b>{test.heading}</b>
-                                        </div>
-                                      </AccordionTrigger>
-                                      <AccordionContent className="text-left max-sm:text-xs">
-                                        <p> {test.description}</p>
-                                      </AccordionContent>
-                                    </AccordionItem>
-                                  ))}
-                                </Accordion>
-                              </BorderShadow>
-                            </Div>
-                          </div>
+                  )}
+                </>
+              )}
+
+              <div className="w-full" id="benefits">
+                <div className={`w-full flex justify-center`}>
+                  <Badge
+                    variant={"secondary"}
+                    className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                  >
+                    Benefits
+                  </Badge>
+                </div>
+                <div className="w-full">
+                  <div className="relative isolate mx-auto">
+                    <div>
+                      <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                        <div className="rounded-xl bg-white w-full lg:rounded-2xl">
+                          <Div
+                            className="bg-white text-gray-800"
+                            containerClassName="w-full"
+                          >
+                            <BorderShadow>
+                              <Accordion
+                                type="single"
+                                collapsible
+                                className="w-full text-gray-500 max-sm:p-4 "
+                              >
+                                {(botType !== "subject_specific_bot"
+                                  ? [...dynamicBenefits]
+                                  : [dynamicBenefits[0]]
+                                ).map((test, i) => (
+                                  <AccordionItem
+                                    key={i}
+                                    value={`item-${i + 1}`}
+                                    className={`${
+                                      i ===
+                                      (botType !== "subject_specific_bot"
+                                        ? [...dynamicBenefits]
+                                        : [dynamicBenefits[0]]
+                                      ).length -
+                                        1
+                                        ? "border-none"
+                                        : "border-b"
+                                    } px-4 py-2`}
+                                  >
+                                    <AccordionTrigger className="text-left max-sm:text-xs">
+                                      <div>
+                                        <b>{test.heading}</b>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="text-left max-sm:text-xs">
+                                      <p> {test.description}</p>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                ))}
+                              </Accordion>
+                            </BorderShadow>
+                          </Div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </>
-            )}
+              </div>
+            </>
 
             <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
               <Badge
