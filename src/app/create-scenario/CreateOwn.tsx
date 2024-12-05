@@ -1067,7 +1067,7 @@ const CreateOwn = ({
                                   <>
                                     {createLoading ? (
                                       <>
-                                        <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                        <div className="h-full w-full text-sm max-sm:text-xs my-10">
                                           <div className="flex justify-center items-center">
                                             {" "}
                                             <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
@@ -1097,7 +1097,7 @@ const CreateOwn = ({
                                           </>
                                         ) : (
                                           <>
-                                            <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                            <div className="h-full w-full text-sm max-sm:text-xs scroll-my-10">
                                               <p>{contextPrompt}</p>
                                             </div>{" "}
                                           </>
@@ -1110,7 +1110,7 @@ const CreateOwn = ({
                                   <>
                                     {createLoading ? (
                                       <>
-                                        <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                        <div className="h-full w-full text-sm max-sm:text-xs my-10">
                                           <div className="flex justify-center items-center">
                                             {" "}
                                             <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
@@ -1141,7 +1141,7 @@ const CreateOwn = ({
                                           </>
                                         ) : (
                                           <>
-                                            <div className="h-full w-full text-sm max-sm:text-xs my-10 ">
+                                            <div className="h-full w-full text-sm max-sm:text-xs my-10">
                                               <p className="text-gray-800">
                                                 {contextPrompt}
                                               </p>
