@@ -20,6 +20,7 @@ const EmailSign = ({ user }: any) => {
 
   const [avatarBotId, setAvatarBotId] = useState("");
   const [feedbackBotId, setFeedbackBotId] = useState("");
+  const [subjectBotId, setSubjectBotId] = useState("");
 
   const { actionPoints, coachId, coacheeId, allCoaches, botsData } = useUser();
 
@@ -37,19 +38,28 @@ const EmailSign = ({ user }: any) => {
       const bot_ids = findBotIds(isApprovedData);
       setBotIds(bot_ids);
 
+      console.log(bot_ids);
+
       if (bot_ids?.split(", ").length > 0) {
         const avatarBot = bot_ids
           .split(", ")
-          .filter((id: string) => id.includes("avatar"))
+          .filter((id: string) => id.includes("avatar-bot"))
           .join("");
         setAvatarBotId(avatarBot);
 
         const feedbackBot = bot_ids
           .split(", ")
-          .filter((id: string) => id.includes("feedback"))
+          .filter((id: string) => id.includes("feedback-bot"))
           .join("");
 
         setFeedbackBotId(feedbackBot);
+
+        const subject = bot_ids
+          .split(", ")
+          .filter((id: string) => id.includes("subject-spe"))
+          .join("");
+
+        setSubjectBotId(subject);
       }
 
       const coachAvatarBot = botsData.filter(
@@ -115,7 +125,7 @@ const EmailSign = ({ user }: any) => {
         )}
         {!loading && (
           <div className="m-4 flex flex-row gap-4 max-sm:flex-col max-lg:flex-col max-md:flex-col">
-            {coachId.length > 0 && botIds?.includes("avatar-bot") && (
+            {avatarBotId && (
               <div>
                 <p className="text-sm my-1 text-gray-600 font-semibold">
                   Coach Profile
@@ -159,7 +169,51 @@ const EmailSign = ({ user }: any) => {
                 </div>
               </div>
             )}
-            {feedbackBots.length > 0 && botIds?.includes("feedback-bot") && (
+            {subjectBotId && (
+              <div>
+                <p className="text-sm my-1 text-gray-600 font-semibold">
+                  Subject Bot
+                </p>
+                <div className="w-fit  h-[150px] bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
+                  <div
+                    id="email-sign-avatar"
+                    className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
+                  >
+                    <div>With best Regards,</div>
+                    <div>{userName}</div>
+                    <div>{"<<Add your designation>>"}</div>
+                    <div>
+                      Email:{" "}
+                      <a
+                        style={{
+                          color: "#2563eb",
+                          textDecoration: "underline",
+                        }}
+                        href={`mailto:${userEmail}`}
+                      >
+                        {userEmail}
+                      </a>{" "}
+                    </div>
+                    <div>Phone: {"<<+91-Add your own>>"} </div>
+                    <a
+                      href={`${applicationUrl()}/coach/${avatarBotId}`}
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "12px",
+                        color: "#2563eb",
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      👨‍🏫👩‍🏫 My Bot🗣️{" "}
+                    </a>
+                  </div>
+                </div>
+                <div className="text-sm font-semibold text-gray-700 mt-2">
+                  <CopySignComponent id="email-sign-avatar" />
+                </div>
+              </div>
+            )}
+            {feedbackBotId && (
               <div>
                 <p className="text-sm my-1 text-gray-600 font-semibold">
                   Feedback
@@ -203,14 +257,9 @@ const EmailSign = ({ user }: any) => {
                 </div>
               </div>
             )}
-            {coachId.length > 0 && !botIds?.includes("avatar_bot") && (
-              <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
-                <div>Your custom email signature is currently not active.</div>{" "}
-              </div>
-            )}
-            {coachId.length === 0 &&
-              coacheeId.length === 0 &&
-              feedbackBots.length === 0 && (
+            {feedbackBotId.length === 0 &&
+              avatarBotId.length === 0 &&
+              subjectBotId.length === 0 && (
                 <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
                   <div>
                     Your custom email signature is currently not active.
