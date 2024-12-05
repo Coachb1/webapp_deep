@@ -289,6 +289,8 @@ export function ParticipantListItemCard({
                 coach?.subject_specific_bot_id !== null) &&
                 (coach?.avatar_bot_url !== "" ||
                   coach?.subject_specific_bot_url !== "") && (
+                    coach.profile_type !== "coachee"
+                  ) && (
                   <>
                     <div className="max-sm:w-full max-md:w-full max-lg:w-full">
                       <Button
