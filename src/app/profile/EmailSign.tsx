@@ -196,7 +196,7 @@ const EmailSign = ({ user }: any) => {
                     </div>
                     <div>Phone: {"<<+91-Add your own>>"} </div>
                     <a
-                      href={`${applicationUrl()}/coach/${avatarBotId}`}
+                      href={`${applicationUrl()}/coach/${subjectBotId}`}
                       style={{
                         fontWeight: 600,
                         fontSize: "12px",
