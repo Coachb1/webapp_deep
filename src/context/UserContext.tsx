@@ -330,9 +330,8 @@ export const UserProvider = ({
           const actionPoints = await getActionPoints(data.uid);
           setActionPoints(actionPoints);
 
-          const idps = await getIDPs(data.uid);
-
-          setUserIDPs(idps);
+          // const idps = await getIDPs(data.uid);
+          // setUserIDPs(idps);
         }
       } else {
         setLoadingState(false);

@@ -20,7 +20,6 @@ import {
 import { UserIDPsType } from "@/lib/types";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IDPIntake from "../intake/IDPIntake";
@@ -44,7 +43,7 @@ const IDP = ({ user }: any) => {
 
   const { userIDPs: idps } = useUser();
   const getIDPs = () => {
-    if (user) {
+    if (user && userIDPs.length === 0) {
       setLoading(true);
       getUserAccount(user)
         .then((res) => res.json())
@@ -74,7 +73,8 @@ const IDP = ({ user }: any) => {
   };
 
   useEffect(() => {
-    setUserIDPs(idps);
+    getIDPs()
+
   }, []);
 
   return (
@@ -111,9 +111,9 @@ const IDP = ({ user }: any) => {
                   <div className="mx-4 max-sm:mx-1 max-lg:mx-1">
                     {userIDPs.map((idp, i) => (
                       <div className="flex flex-row gap-3 my-2 items-center">
-                        <p className="max-sm:text-xs w-[40%] max-sm:w-[50%]  text-center">
+                        <p className="max-sm:text-xs w-[40%] max-sm:w-[50%]  text-center font-sans">
                           {convertDateWithTime(idp.created)}
-                        </p>{" "}
+                        </p>
                         <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
                         <Link href={`${reportsLinksSelector()}/${idp.report.replace(/^https?:\/\/[^\/]+/, '')}`} target="_blank">
                           <Button
