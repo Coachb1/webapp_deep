@@ -1941,7 +1941,7 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
-    if (formVersion === null) return;
+    if (formType === "coach" && formVersion === null) return;
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
     const coachScribe = document.getElementsByClassName(
       "coachbots-coachscribe"
@@ -2399,8 +2399,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows},
-        { HighCompetency: characteristicsRateHigh}
+        { LowCompetency: characteristicsRateLows },
+        { HighCompetency: characteristicsRateHigh },
       ];
     } else if (formVersion === "2") {
       console.log("here");
@@ -2410,8 +2410,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows},
-        { HighCompetency: characteristicsRateHigh}
+        { LowCompetency: characteristicsRateLows },
+        { HighCompetency: characteristicsRateHigh },
       ];
     } else {
       coachFields = [
@@ -2425,8 +2425,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows},
-        { HighCompetency: characteristicsRateHigh}
+        { LowCompetency: characteristicsRateLows },
+        { HighCompetency: characteristicsRateHigh },
       ];
     }
 
@@ -2442,7 +2442,7 @@ const CoachIntake = ({ user }: any) => {
 
     const listOfFields = profile_type === "coach" ? coachFields : coacheeFields;
 
-    console.log(`list of fields for ${profile_type}`, listOfFields)
+    console.log(`list of fields for ${profile_type}`, listOfFields);
     for (let field of listOfFields) {
       // Using Object.entries to loop over the keys and values
       for (let [key, value] of Object.entries(field)) {
@@ -3879,9 +3879,7 @@ const CoachIntake = ({ user }: any) => {
                             onCharacteristicsSelect={onCharacteristicsSelectLow}
                             options={characteristicsList}
                           />
-                          {Object.keys(error).includes(
-                            "LowCompetency"
-                          ) && (
+                          {Object.keys(error).includes("LowCompetency") && (
                             <p className="text-red-500 text-xs mt-1">
                               {(error as any)["LowCompetency"]}
                             </p>
@@ -3903,9 +3901,7 @@ const CoachIntake = ({ user }: any) => {
                             }
                             options={characteristicsList}
                           />
-                          {Object.keys(error).includes(
-                            "HighCompetency"
-                          ) && (
+                          {Object.keys(error).includes("HighCompetency") && (
                             <p className="text-red-500 text-xs mt-1">
                               {(error as any)["HighCompetency"]}
                             </p>
@@ -5687,9 +5683,7 @@ const CoachIntake = ({ user }: any) => {
                       onCharacteristicsSelect={onCharacteristicsSelectLow}
                       options={characteristicsList}
                     />
-                    {Object.keys(error).includes(
-                      "LowCompetency"
-                    ) && (
+                    {Object.keys(error).includes("LowCompetency") && (
                       <p className="text-red-500 text-xs mt-1">
                         {(error as any)["LowCompetency"]}
                       </p>
@@ -5707,9 +5701,7 @@ const CoachIntake = ({ user }: any) => {
                       onCharacteristicsSelect={onCharacteristicsSelectHigh}
                       options={characteristicsList}
                     />
-                    {Object.keys(error).includes(
-                      "HighCompetency"
-                    ) && (
+                    {Object.keys(error).includes("HighCompetency") && (
                       <p className="text-red-500 text-xs mt-1">
                         {(error as any)["HighCompetency"]}
                       </p>
@@ -6244,13 +6236,11 @@ const CoachIntake = ({ user }: any) => {
                     onCharacteristicsSelect={onCharacteristicsSelectLow}
                     options={characteristicsList}
                   />
-                  {Object.keys(error).includes(
-                            "LowCompetency"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["LowCompetency"]}
-                            </p>
-                          )}
+                  {Object.keys(error).includes("LowCompetency") && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {(error as any)["LowCompetency"]}
+                    </p>
+                  )}
                 </div>
                 <div className="my-3">
                   <p className="text-sm my-1">
@@ -6264,13 +6254,11 @@ const CoachIntake = ({ user }: any) => {
                     onCharacteristicsSelect={onCharacteristicsSelectHigh}
                     options={characteristicsList}
                   />
-                  {Object.keys(error).includes(
-                      "HighCompetency"
-                    ) && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["HighCompetency"]}
-                      </p>
-                    )}
+                  {Object.keys(error).includes("HighCompetency") && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {(error as any)["HighCompetency"]}
+                    </p>
+                  )}
                 </div>
 
                 {!checkIfView && (
