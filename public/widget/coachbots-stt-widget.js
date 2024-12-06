@@ -9653,6 +9653,9 @@ loadExternalModule().then(() => {
                   }
                 }
 
+                wordLimit = senarioCase2 === 'psychometric'? 20 : 15
+                console.log(wordLimit, "wordLimit");
+
                 if (interactionMode2 == 'audio'){
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'>Please use <b>CoachTalk</b> widget for this type of scenario - as it supports audio analysis.</p>",

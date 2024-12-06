@@ -105,7 +105,7 @@ export function ParticipantListItemCard({
                   : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
               }
             />
-            <div>{likeComponent}</div>
+            <div className={`${coach.profile_type === "coachee" && !coach.feedback_wall && "mb-4"}`}>{likeComponent}</div>
           </div>
           <div className="w-full ml-4 max-sm:ml-0 text-left">
             <div className="text-gray-800 w-full text-sm my-1 text-left">
@@ -289,6 +289,8 @@ export function ParticipantListItemCard({
                 coach?.subject_specific_bot_id !== null) &&
                 (coach?.avatar_bot_url !== "" ||
                   coach?.subject_specific_bot_url !== "") && (
+                    coach.profile_type !== "coachee"
+                  ) && (
                   <>
                     <div className="max-sm:w-full max-md:w-full max-lg:w-full">
                       <Button

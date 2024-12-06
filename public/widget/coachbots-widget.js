@@ -115,6 +115,7 @@ let questionSnippetLink;
 let isEmptyAudio = false;
 let EmailCandidate;
 let ClientUserInformation;
+let responseWordLimit = 15;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -3445,7 +3446,7 @@ loadExternalModule().then(() => {
   }
 
   // to check word limit
-  function isValidMessage(text, limit=15,is_greater=false) {
+  function isValidMessage(text, limit=responseWordLimit,is_greater=false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -4909,7 +4910,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
+                  html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${responseWordLimit} words.</b></p>`,
                 });
                 return;
               }
@@ -5036,8 +5037,10 @@ loadExternalModule().then(() => {
                 senarioSnippetURL = 
                 questionData.results[0].snippet_url;
               console.log(senarioSnippetURL,'senarioSnippetURL');
-
-
+                
+                responseWordLimit = senarioCase === 'psychometric'? 20 : 15
+                console.log('responseWordLimit: ',responseWordLimit)
+                
                 if (Object.keys(snnipetConfig).length > 0){
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
                   if (ClientUserInformation && 'client_name' in ClientUserInformation){
