@@ -119,6 +119,7 @@ const Conversations = ({ user }: any) => {
               question: question,
               answer: entry.msg[question],
             })),
+            coach_name: entry.coach_name,
           })
         );
         console.log(FeedbackUserConvo, "FeedbackUserConvo");
@@ -154,6 +155,7 @@ const Conversations = ({ user }: any) => {
                 question: question,
                 answer: entry.msg[question],
               })),
+              coach_name: entry.coach_name,
             }));
           console.log(FeedbackConvo, "FeedbackConvo");
           setFeedbackConversations(
@@ -201,9 +203,7 @@ const Conversations = ({ user }: any) => {
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>
-                    <Badge className="mt-2 mb-0">
-                      Coachee Interactions
-                    </Badge>
+                    <Badge className="mt-2 mb-0">Coachee Interactions</Badge>
                     <div className="flex flex-col w-full mt-0">
                       {/* AVATAR BOT */}
                       {conversationDataAdmin.filter(
@@ -215,6 +215,33 @@ const Conversations = ({ user }: any) => {
                       )}
                       {conversationDataAdmin
                         .filter((convo) => convo.bot_type === "avatar_bot")
+                        .map((conversation) => (
+                          <ConversationChat
+                            // type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
+
+                      {/* SUBJECT SPECIFIC */}
+                      {conversationDataAdmin.filter(
+                        (convo) => convo.bot_type == "subject_specific_bot"
+                      ).length > 0 && (
+                        <p className="mt-2 font-semibold">
+                          {" "}
+                          Subject specific bots
+                        </p>
+                      )}
+                      {conversationDataAdmin
+                        .filter(
+                          (convo) => convo.bot_type == "subject_specific_bot"
+                        )
                         .map((conversation) => (
                           <ConversationChat
                             // type="coach-interactions"
@@ -311,6 +338,32 @@ const Conversations = ({ user }: any) => {
                           />
                         ))}
 
+                      {/* SUBJECT SPECIFIC */}
+                      {conversationData.filter(
+                        (convo) => convo.bot_type === "subject_specific_bot"
+                      ).length > 0 && (
+                        <p className="mt-2 font-semibold">
+                          Subject specific bots
+                        </p>
+                      )}
+                      {conversationData
+                        .filter(
+                          (convo) => convo.bot_type === "subject_specific_bot"
+                        )
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
+
                       {/* FEEDBACK CONVERSATIONS */}
                       {myFeedbacksData.length > 0 && (
                         <p className="mt-2 font-semibold">Feedbacks</p>
@@ -321,6 +374,7 @@ const Conversations = ({ user }: any) => {
                             conversation={conversation.msg}
                             date={formatDate(conversation.date)}
                             participant={conversation.participant_name}
+                            coachName={conversation.coach_name}
                           />
                         ))}
                       </div>
@@ -383,6 +437,7 @@ const Conversations = ({ user }: any) => {
                     <div className="flex flex-col w-full">
                       {feedbackConversations.map((conversation) => (
                         <FeedbackConversationChat
+                          coachName={conversation.coach_name}
                           conversation={conversation.msg}
                           date={formatDate(conversation.date)}
                           participant={conversation.participant_name}
