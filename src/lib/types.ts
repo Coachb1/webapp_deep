@@ -152,6 +152,7 @@ export interface FeedbackConversationType {
   participant_name: string;
   date: string;
   msg: Message[];
+  coach_name: string;
 }
 
 export interface SkillnRoleBotsType {

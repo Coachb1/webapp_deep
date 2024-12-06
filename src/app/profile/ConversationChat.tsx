@@ -83,10 +83,12 @@ export const FeedbackConversationChat = ({
   conversation,
   participant,
   date,
+  coachName,
 }: {
   conversation: { question: string; answer: string }[];
   participant: string;
   date: string;
+  coachName?: string;
 }) => {
   return (
     <div className="w-full border border-gray-400  bg-gray-200 my-2 px-2 rounded-xl">
@@ -101,6 +103,10 @@ export const FeedbackConversationChat = ({
               </span>
               <span>
                 <b>Date</b> : {date}
+                <span className="max-sm:hidden mx-2">|</span>
+              </span>
+              <span>
+                <b>Coach</b> : {coachName}
               </span>
             </p>
           </AccordionTrigger>
