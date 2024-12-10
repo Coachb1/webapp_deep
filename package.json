@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
+    "@types/lodash": "^4.17.13",
     "@types/logrocket-react": "^3.0.3",
     "@types/node": "^20",
     "@types/papaparse": "^5.3.14",

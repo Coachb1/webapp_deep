@@ -3,18 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { baseURL, basicAuth } from "@/lib/utils";
+import { debounce } from "lodash";
 
-import {
-  Input,
-  Modal,
-  TimePicker,
-  Button as AButton,
-  Select,
-  SelectProps,
-} from "antd";
+import { Input, Modal, Button as AButton, Select, SelectProps } from "antd";
 import dayjs from "dayjs";
 import { Loader } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const MeetingPrefrences = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -195,6 +189,33 @@ const MeetingPrefrences = () => {
     },
   ];
 
+  const convertToISOString = (time: string): string => {
+    const [hours, minutes] = time.split(":").map(Number);
+
+    const now = new Date();
+
+    now.setHours(hours, minutes, 0, 0);
+
+    return now.toISOString();
+  };
+
+  const convertToTimeString = (isoString: string): string => {
+    const date = new Date(isoString);
+
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${hours}:${minutes}`;
+  };
+
+  const handleOk = useCallback(
+    debounce((date) => {
+      console.log(date.toISOString());
+      setFromAvailibility(date.toISOString());
+    }, 300),
+    []
+  );
+
   return (
     <div>
       <Button
@@ -252,25 +273,21 @@ const MeetingPrefrences = () => {
           <div className="flex flex-row gap-2 items-center">
             <div className="flex flex-row gap-2 items-center">
               <p className="m-w-fit">Start</p>{" "}
-              <TimePicker
-                use12Hours
-                disabled={loading}
-                value={dayjs(fromAvailability)}
-                onOk={(date) => {
-                  console.log(date.toISOString());
-                  setFromAvailibility(date.toISOString());
+              <Input
+                type="time"
+                value={convertToTimeString(fromAvailability)}
+                onChange={(e) => {
+                  setFromAvailibility(convertToISOString(e.target.value));
                 }}
               />
             </div>
             <div className="flex flex-row gap-2 items-center">
               <p className="m-w-fit">End</p>{" "}
-              <TimePicker
-                use12Hours
-                disabled={loading}
-                value={dayjs(toAvailability)}
-                onOk={(date) => {
-                  console.log(date.toISOString());
-                  settoAvailibility(date.toISOString());
+              <Input
+                type="time"
+                value={convertToTimeString(toAvailability)}
+                onChange={(e) => {
+                  settoAvailibility(convertToISOString(e.target.value));
                 }}
               />
             </div>
