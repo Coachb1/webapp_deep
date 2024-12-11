@@ -56,6 +56,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { headers } from "next/headers";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -69,7 +70,7 @@ interface FileData {
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
   const formType = params.get("type");
-  const checkIfEdit = params.get("edit");
+  let checkIfEdit = params.get("edit");
   const checkIfView = params.get("view");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
@@ -306,6 +307,20 @@ const CoachIntake = ({ user }: any) => {
   const [restrictedFeatures, setRestrictedFeatures] = useState("");
 
   const { getAllDirectoryData, getFeedbackBotsData, getBotsFn } = useUser();
+
+  const [switchState, setSwitchState] = useState({
+    from: formVersion ?? "1",
+    to: "",
+  });
+
+  const switchStateCheck = () => {
+    if (
+      switchState.from === "1" &&
+      (switchState.to === "2" || switchState.to === "3")
+    ) {
+      return "create-bot";
+    }
+  };
 
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
@@ -699,8 +714,16 @@ const CoachIntake = ({ user }: any) => {
     }
   }, []);
 
-  const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const createSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (switchState.to !== "" && switchState.from !== switchState.to) {
+      checkIfEdit = null; //checkIfEdit stores "1" if in edit mode, here it is reset to null if switch is made
+
+      //delete the user resources here
+
+      // throw new Error("Error deleting user resources"); -> throw error if delete fails else proceeds
+    }
 
     try {
       if (characteristicsRateHigh && characteristicsRateLows) {
@@ -2459,19 +2482,7 @@ const CoachIntake = ({ user }: any) => {
       }
     }
 
-    // Return the result based on whether there were any errors
     return errors.length === 0;
-
-    // if (experience.trim().length == 0){
-    //   handleRequiredSelection(experience,'UserExperience')
-    //   return false
-    // } else if (
-    //   mentoringPreferences.trim().length  == 0
-    // ){
-    //   return false
-    // } else {
-    //   return true
-    // }
   };
 
   const handleRequiredSelection = async (
@@ -2765,8 +2776,8 @@ const CoachIntake = ({ user }: any) => {
                       className="mt-2"
                       size="middle"
                       disabled={
-                        (checkIfView === null ? false : true) ||
-                        (checkIfEdit === null ? false : true)
+                        checkIfView === null ? false : true
+                        // || (checkIfEdit === null ? false : true)
                       }
                       value={
                         (formVersion === "1" && "no-co-pilot") ||
@@ -2791,11 +2802,24 @@ const CoachIntake = ({ user }: any) => {
                         const value = e.target.value;
                         if (value === "no-co-pilot") {
                           setFormVersion("1");
+                          setSwitchState({
+                            ...switchState,
+                            to: "1",
+                          });
                         } else if (value === "subject-copilot") {
                           setFormVersion("2");
+                          setSwitchState({
+                            ...switchState,
+                            to: "2",
+                          });
                         } else {
                           setFormVersion("3");
+                          setSwitchState({
+                            ...switchState,
+                            to: "3",
+                          });
                         }
+                        setDataModified(true);
                       }}
                       optionType={
                         window.innerWidth < 768 ? "default" : "button"
@@ -2810,35 +2834,7 @@ const CoachIntake = ({ user }: any) => {
                         "This is the most comprehensive option. It creates an AI assistant specifically for coaching that evolves over time. The co-pilot's development is carefully guided by the coach's input and customized AI model training."}
                     </p>
                   </div>
-                  {/* <div className="my-3">
-                    <p className="text-sm my-1">Select your profile type</p>
-                    <Radio.Group
-                      disabled={
-                        (checkIfEdit === null ? false : true) ||
-                        (checkIfView === null ? false : true)
-                      }
-                      value={profileType}
-                      options={[
-                        {
-                          label: "Coach",
-                          value: "coach",
-                        },
-                        {
-                          label: "Mentor",
-                          value: "mentor",
-                        },
-                        {
-                          label: "Both",
-                          value: "coach-mentor",
-                        },
-                      ]}
-                      onChange={(e) => {
-                        console.log(e.target.value);
-                        setProfileType(e.target.value);
-                      }}
-                      optionType="default"
-                    />
-                  </div> */}
+
                   <Accordion
                     type="single"
                     collapsible
@@ -2875,11 +2871,6 @@ const CoachIntake = ({ user }: any) => {
                             type="text"
                             className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
-                          {/* {Object.keys(error).includes("Name") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Name"]}
-                      </p>
-                    )} */}
                         </div>
                         <div className="my-3">
                           <p className="text-sm my-1">
