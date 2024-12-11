@@ -519,6 +519,9 @@ const CoachIntake = ({ user }: any) => {
   useEffect(() => {
     console.log("noCopilotBot : ", noCopilotBot);
     hideBots();
+    if (noCopilotBot === "1") {
+      setFormVersion("1");
+    }
     // if (!checkIfEdit && !checkIfView) {
     //   if (formType === "coach" && !formVersion) {
     //     setFormVersion("1");
@@ -1941,7 +1944,7 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
-    if (formType === "coach" && formVersion === null) return;
+    // if ((formType === "coach") && formVersion === null) return;
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
     const coachScribe = document.getElementsByClassName(
       "coachbots-coachscribe"
@@ -2365,7 +2368,7 @@ const CoachIntake = ({ user }: any) => {
           });
       }
     }
-  }, [formVersion]);
+  }, []);
 
   const [error, setError] = useState({});
 
