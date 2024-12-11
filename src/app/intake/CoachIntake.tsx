@@ -519,21 +519,24 @@ const CoachIntake = ({ user }: any) => {
   useEffect(() => {
     console.log("noCopilotBot : ", noCopilotBot);
     hideBots();
-    if (!checkIfEdit && !checkIfView) {
-      if (formType === "coach" && !formVersion) {
-        setFormVersion("1");
-      }
-    } else {
-      if (formType === "coach") {
-        if (editBotType === "avatar_bot") {
-          setFormVersion("3");
-        } else if (editBotType === "subject_specific_bot") {
-          setFormVersion("2");
-        } else {
-          setFormVersion("1");
-        }
-      }
+    if (noCopilotBot === "1") {
+      setFormVersion("1");
     }
+    // if (!checkIfEdit && !checkIfView) {
+    //   if (formType === "coach" && !formVersion) {
+    //     setFormVersion("1");
+    //   }
+    // } else {
+    //   if (formType === "coach") {
+    //     if (editBotType === "avatar_bot") {
+    //       setFormVersion("3");
+    //     } else if (editBotType === "subject_specific_bot") {
+    //       setFormVersion("2");
+    //     } else {
+    //       setFormVersion("1");
+    //     }
+    //   }
+    // }
     if (formType === "coach") {
       setProfileType("coach");
     } else if (formType === "coachee") {
@@ -1941,7 +1944,7 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
-    if (formType === "coach" && formVersion === null) return;
+    // if ((formType === "coach") && formVersion === null) return;
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
     const coachScribe = document.getElementsByClassName(
       "coachbots-coachscribe"
@@ -2365,7 +2368,7 @@ const CoachIntake = ({ user }: any) => {
           });
       }
     }
-  }, [formVersion]);
+  }, []);
 
   const [error, setError] = useState({});
 
@@ -3778,11 +3781,11 @@ const CoachIntake = ({ user }: any) => {
                                   >
                                     <Checkbox
                                       id={`checkbox-${index}`}
-                                      checked={mentoringPreferencess.includes(
+                                      checked={mentoringPreferencess?.includes(
                                         model
                                       )}
                                       disabled={
-                                        (mentoringPreferencess.length >= 3 &&
+                                        (mentoringPreferencess?.length >= 3 &&
                                           !mentoringPreferencess.includes(
                                             model
                                           )) ||
@@ -3791,7 +3794,7 @@ const CoachIntake = ({ user }: any) => {
                                       onCheckedChange={(checked) => {
                                         if (checked) {
                                           if (
-                                            mentoringPreferencess.length < 3
+                                            mentoringPreferencess?.length < 3
                                           ) {
                                             setMentoringPreferencess((prev) => [
                                               ...prev,

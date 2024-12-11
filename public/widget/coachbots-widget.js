@@ -1238,15 +1238,35 @@ async function setMcqVariables() {
 }
 
 //* handle MCQ type test : end
+function isEmail(emailAdress){
+  let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+if (emailAdress.match(regex)) 
+  return true; 
+
+ else 
+  return false; 
+}
 
 let queryParams;
+
 async function proceedFormFlow(msg) {
-  if (formFields.length > 0) {
+    if (formFields.length === 0) {
+      return [true, "None"];
+    }
+  
     isEmailForm = true;
-    const filedname = formFields[0];
+    const fieldName = formFields[0];
+    if (fieldName === 'email' && !isEmail(msg)) {
+      return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`];
+    }
+    
     formFields = formFields.slice(1);
-    emailNameformJson[filedname] = filedname === 'email'? msg.toLowerCase() : msg ;
-  }
+  
+    emailNameformJson[fieldName] = fieldName === 'email' ? msg.toLowerCase() : msg;
+    return [true, "None"];
+  
+  
 }
 //*********** hit mail sending api */
 
@@ -4670,7 +4690,16 @@ loadExternalModule().then(() => {
           }
 
           if (isEmailForm) {
-            await proceedFormFlow(latestMessage);
+            const [proceed,errorMsg] = await proceedFormFlow(latestMessage);
+            console.log(proceed, errorMsg)
+            if (!proceed){
+              console.log("email not valid 1")
+              signals.onResponse({
+                html: errorMsg
+              });
+              return;
+            }
+
             if (formFields.length > 0) {
               signals.onResponse({
                 html: `Please enter your ${formFields[0]}.`,
@@ -5012,8 +5041,8 @@ loadExternalModule().then(() => {
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
                 EmailCandidate = questionData.results[0].email_candidate;
-                if (ClientUserInformation && 'report_on' in ClientUserInformation){
-                  EmailCandidate = ClientUserInformation.report_on
+                if (ClientUserInformation?.report_on && ClientUserInformation?.report_on != null && senarioCase !== 'assessment') {
+                  EmailCandidate = ClientUserInformation.report_on;
                 }
                 senarioMediaDescription =
                   questionData.results[0].description_media;

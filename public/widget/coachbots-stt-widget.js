@@ -642,7 +642,7 @@ function getAnonymousEmail() {
   return user_email;
 }
 
-function isEmail(emailAdress){
+function isEmailSTT(emailAdress){
   let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 if (emailAdress.match(regex)) 
@@ -5072,13 +5072,23 @@ async function setMcqVariablesStt() {
 let queryParams2;
 
 async function proceedFormFlowStt(msg) {
-  if (formFieldsstt.length > 0) {
-    isEmailFormstt = true;
-    const filedname = formFieldsstt[0];
-    formFieldsstt = formFieldsstt.slice(1);
-    emailNameformJsonstt[filedname] = filedname === 'email' ? msg.toLowerCase() : msg;
+  if (formFieldsstt.length === 0) {
+    return [true, "None"];
   }
+
+  isEmailFormstt = true;
+  const fieldName = formFieldsstt[0];
+  if (fieldName === 'email' && !isEmailSTT(msg)) {
+    return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`];
+  }
+  
+  formFieldsstt = formFieldsstt.slice(1);
+
+  emailNameformJsonstt[fieldName] = fieldName === 'email' ? msg.toLowerCase() : msg;
+  return [true, "None"];
+
 }
+
 function sendEmail2(session_id, reportUrl) {
   // responsesDone = false;
   console.log("sending email");
@@ -8269,7 +8279,15 @@ loadExternalModule().then(() => {
           }
 
           if (isEmailFormstt) {
-            await proceedFormFlowStt(latestMessage);
+            const [proceed,errorMsg] = await proceedFormFlowStt(latestMessage);
+            console.log(proceed, errorMsg)
+            if (!proceed){
+              console.log("email not valid 1")
+              signals.onResponse({
+                html: errorMsg
+              });
+              return;
+            }
             if (formFieldsstt.length > 0) {
               signals.onResponse({
                 html: `Please enter your ${formFieldsstt[0]}.`,
@@ -8278,7 +8296,7 @@ loadExternalModule().then(() => {
               isEmailFormstt = false;
               if (botId != undefined && botType === "deep_dive") {
                 const userEmail = emailNameformJsonstt["email"];
-                if(! isEmail(userEmail)){
+                if(! isEmailSTT(userEmail)){
                   console.log("email not valid 1")
                   formFieldsstt.push("email")
                   isEmailFormstt = true;
@@ -8307,7 +8325,7 @@ loadExternalModule().then(() => {
                 FeedbackUserEmail = emailNameformJsonstt["email"];
                 feedbackUserName = emailNameformJsonstt["name"];
 
-                if(! isEmail(FeedbackUserEmail)){
+                if(! isEmailSTT(FeedbackUserEmail)){
                   console.log("email not valid 2")
 
                   formFieldsstt.push("email")
@@ -9623,7 +9641,7 @@ loadExternalModule().then(() => {
                 senarioCase2 = questionData2.results[0].scenario_case;
                 emailCandidate2 = questionData2.results[0].email_candidate;
 
-                if (clientuserInformationSTT && 'report_on' in clientuserInformationSTT) {
+                if (clientuserInformationSTT?.report_on && clientuserInformationSTT?.report_on != null && senarioCase2 !== 'assessment') {
                   emailCandidate2 = clientuserInformationSTT.report_on;
                 }
                 senarioMediaDescription2 =
