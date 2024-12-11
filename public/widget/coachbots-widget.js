@@ -1258,7 +1258,7 @@ async function proceedFormFlow(msg) {
     isEmailForm = true;
     const fieldName = formFields[0];
     if (fieldName === 'email' && !isEmail(msg)) {
-      return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>.`];
+      return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`];
     }
     
     formFields = formFields.slice(1);
@@ -5041,8 +5041,8 @@ loadExternalModule().then(() => {
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
                 EmailCandidate = questionData.results[0].email_candidate;
-                if (ClientUserInformation && 'report_on' in ClientUserInformation){
-                  EmailCandidate = ClientUserInformation.report_on
+                if (ClientUserInformation?.report_on && ClientUserInformation?.report_on != null && senarioCase !== 'assessment') {
+                  EmailCandidate = ClientUserInformation.report_on;
                 }
                 senarioMediaDescription =
                   questionData.results[0].description_media;

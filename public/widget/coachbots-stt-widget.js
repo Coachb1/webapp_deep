@@ -5079,7 +5079,7 @@ async function proceedFormFlowStt(msg) {
   isEmailFormstt = true;
   const fieldName = formFieldsstt[0];
   if (fieldName === 'email' && !isEmailSTT(msg)) {
-    return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>.`];
+    return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`];
   }
   
   formFieldsstt = formFieldsstt.slice(1);
@@ -9641,7 +9641,7 @@ loadExternalModule().then(() => {
                 senarioCase2 = questionData2.results[0].scenario_case;
                 emailCandidate2 = questionData2.results[0].email_candidate;
 
-                if (clientuserInformationSTT && 'report_on' in clientuserInformationSTT) {
+                if (clientuserInformationSTT?.report_on && clientuserInformationSTT?.report_on != null && senarioCase2 !== 'assessment') {
                   emailCandidate2 = clientuserInformationSTT.report_on;
                 }
                 senarioMediaDescription2 =
