@@ -717,10 +717,38 @@ const CoachIntake = ({ user }: any) => {
   const createSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log(formVersion,switchState,checkIfEdit)
     if (switchState.to !== "" && switchState.from !== switchState.to) {
       checkIfEdit = null; //checkIfEdit stores "1" if in edit mode, here it is reset to null if switch is made
 
       //delete the user resources here
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", basicAuth);
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        "user_id": userId,
+        "delete_profile": true,
+        "delete_bot": true,
+        "soft_delete_profile_bot": true,
+        "delete_bot_types": "avatar_bot,subject_specific_bot"
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      fetch(`${baseURL}/accounts/delete-user-resources/`, requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed to process the switch profile. Please try again later")
+          return
+        });
+
 
       // throw new Error("Error deleting user resources"); -> throw error if delete fails else proceeds
     }
