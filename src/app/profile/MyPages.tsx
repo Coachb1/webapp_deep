@@ -1,8 +1,8 @@
 "use client";
 
-import { applicationUrl } from "@/lib/utils";
+import { applicationUrl, baseURL, basicAuth } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import { Code, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
+import { Code, Edit, Info, LinkIcon, Loader, Trash2, View } from "lucide-react";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import CopyToClipboard from "../../components/CopyToClipboard";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
+import { Popconfirm } from "antd";
+import { toast } from "sonner";
 interface Bot {
   bot_id: string;
   bot_name: string;
@@ -37,7 +39,7 @@ const MyPages = ({ user }: any) => {
   const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
   const [noCopilotBot, setNoCopilotBot] = useState<any>();
 
-  const { allCoaches, botsData } = useUser();
+  const { allCoaches, botsData, getAllDirectoryData, userId } = useUser();
 
   useEffect(() => {
     setUserProfile(allCoaches[0]);
@@ -208,6 +210,44 @@ const MyPages = ({ user }: any) => {
     }
   };
 
+  const [deleteLoading, setDeleteLoading] = useState("");
+  const deleteProfileHandler = (
+    profileTypeorBotId: string,
+    profileId: string,
+    botUId?: string
+  ) => {
+    setDeleteLoading(botUId ?? "");
+
+    let raw: any;
+
+    //construct the payload here for each case - @delete_call
+
+    fetch(`${baseURL}/accounts/delete-user-resources/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: basicAuth,
+      },
+      body: JSON.stringify(raw),
+    })
+      .then((res) => {
+        console.log("res : ", res);
+        getAllDirectoryData()
+          .then(() => {
+            console.log("Data fetched");
+            toast.success("Bot deleted successfully");
+          })
+          .finally(() => {
+            setDeleteLoading("");
+          });
+      })
+      .catch((err) => {
+        console.log("err : ", err);
+        toast.error("Error deleting bot");
+        setDeleteLoading("");
+      });
+  };
+
   return (
     <div id="directory-profile" className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
@@ -241,16 +281,21 @@ const MyPages = ({ user }: any) => {
           <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
             {botType.bots.map((bot, i) => (
               <div className="m-4 my-1 text-sm max-sm:m-2">
-                <div className="flex items-center">
+                <div
+                  className={`flex items-center max-sm:flex-col max-sm:items-start ${
+                    botType?.bots?.length !== i + 1 && "max-sm:border-b-2 pb-2"
+                  }   border-gray-300`}
+                >
                   <p
                     className={`text-sm max-sm:text-xs text-gray-600 inline ${
                       botType.bot_type === "user_bot"
-                        ? "w-[45%] max-sm:w-[70%]"
-                        : "w-[45%] max-sm:w-[70%]"
+                        ? "w-[45%] max-sm:w-full"
+                        : "w-[45%] max-sm:w-full"
                     } `}
                   >
                     <>
-                      {botType.bot_type !== "feedback_bot" && <>Coach - </>}
+                      {botType.bot_type !== "feedback_bot" &&
+                        botType.bot_type !== "user_bot" && <>Coach - </>}
                       <span className="font-semibold">
                         {BotTypesHeading(botType.bot_type)}
                       </span>
@@ -259,8 +304,8 @@ const MyPages = ({ user }: any) => {
                       )}{" "}
                     </>
                   </p>{" "}
-                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
-                  <div className="flex flex-row gap-2">
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block max-sm:hidden" />
+                  <div className="flex flex-row gap-2 max-sm:mt-2">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -415,6 +460,42 @@ const MyPages = ({ user }: any) => {
                         />
                       </Link>
                     </Button>
+                    <Popconfirm
+                      title="Delete this bot?"
+                      description="Are you sure to delete this bot?"
+                      onConfirm={() =>
+                        deleteProfileHandler(
+                          //@delete_call - this is for coaches(subject/coaching co-pilot), feedback and knowledge bot
+                          bot.bot_id,
+                          userProfile?.uid,
+                          bot.uid
+                        )
+                      }
+                      onCancel={() => console.log("canceled")}
+                      okText="Yes"
+                      cancelText="No"
+                      okButtonProps={{
+                        type: "primary",
+                        danger: true,
+                      }}
+                    >
+                      <Button
+                        variant={"destructive"}
+                        className="h-6 text-xs w-fit min-w-fit"
+                        disabled={deleteLoading.includes(bot.bot_id)}
+                      >
+                        {deleteLoading.includes(bot.bot_id) ? (
+                          <span>
+                            <Loader className="h-4 w-4 animate-spin" />
+                          </span>
+                        ) : (
+                          <>
+                            <span className="max-sm:hidden">Delete</span>
+                            <Trash2 className="hidden max-sm:block h-3 w-3" />
+                          </>
+                        )}
+                      </Button>
+                    </Popconfirm>
                   </div>
                 </div>
               </div>
@@ -431,9 +512,9 @@ const MyPages = ({ user }: any) => {
             <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
               {/* <p className="text-sm ">Coachee</p> */}
               <div className="m-4 my-1 text-sm max-sm:m-2">
-                <div className="flex items-center">
+                <div className="flex items-center max-sm:flex-col max-sm:items-start">
                   {/* <p className="text-sm inline w-[10%]">1</p> */}
-                  <p className="text-sm max-sm:text-xs text-gray-600 inline w-[45%] max-sm:w-[50%]">
+                  <p className="text-sm max-sm:text-xs text-gray-600 inline w-[45%] max-sm:full">
                     {userProfile.profile_type === "coachee" && <>Coachee</>}
                     {userProfile.profile_type === "mentee" && <>Mentee</>}
                     {noCopilotBot?.profile_type === "coach" && (
@@ -445,67 +526,104 @@ const MyPages = ({ user }: any) => {
 
                     {/* - {userProfile.name} */}
                   </p>
-                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 " />
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 max-sm:hidden" />
                   {/* FOR VIEW MODE */}
-                  <Button
-                    variant={"secondary"}
-                    className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
-                  >
-                    <Link
-                      href={
-                        intakeBotTypeLinksForView(
-                          noCopilotBot?.profile_type || "coachee",
-                          !noCopilotBot?.avatar_bot ? "" : "123",
-                          noCopilotBot?.uid || userProfile.uid,
-                          userProfile.profile_type
-                        )! + `&uid=`
-                      }
-                      className="flex flex-row gap-1 items-center "
-                      // target="_blank"
+                  <div className="max-sm:mt-2">
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center "
                     >
-                      <span className="max-sm:hidden">View</span>{" "}
-                      <TooltipWrapper
-                        className="hidden max-sm:block text-xs"
-                        tooltipName="View"
-                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                      />
-                    </Link>
-                  </Button>
+                      <Link
+                        href={
+                          intakeBotTypeLinksForView(
+                            noCopilotBot?.profile_type || "coachee",
+                            !noCopilotBot?.avatar_bot ? "" : "123",
+                            noCopilotBot?.uid || userProfile.uid,
+                            userProfile.profile_type
+                          )! + `&uid=`
+                        }
+                        className="flex flex-row gap-1 items-center "
+                        // target="_blank"
+                      >
+                        <span className="max-sm:hidden">View</span>{" "}
+                        <TooltipWrapper
+                          className="hidden max-sm:block text-xs"
+                          tooltipName="View"
+                          body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        />
+                      </Link>
+                    </Button>
 
-                  {/* FOR EDIT MODE */}
-                  <Button
-                    variant={"secondary"}
-                    className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
-                    disabled={
-                      noCopilotBot
-                        ? noCopilotBot?.is_approved === true
-                          ? false
-                          : true
-                        : false
-                    }
-                  >
-                    <Link
-                      className="flex flex-row gap-1 items-center "
-                      href={
-                        intakeBotTypeLinks(
-                          (noCopilotBot?.profile_type === "coach" &&
-                            "no-copilot") ||
-                            "coachee",
-                          !noCopilotBot?.avatar_bot ? "" : "123",
-                          userProfile.uid,
-                          noCopilotBot?.profile_type || userProfile.profile_type
-                        )! + `&uid=`
+                    {/* FOR EDIT MODE */}
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
+                      disabled={
+                        noCopilotBot
+                          ? noCopilotBot?.is_approved === true
+                            ? false
+                            : true
+                          : false
                       }
-                      // target="_blank"
                     >
-                      <span className="max-sm:hidden">Edit</span>{" "}
-                      <TooltipWrapper
-                        className="hidden max-sm:block text-xs"
-                        tooltipName="Edit"
-                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                      />
-                    </Link>
-                  </Button>
+                      <Link
+                        className="flex flex-row gap-1 items-center "
+                        href={
+                          intakeBotTypeLinks(
+                            (noCopilotBot?.profile_type === "coach" &&
+                              "no-copilot") ||
+                              "coachee",
+                            !noCopilotBot?.avatar_bot ? "" : "123",
+                            userProfile.uid,
+                            noCopilotBot?.profile_type ||
+                              userProfile.profile_type
+                          )! + `&uid=`
+                        }
+                      >
+                        <span className="max-sm:hidden">Edit</span>{" "}
+                        <TooltipWrapper
+                          className="hidden max-sm:block text-xs"
+                          tooltipName="Edit"
+                          body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        />
+                      </Link>
+                    </Button>
+                    <Popconfirm
+                      title="Delete this bot?"
+                      description="Are you sure to delete this bot?"
+                      onConfirm={() =>
+                        deleteProfileHandler(
+                          //@delete_call - this is for coachees and coach with no co-pilot
+                          userProfile.profile_type,
+                          userProfile?.uid
+                        )
+                      }
+                      onCancel={() => console.log("canceled")}
+                      okText="Yes"
+                      cancelText="No"
+                      okButtonProps={{
+                        type: "primary",
+                        danger: true,
+                      }}
+                    >
+                      <Button
+                        variant={"destructive"}
+                        className="h-6 text-xs w-fit min-w-fit ml-2"
+                        disabled={deleteLoading.includes(userProfile?.uid)}
+                      >
+                        {deleteLoading.includes(userProfile?.uid) ? (
+                          <span>
+                            <Loader className="h-4 w-4 animate-spin" />
+                          </span>
+                        ) : (
+                          <>
+                            <span className="max-sm:hidden">Delete</span>
+                            <Trash2 className="hidden max-sm:block h-3 w-3" />
+                          </>
+                        )}
+                      </Button>
+                    </Popconfirm>
+                  </div>
                 </div>
               </div>
             </div>
