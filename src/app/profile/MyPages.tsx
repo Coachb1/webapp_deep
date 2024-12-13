@@ -118,13 +118,28 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
+
+    let formVersion;
+    if (
+      profile_type === "coach" ||
+      profile_type === "mentor" ||
+      profile_type === "coach-mentor"
+    ) {
+      formVersion = "1";
+      if (bot_id?.includes("avatar-bot") || bot_id?.includes("avatar_bot")) {
+        formVersion = "3";
+      } else if (bot_id?.includes("subject-spe")) {
+        formVersion = "2";
+      }
+    }
+    
     if (
       profile_type === "coach" ||
       profile_type === "mentor" ||
       profile_type === "coach-mentor"
     ) {
       if (botType === "avatar_bot" || botType === "subject_specific_bot") {
-        return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+        return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}&v=${formVersion}`;
       } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "user_bot") {
