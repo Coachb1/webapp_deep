@@ -7435,6 +7435,11 @@ loadExternalModule().then(() => {
 
         if (!response.ok) {
           audioElement.dispatchEvent(new Event("ended"));
+          if(signals){
+            signals.onResponse({
+              html: ".",
+            })
+          }
           throw new Error("Speech api error");
         }
 
