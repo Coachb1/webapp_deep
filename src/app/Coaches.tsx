@@ -1328,7 +1328,7 @@ const Coaches = ({
                                 !["coach", "mentor"].includes(canJoinAs))
                             }
                           >
-                            <Link href={"/intake/?type=coach"}>
+                            <Link href={"/intake/?type=coach&v=1"}>
                               Join as Coach{" "}
                               {allCoaches.length > 0 ? (
                                 <>

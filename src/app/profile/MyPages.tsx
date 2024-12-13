@@ -212,15 +212,26 @@ const MyPages = ({ user }: any) => {
 
   const [deleteLoading, setDeleteLoading] = useState("");
   const deleteProfileHandler = (
-    profileTypeorBotId: string,
     profileId: string,
-    botUId?: string
+    deleteProfile: boolean,
+    deleteBot: boolean,
+    botIds: string | null,
+    BotTypesTobeDeleted: string | null
   ) => {
-    setDeleteLoading(botUId ?? "");
+    //botids or bottypestobedeleted can be null 
+    setDeleteLoading(botIds ?? "");
 
     let raw: any;
 
     //construct the payload here for each case - @delete_call
+    raw = {
+      "profile_id": profileId,
+      "delete_profile": deleteProfile,
+      "delete_bot": deleteBot,
+      "soft_delete_profile_bot": true,
+      "delete_bot_types": BotTypesTobeDeleted,
+      "bot_ids": botIds
+    }
 
     fetch(`${baseURL}/accounts/delete-user-resources/`, {
       method: "POST",
@@ -463,13 +474,39 @@ const MyPages = ({ user }: any) => {
                     <Popconfirm
                       title="Delete this bot?"
                       description="Are you sure to delete this bot?"
-                      onConfirm={() =>
-                        deleteProfileHandler(
-                          //@delete_call - this is for coaches(subject/coaching co-pilot), feedback and knowledge bot
+                      onConfirm={() =>{
+                        console.log(1);
+                        console.log(
+                          botType.bot_type,
                           bot.bot_id,
+                          bot.uid,
                           userProfile?.uid,
-                          bot.uid
+                          userProfile?.profile_type,
+                          userId
                         )
+
+                        if (['coach','mentor'].includes(userProfile?.profile_type) && ['avatar_bot','subject_specific_bot'].includes(botType.bot_type)){
+                          console.log('deleting coach with avatar or specific bot: ', userProfile?.profile_type, botType.bot_type, bot.bot_id)
+                          //@delete_call - this is for coaches(subject/coaching co-pilot)
+                          deleteProfileHandler(
+                            userProfile?.uid,
+                            true,
+                            true,
+                            null,
+                           'avatar_bot,subject_specific_bot'
+                          )
+                        } else {
+                          console.log('deleting bot: ', userProfile?.profile_type, botType.bot_type, bot.bot_id)
+                          deleteProfileHandler(
+                            userProfile?.uid,
+                            false,
+                            true,
+                            bot.uid,
+                            null
+                          )
+                        }
+
+                      }
                       }
                       onCancel={() => console.log("canceled")}
                       okText="Yes"
@@ -591,12 +628,19 @@ const MyPages = ({ user }: any) => {
                     <Popconfirm
                       title="Delete this bot?"
                       description="Are you sure to delete this bot?"
-                      onConfirm={() =>
+                      onConfirm={() =>{
+
+
+                        console.log(`deleting coachee or no copilot: profile_type: ${userProfile.profile_type}, nocopilot:`, noCopilotBot)
                         deleteProfileHandler(
-                          //@delete_call - this is for coachees and coach with no co-pilot
-                          userProfile.profile_type,
-                          userProfile?.uid
+                          userProfile?.uid,
+                          true,
+                          true,
+                          null,
+                          "avatar_bot,subject_specific_bot"
                         )
+                      }
+                        //@delete_call - this is for coachees and coach with no co-pilot
                       }
                       onCancel={() => console.log("canceled")}
                       okText="Yes"
