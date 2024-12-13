@@ -405,11 +405,13 @@ export const UserProvider = ({
     setUserConnections(connections?.data);
 
     const botsData = await getBots(data.uid);
-    console.log(botsData);
+    console.log('botsData',botsData);
     setBotsData(botsData?.data);
     const feedbackBots = botsData.data?.filter(
       (data: any) => data.signature_bot.bot_type === "feedback_bot"
     );
+    console.log('Feedback data: ', feedbackBots)
+
     setFeedbackBots(feedbackBots);
   };
 
