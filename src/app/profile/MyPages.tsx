@@ -36,16 +36,67 @@ const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
   const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
   const [noCopilotBot, setNoCopilotBot] = useState<any>();
 
-  const { allCoaches, botsData, getAllDirectoryData, userId } = useUser();
+  const {
+    allCoaches,
+    botsData,
+    getAllDirectoryData,
+    userId,
+    getAllKnowledgeBotData,
+  } = useUser();
 
   useEffect(() => {
+    console.log("BOTS DATA : ", botsData);
+    const processBots = () => {
+      const newBotTypeMap: Record<string, Bot[]> = {};
+
+      botsData
+        .filter((bot: any) => bot.signature_bot.bot_type !== "deep_dive")
+        .forEach((entry: any) => {
+          const botType = entry.signature_bot.bot_type;
+
+          if (!newBotTypeMap[botType]) {
+            newBotTypeMap[botType] = [];
+          }
+
+          const existingEntry = newBotTypeMap[botType].find(
+            (bot) => bot.bot_id === entry.signature_bot.bot_id
+          );
+
+          if (!existingEntry) {
+            newBotTypeMap[botType].push({
+              bot_id: entry.signature_bot.bot_id,
+              uid: entry.signature_bot.uid,
+              is_approved: entry.signature_bot.is_approved,
+              bot_name:
+                entry.signature_bot.bot_id.includes("feedback") ||
+                entry.signature_bot.bot_id.includes("knowledge")
+                  ? entry.bot_attributes.bot_name
+                  : entry.bot_attributes.coach_name,
+            });
+          }
+        });
+
+      const newBotTypes: BotTypeEntry[] = Object.keys(newBotTypeMap).map(
+        (botType) => ({
+          bot_type: botType,
+          bots: newBotTypeMap[botType],
+        })
+      );
+
+      setBotTypes(newBotTypes);
+    };
+
     setUserProfile(allCoaches[0]);
     const coachData: any = allCoaches[0];
-    console.log("allCoaches[0] : ", allCoaches[0]);
-    console.log("botsData : ", botsData);
+
+    if (allCoaches.length === 0) setNoCopilotBot(null);
+    if (botsData.length === 0) {
+      setBotTypes([]); // Clear botTypes if no data
+      setLoading(false);
+      return;
+    }
 
     if (
       coachData?.profile_type == "coach" &&
@@ -53,42 +104,12 @@ const MyPages = ({ user }: any) => {
       !coachData?.bot_ids?.includes("avatar_bot") &&
       !coachData?.bot_ids?.includes("subject-spe")
     ) {
-      console.log("JUST coach : ", coachData);
       setNoCopilotBot(coachData);
     }
 
-    botsData
-      .filter((bot: any) => bot.signature_bot.bot_type !== "deep_dive")
-      .forEach((entry: any) => {
-        const botType = entry.signature_bot.bot_type;
-
-        if (!botTypeMap[botType]) {
-          botTypeMap[botType] = [];
-        }
-        const existingEntry = botTypeMap[botType].find(
-          (bot) => bot.bot_id === entry.signature_bot.bot_id
-        );
-        if (!existingEntry) {
-          botTypeMap[botType].push({
-            bot_id: entry.signature_bot.bot_id,
-            uid: entry.signature_bot.uid,
-            is_approved: entry.signature_bot.is_approved,
-            bot_name:
-              entry.signature_bot.bot_id.includes("feedback") ||
-              entry.signature_bot.bot_id.includes("knowledge")
-                ? entry.bot_attributes.bot_name
-                : entry.bot_attributes.coach_name,
-          });
-        }
-      });
-    const result: BotTypeEntry[] = Object.keys(botTypeMap).map((botType) => ({
-      bot_type: botType,
-      bots: botTypeMap[botType],
-    }));
-
-    setBotTypes(result);
+    processBots();
     setLoading(false);
-  }, []);
+  }, [botsData, allCoaches]);
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
@@ -120,7 +141,6 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-
     let formVersion;
     if (
       profile_type === "coach" ||
@@ -134,7 +154,7 @@ const MyPages = ({ user }: any) => {
         formVersion = "2";
       }
     }
-    
+
     if (
       profile_type === "coach" ||
       profile_type === "mentor" ||
@@ -226,38 +246,50 @@ const MyPages = ({ user }: any) => {
   };
 
   const [deleteLoading, setDeleteLoading] = useState("");
-  const deleteProfileHandler = (
+  const deleteProfileHandler = async (
     profileId: string,
     deleteProfile: boolean,
     deleteBot: boolean,
     botIds: string | null,
-    BotTypesTobeDeleted: string | null
+    BotTypesTobeDeleted: string | null,
+    isknowledgeBot?: boolean
   ) => {
-    //botids or bottypestobedeleted can be null 
-    setDeleteLoading(botIds ?? "");
+    console.log("deleteProfileHandler : ", botIds);
+    //botids or bottypestobedeleted can be null
+    setDeleteLoading(botIds ?? profileId ?? "");
 
     let raw: any;
-
-    //construct the payload here for each case - @delete_call
     raw = {
-      "profile_id": profileId,
-      "delete_profile": deleteProfile,
-      "delete_bot": deleteBot,
-      "soft_delete_profile_bot": true,
-      "delete_bot_types": BotTypesTobeDeleted,
-      "bot_ids": botIds
-    }
+      user_id: userId,
+      delete_profile: deleteProfile,
+      delete_bot: deleteBot,
+      soft_delete_profile_bot: true,
+      delete_bot_types: BotTypesTobeDeleted,
+      bot_ids: botIds,
+    };
 
-    fetch(`${baseURL}/accounts/delete-user-resources/`, {
+    const response = await fetch(`${baseURL}/accounts/delete-user-resources/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: basicAuth,
       },
       body: JSON.stringify(raw),
-    })
-      .then((res) => {
-        console.log("res : ", res);
+    });
+
+    if (response.ok) {
+      const results = await response.json();
+      console.log("DELETE RESOURCE response : ", results);
+      if (isknowledgeBot) {
+        getAllKnowledgeBotData()
+          .then(() => {
+            console.log("Data fetched");
+            toast.success("Bot deleted successfully");
+          })
+          .finally(() => {
+            setDeleteLoading("");
+          });
+      } else {
         getAllDirectoryData()
           .then(() => {
             console.log("Data fetched");
@@ -266,12 +298,11 @@ const MyPages = ({ user }: any) => {
           .finally(() => {
             setDeleteLoading("");
           });
-      })
-      .catch((err) => {
-        console.log("err : ", err);
-        toast.error("Error deleting bot");
-        setDeleteLoading("");
-      });
+      }
+    } else {
+      toast.error("Error deleting bot");
+      setDeleteLoading("");
+    }
   };
 
   return (
@@ -489,7 +520,7 @@ const MyPages = ({ user }: any) => {
                     <Popconfirm
                       title="Delete this bot?"
                       description="Are you sure to delete this bot?"
-                      onConfirm={() =>{
+                      onConfirm={() => {
                         console.log(1);
                         console.log(
                           botType.bot_type,
@@ -498,31 +529,48 @@ const MyPages = ({ user }: any) => {
                           userProfile?.uid,
                           userProfile?.profile_type,
                           userId
-                        )
+                        );
 
-                        if (['coach','mentor'].includes(userProfile?.profile_type) && ['avatar_bot','subject_specific_bot'].includes(botType.bot_type)){
-                          console.log('deleting coach with avatar or specific bot: ', userProfile?.profile_type, botType.bot_type, bot.bot_id)
+                        if (
+                          ["coach", "mentor"].includes(
+                            userProfile?.profile_type
+                          ) &&
+                          ["avatar_bot", "subject_specific_bot"].includes(
+                            botType.bot_type
+                          )
+                        ) {
+                          console.log(
+                            "deleting coach with avatar or specific bot: ",
+                            userProfile?.profile_type,
+                            botType.bot_type,
+                            bot.bot_id
+                          );
                           //@delete_call - this is for coaches(subject/coaching co-pilot)
                           deleteProfileHandler(
                             userProfile?.uid,
                             true,
                             true,
-                            null,
-                           'avatar_bot,subject_specific_bot'
-                          )
+                            bot.uid,
+                            "avatar_bot,subject_specific_bot"
+                          );
                         } else {
-                          console.log('deleting bot: ', userProfile?.profile_type, botType.bot_type, bot.bot_id)
+                          console.log(
+                            "deleting bot: ",
+                            userProfile?.profile_type,
+                            botType.bot_type,
+                            bot.bot_id
+                          );
                           deleteProfileHandler(
+                            //userUid if profileUID is not available
                             userProfile?.uid,
                             false,
                             true,
                             bot.uid,
-                            null
-                          )
+                            null,
+                            botType.bot_type === "user_bot"
+                          );
                         }
-
-                      }
-                      }
+                      }}
                       onCancel={() => console.log("canceled")}
                       okText="Yes"
                       cancelText="No"
@@ -534,9 +582,9 @@ const MyPages = ({ user }: any) => {
                       <Button
                         variant={"destructive"}
                         className="h-6 text-xs w-fit min-w-fit"
-                        disabled={deleteLoading.includes(bot.bot_id)}
+                        disabled={deleteLoading.includes(bot.uid)}
                       >
-                        {deleteLoading.includes(bot.bot_id) ? (
+                        {deleteLoading.includes(bot.uid) ? (
                           <span>
                             <Loader className="h-4 w-4 animate-spin" />
                           </span>
@@ -643,18 +691,20 @@ const MyPages = ({ user }: any) => {
                     <Popconfirm
                       title="Delete this bot?"
                       description="Are you sure to delete this bot?"
-                      onConfirm={() =>{
-
-
-                        console.log(`deleting coachee or no copilot: profile_type: ${userProfile.profile_type}, nocopilot:`, noCopilotBot)
-                        deleteProfileHandler(
-                          userProfile?.uid,
-                          true,
-                          true,
-                          null,
-                          "avatar_bot,subject_specific_bot"
-                        )
-                      }
+                      onConfirm={
+                        () => {
+                          console.log(
+                            `deleting coachee or no copilot: profile_type: ${userProfile.profile_type}, nocopilot:`,
+                            noCopilotBot
+                          );
+                          deleteProfileHandler(
+                            userProfile?.uid || noCopilotBot?.uid,
+                            true,
+                            true,
+                            null,
+                            "avatar_bot,subject_specific_bot"
+                          );
+                        }
                         //@delete_call - this is for coachees and coach with no co-pilot
                       }
                       onCancel={() => console.log("canceled")}
@@ -668,9 +718,13 @@ const MyPages = ({ user }: any) => {
                       <Button
                         variant={"destructive"}
                         className="h-6 text-xs w-fit min-w-fit ml-2"
-                        disabled={deleteLoading.includes(userProfile?.uid)}
+                        disabled={
+                          deleteLoading.includes(userProfile?.uid) ||
+                          deleteLoading.includes(noCopilotBot?.uid)
+                        }
                       >
-                        {deleteLoading.includes(userProfile?.uid) ? (
+                        {deleteLoading.includes(userProfile?.uid) ||
+                        deleteLoading.includes(noCopilotBot?.uid) ? (
                           <span>
                             <Loader className="h-4 w-4 animate-spin" />
                           </span>
