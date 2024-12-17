@@ -85,7 +85,7 @@ const UserBotIntake = ({
   const [dataModified, setDataModified] = useState(false);
   const [forReapproval, setForReapproval] = useState(false);
 
-  const { getAllKnowledgeBotData } = useUser();
+  const { getAllKnowledgeBotData, getBotsFn } = useUser();
 
   useEffect(() => {
     if (user && !adminEdit) {
@@ -447,6 +447,7 @@ const UserBotIntake = ({
                   });
                   setTimeout(() => {
                     getAllKnowledgeBotData();
+                    getBotsFn();
                     router.push("/profile");
                   }, 4000);
                 } else {
@@ -457,6 +458,7 @@ const UserBotIntake = ({
                     }
                   );
                   setTimeout(() => {
+                    getBotsFn();
                     getAllKnowledgeBotData();
                     router.push("/");
                   }, 4000);

@@ -44,6 +44,7 @@ const MyPages = ({ user }: any) => {
     getAllDirectoryData,
     userId,
     getAllKnowledgeBotData,
+    getBotsFn,
   } = useUser();
 
   useEffect(() => {
@@ -283,7 +284,7 @@ const MyPages = ({ user }: any) => {
       const results = await response.json();
       console.log("DELETE RESOURCE response : ", results);
       if (isknowledgeBot) {
-        getAllKnowledgeBotData()
+        getBotsFn()
           .then(() => {
             console.log("Data fetched");
             toast.success("Bot deleted successfully");
