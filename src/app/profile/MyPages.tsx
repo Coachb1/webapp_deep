@@ -48,6 +48,7 @@ const MyPages = ({ user }: any) => {
 
   useEffect(() => {
     console.log("BOTS DATA : ", botsData);
+    console.log("ALL COACHES : ", allCoaches);
     const processBots = () => {
       const newBotTypeMap: Record<string, Bot[]> = {};
 
@@ -89,15 +90,10 @@ const MyPages = ({ user }: any) => {
     };
 
     setUserProfile(allCoaches[0]);
-    const coachData: any = allCoaches[0];
 
     if (allCoaches.length === 0) setNoCopilotBot(null);
-    if (botsData.length === 0) {
-      setBotTypes([]); // Clear botTypes if no data
-      setLoading(false);
-      return;
-    }
 
+    const coachData: any = allCoaches[0];
     if (
       coachData?.profile_type == "coach" &&
       !coachData?.bot_ids?.includes("avatar-bot") &&
@@ -105,6 +101,12 @@ const MyPages = ({ user }: any) => {
       !coachData?.bot_ids?.includes("subject-spe")
     ) {
       setNoCopilotBot(coachData);
+    }
+
+    if (botsData.length === 0) {
+      setBotTypes([]); // Clear botTypes if no data
+      setLoading(false);
+      return;
     }
 
     processBots();
