@@ -252,6 +252,9 @@ let botAvatarImageURL =
 let UserAvatarImageURL =
   "data:image/png;base64,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";
 let clientuserInformationSTT;
+
+let responderDisplayNameStt;
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -4135,6 +4138,7 @@ const resetAllVariablesStt = async () => {
   isTranscriptOnlyStt = false;
   allowRecommendationTestCode = false;
   recommendationClicked = false;
+  responderDisplayNameStt=null;
 
   console.log("resetting variables completed");
 };
@@ -4316,6 +4320,63 @@ const audioCanvasUI = (audio, canvas) => {
   };
 };
 
+
+const handleGameTypeConversation = async () => {
+  try {
+    const response = await fetch(`${baseURL2}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: sessionId2,
+        question_id: testId2,
+        response_text: userResponse2,
+        response_file: "",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user2 ? user2.email : getAnonymousEmail(),
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    console.log('gameresponse: ', responseData)
+
+    // Extract next question text
+    let next_question_text = responseData.question_text || null;
+
+    // Check if it is the last question using specific conditions
+    const is_last_question = responseData.is_last_question !== undefined 
+        ? responseData.is_last_question 
+        : (next_question_text === null || /end of quiz|achieved a score of/i.test(next_question_text));
+   
+
+        console.log(
+      is_last_question,
+      next_question_text
+    )
+
+    return { is_last_question, next_question_text}
+    
+  } catch (error) {
+    console.error("Error handling game type conversation:", error.message);
+    
+    return {
+      error: `${error}`
+    }
+  }
+};
+
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
     isProceedStt = "true";
@@ -4332,6 +4393,8 @@ const handleProceedClickStt = async (choice) => {
       console.log(questionSnippetLinkStt);
       if (questionSnippetLinkStt.length > 0) {
         const linkList = questionSnippetLinkStt.split(",");
+        console.log('Ahere12')
+
         linkList.forEach((element) => {
           appendMessage2(snippetDivSTT(element));
         });
@@ -4362,6 +4425,8 @@ const handleProceedClickStt = async (choice) => {
         }
 
         if (embeddingUrl) {
+          console.log('Ahere11')
+
           appendMessage2(`▪ Media <br>  <iframe
                             allow="autoplay; encrypted-media; fullscreen;"
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
@@ -4382,6 +4447,8 @@ const handleProceedClickStt = async (choice) => {
                 element.split("edit?")[0] +
                 "embed?start=true&loop=true&delayms=3000";
               console.log(url);
+          console.log('Ahere10')
+
               appendMessage2(`<iframe src=${url}
                                 frameborder="0" 
                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
@@ -4391,6 +4458,7 @@ const handleProceedClickStt = async (choice) => {
                                 ></iframe>`);
             } else {
               console.log(element);
+          console.log('Ahere8')
 
               appendMessage2(`<div ><audio style="${
                 window.innerWidth < 600
@@ -4408,6 +4476,8 @@ const handleProceedClickStt = async (choice) => {
               questionMediaLinkStt.split("edit?")[0] +
               "embed?start=true&loop=true&delayms=3000";
             console.log(url);
+          console.log('Ahere7')
+
             appendMessage2(`<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
@@ -4417,6 +4487,8 @@ const handleProceedClickStt = async (choice) => {
                               ></iframe>`);
           } else if (questionMediaLinkStt.includes("guidejar.com")) {
             const guidejarId = questionMediaLinkStt.split("/").pop();
+          console.log('Ahere6')
+
             appendMessage2(`
               <div style="width:640px">
               <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
@@ -4506,6 +4578,7 @@ const handleProceedClickStt = async (choice) => {
             initialQuestionTextStt =
               `<b>${responderName}:</b><br>` + `${initialQuestionTextStt}`;
           }
+          console.log('Aher51')
 
           appendMessage2(initialQuestionTextStt);
         }
@@ -4521,16 +4594,19 @@ const handleProceedClickStt = async (choice) => {
         let responderName;
 
         if (testType2 === "dynamic_discussion_thread") {
-          if (initialQuestionTextStt.includes(":")) {
-            initialQuestionTextStt = initialQuestionTextStt.replace(
-              /<\/?p>/g,
-              ""
-            );
-            const strList = initialQuestionTextStt.split(":", 2);
-            responderName = `<b>${strList[0]}:</b><br>`;
-            initialQuestionTextStt = strList[1];
-          } else {
-            responderName = `<b>System:</b><br>`;
+          if (!['game'].includes(senarioCase2)){
+
+            if (initialQuestionTextStt.includes(":")) {
+              initialQuestionTextStt = initialQuestionTextStt.replace(
+                /<\/?p>/g,
+                ""
+              );
+              const strList = initialQuestionTextStt.split(":", 2);
+              responderName = `<b>${strList[0]}:</b><br>`;
+              initialQuestionTextStt = strList[1];
+            } else {
+              responderName = `<b>System:</b><br>`;
+            }
           }
         } else {
           let strLIst = initialQuestionTextStt
@@ -4604,7 +4680,7 @@ const handleProceedClickStt = async (choice) => {
         if (responderName) {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
-
+        console.log('here1',initialQuestionTextStt)
         appendMessage2(initialQuestionTextStt);
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
@@ -4662,11 +4738,13 @@ const handleProceedClickStt = async (choice) => {
           console.log(audioPromises, "audioPromises");
 
           const audioContents = await Promise.all(audioPromises);
-
+          console.log('Ahere1')
           audioContents.forEach((content) => {
             appendMessage2(content);
           });
         } else {
+          console.log('Ahere2')
+
           separatedText.forEach((entry) => {
             const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`;
             appendMessage2(container);
@@ -4726,6 +4804,7 @@ const handleProceedClickStt = async (choice) => {
         const imageIdStt = `mediaImageStt${initialIndexStt}`;
         const imageMapNameStt = `image-mapStt${initialIndexStt}`;
         const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`;
+        console.log('Ahere3')
 
         appendMessage2(`▪  ${ttsNarration}<br><br>
                           ▪ <img src=${imageUrlStt} ${
@@ -4751,6 +4830,8 @@ const handleProceedClickStt = async (choice) => {
               `<b>${strList[0]}:</b><br>` + `<p>${initialQuestionTextStt}</p>`;
           }
         }
+        console.log('Ahere4')
+
         appendMessage2(initialQuestionTextStt);
       }
     }
@@ -9867,14 +9948,14 @@ loadExternalModule().then(() => {
                 return;
               }
               //************* check if user message is atleast 10 words */
-              if (!isValidMessageStt(latestMessage)) {
+              if (!isValidMessageStt(latestMessage) && !['game'].includes(senarioCase2)) {
                 console.log("4");
                 signals.onResponse({
                   html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
                 });
                 return;
               }
-              if (isDuplicateResponseStt(latestMessage)) {
+              if (isDuplicateResponseStt(latestMessage) && !['game'].includes(senarioCase2)) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
                   resetAllVariablesStt();
@@ -9999,6 +10080,7 @@ loadExternalModule().then(() => {
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
 
+                responderDisplayNameStt = orch_details2.responder_name;
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
                     signals.onResponse({
@@ -10182,6 +10264,16 @@ loadExternalModule().then(() => {
                   sessionId2 = data.uid;
                   isSessionActiveStt = true;
                   console.log("Session Created => ", sessionId2);
+
+                  if (senarioCase2 === 'game'){
+                    questionLength2 = 1;
+                    questionIndex2 = 0;
+                      // getting question for the game scenario:
+                      questionText2 = `${data.next_question_text}}`
+
+                    
+                  }
+
                   // initialize coaching conversation if test is coaching type
                   try {
                     if (testType2 === "coaching") {
@@ -10217,6 +10309,7 @@ loadExternalModule().then(() => {
                 }
               }
               if (questionIndex2 <= questionLength2) {
+                // handling first question for test
                 if (questionIndex2 < questionLength2) {
                   if (
                     testType2 === "dynamic_discussion_thread" ||
@@ -10244,14 +10337,16 @@ loadExternalModule().then(() => {
                             "Start the discussion by commenting your thoughts on this.";
                         }
                       } else {
-                        let resultString2 = "";
-                        for (let i = 0; i < initial_msg2.length; i++) {
-                          resultString2 += "<p>" + initial_msg2[i] + "</p>";
-                          if (i < initial_msg2.length - 1) {
-                            resultString2 += "<br>";
-                          }
+                        if (senarioCase2 != 'game'){
+                          let resultString2 = "";
+                            for (let i = 0; i < initial_msg2.length; i++) {
+                              resultString2 += "<p>" + initial_msg2[i] + "</p>";
+                              if (i < initial_msg2.length - 1) {
+                                resultString2 += "<br>";
+                              }
+                            }
+                            questionText2 = resultString2;
                         }
-                        questionText2 = resultString2;
                       }
                     }
                   } else {
@@ -10948,6 +11043,62 @@ loadExternalModule().then(() => {
                     }
                   }
                 }
+                
+                // above we have creeate session and send proceed button
+                //now we will proceed for game type or similiar to game type
+
+                if (senarioCase2 === 'game') {
+                  if (questionIndex2 !== 0) {
+                    try {
+                      // Fetch the next game question
+                      const response = await handleGameTypeConversation();
+                
+                      // Handle API errors
+                      if (response.error) {
+                        resetAllVariablesStt();
+                        signals.onResponse({
+                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
+                        });
+                        return;
+                      }
+
+                      if (response.is_last_question){
+                          appendMessage2( `<b>That's it! Thank you for participating!</b>`)
+                      }
+                
+                      // Extract the next question text
+                      let next_question_text = response.next_question_text;
+                      console.log("Game question text:", next_question_text);
+              
+                
+                      // If immersive mode is enabled, process with TTS (Text-to-Speech)
+                      if (isImmersiveStt) {
+                        next_question_text = await TTSContainerStt(next_question_text);
+                      }
+                
+                      // Send the formatted question text for display
+                      signals.onResponse({
+                        text: next_question_text
+                      });
+                    } catch (error) {
+                      console.error("Error handling game conversation:", error);
+                      signals.onResponse({
+                        html: "<p style='font-size: 14px;color: #991b1b;'><b>Something went wrong. Please try again later.</b></p>",
+                      });
+                    }
+                    return;
+                  }
+                
+                  // Initialize the game (First question case)
+                  if (questionIndex2 === 0) {
+                    questionIndex2++;
+                  }
+                  return;
+                }
+                
+
+
+                // handling last question showing report
                 if (
                   questionIndex2 === questionLength2 &&
                   userResponse2.length > 0
