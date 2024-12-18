@@ -556,13 +556,48 @@ const CoachIntake = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              // if (characteristicsList) {
-              //   console.log("characteristicsList ##", characteristicsList);
-              // }
-              onCharacteristicsSelectLow(data.low_skill, tempChars);
-              onCharacteristicsSelectHigh(data.high_skill, tempChars);
-              // setCharacteristicsRateLows(data.low_skill);
-              // setCharacteristicsRateHigh(data.high_skill);
+              if (tempChars) {
+                console.log("tempChars ##", tempChars);
+              }
+
+              const highSkill = data.high_skill;
+              const lowSkill = data.low_skill;
+
+              const selectedValueIndexHigh = tempChars.findIndex(
+                (option: any) => option.value === highSkill
+              );
+              const selectedValueIndexLow = tempChars.findIndex(
+                (option: any) => option.value === lowSkill
+              );
+
+              console.log("selectedValueIndex : ", selectedValueIndexHigh);
+
+              if (selectedValueIndexHigh !== -1) {
+                tempChars[selectedValueIndexHigh] = {
+                  ...tempChars[selectedValueIndexHigh],
+                  disabled: true,
+                };
+              }
+
+              if (selectedValueIndexLow !== -1) {
+                tempChars[selectedValueIndexLow] = {
+                  ...tempChars[selectedValueIndexLow],
+                  disabled: true,
+                };
+              }
+
+              setCharacteristicsList(tempChars);
+
+              // onCharacteristicsSelectLow(
+              //   data.low_skill,
+              //   tempChars,
+              //   data.high_skill
+              // );
+              // // onCharacteristicsSelectHigh(data.high_skill, tempChars);
+              setTimeout(() => {
+                setCharacteristicsRateLows(data.low_skill);
+                setCharacteristicsRateHigh(data.high_skill);
+              }, 100);
             });
         })
         .catch((err) => {
@@ -1923,69 +1958,75 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  const onCharacteristicsSelectLow = (
-    val: string,
-    tempCharacteristics?: any
-  ) => {
+  const onCharacteristicsSelectLow = (val: string) => {
     setCharacteristicsRateLows(val);
     setDataModified(true);
-    const characteristics: any =
-      characteristicsList.length > 0
-        ? characteristicsList
-        : tempCharacteristics;
-    const resetDisabledData = characteristics.map((option: any) => ({
+
+    const resetDisabledData = characteristicsList.map((option) => ({
       ...option,
       disabled: false,
     }));
 
     console.log("resetDisabledData : ", resetDisabledData);
 
-    const selectedValueIndex = resetDisabledData.findIndex(
-      (option: any) => option.value === val
+    const selectedValueIndexLow = resetDisabledData.findIndex(
+      (option) => option.value === val
     );
 
-    console.log("selectedValueIndex : ", selectedValueIndex);
+    const selectedValueIndexHigh = resetDisabledData.findIndex(
+      (option) => option.value === characteristicsRateHigh
+    );
 
-    if (selectedValueIndex !== -1) {
-      resetDisabledData[selectedValueIndex] = {
-        ...resetDisabledData[selectedValueIndex],
+    console.log("selectedValueIndex : ", selectedValueIndexLow);
+
+    if (selectedValueIndexLow !== -1) {
+      resetDisabledData[selectedValueIndexLow] = {
+        ...resetDisabledData[selectedValueIndexLow],
         disabled: true,
       };
     }
 
-    console.log("resetDisabledData AA : ", resetDisabledData);
+    if (selectedValueIndexHigh !== -1) {
+      resetDisabledData[selectedValueIndexHigh] = {
+        ...resetDisabledData[selectedValueIndexHigh],
+        disabled: true,
+      };
+    }
 
     setCharacteristicsList(resetDisabledData);
   };
 
-  const onCharacteristicsSelectHigh = (
-    val: string,
-    tempCharacteristics?: any
-  ) => {
+  const onCharacteristicsSelectHigh = (val: string) => {
     console.log(val);
     setDataModified(true);
     setCharacteristicsRateHigh(val);
 
-    const characteristics: any =
-      characteristicsList.length > 0
-        ? characteristicsList
-        : tempCharacteristics;
-
-    const resetDisabledData = characteristics.map((option: any) => ({
+    const resetDisabledData = characteristicsList.map((option) => ({
       ...option,
       disabled: false,
     }));
 
-    const selectedValueIndex = resetDisabledData.findIndex(
-      (option: any) => option.value === val
+    const selectedValueIndexHigh = resetDisabledData.findIndex(
+      (option) => option.value === val
+    );
+    const selectedValueIndexLow = resetDisabledData.findIndex(
+      (option) => option.value === characteristicsRateLows
     );
 
-    if (selectedValueIndex !== -1) {
-      resetDisabledData[selectedValueIndex] = {
-        ...resetDisabledData[selectedValueIndex],
+    if (selectedValueIndexHigh !== -1) {
+      resetDisabledData[selectedValueIndexHigh] = {
+        ...resetDisabledData[selectedValueIndexHigh],
         disabled: true,
       };
     }
+
+    if (selectedValueIndexLow !== -1) {
+      resetDisabledData[selectedValueIndexLow] = {
+        ...resetDisabledData[selectedValueIndexLow],
+        disabled: true,
+      };
+    }
+
     setCharacteristicsList(resetDisabledData);
   };
 
