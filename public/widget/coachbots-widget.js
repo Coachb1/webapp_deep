@@ -5108,6 +5108,13 @@ loadExternalModule().then(() => {
                   globalQuestionData = questionData;
                 }
 
+                if (['game'].includes(senarioCase)){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachScribe</b> for this interaction.</p>",
+                  });
+                  return;
+                }
+
                 //signed user rules
 
                 if (user) {

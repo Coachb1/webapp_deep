@@ -3822,7 +3822,7 @@ function appendMessageForUser2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
-function createMessageNode2(message) {
+function createMessageNode2(message,isMarkdown=false) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
 
@@ -3846,7 +3846,11 @@ function createMessageNode2(message) {
   messageBubble.style.color = "#374151";
 
   const messageText = document.createElement("p");
-  if (message?.includes("<")) {
+  if( isMarkdown){
+    messageText.innerHTML = parseMarkdown(message);
+  }
+  else if (message?.includes("<")) {
+    // Parse the message as markdown and set it as HTML
     messageText.innerHTML = message;
   } else {
     messageText.innerText = message;
@@ -3857,6 +3861,20 @@ function createMessageNode2(message) {
   messageNode.appendChild(messageBubble);
 
   return messageNode;
+}
+function parseMarkdown(markdown) {
+  // Handle bold text (**text**)
+  markdown = markdown.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  // Handle italic text (_text_)
+  markdown = markdown.replace(/_(.*?)_/g, "<em>$1</em>");
+  // Handle links [text](url)
+  markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  // Convert newlines (\n) to <br>
+  markdown = markdown.replace(/\n/g, "<br>");
+  // Preserve spaces for better formatting
+  markdown = markdown.replace(/  /g, "&nbsp;&nbsp;");
+
+  return markdown;
 }
 
 function LoadingMessageWithText(message) {
@@ -3920,9 +3938,9 @@ function addStickerToMessage(sticker, msg, color = "#3b82f6") {
   return divWithLabel;
 }
 
-function appendMessage2(message2) {
+function appendMessage2(message2, isMarkdown=false) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const messageNode = createMessageNode2(message2);
+  const messageNode = createMessageNode2(message2,isMarkdown);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
@@ -4681,7 +4699,7 @@ const handleProceedClickStt = async (choice) => {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
         console.log('here1',initialQuestionTextStt)
-        appendMessage2(initialQuestionTextStt);
+        appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
 
@@ -10080,7 +10098,6 @@ loadExternalModule().then(() => {
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
 
-                responderDisplayNameStt = orch_details2.responder_name;
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
                     signals.onResponse({
@@ -10577,6 +10594,7 @@ loadExternalModule().then(() => {
                           const videoId =
                             senarioMediaDescription2.split("v=")[1];
                           embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
+                          console.log('desc section 1')
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
@@ -10596,6 +10614,8 @@ loadExternalModule().then(() => {
                             .split("/")
                             .pop();
                           embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
+                          console.log('desc section 2')
+
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
@@ -10613,6 +10633,8 @@ loadExternalModule().then(() => {
                         ) {
                           // console.log(tweetId);
                           embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
+                          console.log('desc section 3')
+                          
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
@@ -10630,6 +10652,8 @@ loadExternalModule().then(() => {
                           const urlList = senarioMediaDescription2.split(",");
                           console.log("list", urlList);
                           if (urlList.length > 1) {
+                          console.log('desc section 4')
+
                             appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
                                 ▪ Description : ${senarioDescription2} <br><br>
                                 ▪ Instructions : Response should be at least 15 words. <br><br>`);
@@ -10671,6 +10695,8 @@ loadExternalModule().then(() => {
                                 senarioMediaDescription2.split("edit?")[0] +
                                 "embed?start=true&loop=true&delayms=3000";
                               console.log(url);
+                              console.log('desc section 5')
+
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                               ▪ Description : ${senarioDescription2} <br><br>
@@ -10690,6 +10716,9 @@ loadExternalModule().then(() => {
                               const guidejarId = senarioMediaDescription2
                                 .split("/")
                                 .pop();
+
+                          console.log('desc section 6')
+                              
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                               ▪ Description : ${senarioDescription2} <br><br>
@@ -10703,6 +10732,8 @@ loadExternalModule().then(() => {
                               ></div></div>
                               `);
                             } else {
+                          console.log('desc section 7')
+
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                                     ▪ Description : ${senarioDescription2} <br><br>
@@ -10736,6 +10767,7 @@ loadExternalModule().then(() => {
                         //    );
                         // }
                       } else {
+                        console.log('desc section 8')
                         appendMessage2(
                           `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
@@ -10800,6 +10832,8 @@ loadExternalModule().then(() => {
                       const imageIdStt = "mediaImageStt";
                       const imageMapNameStt = "image-mapStt";
                       const imageTooltipIdStt = "tooltip-stt";
+                      console.log('desc section 9')
+
                       appendMessage2(
                         `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
@@ -10830,9 +10864,15 @@ loadExternalModule().then(() => {
 
                       if (!AttemptTestDirectSTT) {
                         const temp_que_text = questionText2;
+                        let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
+                        if (!['game'].includes(senarioCase2)){
+                          instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
+                        }
+                        console.log('desc section 11')
+
                         signals
                           .onResponse({
-                            text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
+                            text: instruction,
                           })
                           .then(() => {
                             if (senarioSnippetURLStt) {
@@ -11062,14 +11102,15 @@ loadExternalModule().then(() => {
                         return;
                       }
 
-                      if (response.is_last_question){
-                          appendMessage2( `<b>That's it! Thank you for participating!</b>`)
-                      }
-                
+                      
                       // Extract the next question text
                       let next_question_text = response.next_question_text;
                       console.log("Game question text:", next_question_text);
-              
+                      
+                      if (response.is_last_question){
+                          appendMessage2( `<b>That's it! Thank you for participating!</b>`)
+                          resetAllVariablesStt()
+                      }
                 
                       // If immersive mode is enabled, process with TTS (Text-to-Speech)
                       if (isImmersiveStt) {
@@ -11079,7 +11120,11 @@ loadExternalModule().then(() => {
                       // Send the formatted question text for display
                       signals.onResponse({
                         text: next_question_text
-                      });
+                      }).then(()=>{
+                        if (response.is_last_question){
+                          appendMessage2(`<b>Please enter another access code to start a new interaction.</b>`)
+                        }
+                      })
                     } catch (error) {
                       console.error("Error handling game conversation:", error);
                       signals.onResponse({
