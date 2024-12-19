@@ -129,15 +129,18 @@ const ProfileActions = () => {
     isApproved,
     isVisible,
     botType,
+    botId,
   }: {
     id: number;
     isApproved: boolean;
     isVisible: boolean;
     botType: string;
+    botId?: string;
   }) => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [checked, setChecked] = useState<boolean>();
 
+    console.log("ID : ", id);
     useEffect(() => {
       setChecked(isVisible);
     }, []);
@@ -180,7 +183,7 @@ const ProfileActions = () => {
     return (
       <div>
         <Switch
-          disabled={botType.includes("user")}
+          disabled={botType.includes("user") || botId?.includes("knowledge")}
           className="flex flex-row items-center bg-gray-300"
           checked={checked}
           loading={saveLoading}
@@ -281,6 +284,7 @@ const ProfileActions = () => {
               isApproved={profile.is_approved}
               isVisible={profile.is_visible}
               botType={profile.bot_type || ""}
+              botId={profile.custom_user_bot_id}
             />
           ),
           editButton:

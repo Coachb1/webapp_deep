@@ -56,6 +56,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { headers } from "next/headers";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -69,14 +70,14 @@ interface FileData {
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
   const formType = params.get("type");
-  const checkIfEdit = params.get("edit");
+  let [checkIfEdit, setCheckIfEdit] = useState(params.get("edit"));
   const checkIfView = params.get("view");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
   const profileTypeFromParams = params.get("profile_type");
   let userProfileId = params.get("profile_id");
-  const formVersion = params.get("v");
+  let formVersion = params.get("v");
   const noCopilotBot = params.get("no-copilot");
 
   const adminEdit = params.get("admin_edit");
@@ -307,6 +308,24 @@ const CoachIntake = ({ user }: any) => {
 
   const { getAllDirectoryData, getFeedbackBotsData, getBotsFn } = useUser();
 
+  const [switchState, setSwitchState] = useState({
+    from: editBotType?.includes("subject_specific_bot")
+      ? "2"
+      : editBotType?.includes("avatar_bot")
+      ? "3"
+      : "1",
+    to: "",
+  });
+
+  const switchStateCheck = () => {
+    if (
+      switchState.from === "1" &&
+      (switchState.to === "2" || switchState.to === "3")
+    ) {
+      return "create-bot";
+    }
+  };
+
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
       fetch(
@@ -415,42 +434,6 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  const handleFileChangeBotInput = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setDataModified(true);
-    const selectedFiles = e.target?.files;
-    const input_name = e.target?.name;
-
-    if (selectedFiles) {
-      const filesArray = await Promise.all(
-        Array.from(selectedFiles).map(async (file: File) => {
-          let textContent: string = "";
-          try {
-            if (file.name.includes(".pdf")) {
-              textContent = (await extractTextFromPdf(file)) || "";
-            } else if (file.name.includes(".docx")) {
-              textContent = (await extractTextFromDocx(file)) || "";
-            }
-            console.log("text", textContent);
-          } catch (error) {
-            console.error("Error extracting text from DOCX:", error);
-            // If text extraction fails, set textContent to an empty string or handle it as needed
-            // textContent = '';
-          }
-          return {
-            file: file,
-            id: Math.floor(Math.random() * 10000),
-            text: textContent,
-            name: input_name,
-          };
-        })
-      );
-
-      setBotDocs((prevFiles) => [...prevFiles, ...filesArray]);
-    }
-  };
-
   const extractTextFromDocx = async (file: File) => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -522,26 +505,33 @@ const CoachIntake = ({ user }: any) => {
     if (noCopilotBot === "1") {
       setFormVersion("1");
     }
-    // if (!checkIfEdit && !checkIfView) {
-    //   if (formType === "coach" && !formVersion) {
-    //     setFormVersion("1");
-    //   }
-    // } else {
-    //   if (formType === "coach") {
-    //     if (editBotType === "avatar_bot") {
-    //       setFormVersion("3");
-    //     } else if (editBotType === "subject_specific_bot") {
-    //       setFormVersion("2");
-    //     } else {
-    //       setFormVersion("1");
-    //     }
-    //   }
-    // }
+
     if (formType === "coach") {
       setProfileType("coach");
     } else if (formType === "coachee") {
       setProfileType("coachee");
     }
+
+    let tempChars: any[] = [];
+
+    fetch(`${baseURL}/skills/get-characteristics-list/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const createLabelValuePairs = Array.from(
+          new Set<string>(data.characteristic_list.map((val: string) => val))
+        ).map((val: string) => ({
+          label: val,
+          value: val,
+        }));
+        setCharacteristicsList(createLabelValuePairs);
+        tempChars = createLabelValuePairs;
+      });
+
     if (user && !adminEdit) {
       // getClientInfoForUser(user.email);
       getUserAccount(user)
@@ -566,8 +556,48 @@ const CoachIntake = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              setCharacteristicsRateLows(data.low_skill);
-              setCharacteristicsRateHigh(data.high_skill);
+              if (tempChars) {
+                console.log("tempChars ##", tempChars);
+              }
+
+              const highSkill = data.high_skill;
+              const lowSkill = data.low_skill;
+
+              const selectedValueIndexHigh = tempChars.findIndex(
+                (option: any) => option.value === highSkill
+              );
+              const selectedValueIndexLow = tempChars.findIndex(
+                (option: any) => option.value === lowSkill
+              );
+
+              console.log("selectedValueIndex : ", selectedValueIndexHigh);
+
+              if (selectedValueIndexHigh !== -1) {
+                tempChars[selectedValueIndexHigh] = {
+                  ...tempChars[selectedValueIndexHigh],
+                  disabled: true,
+                };
+              }
+
+              if (selectedValueIndexLow !== -1) {
+                tempChars[selectedValueIndexLow] = {
+                  ...tempChars[selectedValueIndexLow],
+                  disabled: true,
+                };
+              }
+
+              setCharacteristicsList(tempChars);
+
+              // onCharacteristicsSelectLow(
+              //   data.low_skill,
+              //   tempChars,
+              //   data.high_skill
+              // );
+              // // onCharacteristicsSelectHigh(data.high_skill, tempChars);
+              setTimeout(() => {
+                setCharacteristicsRateLows(data.low_skill);
+                setCharacteristicsRateHigh(data.high_skill);
+              }, 100);
             });
         })
         .catch((err) => {
@@ -595,24 +625,6 @@ const CoachIntake = ({ user }: any) => {
           setCharacteristicsRateHigh(data.high_skill);
         });
     }
-
-    fetch(`${baseURL}/skills/get-characteristics-list/`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const createLabelValuePairs = Array.from(
-          new Set(data.characteristic_list.map((val: string) => val))
-        ).map((val) => ({
-          label: val,
-          value: val,
-        }));
-        //@ts-ignore
-        setCharacteristicsList(createLabelValuePairs);
-      });
 
     if (user) {
       getUserAccount(user)
@@ -699,9 +711,57 @@ const CoachIntake = ({ user }: any) => {
     }
   }, []);
 
-  const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const createSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log(formVersion, switchState, checkIfEdit);
+    if (switchState.to !== "" && switchState.from !== switchState.to) {
+      checkIfEdit = null; //checkIfEdit stores "1" if in edit mode, here it is reset to null if switch is made
+
+      //delete the user resources here
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", basicAuth);
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        user_id: userId,
+        delete_profile: true,
+        delete_bot: true,
+        soft_delete_profile_bot: true,
+        delete_bot_types: "avatar_bot,subject_specific_bot",
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      await fetch(`${baseURL}/accounts/delete-user-resources/`, requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          if (result?.error) {
+            toast.error(
+              "Failed to process the switch profile. Please try again later"
+            );
+            return;
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error(
+            "Failed to process the switch profile. Please try again later"
+          );
+          return;
+        });
+
+      // throw new Error("Error deleting user resources"); -> throw error if delete fails else proceeds
+    }
+    console.log(
+      `Creating Profile and bot for v = ${formVersion} and switchmode:`,
+      switchState
+    );
     try {
       if (characteristicsRateHigh && characteristicsRateLows) {
         if (user) {
@@ -1901,21 +1961,38 @@ const CoachIntake = ({ user }: any) => {
   const onCharacteristicsSelectLow = (val: string) => {
     setCharacteristicsRateLows(val);
     setDataModified(true);
+
     const resetDisabledData = characteristicsList.map((option) => ({
       ...option,
       disabled: false,
     }));
 
-    const selectedValueIndex = resetDisabledData.findIndex(
+    console.log("resetDisabledData : ", resetDisabledData);
+
+    const selectedValueIndexLow = resetDisabledData.findIndex(
       (option) => option.value === val
     );
 
-    if (selectedValueIndex !== -1) {
-      resetDisabledData[selectedValueIndex] = {
-        ...resetDisabledData[selectedValueIndex],
+    const selectedValueIndexHigh = resetDisabledData.findIndex(
+      (option) => option.value === characteristicsRateHigh
+    );
+
+    console.log("selectedValueIndex : ", selectedValueIndexLow);
+
+    if (selectedValueIndexLow !== -1) {
+      resetDisabledData[selectedValueIndexLow] = {
+        ...resetDisabledData[selectedValueIndexLow],
         disabled: true,
       };
     }
+
+    if (selectedValueIndexHigh !== -1) {
+      resetDisabledData[selectedValueIndexHigh] = {
+        ...resetDisabledData[selectedValueIndexHigh],
+        disabled: true,
+      };
+    }
+
     setCharacteristicsList(resetDisabledData);
   };
 
@@ -1929,16 +2006,27 @@ const CoachIntake = ({ user }: any) => {
       disabled: false,
     }));
 
-    const selectedValueIndex = resetDisabledData.findIndex(
+    const selectedValueIndexHigh = resetDisabledData.findIndex(
       (option) => option.value === val
     );
+    const selectedValueIndexLow = resetDisabledData.findIndex(
+      (option) => option.value === characteristicsRateLows
+    );
 
-    if (selectedValueIndex !== -1) {
-      resetDisabledData[selectedValueIndex] = {
-        ...resetDisabledData[selectedValueIndex],
+    if (selectedValueIndexHigh !== -1) {
+      resetDisabledData[selectedValueIndexHigh] = {
+        ...resetDisabledData[selectedValueIndexHigh],
         disabled: true,
       };
     }
+
+    if (selectedValueIndexLow !== -1) {
+      resetDisabledData[selectedValueIndexLow] = {
+        ...resetDisabledData[selectedValueIndexLow],
+        disabled: true,
+      };
+    }
+
     setCharacteristicsList(resetDisabledData);
   };
 
@@ -2074,7 +2162,7 @@ const CoachIntake = ({ user }: any) => {
                     .map((item: string) =>
                       replaceSpecialCharacters(item.trim())
                     )
-                    .filter((item: string) => item.length > 0)
+                    .filter((item: string) => item.length > 0) || []
                 );
                 console.log(
                   resultingBot.signature_bot.data.additional_data
@@ -2160,8 +2248,8 @@ const CoachIntake = ({ user }: any) => {
                 //   resultingBot.signature_bot.data.additional_data
                 //     .fitment_answers?.coachmentSelect
                 // );
-                console.log("FORM version : ", formVersion);
-                if (formVersion === "3") {
+                console.log("FORM version : ", switchState.from);
+                if (switchState.from === "3") {
                   setParticipantLevel(
                     resultingBot.signature_bot.data.additional_data
                       .fitment_answers[0]
@@ -2395,6 +2483,7 @@ const CoachIntake = ({ user }: any) => {
 
   const handleRequiredSelections = async (profile_type = "coach") => {
     let coachFields;
+    console.log("formversion: ", formVersion);
 
     if (formVersion === "1") {
       coachFields = [
@@ -2450,28 +2539,16 @@ const CoachIntake = ({ user }: any) => {
       // Using Object.entries to loop over the keys and values
       for (let [key, value] of Object.entries(field)) {
         // Check if value is empty
-        if (value?.length <= 0) {
-          errors.push("field required");
+        if (value?.length <= 0 || value === undefined || value === null) {
+          errors.push(`${value} field required`);
         }
 
         // Await the asynchronous handleRequiredSelection function
         await handleRequiredSelection(value, key);
       }
     }
-
-    // Return the result based on whether there were any errors
+    console.log(`Got errors: ${errors}`);
     return errors.length === 0;
-
-    // if (experience.trim().length == 0){
-    //   handleRequiredSelection(experience,'UserExperience')
-    //   return false
-    // } else if (
-    //   mentoringPreferences.trim().length  == 0
-    // ){
-    //   return false
-    // } else {
-    //   return true
-    // }
   };
 
   const handleRequiredSelection = async (
@@ -2651,6 +2728,7 @@ const CoachIntake = ({ user }: any) => {
     const query = new URLSearchParams(window.location.search); // Get existing query params
     query.set("v", version); // Set or update the formVersion param
     router.push(`${window.location.pathname}?${query.toString()}`);
+    formVersion = version;
   };
 
   return (
@@ -2765,8 +2843,8 @@ const CoachIntake = ({ user }: any) => {
                       className="mt-2"
                       size="middle"
                       disabled={
-                        (checkIfView === null ? false : true) ||
-                        (checkIfEdit === null ? false : true)
+                        checkIfView === null ? false : true
+                        // || (checkIfEdit === null ? false : true)
                       }
                       value={
                         (formVersion === "1" && "no-co-pilot") ||
@@ -2789,12 +2867,36 @@ const CoachIntake = ({ user }: any) => {
                       ]}
                       onChange={(e) => {
                         const value = e.target.value;
-                        if (value === "no-co-pilot") {
-                          setFormVersion("1");
-                        } else if (value === "subject-copilot") {
-                          setFormVersion("2");
-                        } else {
-                          setFormVersion("3");
+                        // Update formVersion immediately
+                        let NewFormVersionValue =
+                          value === "no-co-pilot"
+                            ? "1"
+                            : value === "subject-copilot"
+                            ? "2"
+                            : "3";
+
+                        setFormVersion(NewFormVersionValue);
+
+                        // Update switchState and other dependent states
+                        // setSwitchState((prev) => ({
+                        //   ...prev,
+                        //   to: NewFormVersionValue,
+                        // }));
+                        setSwitchState((prev) => {
+                          return { ...prev, to: NewFormVersionValue };
+                        });
+
+                        setDataModified(true);
+
+                        console.log(
+                          switchState,
+                          formVersion,
+                          NewFormVersionValue
+                        );
+                        if (switchState.from !== NewFormVersionValue) {
+                          setCheckIfEdit(null);
+                        } else if (switchState.from === NewFormVersionValue) {
+                          setCheckIfEdit("true");
                         }
                       }}
                       optionType={
@@ -2810,35 +2912,7 @@ const CoachIntake = ({ user }: any) => {
                         "This is the most comprehensive option. It creates an AI assistant specifically for coaching that evolves over time. The co-pilot's development is carefully guided by the coach's input and customized AI model training."}
                     </p>
                   </div>
-                  {/* <div className="my-3">
-                    <p className="text-sm my-1">Select your profile type</p>
-                    <Radio.Group
-                      disabled={
-                        (checkIfEdit === null ? false : true) ||
-                        (checkIfView === null ? false : true)
-                      }
-                      value={profileType}
-                      options={[
-                        {
-                          label: "Coach",
-                          value: "coach",
-                        },
-                        {
-                          label: "Mentor",
-                          value: "mentor",
-                        },
-                        {
-                          label: "Both",
-                          value: "coach-mentor",
-                        },
-                      ]}
-                      onChange={(e) => {
-                        console.log(e.target.value);
-                        setProfileType(e.target.value);
-                      }}
-                      optionType="default"
-                    />
-                  </div> */}
+
                   <Accordion
                     type="single"
                     collapsible
@@ -2875,11 +2949,6 @@ const CoachIntake = ({ user }: any) => {
                             type="text"
                             className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
-                          {/* {Object.keys(error).includes("Name") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Name"]}
-                      </p>
-                    )} */}
                         </div>
                         <div className="my-3">
                           <p className="text-sm my-1">
@@ -3306,6 +3375,11 @@ const CoachIntake = ({ user }: any) => {
                             <div className="my-3">
                               <p className="text-sm font-semibold">
                                 Knowledge base
+                                {!checkIfEdit && (
+                                  <span className="text-xl font-bold text-red-500">
+                                    *
+                                  </span>
+                                )}
                               </p>
                               <p className="text-sm my-1">
                                 {formVersion !== "2"
@@ -3353,74 +3427,74 @@ const CoachIntake = ({ user }: any) => {
                                   </p>
                                 )}
                                 {/* @ts-ignore */}
-                                {mediaData?.extracted_from_youtube.length >
-                                  0 && (
-                                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                                    {mediaData?.extracted_from_youtube.map(
-                                      (item) => (
-                                        <div className="flex flex-row justify-between items-center">
-                                          <Link
-                                            href={item.fileName}
-                                            target="_target"
-                                            className={`text-xs text-blue-500 truncate ${
-                                              item.isDeleted && "line-through"
-                                            }`}
-                                          >
-                                            {item.fileName}
-                                          </Link>
-                                          {checkIfEdit && (
-                                            <div className="flex flex-row gap-2 min-w-fit">
-                                              <Button
-                                                variant={"outline"}
-                                                className="h-6 text-xs w-fit"
-                                                type="button"
-                                                onClick={() => {
-                                                  deleteMediaDataHandler(
-                                                    item.fileName
-                                                  );
-                                                }}
-                                                disabled={item.isDeleted}
-                                              >
-                                                <span className="max-sm:hidden">
-                                                  Delete
-                                                </span>
-                                                <TooltipWrapper
-                                                  className="hidden max-sm:block text-xs"
-                                                  tooltipName="Delete"
-                                                  body={
-                                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                                  }
-                                                />
-                                              </Button>
-                                              <Button
-                                                variant={"outline"}
-                                                className="h-6 text-xs w-fit"
-                                                type="button"
-                                                disabled={!item.isDeleted}
-                                                onClick={() => {
-                                                  undoDeleteMediaDataHandler(
-                                                    item.fileName
-                                                  );
-                                                }}
-                                              >
-                                                <span className="max-sm:hidden">
-                                                  Undo delete
-                                                </span>
-                                                <TooltipWrapper
-                                                  className="hidden max-sm:block text-xs"
-                                                  tooltipName="Undo delete"
-                                                  body={
-                                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                                  }
-                                                />
-                                              </Button>
-                                            </div>
-                                          )}
-                                        </div>
-                                      )
-                                    )}
-                                  </div>
-                                )}
+                                {mediaData?.extracted_from_youtube.length > 0 &&
+                                  switchState.from === formVersion && (
+                                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                      {mediaData?.extracted_from_youtube.map(
+                                        (item) => (
+                                          <div className="flex flex-row justify-between items-center">
+                                            <Link
+                                              href={item.fileName}
+                                              target="_target"
+                                              className={`text-xs text-blue-500 truncate ${
+                                                item.isDeleted && "line-through"
+                                              }`}
+                                            >
+                                              {item.fileName}
+                                            </Link>
+                                            {checkIfEdit && (
+                                              <div className="flex flex-row gap-2 min-w-fit">
+                                                <Button
+                                                  variant={"outline"}
+                                                  className="h-6 text-xs w-fit"
+                                                  type="button"
+                                                  onClick={() => {
+                                                    deleteMediaDataHandler(
+                                                      item.fileName
+                                                    );
+                                                  }}
+                                                  disabled={item.isDeleted}
+                                                >
+                                                  <span className="max-sm:hidden">
+                                                    Delete
+                                                  </span>
+                                                  <TooltipWrapper
+                                                    className="hidden max-sm:block text-xs"
+                                                    tooltipName="Delete"
+                                                    body={
+                                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                    }
+                                                  />
+                                                </Button>
+                                                <Button
+                                                  variant={"outline"}
+                                                  className="h-6 text-xs w-fit"
+                                                  type="button"
+                                                  disabled={!item.isDeleted}
+                                                  onClick={() => {
+                                                    undoDeleteMediaDataHandler(
+                                                      item.fileName
+                                                    );
+                                                  }}
+                                                >
+                                                  <span className="max-sm:hidden">
+                                                    Undo delete
+                                                  </span>
+                                                  <TooltipWrapper
+                                                    className="hidden max-sm:block text-xs"
+                                                    tooltipName="Undo delete"
+                                                    body={
+                                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                    }
+                                                  />
+                                                </Button>
+                                              </div>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
                               </div>
                             </div>
                             <div className="my-3">
@@ -3464,8 +3538,8 @@ const CoachIntake = ({ user }: any) => {
                                   </p>
                                 )}
                                 {/* @ts-ignore */}
-                                {mediaData?.extracted_from_article.length >
-                                0 ? (
+                                {mediaData?.extracted_from_article.length > 0 &&
+                                switchState.from === formVersion ? (
                                   <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                                     {mediaData?.extracted_from_article.map(
                                       (item) => (
@@ -3577,70 +3651,73 @@ const CoachIntake = ({ user }: any) => {
                             </div>
                           </div>
                           {/* @ts-ignore */}
-                          {mediaData?.extracted_from_pdf.length > 0 && (
-                            <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                              {mediaData?.extracted_from_pdf.map((item) => (
-                                <div className="flex flex-row justify-between items-center">
-                                  <div className="flex flex-row items-center gap-2">
-                                    <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                                    <span
-                                      className={`text-xs text-blue-500 truncate ${
-                                        item.isDeleted && "line-through"
-                                      }`}
-                                    >
-                                      {item.fileName}
-                                    </span>
-                                  </div>
-                                  {checkIfEdit && (
-                                    <div className="flex flex-row gap-2 min-w-fit">
-                                      <Button
-                                        variant={"outline"}
-                                        className="h-6 text-xs w-fit"
-                                        type="button"
-                                        disabled={item.isDeleted}
-                                        onClick={() => {
-                                          deleteMediaDataHandler(item.fileName);
-                                        }}
+                          {mediaData?.extracted_from_pdf.length > 0 &&
+                            switchState.from === formVersion && (
+                              <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                {mediaData?.extracted_from_pdf.map((item) => (
+                                  <div className="flex flex-row justify-between items-center">
+                                    <div className="flex flex-row items-center gap-2">
+                                      <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                      <span
+                                        className={`text-xs text-blue-500 truncate ${
+                                          item.isDeleted && "line-through"
+                                        }`}
                                       >
-                                        <span className="max-sm:hidden">
-                                          Delete
-                                        </span>
-                                        <TooltipWrapper
-                                          className="hidden max-sm:block text-xs"
-                                          tooltipName="Delete"
-                                          body={
-                                            <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                          }
-                                        />
-                                      </Button>
-                                      <Button
-                                        variant={"outline"}
-                                        className="h-6 text-xs w-fit"
-                                        type="button"
-                                        disabled={!item.isDeleted}
-                                        onClick={() => {
-                                          undoDeleteMediaDataHandler(
-                                            item.fileName
-                                          );
-                                        }}
-                                      >
-                                        <span className="max-sm:hidden">
-                                          Undo delete
-                                        </span>
-                                        <TooltipWrapper
-                                          className="hidden max-sm:block text-xs"
-                                          tooltipName="Undo delete"
-                                          body={
-                                            <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                          }
-                                        />
-                                      </Button>
+                                        {item.fileName}
+                                      </span>
                                     </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                    {checkIfEdit && (
+                                      <div className="flex flex-row gap-2 min-w-fit">
+                                        <Button
+                                          variant={"outline"}
+                                          className="h-6 text-xs w-fit"
+                                          type="button"
+                                          disabled={item.isDeleted}
+                                          onClick={() => {
+                                            deleteMediaDataHandler(
+                                              item.fileName
+                                            );
+                                          }}
+                                        >
+                                          <span className="max-sm:hidden">
+                                            Delete
+                                          </span>
+                                          <TooltipWrapper
+                                            className="hidden max-sm:block text-xs"
+                                            tooltipName="Delete"
+                                            body={
+                                              <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                            }
+                                          />
+                                        </Button>
+                                        <Button
+                                          variant={"outline"}
+                                          className="h-6 text-xs w-fit"
+                                          type="button"
+                                          disabled={!item.isDeleted}
+                                          onClick={() => {
+                                            undoDeleteMediaDataHandler(
+                                              item.fileName
+                                            );
+                                          }}
+                                        >
+                                          <span className="max-sm:hidden">
+                                            Undo delete
+                                          </span>
+                                          <TooltipWrapper
+                                            className="hidden max-sm:block text-xs"
+                                            tooltipName="Undo delete"
+                                            body={
+                                              <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                            }
+                                          />
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           <hr className="mt-2" />
                           <div className="my-3 ">
                             <p className="text-sm my-1">
@@ -4129,16 +4206,18 @@ const CoachIntake = ({ user }: any) => {
                         <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
                           <div>
                             Knowledge base.{" "}
-                            {/* <span className="text-xl font-bold text-red-500">
-                              *
-                            </span> */}
+                            {!checkIfEdit && (
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            )}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-2 border-none">
                           <>
                             <div className="my-3">
                               <p className="text-sm my-1">
-                                {formVersion === "2"
+                                {formVersion !== "2"
                                   ? `Please enter 1-2 YouTube links that reflect your worldview on personal & professional development. (Separate multiple links by comma)`
                                   : `Please enter 1-2 YouTube links related to the Subject matter. (Separate multiple links by comma)`}
                                 {!checkIfEdit && (
@@ -4183,74 +4262,74 @@ const CoachIntake = ({ user }: any) => {
                                   </p>
                                 )}
                                 {/* @ts-ignore */}
-                                {mediaData?.extracted_from_youtube.length >
-                                  0 && (
-                                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                                    {mediaData?.extracted_from_youtube.map(
-                                      (item) => (
-                                        <div className="flex flex-row justify-between items-center">
-                                          <Link
-                                            href={item.fileName}
-                                            target="_target"
-                                            className={`text-xs text-blue-500 truncate ${
-                                              item.isDeleted && "line-through"
-                                            }`}
-                                          >
-                                            {item.fileName}
-                                          </Link>
-                                          {checkIfEdit && (
-                                            <div className="flex flex-row gap-2 min-w-fit">
-                                              <Button
-                                                variant={"outline"}
-                                                className="h-6 text-xs w-fit"
-                                                type="button"
-                                                onClick={() => {
-                                                  deleteMediaDataHandler(
-                                                    item.fileName
-                                                  );
-                                                }}
-                                                disabled={item.isDeleted}
-                                              >
-                                                <span className="max-sm:hidden">
-                                                  Delete
-                                                </span>
-                                                <TooltipWrapper
-                                                  className="hidden max-sm:block text-xs"
-                                                  tooltipName="Delete"
-                                                  body={
-                                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                                  }
-                                                />
-                                              </Button>
-                                              <Button
-                                                variant={"outline"}
-                                                className="h-6 text-xs w-fit"
-                                                type="button"
-                                                disabled={!item.isDeleted}
-                                                onClick={() => {
-                                                  undoDeleteMediaDataHandler(
-                                                    item.fileName
-                                                  );
-                                                }}
-                                              >
-                                                <span className="max-sm:hidden">
-                                                  Undo delete
-                                                </span>
-                                                <TooltipWrapper
-                                                  className="hidden max-sm:block text-xs"
-                                                  tooltipName="Undo delete"
-                                                  body={
-                                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                                  }
-                                                />
-                                              </Button>
-                                            </div>
-                                          )}
-                                        </div>
-                                      )
-                                    )}
-                                  </div>
-                                )}
+                                {mediaData?.extracted_from_youtube.length > 0 &&
+                                  switchState.from === formVersion && (
+                                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                      {mediaData?.extracted_from_youtube.map(
+                                        (item) => (
+                                          <div className="flex flex-row justify-between items-center">
+                                            <Link
+                                              href={item.fileName}
+                                              target="_target"
+                                              className={`text-xs text-blue-500 truncate ${
+                                                item.isDeleted && "line-through"
+                                              }`}
+                                            >
+                                              {item.fileName}
+                                            </Link>
+                                            {checkIfEdit && (
+                                              <div className="flex flex-row gap-2 min-w-fit">
+                                                <Button
+                                                  variant={"outline"}
+                                                  className="h-6 text-xs w-fit"
+                                                  type="button"
+                                                  onClick={() => {
+                                                    deleteMediaDataHandler(
+                                                      item.fileName
+                                                    );
+                                                  }}
+                                                  disabled={item.isDeleted}
+                                                >
+                                                  <span className="max-sm:hidden">
+                                                    Delete
+                                                  </span>
+                                                  <TooltipWrapper
+                                                    className="hidden max-sm:block text-xs"
+                                                    tooltipName="Delete"
+                                                    body={
+                                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                    }
+                                                  />
+                                                </Button>
+                                                <Button
+                                                  variant={"outline"}
+                                                  className="h-6 text-xs w-fit"
+                                                  type="button"
+                                                  disabled={!item.isDeleted}
+                                                  onClick={() => {
+                                                    undoDeleteMediaDataHandler(
+                                                      item.fileName
+                                                    );
+                                                  }}
+                                                >
+                                                  <span className="max-sm:hidden">
+                                                    Undo delete
+                                                  </span>
+                                                  <TooltipWrapper
+                                                    className="hidden max-sm:block text-xs"
+                                                    tooltipName="Undo delete"
+                                                    body={
+                                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                    }
+                                                  />
+                                                </Button>
+                                              </div>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
                               </div>
                             </div>
                             <div className="my-3">
@@ -4294,8 +4373,8 @@ const CoachIntake = ({ user }: any) => {
                                   </p>
                                 )}
                                 {/* @ts-ignore */}
-                                {mediaData?.extracted_from_article.length >
-                                0 ? (
+                                {mediaData?.extracted_from_article.length > 0 &&
+                                switchState.from === formVersion ? (
                                   <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                                     {mediaData?.extracted_from_article.map(
                                       (item) => (
@@ -4407,70 +4486,73 @@ const CoachIntake = ({ user }: any) => {
                             </div>
                           </div>
                           {/* @ts-ignore */}
-                          {mediaData?.extracted_from_pdf.length > 0 && (
-                            <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                              {mediaData?.extracted_from_pdf.map((item) => (
-                                <div className="flex flex-row justify-between items-center">
-                                  <div className="flex flex-row items-center gap-2">
-                                    <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                                    <span
-                                      className={`text-xs text-blue-500 truncate ${
-                                        item.isDeleted && "line-through"
-                                      }`}
-                                    >
-                                      {item.fileName}
-                                    </span>
-                                  </div>
-                                  {checkIfEdit && (
-                                    <div className="flex flex-row gap-2 min-w-fit">
-                                      <Button
-                                        variant={"outline"}
-                                        className="h-6 text-xs w-fit"
-                                        type="button"
-                                        disabled={item.isDeleted}
-                                        onClick={() => {
-                                          deleteMediaDataHandler(item.fileName);
-                                        }}
+                          {mediaData?.extracted_from_pdf.length > 0 &&
+                            switchState.from === formVersion && (
+                              <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                {mediaData?.extracted_from_pdf.map((item) => (
+                                  <div className="flex flex-row justify-between items-center">
+                                    <div className="flex flex-row items-center gap-2">
+                                      <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                      <span
+                                        className={`text-xs text-blue-500 truncate ${
+                                          item.isDeleted && "line-through"
+                                        }`}
                                       >
-                                        <span className="max-sm:hidden">
-                                          Delete
-                                        </span>
-                                        <TooltipWrapper
-                                          className="hidden max-sm:block text-xs"
-                                          tooltipName="Delete"
-                                          body={
-                                            <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                          }
-                                        />
-                                      </Button>
-                                      <Button
-                                        variant={"outline"}
-                                        className="h-6 text-xs w-fit"
-                                        type="button"
-                                        disabled={!item.isDeleted}
-                                        onClick={() => {
-                                          undoDeleteMediaDataHandler(
-                                            item.fileName
-                                          );
-                                        }}
-                                      >
-                                        <span className="max-sm:hidden">
-                                          Undo delete
-                                        </span>
-                                        <TooltipWrapper
-                                          className="hidden max-sm:block text-xs"
-                                          tooltipName="Undo delete"
-                                          body={
-                                            <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                          }
-                                        />
-                                      </Button>
+                                        {item.fileName}
+                                      </span>
                                     </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                    {checkIfEdit && (
+                                      <div className="flex flex-row gap-2 min-w-fit">
+                                        <Button
+                                          variant={"outline"}
+                                          className="h-6 text-xs w-fit"
+                                          type="button"
+                                          disabled={item.isDeleted}
+                                          onClick={() => {
+                                            deleteMediaDataHandler(
+                                              item.fileName
+                                            );
+                                          }}
+                                        >
+                                          <span className="max-sm:hidden">
+                                            Delete
+                                          </span>
+                                          <TooltipWrapper
+                                            className="hidden max-sm:block text-xs"
+                                            tooltipName="Delete"
+                                            body={
+                                              <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                            }
+                                          />
+                                        </Button>
+                                        <Button
+                                          variant={"outline"}
+                                          className="h-6 text-xs w-fit"
+                                          type="button"
+                                          disabled={!item.isDeleted}
+                                          onClick={() => {
+                                            undoDeleteMediaDataHandler(
+                                              item.fileName
+                                            );
+                                          }}
+                                        >
+                                          <span className="max-sm:hidden">
+                                            Undo delete
+                                          </span>
+                                          <TooltipWrapper
+                                            className="hidden max-sm:block text-xs"
+                                            tooltipName="Undo delete"
+                                            body={
+                                              <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                            }
+                                          />
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           <hr className="mt-2" />
                           <div className="my-3 ">
                             <p className="text-sm my-1">
@@ -4503,74 +4585,75 @@ const CoachIntake = ({ user }: any) => {
                             </div>
                             {/* @ts-ignore */}
                             {optionalMediaData?.extracted_from_optional_file
-                              .length > 0 && (
-                              <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                                {optionalMediaData?.extracted_from_optional_file.map(
-                                  (item) => (
-                                    <div className="flex flex-row justify-between items-center">
-                                      <div className="flex flex-row items-center gap-2">
-                                        <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                                        <span
-                                          className={`text-xs text-blue-500 truncate ${
-                                            item.isDeleted && "line-through"
-                                          }`}
-                                        >
-                                          {item.fileName}
-                                        </span>
-                                      </div>
-                                      {checkIfEdit && (
-                                        <div className="flex flex-row gap-2 min-w-fit">
-                                          <Button
-                                            variant={"outline"}
-                                            className="h-6 text-xs w-fit"
-                                            type="button"
-                                            disabled={item.isDeleted}
-                                            onClick={() => {
-                                              deleteOptionalMediaDataHandler(
-                                                item.fileName
-                                              );
-                                            }}
+                              .length > 0 &&
+                              switchState.from === formVersion && (
+                                <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                  {optionalMediaData?.extracted_from_optional_file.map(
+                                    (item) => (
+                                      <div className="flex flex-row justify-between items-center">
+                                        <div className="flex flex-row items-center gap-2">
+                                          <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                          <span
+                                            className={`text-xs text-blue-500 truncate ${
+                                              item.isDeleted && "line-through"
+                                            }`}
                                           >
-                                            <span className="max-sm:hidden">
-                                              Delete
-                                            </span>
-                                            <TooltipWrapper
-                                              className="hidden max-sm:block text-xs"
-                                              tooltipName="Delete"
-                                              body={
-                                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                              }
-                                            />
-                                          </Button>
-                                          <Button
-                                            variant={"outline"}
-                                            className="h-6 text-xs w-fit"
-                                            type="button"
-                                            disabled={!item.isDeleted}
-                                            onClick={() => {
-                                              undoDeleteOptionalMediaDataHandler(
-                                                item.fileName
-                                              );
-                                            }}
-                                          >
-                                            <span className="max-sm:hidden">
-                                              Undo delete
-                                            </span>
-                                            <TooltipWrapper
-                                              className="hidden max-sm:block text-xs"
-                                              tooltipName="Undo delete"
-                                              body={
-                                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                              }
-                                            />
-                                          </Button>
+                                            {item.fileName}
+                                          </span>
                                         </div>
-                                      )}
-                                    </div>
-                                  )
-                                )}
-                              </div>
-                            )}
+                                        {checkIfEdit && (
+                                          <div className="flex flex-row gap-2 min-w-fit">
+                                            <Button
+                                              variant={"outline"}
+                                              className="h-6 text-xs w-fit"
+                                              type="button"
+                                              disabled={item.isDeleted}
+                                              onClick={() => {
+                                                deleteOptionalMediaDataHandler(
+                                                  item.fileName
+                                                );
+                                              }}
+                                            >
+                                              <span className="max-sm:hidden">
+                                                Delete
+                                              </span>
+                                              <TooltipWrapper
+                                                className="hidden max-sm:block text-xs"
+                                                tooltipName="Delete"
+                                                body={
+                                                  <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                }
+                                              />
+                                            </Button>
+                                            <Button
+                                              variant={"outline"}
+                                              className="h-6 text-xs w-fit"
+                                              type="button"
+                                              disabled={!item.isDeleted}
+                                              onClick={() => {
+                                                undoDeleteOptionalMediaDataHandler(
+                                                  item.fileName
+                                                );
+                                              }}
+                                            >
+                                              <span className="max-sm:hidden">
+                                                Undo delete
+                                              </span>
+                                              <TooltipWrapper
+                                                className="hidden max-sm:block text-xs"
+                                                tooltipName="Undo delete"
+                                                body={
+                                                  <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                }
+                                              />
+                                            </Button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -4584,7 +4667,12 @@ const CoachIntake = ({ user }: any) => {
                   >
                     <AccordionItem value="item-acc">
                       <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
-                        <div>Account preferences</div>
+                        <div>
+                          Account preferences
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
+                        </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-2 border-none">
                         <div className="my-3">
@@ -5231,9 +5319,9 @@ const CoachIntake = ({ user }: any) => {
                           <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
                             <div>
                               Quick Match Analysis.{" "}
-                              {/* <span className="text-xl font-bold text-red-500">
-                              *
-                            </span> */}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent className="px-2 border-none">
@@ -5739,73 +5827,75 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </div>
                   {/* @ts-ignore */}
-                  {optionalMediaData?.extracted_from_optional_file.length >
-                    0 && (
-                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                      {optionalMediaData?.extracted_from_optional_file.map(
-                        (item) => (
-                          <div className="flex flex-row justify-between items-center">
-                            <div className="flex flex-row items-center gap-2">
-                              <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                              <span
-                                className={`text-xs text-blue-500 truncate ${
-                                  item.isDeleted && "line-through"
-                                }`}
-                              >
-                                {item.fileName}
-                              </span>
-                            </div>
-                            {checkIfEdit && (
-                              <div className="flex flex-row gap-2 min-w-fit">
-                                <Button
-                                  variant={"outline"}
-                                  className="h-6 text-xs w-fit"
-                                  type="button"
-                                  disabled={item.isDeleted}
-                                  onClick={() => {
-                                    deleteOptionalMediaDataHandler(
-                                      item.fileName
-                                    );
-                                  }}
+                  {optionalMediaData?.extracted_from_optional_file.length > 0 &&
+                    switchState.from === formVersion && (
+                      <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                        {optionalMediaData?.extracted_from_optional_file.map(
+                          (item) => (
+                            <div className="flex flex-row justify-between items-center">
+                              <div className="flex flex-row items-center gap-2">
+                                <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                <span
+                                  className={`text-xs text-blue-500 truncate ${
+                                    item.isDeleted && "line-through"
+                                  }`}
                                 >
-                                  <span className="max-sm:hidden">Delete</span>
-                                  <TooltipWrapper
-                                    className="hidden max-sm:block text-xs"
-                                    tooltipName="Delete"
-                                    body={
-                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                    }
-                                  />
-                                </Button>
-                                <Button
-                                  variant={"outline"}
-                                  className="h-6 text-xs w-fit"
-                                  type="button"
-                                  disabled={!item.isDeleted}
-                                  onClick={() => {
-                                    undoDeleteOptionalMediaDataHandler(
-                                      item.fileName
-                                    );
-                                  }}
-                                >
-                                  <span className="max-sm:hidden">
-                                    Undo delete
-                                  </span>
-                                  <TooltipWrapper
-                                    className="hidden max-sm:block text-xs"
-                                    tooltipName="Undo delete"
-                                    body={
-                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                    }
-                                  />
-                                </Button>
+                                  {item.fileName}
+                                </span>
                               </div>
-                            )}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  )}
+                              {checkIfEdit && (
+                                <div className="flex flex-row gap-2 min-w-fit">
+                                  <Button
+                                    variant={"outline"}
+                                    className="h-6 text-xs w-fit"
+                                    type="button"
+                                    disabled={item.isDeleted}
+                                    onClick={() => {
+                                      deleteOptionalMediaDataHandler(
+                                        item.fileName
+                                      );
+                                    }}
+                                  >
+                                    <span className="max-sm:hidden">
+                                      Delete
+                                    </span>
+                                    <TooltipWrapper
+                                      className="hidden max-sm:block text-xs"
+                                      tooltipName="Delete"
+                                      body={
+                                        <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                      }
+                                    />
+                                  </Button>
+                                  <Button
+                                    variant={"outline"}
+                                    className="h-6 text-xs w-fit"
+                                    type="button"
+                                    disabled={!item.isDeleted}
+                                    onClick={() => {
+                                      undoDeleteOptionalMediaDataHandler(
+                                        item.fileName
+                                      );
+                                    }}
+                                  >
+                                    <span className="max-sm:hidden">
+                                      Undo delete
+                                    </span>
+                                    <TooltipWrapper
+                                      className="hidden max-sm:block text-xs"
+                                      tooltipName="Undo delete"
+                                      body={
+                                        <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                      }
+                                    />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
                   <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
