@@ -3864,10 +3864,17 @@ function createMessageNode2(message,isMarkdown=false) {
   return messageNode;
 }
 function parseMarkdown(markdown) {
+  // Convert headers (#, ##, ###)
+  markdown = markdown.replace(/^(#{1,3})\s+(.*)/gm, (match, hashes, text) => {
+    const level = hashes.length;
+    return `<h${level} style="margin-top: 0; margin-bottom: 5px;">${text}</h${level}>`;
+  });
   // Handle bold text (**text**)
   markdown = markdown.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   // Handle italic text (_text_)
   markdown = markdown.replace(/_(.*?)_/g, "<em>$1</em>");
+  // Handle italic text (_text_ or *text*)
+  markdown = markdown.replace(/(?:\*|_)(.*?)\1/g, "<em>$1</em>");
   // Handle links [text](url)
   markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
   // Convert newlines (\n) to <br>
