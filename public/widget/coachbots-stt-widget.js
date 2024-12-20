@@ -254,6 +254,7 @@ let UserAvatarImageURL =
 let clientuserInformationSTT;
 
 let responderDisplayNameStt;
+let IsSingleSelectSTT;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -4700,6 +4701,14 @@ const handleProceedClickStt = async (choice) => {
         }
         console.log('here1',initialQuestionTextStt)
         appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+        if (['game'].includes(senarioCase2) && IsSingleSelectSTT !== null){
+          if(IsSingleSelectSTT){
+            // add logic to add single box
+          } else{
+            // add logic to add multiselect 
+          }
+          
+        }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
 
@@ -10097,6 +10106,7 @@ loadExternalModule().then(() => {
                   questionData2.results[0].is_transcript_only;
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
+                IsSingleSelectSTT = questionData2.results[0].is_single_select;
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -11118,13 +11128,46 @@ loadExternalModule().then(() => {
                       }
                 
                       // Send the formatted question text for display
+                      if (response.is_last_question){
+
                       signals.onResponse({
                         text: next_question_text
                       }).then(()=>{
-                        if (response.is_last_question){
                           appendMessage2(`<b>Please enter another access code to start a new interaction.</b>`)
+                        })
+                      } else{
+                        // Preserve spaces for better formatting
+                        if (IsSingleSelectSTT !== null){
+                          if(IsSingleSelectSTT){
+                            signals.onResponse({
+                              html: `
+                                  <div>
+                                      <div>
+                                      ${parseMarkdown(next_question_text)} 
+                                      </div>
+
+                                      
+                                    <div class="deep-chat-temporary-message">
+                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">A</button>
+                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">B</button>
+                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">C</button>
+                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">D</button>
+                                      </div>
+                                    </div>`
+                                    })
+                          } else{
+                            // add logic to add multiselect 
+                            signals.onResponse({
+                              html: parseMarkdown(next_question_text)
+                            })
+                          }
+                        } else{
+                          signals.onResponse({
+                            html: parseMarkdown(next_question_text)
+                          })
                         }
-                      })
+                        
+                      }
                     } catch (error) {
                       console.error("Error handling game conversation:", error);
                       signals.onResponse({
