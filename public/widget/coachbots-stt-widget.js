@@ -2270,6 +2270,16 @@ function sendMessage(item) {
   }, 100);
 }
 
+function sendUserMessage(message, shadowRoot) {
+  shadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    shadowRoot.getElementById("text-input").textContent = message;
+    setTimeout(() => {
+      shadowRoot.querySelectorAll(".input-button")[1].click();
+    }, 100);
+  }, 100);
+}
+
 function handleRadioTypeInitialQuestion(questionOptions, question_text) {
   let optioncont = "";
   questionOptions.forEach((item, index) => {
@@ -4403,6 +4413,203 @@ const handleGameTypeConversation = async () => {
   }
 };
 
+const handleGameQuestion = async (
+  questionText,
+  randomNumber,
+  isSingleSelect,
+  signals
+) => {
+  const tShadowRoot = document.getElementById("chat-element2").shadowRoot;
+
+  const chatInputBox = tShadowRoot.getElementById("text-input")
+  console.log("chatInputBox", chatInputBox)
+  chatInputBox.placeholder = "Choose the options and click on submit for a response";
+  chatInputBox.disabled = true;
+  
+
+  const inputText = questionText;
+  const headingRegex = /^##\s+(.*)$/m;
+  const scenarioRegex = isSingleSelect ? /(?:\*\*Scenario:\*\*|- \*\*Scenario\*\*):\s+(.*)$/m :  /\*\*Scenario:\*\*\s+(.*)$/m;
+  const objectiveRegex = /\*\*Objective:\*\*\s+(.*)$/m;
+  const optionsRegex = /-\s+\*\*([A-D])\.\*\*\s+(.*?)(?=\n|$)/g;
+  const feedbackRegex = /(?:\*\*Feedback:\*\*|##\s*Feedback:)\s*([\s\S]*)/i;
+  const decisionRegex =
+    /\*\*Decision\*\*:\s*(.*?)\n((?:\s*-\s+\*\*[A-D]\.\*\*.*\n)+)/s;
+
+  const headingMatch = inputText.match(headingRegex);
+  const scenarioMatch = inputText.match(scenarioRegex);
+  const objectiveMatch = inputText.match(objectiveRegex);
+  const feedbackMatch = inputText.match(feedbackRegex);
+  const decisionMatch = inputText.match(decisionRegex);
+
+  const options = [];
+  let optionMatch;
+  while ((optionMatch = optionsRegex.exec(inputText)) !== null) {
+    options.push({
+      option: optionMatch[1],
+      description: optionMatch[2]?.trim(),
+    });
+  }
+
+  const extractedData = {
+    heading: headingMatch ? headingMatch[1].trim() : null,
+    scenario: scenarioMatch ? scenarioMatch[1].trim() : null,
+    decisionMatch: decisionMatch ? decisionMatch[1].trim() : null,
+    objective: objectiveMatch ? objectiveMatch[1].trim() : null,
+    options: options.length > 0 ? options : null,
+    feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
+  };
+
+  // Output the extracted data
+  console.log(extractedData);
+
+  if (signals) {
+    signals.onResponse({
+      html: `
+    <h3>${extractedData.heading}</h3>
+    ${
+      extractedData.scenario &&
+      `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
+    }
+    ${
+      extractedData.objective
+        ? `<p><b>Objective</b> : ${extractedData.objective}</p>`
+        : `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`
+    }
+   
+    <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
+      ${
+        isSingleSelect
+          ? "<b>Please choose option A, B, C, or D.</b><br>"
+          : "<b>Select one or more options from A, B, C, or D:</b><br>"
+      }
+      ${extractedData.options
+        .map((option) =>
+          isSingleSelect == true
+            ? `<label><input type="radio" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+            : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+        )
+        .join("")}
+      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
+         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; bacground-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+      </div>
+      ${
+        extractedData.feedback
+          ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #e5e7eb; border-radius: 8px; border: 1px solid #d1d5db;">
+          <b>Feedback:</b>
+          <p style="font-size:14px;">${extractedData.feedback}</p>
+        </div>`
+          : ""
+      }
+      <style>
+        #multiple-select-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #f0f0f0;
+        }
+      </style>
+    </div>
+  `,
+    });
+  } else {
+    appendMessage2(`
+    <h3>${extractedData.heading}</h3>
+    ${
+      extractedData.scenario &&
+      `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
+    }
+    
+    ${
+      extractedData.objective
+        ? `<p><b>Objective</b> : ${extractedData.objective}</p>`
+        : `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`
+    }
+
+    <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
+    ${
+      isSingleSelect
+        ? "<b>Please choose option A, B, C, or D.</b><br>"
+        : "<b>Select one or more options from A, B, C, or D:</b><br>"
+    }
+      ${extractedData.options
+        .map((option) =>
+          isSingleSelect == true
+            ? `<label><input type="radio" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+            : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+        )
+        .join("")}
+      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
+         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+      </div>
+      ${
+        extractedData.feedback
+          ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #d1d5db; border-radius: 8px; border: 1px solid #4b5563;">
+          <b>Feedback:</b>
+          <p style="font-size:14px;">${extractedData.feedback}</p>
+        </div>`
+          : ""
+      }
+      
+      <style>
+        #multiple-select-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #f0f0f0;
+          border: 1px solid darkgray;
+        }
+      </style>
+    </div>`);
+  }
+
+  console.log("SH Root : ", tShadowRoot);
+
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  const multipleSelectSubmitButton = tShadowRoot.getElementById(
+    `multiple-select-${randomNumber}`
+  );
+  console.log("Button : ", multipleSelectSubmitButton);
+
+  const items = tShadowRoot.querySelectorAll(
+    `input[name="option-${randomNumber}"]`
+  );
+
+  items.forEach((item) => {
+    item.addEventListener("change", function (event) {
+      console.log("Event : ", event);
+      const selectedItems = tShadowRoot.querySelectorAll(
+        `input[name="option-${randomNumber}"]:checked`
+      );
+      console.log("Selected Items : ", selectedItems);
+      multipleSelectSubmitButton.disabled = selectedItems.length === 0;
+    });
+  });
+
+  multipleSelectSubmitButton.disabled = true;
+
+  multipleSelectSubmitButton.addEventListener("click", function (event) {
+    console.log("Event : ", event);
+
+    const selectedItems = tShadowRoot.querySelectorAll(
+      `input[name="option-${randomNumber}"]:checked`
+    );
+
+    let selectedText = [];
+    selectedItems.forEach((item) => {
+      selectedText = [...selectedText, item.value];
+    });
+
+    console.log("Selected Text : ", selectedText);
+    sendUserMessage(selectedText.join(", "), tShadowRoot);
+
+    multipleSelectSubmitButton.disabled = true;
+    items.forEach((item) => {
+      item.disabled = true;
+    });
+
+    chatInputBox.disabled = true;
+    chatInputBox.placeholder = "Welcome, Please follow the provided instructions.";
+  });
+};
+
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
     isProceedStt = "true";
@@ -4707,14 +4914,21 @@ const handleProceedClickStt = async (choice) => {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
         console.log('here1',initialQuestionTextStt)
-        appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+        // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+        const randomIdForAudioElement = generateRandomAlphanumeric(10);
+      
         if (['game'].includes(senarioCase2) && IsSingleSelectSTT !== null){
-          if(IsSingleSelectSTT){
-            // add logic to add single box
-          } else{
-            // add logic to add multiselect 
-          }
           
+          if(IsSingleSelectSTT){
+            console.log("HERE 2")
+            // add logic to add single box
+            // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+            // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+            handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+          } else{
+            // add logic to add multiselect
+            handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
+          }
         }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
@@ -10114,6 +10328,7 @@ loadExternalModule().then(() => {
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
                 IsSingleSelectSTT = questionData2.results[0].is_single_select;
+                console.log( "IsSingleSelectSTT", IsSingleSelectSTT);
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -11144,29 +11359,30 @@ loadExternalModule().then(() => {
                         })
                       } else{
                         // Preserve spaces for better formatting
+                        const randomIdForAudioElement = generateRandomAlphanumeric(10);
                         if (IsSingleSelectSTT !== null){
                           if(IsSingleSelectSTT){
-                            signals.onResponse({
-                              html: `
-                                  <div>
-                                      <div>
-                                      ${parseMarkdown(next_question_text)} 
-                                      </div>
-
-                                      
-                                    <div class="deep-chat-temporary-message">
-                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">A</button>
-                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">B</button>
-                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">C</button>
-                                      <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">D</button>
-                                      </div>
-                                    </div>`
-                                    })
+                            // signals.onResponse({
+                            //   html: `
+                            //       <div>
+                            //           <div>
+                            //           ${parseMarkdown(next_question_text)} 
+                            //           </div>
+                            //         <div class="deep-chat-temporary-message">
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">A</button>
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">B</button>
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">C</button>
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">D</button>
+                            //           </div>
+                            //         </div>`
+                            //         })
+                            handleGameQuestion(next_question_text, randomIdForAudioElement, true, signals)
                           } else{
                             // add logic to add multiselect 
-                            signals.onResponse({
-                              html: parseMarkdown(next_question_text)
-                            })
+                            // signals.onResponse({
+                            //   html: parseMarkdown(next_question_text)
+                            // })
+                            handleGameQuestion(next_question_text, randomIdForAudioElement, false, signals)
                           }
                         } else{
                           signals.onResponse({
