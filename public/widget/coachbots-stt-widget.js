@@ -8079,52 +8079,40 @@ loadExternalModule().then(() => {
         audioDiv.appendChild(audioElement);
         audioDiv.appendChild(canvasElement);
 
-        if (index === 0) {
-          reader.read().then(function process({ done, value }) {
-            if (done) {
-              if (mediaSource.readyState === "open") mediaSource.endOfStream();
-              return;
-            }
+        const processBuffer = async ({ done, value }) => {
+          if (done) {
+            if (mediaSource.readyState === "open") mediaSource.endOfStream();
+            return;
+          }
+          if (!sourceBuffer.updating) {
             sourceBuffer.appendBuffer(value);
-
-            sourceBuffer.addEventListener("updateend", () => {
-              if (!sourceBuffer.updating && mediaSource.readyState === "open") {
-                reader.read().then(process);
-              }
-            });
+          }
+          sourceBuffer.addEventListener("updateend", () => {
+            if (!sourceBuffer.updating && mediaSource.readyState === "open") {
+              reader.read().then(processBuffer);
+            }
           });
+        };
+
+        if (index === 0) {
+          reader.read().then(processBuffer);
         } else {
-          const shadowRootAud =
-            document.getElementById("chat-element2").shadowRoot;
+          const shadowRootAud = document.getElementById("chat-element2").shadowRoot;
           const previousPlayer = shadowRootAud.getElementById(
             `audio-player-stream-${index - 1}-${randomTextForId}`
           );
           if (previousPlayer) {
             previousPlayer.addEventListener("ended", () => {
               console.log("PLAYER HAS ENDED");
-
-              reader.read().then(function process({ done, value }) {
-                if (done) {
-                  if (mediaSource.readyState === "open")
-                    mediaSource.endOfStream();
-                  return;
-                }
-                sourceBuffer.appendBuffer(value);
-
-                sourceBuffer.addEventListener("updateend", () => {
-                  if (
-                    !sourceBuffer.updating &&
-                    mediaSource.readyState === "open"
-                  ) {
-                    reader.read().then(process);
-                  }
-                });
-              });
+              reader.read().then(processBuffer);
             });
           }
         }
       } catch (error) {
         audioElement.dispatchEvent(new Event("ended"));
+        signals.onResponse({
+          html: ".",
+        });
         console.error("Speech API ERROR");
       }
     });
