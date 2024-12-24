@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
-// const devUrlStt = "http://127.0.0.1:8001/api/v1"
+// const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
+const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -4402,6 +4402,17 @@ const handleGameTypeConversation = async () => {
       next_question_text
     )
 
+    if (is_last_question){
+      next_question_text = JSON.parse(next_question_text)
+      next_question_text = `<div>
+      <b>${next_question_text.end_message}</b>
+      <div>
+        <h3>Feedback:</h3>
+        <p>${next_question_text.feedback}</p>
+      </div>
+    </div>`
+    }
+
     return { is_last_question, next_question_text}
     
   } catch (error) {
@@ -4429,40 +4440,57 @@ const handleGameQuestion = async (
   chatInputBox.contentEditable = false
   chatInputBox.placeholder = "Please wait for the next question..."
   //@disable the input
+  
 
-  const inputText = questionText;
-  const headingRegex = /^##\s+(.*)$/m;
-  const scenarioRegex = isSingleSelect ? /(?:\*\*Scenario:\*\*|- \*\*Scenario\*\*):\s+(.*)$/m :  /\*\*Scenario:\*\*\s+(.*)$/m;
-  const objectiveRegex = /\*\*Objective:\*\*\s+(.*)$/m;
-  const optionsRegex = /-\s+\*\*([A-D])\.\*\*\s+(.*?)(?=\n|$)/g;
-  const feedbackRegex = /(?:\*\*Feedback:\*\*|##\s*Feedback:)\s*([\s\S]*)/i;
-  const decisionRegex =
-    /\*\*Decision\*\*:\s*(.*?)\n((?:\s*-\s+\*\*[A-D]\.\*\*.*\n)+)/s;
+  // const inputText = questionText;
+  // const headingRegex = /^##\s+(.*)$/m;
+  // const scenarioRegex = isSingleSelect ? /(?:\*\*Scenario:\*\*|- \*\*Scenario\*\*):\s+(.*)$/m :  /\*\*Scenario:\*\*\s+(.*)$/m;
+  // const objectiveRegex = /\*\*Objective:\*\*\s+(.*)$/m;
+  // const optionsRegex = /-\s+\*\*([A-D])\.\*\*\s+(.*?)(?=\n|$)/g;
+  // const feedbackRegex = /(?:\*\*Feedback:\*\*|##\s*Feedback:)\s*([\s\S]*)/i;
+  // const decisionRegex =
+  //   /\*\*Decision\*\*:\s*(.*?)\n((?:\s*-\s+\*\*[A-D]\.\*\*.*\n)+)/s;
 
-  const headingMatch = inputText.match(headingRegex);
-  const scenarioMatch = inputText.match(scenarioRegex);
-  const objectiveMatch = inputText.match(objectiveRegex);
-  const feedbackMatch = inputText.match(feedbackRegex);
-  const decisionMatch = inputText.match(decisionRegex);
+  // const headingMatch = inputText.match(headingRegex);
+  // const scenarioMatch = inputText.match(scenarioRegex);
+  // const objectiveMatch = inputText.match(objectiveRegex);
+  // const feedbackMatch = inputText.match(feedbackRegex);
+  // const decisionMatch = inputText.match(decisionRegex);
 
-  const options = [];
-  let optionMatch;
-  while ((optionMatch = optionsRegex.exec(inputText)) !== null) {
-    options.push({
-      option: optionMatch[1],
-      description: optionMatch[2]?.trim(),
-    });
-  }
+  // const options = [];
+  // let optionMatch;
+  // while ((optionMatch = optionsRegex.exec(inputText)) !== null) {
+  //   options.push({
+  //     option: optionMatch[1],
+  //     description: optionMatch[2]?.trim(),
+  //   });
+  // }
 
+  // const extractedData = {
+  //   heading: headingMatch ? headingMatch[1].trim() : null,
+  //   scenario: scenarioMatch ? scenarioMatch[1].trim() : null,
+  //   decisionMatch: decisionMatch ? decisionMatch[1].trim() : null,
+  //   objective: objectiveMatch ? objectiveMatch[1].trim() : null,
+  //   options: options.length > 0 ? options : null,
+  //   feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
+  // };
+
+
+  questionText = JSON.parse(questionText)
+  
   const extractedData = {
-    heading: headingMatch ? headingMatch[1].trim() : null,
-    scenario: scenarioMatch ? scenarioMatch[1].trim() : null,
-    decisionMatch: decisionMatch ? decisionMatch[1].trim() : null,
-    objective: objectiveMatch ? objectiveMatch[1].trim() : null,
-    options: options.length > 0 ? options : null,
-    feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
+    heading: questionText?.level || null,
+    scenario: questionText?.scenario || null,
+    decisionMatch: questionText?.decision ?? null,
+    objective: questionText?.objective ?? null,
+    options: questionText?.options
+      ? Object.entries(questionText.options).map(([option, description]) => ({ option, description }))
+      : null,
+    feedback: questionText?.feedback ?? null,
+    instruction: questionText?.instruction ?? null
   };
-
+  
+  
   // Output the extracted data
   console.log(extractedData);
 
@@ -4475,16 +4503,19 @@ const handleGameQuestion = async (
       `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
     }
     ${
-      extractedData.objective
-        ? `<p><b>Objective</b> : ${extractedData.objective}</p>`
-        : `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`
+      extractedData.objective ? `<p><b>Objective</b> : ${extractedData.objective}</p>`: ''
+    }
+    ${
+      extractedData.decisionMatch ? `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`: ''
     }
    
     <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
       ${
-        isSingleSelect
-          ? "<b>Please choose option A, B, C, or D.</b><br>"
-          : "<b>Select one or more options from A, B, C, or D:</b><br>"
+        extractedData.instruction 
+          ? `<b>${extractedData.instruction}:</b><br>` 
+          : isSingleSelect
+            ? "<b>Please choose option A, B, C, or D:</b><br>" 
+            : "<b>Select one or more options from A, B, C, or D:</b><br>"
       }
       ${extractedData.options
         .map((option) =>
@@ -4522,16 +4553,19 @@ const handleGameQuestion = async (
     }
     
     ${
-      extractedData.objective
-        ? `<p><b>Objective</b> : ${extractedData.objective}</p>`
-        : `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`
+      extractedData.objective ? `<p><b>Objective</b> : ${extractedData.objective}</p>`: ''
+    }
+    ${
+      extractedData.decisionMatch ? `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`: ""
     }
 
     <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
     ${
-      isSingleSelect
-        ? "<b>Please choose option A, B, C, or D.</b><br>"
-        : "<b>Select one or more options from A, B, C, or D:</b><br>"
+      extractedData.instruction 
+        ? `<b>${extractedData.instruction}:</b><br>` 
+        : isSingleSelect
+          ? "<b>Please choose option A, B, C, or D:</b><br>" 
+          : "<b>Select one or more options from A, B, C, or D:</b><br>"
     }
       ${extractedData.options
         .map((option) =>
@@ -4922,21 +4956,26 @@ const handleProceedClickStt = async (choice) => {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
         console.log('here1',initialQuestionTextStt)
-        // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
         const randomIdForAudioElement = generateRandomAlphanumeric(10);
       
-        if (['game'].includes(senarioCase2) && IsSingleSelectSTT !== null){
-          
-          if(IsSingleSelectSTT){
-            console.log("HERE 2")
-            // add logic to add single box
-            // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
-            // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
-            handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
-          } else{
-            // add logic to add multiselect
-            handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
+        if (['game'].includes(senarioCase2) ){
+          if (IsSingleSelectSTT !== null){
+
+            if(IsSingleSelectSTT){
+              console.log("HERE 2")
+              // add logic to add single box
+              // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+              // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+              handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+            } else{
+              // add logic to add multiselect
+              handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
+            }
+          } else {
+            appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+
           }
+          
         }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
@@ -11411,15 +11450,15 @@ loadExternalModule().then(() => {
                       }
                 
                       // If immersive mode is enabled, process with TTS (Text-to-Speech)
-                      if (isImmersiveStt) {
-                        next_question_text = await TTSContainerStt(next_question_text);
-                      }
+                      // if (isImmersiveStt) {
+                      //   next_question_text = await TTSContainerStt(next_question_text);
+                      // }
                 
                       // Send the formatted question text for display
                       if (response.is_last_question){
 
                       signals.onResponse({
-                        text: next_question_text
+                        html: next_question_text
                       }).then(()=>{
                           appendMessage2(`<b>Please enter another access code to start a new interaction.</b>`)
                         })
