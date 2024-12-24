@@ -4419,13 +4419,16 @@ const handleGameQuestion = async (
   isSingleSelect,
   signals
 ) => {
-  const tShadowRoot = document.getElementById("chat-element2").shadowRoot;
+
+
+  const tChatElementRef = document.getElementById("chat-element2")
+  const tShadowRoot = tChatElementRef.shadowRoot;
 
   const chatInputBox = tShadowRoot.getElementById("text-input")
-  console.log("chatInputBox", chatInputBox)
-  chatInputBox.placeholder = "Choose the options and click on submit for a response";
-  chatInputBox.disabled = true;
-  
+  chatInputBox.classList.add("text-input-disabled")
+  chatInputBox.contentEditable = false
+  chatInputBox.placeholder = "Please wait for the next question..."
+  //@disable the input
 
   const inputText = questionText;
   const headingRegex = /^##\s+(.*)$/m;
@@ -4588,6 +4591,9 @@ const handleGameQuestion = async (
   multipleSelectSubmitButton.addEventListener("click", function (event) {
     console.log("Event : ", event);
 
+    chatInputBox.classList.remove("text-input-disabled")
+    chatInputBox.contentEditable = true
+
     const selectedItems = tShadowRoot.querySelectorAll(
       `input[name="option-${randomNumber}"]:checked`
     );
@@ -4605,8 +4611,10 @@ const handleGameQuestion = async (
       item.disabled = true;
     });
 
-    chatInputBox.disabled = true;
-    chatInputBox.placeholder = "Welcome, Please follow the provided instructions.";
+    setTimeout(() => {
+      chatInputBox.classList.add("text-input-disabled")
+      chatInputBox.contentEditable = false
+    }, 250);
   });
 };
 
@@ -5085,6 +5093,15 @@ const handleProceedClickStt = async (choice) => {
     }
   } else {
     resetAllVariablesStt();
+
+     //@disable the input
+     const tChatElementRef = document.getElementById("chat-element2")
+     const tShadowRoot = tChatElementRef.shadowRoot;
+   
+     const chatInputBox = tShadowRoot.getElementById("text-input")
+     chatInputBox.classList.remove("text-input-disabled")
+     chatElement.contentEditable = true
+
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
     // button.parentNode.removeChild(button)
@@ -5532,6 +5549,14 @@ async function setMcqVariablesStt() {
         "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
       );
       enableEndSessionButton();
+
+      //@disable the input
+      const tChatElementRef = document.getElementById("chat-element2")
+      const tShadowRoot = tChatElementRef.shadowRoot;
+    
+      const chatInputBox = tShadowRoot.getElementById("text-input")
+      chatInputBox.classList.remove("text-input-disabled")
+      chatElement.contentEditable = true
       return;
     }
 
@@ -5693,6 +5718,13 @@ async function submitEmailAndName2() {
   const page_name = questionData2.results[0].page_name;
   const test_code = testCode2;
   resetAllVariablesStt();
+  //@disable the input
+  const tChatElementRef = document.getElementById("chat-element2")
+  const tShadowRoot = tChatElementRef.shadowRoot;
+
+  const chatInputBox = tShadowRoot.getElementById("text-input")
+  chatInputBox.classList.remove("text-input-disabled")
+  chatElement.contentEditable = true
 
   if (page_name !== "explore") {
     increaseActionPointStt(userId2, "interaction_attempted");
@@ -10001,6 +10033,14 @@ loadExternalModule().then(() => {
             await cancelTestStt(participantId2); // cancelling session
             //* reset all variables : start
             resetAllVariablesStt(); // reseting session
+
+            //@disable the input
+            const tChatElementRef = document.getElementById("chat-element2")
+            const tShadowRoot = tChatElementRef.shadowRoot;
+          
+            const chatInputBox = tShadowRoot.getElementById("text-input")
+            chatInputBox.classList.remove("text-input-disabled")
+            chatElement.contentEditable = true
           }
           const userAcessAvailability2 = latestMessage; //body.messages[0].text;
           if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
@@ -10091,6 +10131,14 @@ loadExternalModule().then(() => {
 
               const textInputElement = shadowRoot.getElementById("text-input");
               textInputElement.removeAttribute("onpaste");
+
+              //@disable the input
+              const tChatElementRef = document.getElementById("chat-element2");
+              const tShadowRoot = tChatElementRef.shadowRoot;
+
+              const chatInputBox = tShadowRoot.getElementById("text-input");
+              chatInputBox.classList.remove("text-input-disabled");
+              chatElement.contentEditable = true;
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -10193,6 +10241,13 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
+                //@disable the input
+                const tChatElementRef = document.getElementById("chat-element2")
+                const tShadowRoot = tChatElementRef.shadowRoot;
+              
+                const chatInputBox = tShadowRoot.getElementById("text-input")
+                chatInputBox.classList.remove("text-input-disabled")
+                chatElement.contentEditable = true
                 return;
               }
               //************* check if user message is atleast 10 words */
@@ -10210,6 +10265,13 @@ loadExternalModule().then(() => {
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
                   });
+                  //@disable the input
+                  const tChatElementRef = document.getElementById("chat-element2")
+                  const tShadowRoot = tChatElementRef.shadowRoot;
+                
+                  const chatInputBox = tShadowRoot.getElementById("text-input")
+                  chatInputBox.classList.remove("text-input-disabled")
+                  chatElement.contentEditable = true
                   return;
                 }
                 signals.onResponse({
@@ -11331,6 +11393,13 @@ loadExternalModule().then(() => {
                         signals.onResponse({
                           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
                         });
+                        //@disable the input
+                        const tChatElementRef = document.getElementById("chat-element2")
+                        const tShadowRoot = tChatElementRef.shadowRoot;
+                      
+                        const chatInputBox = tShadowRoot.getElementById("text-input")
+                        chatInputBox.classList.remove("text-input-disabled")
+                        chatInputBox.contentEditable = true
                         return;
                       }
 
@@ -11341,6 +11410,15 @@ loadExternalModule().then(() => {
                       
                       if (response.is_last_question){
                           appendMessage2( `<b>That's it! Thank you for participating!</b>`)
+
+                          //@disable the input
+                          const tChatElementRef = document.getElementById("chat-element2")
+                          const tShadowRoot = tChatElementRef.shadowRoot;
+                        
+                          const chatInputBox = tShadowRoot.getElementById("text-input")
+                          chatInputBox.classList.remove("text-input-disabled")
+                          chatInputBox.contentEditable = true
+
                           resetAllVariablesStt()
                       }
                 
@@ -11652,6 +11730,15 @@ loadExternalModule().then(() => {
                     signals.onResponse({
                       html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                     });
+                    //@disable the input
+                    const tChatElementRef =
+                      document.getElementById("chat-element2");
+                    const tShadowRoot = tChatElementRef.shadowRoot;
+
+                    const chatInputBox =
+                      tShadowRoot.getElementById("text-input");
+                    chatInputBox.classList.remove("text-input-disabled");
+                    chatInputBox.contentEditable = true;
                     enableEndSessionButton();
                     return;
                   }
@@ -11812,12 +11899,20 @@ loadExternalModule().then(() => {
                 msg.parentNode.replaceChild(que_msg, msg);
               }
               resetAllVariablesStt();
+
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                 });
                 enableEndSessionButton();
               }
+              //@disable the input
+              const tChatElementRef = document.getElementById("chat-element2");
+              const tShadowRoot = tChatElementRef.shadowRoot;
+
+              const chatInputBox = tShadowRoot.getElementById("text-input");
+              chatInputBox.classList.remove("text-input-disabled");
+              chatInputBox.contentEditable = true;
             }
           }
         }
@@ -11853,6 +11948,13 @@ loadExternalModule().then(() => {
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
         });
         enableEndSessionButton();
+        //@disable the input
+        const tChatElementRef = document.getElementById("chat-element2")
+        const tShadowRoot = tChatElementRef.shadowRoot;
+      
+        const chatInputBox = tShadowRoot.getElementById("text-input")
+        chatInputBox.classList.remove("text-input-disabled")
+        chatInputBox.contentEditable = true
       }
     },
   };
