@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-// const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
-const devUrlStt = "http://127.0.0.1:8001/api/v1"
+const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
+// const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -11486,7 +11486,8 @@ loadExternalModule().then(() => {
                             // add logic to add multiselect 
                             // signals.onResponse({
                             //   html: parseMarkdown(next_question_text)
-                            // })
+                            // })'gemini-2.0-flash-exp',
+'gemini-2.0-flash-exp',
                             handleGameQuestion(next_question_text, randomIdForAudioElement, false, signals)
                           }
                         } else{
