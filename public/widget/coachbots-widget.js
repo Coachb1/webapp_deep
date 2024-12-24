@@ -6458,8 +6458,6 @@ const openChatContainer = () => {
   let audioChunks = [];
   let stream;
 
-
-
   async function startRecording() {
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -6493,13 +6491,13 @@ const openChatContainer = () => {
         });
         audioChunks.length = 0;
 
-        console.log(audioFile,'audioFile')
+        console.log(audioFile, "audioFile");
 
         // audioFileMap[`${questionIndex}`] = audioFile
         const fileUrl = window.URL.createObjectURL(audioFile);
         audioFileSrc = fileUrl;
 
-        isEmptyAudio = isAudioEmpty(audioBuffer)
+        isEmptyAudio = isAudioEmpty(audioBuffer);
         console.log("at INIT - Is audio empty:", isEmptyAudio);
         // audioFileSrcMap[`${questionIndex}`] = fileUrl;
       };
@@ -6508,6 +6506,37 @@ const openChatContainer = () => {
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
+
+    const fileAttachmentContainer = chatE.shadowRoot.querySelector(".file-attachment");
+    console.log("Target Node : ", fileAttachmentContainer);
+    const config = { childList: true, subtree: true };
+
+    const callback = (mutationsList, observer) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('remove-file-attachment-button')) {
+
+              node.addEventListener("click", () => {
+                if (isRecording) {
+                  stream.getTracks().forEach((track) => track.stop());
+                  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                    mediaRecorder.stop();
+                    console.log("glrecor", isRecordingGlobal);
+                  }
+
+                  isRecording = false;
+                  console.log("cancelled the recording!!");
+                }
+              })
+            }
+          });
+        }
+      }
+    };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(fileAttachmentContainer, config);
   }
 
   function isAudioEmpty(audioBuffer) {
@@ -6528,6 +6557,17 @@ const openChatContainer = () => {
   console.log("IS RECORDING ", isRecording);
   if (micButton) {
     micButton.addEventListener("click", () => {
+      if (isRecording) {
+        stream.getTracks().forEach((track) => track.stop());
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+          console.log("glrecor", isRecordingGlobal);
+        }
+  
+        isRecording = false;
+        console.log("cancelled the recording!!");
+      }
+
       if (!isRecording) {
         startRecording();
       }

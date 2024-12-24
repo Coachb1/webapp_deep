@@ -254,6 +254,7 @@ let UserAvatarImageURL =
 let clientuserInformationSTT;
 
 let responderDisplayNameStt;
+let IsSingleSelectSTT;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -2269,6 +2270,16 @@ function sendMessage(item) {
   }, 100);
 }
 
+function sendUserMessage(message, shadowRoot) {
+  shadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    shadowRoot.getElementById("text-input").textContent = message;
+    setTimeout(() => {
+      shadowRoot.querySelectorAll(".input-button")[1].click();
+    }, 100);
+  }, 100);
+}
+
 function handleRadioTypeInitialQuestion(questionOptions, question_text) {
   let optioncont = "";
   questionOptions.forEach((item, index) => {
@@ -3863,10 +3874,17 @@ function createMessageNode2(message,isMarkdown=false) {
   return messageNode;
 }
 function parseMarkdown(markdown) {
+  // Convert headers (#, ##, ###)
+  markdown = markdown.replace(/^(#{1,3})\s+(.*)/gm, (match, hashes, text) => {
+    const level = hashes.length;
+    return `<h${level} style="margin-top: 0; margin-bottom: 5px;">${text}</h${level}>`;
+  });
   // Handle bold text (**text**)
   markdown = markdown.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   // Handle italic text (_text_)
   markdown = markdown.replace(/_(.*?)_/g, "<em>$1</em>");
+  // Handle italic text (_text_ or *text*)
+  markdown = markdown.replace(/(?:\*|_)(.*?)\1/g, "<em>$1</em>");
   // Handle links [text](url)
   markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
   // Convert newlines (\n) to <br>
@@ -4384,6 +4402,17 @@ const handleGameTypeConversation = async () => {
       next_question_text
     )
 
+    if (is_last_question){
+      next_question_text = JSON.parse(next_question_text)
+      next_question_text = `<div>
+      <b>${next_question_text.end_message}</b>
+      <div>
+        <h3>Feedback:</h3>
+        <p>${next_question_text.feedback}</p>
+      </div>
+    </div>`
+    }
+
     return { is_last_question, next_question_text}
     
   } catch (error) {
@@ -4393,6 +4422,234 @@ const handleGameTypeConversation = async () => {
       error: `${error}`
     }
   }
+};
+
+const handleGameQuestion = async (
+  questionText,
+  randomNumber,
+  isSingleSelect,
+  signals
+) => {
+
+
+  const tChatElementRef = document.getElementById("chat-element2")
+  const tShadowRoot = tChatElementRef.shadowRoot;
+
+  const chatInputBox = tShadowRoot.getElementById("text-input")
+  chatInputBox.classList.add("text-input-disabled")
+  chatInputBox.contentEditable = false
+  chatInputBox.placeholder = "Please wait for the next question..."
+  //@disable the input
+  
+
+  // const inputText = questionText;
+  // const headingRegex = /^##\s+(.*)$/m;
+  // const scenarioRegex = isSingleSelect ? /(?:\*\*Scenario:\*\*|- \*\*Scenario\*\*):\s+(.*)$/m :  /\*\*Scenario:\*\*\s+(.*)$/m;
+  // const objectiveRegex = /\*\*Objective:\*\*\s+(.*)$/m;
+  // const optionsRegex = /-\s+\*\*([A-D])\.\*\*\s+(.*?)(?=\n|$)/g;
+  // const feedbackRegex = /(?:\*\*Feedback:\*\*|##\s*Feedback:)\s*([\s\S]*)/i;
+  // const decisionRegex =
+  //   /\*\*Decision\*\*:\s*(.*?)\n((?:\s*-\s+\*\*[A-D]\.\*\*.*\n)+)/s;
+
+  // const headingMatch = inputText.match(headingRegex);
+  // const scenarioMatch = inputText.match(scenarioRegex);
+  // const objectiveMatch = inputText.match(objectiveRegex);
+  // const feedbackMatch = inputText.match(feedbackRegex);
+  // const decisionMatch = inputText.match(decisionRegex);
+
+  // const options = [];
+  // let optionMatch;
+  // while ((optionMatch = optionsRegex.exec(inputText)) !== null) {
+  //   options.push({
+  //     option: optionMatch[1],
+  //     description: optionMatch[2]?.trim(),
+  //   });
+  // }
+
+  // const extractedData = {
+  //   heading: headingMatch ? headingMatch[1].trim() : null,
+  //   scenario: scenarioMatch ? scenarioMatch[1].trim() : null,
+  //   decisionMatch: decisionMatch ? decisionMatch[1].trim() : null,
+  //   objective: objectiveMatch ? objectiveMatch[1].trim() : null,
+  //   options: options.length > 0 ? options : null,
+  //   feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
+  // };
+
+
+  questionText = JSON.parse(questionText)
+  
+  const extractedData = {
+    heading: questionText?.level || null,
+    scenario: questionText?.scenario || null,
+    decisionMatch: questionText?.decision ?? null,
+    objective: questionText?.objective ?? null,
+    options: questionText?.options
+      ? Object.entries(questionText.options).map(([option, description]) => ({ option, description }))
+      : null,
+    feedback: questionText?.feedback ?? null,
+    instruction: questionText?.instruction ?? null
+  };
+  
+  
+  // Output the extracted data
+  console.log(extractedData);
+
+  if (signals) {
+    signals.onResponse({
+      html: `
+    <h3>${extractedData.heading}</h3>
+    ${
+      extractedData.scenario &&
+      `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
+    }
+    ${
+      extractedData.objective ? `<p><b>Objective</b> : ${extractedData.objective}</p>`: ''
+    }
+    ${
+      extractedData.decisionMatch ? `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`: ''
+    }
+   
+    <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
+      ${
+        extractedData.instruction 
+          ? `<b>${extractedData.instruction}:</b><br>` 
+          : isSingleSelect
+            ? "<b>Please choose option A, B, C, or D:</b><br>" 
+            : "<b>Select one or more options from A, B, C, or D:</b><br>"
+      }
+      ${extractedData.options
+        .map((option) =>
+          isSingleSelect == true
+            ? `<label><input type="radio" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+            : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+        )
+        .join("")}
+      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
+         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; bacground-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+      </div>
+      ${
+        extractedData.feedback
+          ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #e5e7eb; border-radius: 8px; border: 1px solid #d1d5db;">
+          <b>Feedback:</b>
+          <p style="font-size:14px;">${extractedData.feedback}</p>
+        </div>`
+          : ""
+      }
+      <style>
+        #multiple-select-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #f0f0f0;
+        }
+      </style>
+    </div>
+  `,
+    });
+  } else {
+    appendMessage2(`
+    <h3>${extractedData.heading}</h3>
+    ${
+      extractedData.scenario &&
+      `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
+    }
+    
+    ${
+      extractedData.objective ? `<p><b>Objective</b> : ${extractedData.objective}</p>`: ''
+    }
+    ${
+      extractedData.decisionMatch ? `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`: ""
+    }
+
+    <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
+    ${
+      extractedData.instruction 
+        ? `<b>${extractedData.instruction}:</b><br>` 
+        : isSingleSelect
+          ? "<b>Please choose option A, B, C, or D:</b><br>" 
+          : "<b>Select one or more options from A, B, C, or D:</b><br>"
+    }
+      ${extractedData.options
+        .map((option) =>
+          isSingleSelect == true
+            ? `<label><input type="radio" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+            : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
+        )
+        .join("")}
+      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
+         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+      </div>
+      ${
+        extractedData.feedback
+          ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #d1d5db; border-radius: 8px; border: 1px solid #4b5563;">
+          <b>Feedback:</b>
+          <p style="font-size:14px;">${extractedData.feedback}</p>
+        </div>`
+          : ""
+      }
+      
+      <style>
+        #multiple-select-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #f0f0f0;
+          border: 1px solid darkgray;
+        }
+      </style>
+    </div>`);
+  }
+
+  console.log("SH Root : ", tShadowRoot);
+
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  const multipleSelectSubmitButton = tShadowRoot.getElementById(
+    `multiple-select-${randomNumber}`
+  );
+  console.log("Button : ", multipleSelectSubmitButton);
+
+  const items = tShadowRoot.querySelectorAll(
+    `input[name="option-${randomNumber}"]`
+  );
+
+  items.forEach((item) => {
+    item.addEventListener("change", function (event) {
+      console.log("Event : ", event);
+      const selectedItems = tShadowRoot.querySelectorAll(
+        `input[name="option-${randomNumber}"]:checked`
+      );
+      console.log("Selected Items : ", selectedItems);
+      multipleSelectSubmitButton.disabled = selectedItems.length === 0;
+    });
+  });
+
+  multipleSelectSubmitButton.disabled = true;
+
+  multipleSelectSubmitButton.addEventListener("click", function (event) {
+    console.log("Event : ", event);
+
+    chatInputBox.classList.remove("text-input-disabled")
+    chatInputBox.contentEditable = true
+
+    const selectedItems = tShadowRoot.querySelectorAll(
+      `input[name="option-${randomNumber}"]:checked`
+    );
+
+    let selectedText = [];
+    selectedItems.forEach((item) => {
+      selectedText = [...selectedText, item.value];
+    });
+
+    console.log("Selected Text : ", selectedText);
+    sendUserMessage(selectedText.join(", "), tShadowRoot);
+
+    multipleSelectSubmitButton.disabled = true;
+    items.forEach((item) => {
+      item.disabled = true;
+    });
+
+    setTimeout(() => {
+      chatInputBox.classList.add("text-input-disabled")
+      chatInputBox.contentEditable = false
+    }, 250);
+  });
 };
 
 const handleProceedClickStt = async (choice) => {
@@ -4699,7 +4956,27 @@ const handleProceedClickStt = async (choice) => {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
         console.log('here1',initialQuestionTextStt)
-        appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+        const randomIdForAudioElement = generateRandomAlphanumeric(10);
+      
+        if (['game'].includes(senarioCase2) ){
+          if (IsSingleSelectSTT !== null){
+
+            if(IsSingleSelectSTT){
+              console.log("HERE 2")
+              // add logic to add single box
+              // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+              // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+              handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+            } else{
+              // add logic to add multiselect
+              handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
+            }
+          } else {
+            appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+
+          }
+          
+        }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
 
@@ -4855,6 +5132,15 @@ const handleProceedClickStt = async (choice) => {
     }
   } else {
     resetAllVariablesStt();
+
+     //@disable the input
+     const tChatElementRef = document.getElementById("chat-element2")
+     const tShadowRoot = tChatElementRef.shadowRoot;
+   
+     const chatInputBox = tShadowRoot.getElementById("text-input")
+     chatInputBox.classList.remove("text-input-disabled")
+     chatElement.contentEditable = true
+
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
     // button.parentNode.removeChild(button)
@@ -5302,6 +5588,14 @@ async function setMcqVariablesStt() {
         "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
       );
       enableEndSessionButton();
+
+      //@disable the input
+      const tChatElementRef = document.getElementById("chat-element2")
+      const tShadowRoot = tChatElementRef.shadowRoot;
+    
+      const chatInputBox = tShadowRoot.getElementById("text-input")
+      chatInputBox.classList.remove("text-input-disabled")
+      chatElement.contentEditable = true
       return;
     }
 
@@ -5463,6 +5757,13 @@ async function submitEmailAndName2() {
   const page_name = questionData2.results[0].page_name;
   const test_code = testCode2;
   resetAllVariablesStt();
+  //@disable the input
+  const tChatElementRef = document.getElementById("chat-element2")
+  const tShadowRoot = tChatElementRef.shadowRoot;
+
+  const chatInputBox = tShadowRoot.getElementById("text-input")
+  chatInputBox.classList.remove("text-input-disabled")
+  chatElement.contentEditable = true
 
   if (page_name !== "explore") {
     increaseActionPointStt(userId2, "interaction_attempted");
@@ -7817,52 +8118,40 @@ loadExternalModule().then(() => {
         audioDiv.appendChild(audioElement);
         audioDiv.appendChild(canvasElement);
 
-        if (index === 0) {
-          reader.read().then(function process({ done, value }) {
-            if (done) {
-              if (mediaSource.readyState === "open") mediaSource.endOfStream();
-              return;
-            }
+        const processBuffer = async ({ done, value }) => {
+          if (done) {
+            if (mediaSource.readyState === "open") mediaSource.endOfStream();
+            return;
+          }
+          if (!sourceBuffer.updating) {
             sourceBuffer.appendBuffer(value);
-
-            sourceBuffer.addEventListener("updateend", () => {
-              if (!sourceBuffer.updating && mediaSource.readyState === "open") {
-                reader.read().then(process);
-              }
-            });
+          }
+          sourceBuffer.addEventListener("updateend", () => {
+            if (!sourceBuffer.updating && mediaSource.readyState === "open") {
+              reader.read().then(processBuffer);
+            }
           });
+        };
+
+        if (index === 0) {
+          reader.read().then(processBuffer);
         } else {
-          const shadowRootAud =
-            document.getElementById("chat-element2").shadowRoot;
+          const shadowRootAud = document.getElementById("chat-element2").shadowRoot;
           const previousPlayer = shadowRootAud.getElementById(
             `audio-player-stream-${index - 1}-${randomTextForId}`
           );
           if (previousPlayer) {
             previousPlayer.addEventListener("ended", () => {
               console.log("PLAYER HAS ENDED");
-
-              reader.read().then(function process({ done, value }) {
-                if (done) {
-                  if (mediaSource.readyState === "open")
-                    mediaSource.endOfStream();
-                  return;
-                }
-                sourceBuffer.appendBuffer(value);
-
-                sourceBuffer.addEventListener("updateend", () => {
-                  if (
-                    !sourceBuffer.updating &&
-                    mediaSource.readyState === "open"
-                  ) {
-                    reader.read().then(process);
-                  }
-                });
-              });
+              reader.read().then(processBuffer);
             });
           }
         }
       } catch (error) {
         audioElement.dispatchEvent(new Event("ended"));
+        signals.onResponse({
+          html: ".",
+        });
         console.error("Speech API ERROR");
       }
     });
@@ -9771,6 +10060,14 @@ loadExternalModule().then(() => {
             await cancelTestStt(participantId2); // cancelling session
             //* reset all variables : start
             resetAllVariablesStt(); // reseting session
+
+            //@disable the input
+            const tChatElementRef = document.getElementById("chat-element2")
+            const tShadowRoot = tChatElementRef.shadowRoot;
+          
+            const chatInputBox = tShadowRoot.getElementById("text-input")
+            chatInputBox.classList.remove("text-input-disabled")
+            chatElement.contentEditable = true
           }
           const userAcessAvailability2 = latestMessage; //body.messages[0].text;
           if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
@@ -9861,6 +10158,14 @@ loadExternalModule().then(() => {
 
               const textInputElement = shadowRoot.getElementById("text-input");
               textInputElement.removeAttribute("onpaste");
+
+              //@disable the input
+              const tChatElementRef = document.getElementById("chat-element2");
+              const tShadowRoot = tChatElementRef.shadowRoot;
+
+              const chatInputBox = tShadowRoot.getElementById("text-input");
+              chatInputBox.classList.remove("text-input-disabled");
+              chatElement.contentEditable = true;
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -9963,6 +10268,13 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
+                //@disable the input
+                const tChatElementRef = document.getElementById("chat-element2")
+                const tShadowRoot = tChatElementRef.shadowRoot;
+              
+                const chatInputBox = tShadowRoot.getElementById("text-input")
+                chatInputBox.classList.remove("text-input-disabled")
+                chatElement.contentEditable = true
                 return;
               }
               //************* check if user message is atleast 10 words */
@@ -9980,6 +10292,13 @@ loadExternalModule().then(() => {
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
                   });
+                  //@disable the input
+                  const tChatElementRef = document.getElementById("chat-element2")
+                  const tShadowRoot = tChatElementRef.shadowRoot;
+                
+                  const chatInputBox = tShadowRoot.getElementById("text-input")
+                  chatInputBox.classList.remove("text-input-disabled")
+                  chatElement.contentEditable = true
                   return;
                 }
                 signals.onResponse({
@@ -10097,6 +10416,8 @@ loadExternalModule().then(() => {
                   questionData2.results[0].is_transcript_only;
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
+                IsSingleSelectSTT = questionData2.results[0].is_single_select;
+                console.log( "IsSingleSelectSTT", IsSingleSelectSTT);
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -11099,6 +11420,13 @@ loadExternalModule().then(() => {
                         signals.onResponse({
                           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
                         });
+                        //@disable the input
+                        const tChatElementRef = document.getElementById("chat-element2")
+                        const tShadowRoot = tChatElementRef.shadowRoot;
+                      
+                        const chatInputBox = tShadowRoot.getElementById("text-input")
+                        chatInputBox.classList.remove("text-input-disabled")
+                        chatInputBox.contentEditable = true
                         return;
                       }
 
@@ -11109,22 +11437,66 @@ loadExternalModule().then(() => {
                       
                       if (response.is_last_question){
                           appendMessage2( `<b>That's it! Thank you for participating!</b>`)
+
+                          //@disable the input
+                          const tChatElementRef = document.getElementById("chat-element2")
+                          const tShadowRoot = tChatElementRef.shadowRoot;
+                        
+                          const chatInputBox = tShadowRoot.getElementById("text-input")
+                          chatInputBox.classList.remove("text-input-disabled")
+                          chatInputBox.contentEditable = true
+
                           resetAllVariablesStt()
                       }
                 
                       // If immersive mode is enabled, process with TTS (Text-to-Speech)
-                      if (isImmersiveStt) {
-                        next_question_text = await TTSContainerStt(next_question_text);
-                      }
+                      // if (isImmersiveStt) {
+                      //   next_question_text = await TTSContainerStt(next_question_text);
+                      // }
                 
                       // Send the formatted question text for display
+                      if (response.is_last_question){
+
                       signals.onResponse({
-                        text: next_question_text
+                        html: next_question_text
                       }).then(()=>{
-                        if (response.is_last_question){
                           appendMessage2(`<b>Please enter another access code to start a new interaction.</b>`)
+                        })
+                      } else{
+                        // Preserve spaces for better formatting
+                        const randomIdForAudioElement = generateRandomAlphanumeric(10);
+                        if (IsSingleSelectSTT !== null){
+                          if(IsSingleSelectSTT){
+                            // signals.onResponse({
+                            //   html: `
+                            //       <div>
+                            //           <div>
+                            //           ${parseMarkdown(next_question_text)} 
+                            //           </div>
+                            //         <div class="deep-chat-temporary-message">
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">A</button>
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">B</button>
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">C</button>
+                            //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">D</button>
+                            //           </div>
+                            //         </div>`
+                            //         })
+                            handleGameQuestion(next_question_text, randomIdForAudioElement, true, signals)
+                          } else{
+                            // add logic to add multiselect 
+                            // signals.onResponse({
+                            //   html: parseMarkdown(next_question_text)
+                            // })'gemini-2.0-flash-exp',
+'gemini-2.0-flash-exp',
+                            handleGameQuestion(next_question_text, randomIdForAudioElement, false, signals)
+                          }
+                        } else{
+                          signals.onResponse({
+                            html: parseMarkdown(next_question_text)
+                          })
                         }
-                      })
+                        
+                      }
                     } catch (error) {
                       console.error("Error handling game conversation:", error);
                       signals.onResponse({
@@ -11386,6 +11758,15 @@ loadExternalModule().then(() => {
                     signals.onResponse({
                       html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                     });
+                    //@disable the input
+                    const tChatElementRef =
+                      document.getElementById("chat-element2");
+                    const tShadowRoot = tChatElementRef.shadowRoot;
+
+                    const chatInputBox =
+                      tShadowRoot.getElementById("text-input");
+                    chatInputBox.classList.remove("text-input-disabled");
+                    chatInputBox.contentEditable = true;
                     enableEndSessionButton();
                     return;
                   }
@@ -11546,12 +11927,20 @@ loadExternalModule().then(() => {
                 msg.parentNode.replaceChild(que_msg, msg);
               }
               resetAllVariablesStt();
+
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                 });
                 enableEndSessionButton();
               }
+              //@disable the input
+              const tChatElementRef = document.getElementById("chat-element2");
+              const tShadowRoot = tChatElementRef.shadowRoot;
+
+              const chatInputBox = tShadowRoot.getElementById("text-input");
+              chatInputBox.classList.remove("text-input-disabled");
+              chatInputBox.contentEditable = true;
             }
           }
         }
@@ -11587,6 +11976,13 @@ loadExternalModule().then(() => {
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
         });
         enableEndSessionButton();
+        //@disable the input
+        const tChatElementRef = document.getElementById("chat-element2")
+        const tShadowRoot = tChatElementRef.shadowRoot;
+      
+        const chatInputBox = tShadowRoot.getElementById("text-input")
+        chatInputBox.classList.remove("text-input-disabled")
+        chatInputBox.contentEditable = true
       }
     },
   };
