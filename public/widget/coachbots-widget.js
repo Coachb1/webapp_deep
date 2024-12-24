@@ -6557,6 +6557,17 @@ const openChatContainer = () => {
   console.log("IS RECORDING ", isRecording);
   if (micButton) {
     micButton.addEventListener("click", () => {
+      if (isRecording) {
+        stream.getTracks().forEach((track) => track.stop());
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+          console.log("glrecor", isRecordingGlobal);
+        }
+  
+        isRecording = false;
+        console.log("cancelled the recording!!");
+      }
+
       if (!isRecording) {
         startRecording();
       }
