@@ -365,7 +365,7 @@ const MyPages = ({ user }: any) => {
                     </>
                   </p>{" "}
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block max-sm:hidden" />
-                  <div className="flex flex-row gap-2 max-sm:mt-2">
+                  <div className="flex flex-row flex-wrap gap-2 max-sm:mt-2">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
