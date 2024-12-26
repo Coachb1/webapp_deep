@@ -8241,17 +8241,17 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
-    const audioDiv = document.createElement("div");
-    audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
-    audioDiv.style.width = "100%";
-    audioDiv.style.height = "3rem";
-    audioDiv.style.border = "1px solid lightgray";
-    audioDiv.style.borderRadius = "4px";
-    audioDiv.style.backgroundColor = "white";
-    audioDiv.style.overflow = "hidden";
-    audioDiv.style.marginBottom = "6px";
-    // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
-    audioDiv.style.display = "none";
+    let audioDiv;
+    // audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
+    // audioDiv.style.width = "100%";
+    // audioDiv.style.height = "3rem";
+    // audioDiv.style.border = "1px solid lightgray";
+    // audioDiv.style.borderRadius = "4px";
+    // audioDiv.style.backgroundColor = "white";
+    // audioDiv.style.overflow = "hidden";
+    // audioDiv.style.marginBottom = "6px";
+    // // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
+    // audioDiv.style.display = "none";
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
@@ -8274,20 +8274,20 @@ loadExternalModule().then(() => {
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
-          if (streamWithAudio) {
-            messageBubble.appendChild(audioDiv);
-            audioSourceOpen(
-              text,
-              audioDiv,
-              0,
-              randomIdForAudioElement,
-              signals
-            );
-          } else {
-            signals.onResponse({
-              html: ".",
-            });
-          }
+          // if (streamWithAudio) {
+          //   messageBubble.appendChild(audioDiv);
+          //   audioSourceOpen(
+          //     text,
+          //     audioDiv,
+          //     0,
+          //     randomIdForAudioElement,
+          //     signals
+          //   );
+          // } else {
+          //   signals.onResponse({
+          //     html: ".",
+          //   });
+          // }
 
           allMessages.forEach((indvMessage) => {
             if (
@@ -8311,12 +8311,14 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               " \n\n Please explain your question or comment in different words which I may be able to understand better.";
             if (streamWithAudio) {
-              audioSourceOpen(
-                "Please explain your question or comment in different words which I may be able to understand better.",
-                audioDiv,
-                1,
-                randomIdForAudioElement
-              );
+              // audioSourceOpen(
+              //   "Please explain your question or comment in different words which I may be able to understand better.",
+              //   audioDiv,
+              //   1,
+              //   randomIdForAudioElement
+              // );
+
+              text += " Please explain your question or comment in different words which I may be able to understand better.";
             }
           }
 
@@ -8324,24 +8326,115 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
-              audioSourceOpen(
-                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-                audioDiv,
-                1,
-                randomIdForAudioElement
-              );
+              // audioSourceOpen(
+              //   " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+              //   audioDiv,
+              //   1,
+              //   randomIdForAudioElement
+              // );
+
+              text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                audioDiv,
-                1,
-                randomIdForAudioElement
-              );
+              // audioSourceOpen(
+              //   "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+              //   audioDiv,
+              //   1,
+              //   randomIdForAudioElement
+              // );
+
+              text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
             }
+          }
+
+          if (streamWithAudio) {
+            const encodedText = encodeURIComponent(text);
+            
+            const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
+            const response = await fetch(url, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              },
+            });
+        
+            const blob = await response.blob();
+            console.log("respnse", blob);
+        
+            const objectUrl = URL.createObjectURL(blob);
+        
+            console.log(objectUrl, "url");
+        
+            audioDiv = document.createElement("div");
+            audioDiv.id = `audioDiv-${randomIdForAudioElement}`;
+            audioDiv.style.cssText =
+              "border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;";
+        
+            const audioPlayer = document.createElement("audio");
+            audioPlayer.id = `audio-player-${randomIdForAudioElement}`;
+            audioPlayer.autoplay = true;
+            audioPlayer.style.cssText =
+              window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : "min-width: 50vw !important;";
+        
+            const audioSource = document.createElement("source");
+            audioSource.src = objectUrl;
+        
+            const fallbackMessage = document.createTextNode(
+              "Your browser does not support the audio element."
+            );
+        
+            audioPlayer.appendChild(audioSource);
+            audioPlayer.appendChild(fallbackMessage);
+        
+            const audioCanvas = document.createElement("canvas");
+            audioCanvas.id = `canvas-audio-${randomIdForAudioElement}`;
+            audioCanvas.width = 800;
+            audioCanvas.height = 40;
+        
+            audioDiv.appendChild(audioPlayer);
+            audioDiv.appendChild(audioCanvas);
+        
+            messageBubble.appendChild(audioDiv);
+        
+            setTimeout(() => {
+              const audioElement = shadowRoot.getElementById(
+                `audio-player-${randomIdForAudioElement}`
+              );
+              const canvasElement = shadowRoot.getElementById(
+                `canvas-audio-${randomIdForAudioElement}`
+              );
+              const audioDiv = shadowRoot.getElementById(
+                `audioDiv-${randomIdForAudioElement}`
+              );
+             
+              console.log(audioElement, canvasElement);
+              audioCanvasUiForQuestions(audioElement, canvasElement);
+        
+              audioElement.addEventListener("ended", () => {
+                canvasElement.remove();
+                audioDiv.remove();
+                signals.onResponse({
+                  html: "",
+                });
+               setTimeout(() => {
+                allMessages.forEach((indvMessage) => {
+                  if (
+                    indvMessage.innerText === "." ||
+                    indvMessage.innerText === "..." ||
+                    indvMessage.innerText === " " ||
+                    indvMessage.innerText === ""
+                  ) {
+                    indvMessage.remove();
+                  }
+                });
+               }, 20);
+              });
+            }, 100);
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
