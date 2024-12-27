@@ -292,105 +292,113 @@ if (window.LogRocket) {
 // 2 - account creation
 console.log("user_name2", user_name2);
 console.log("user_email2", user_email2);
-fetch(`${baseURL2}/accounts/`, {
-  method: "POST",
-  headers: {
-    Authorization: `Basic ${basicAuthToken2}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    user_context: {
-      name: user_name2,
-      role: "member",
-      user_attributes: {
-        tag: "deepchat_profile",
-        attributes: {
-          name: user_name2,
-          username: user_name2,
-          email: user_email2,
+
+const initialiseUser = async () => {
+  fetch(`${baseURL2}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken2}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name2,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name2,
+            username: user_name2,
+            email: user_email2,
+          },
         },
       },
-    },
-    identity_context: {
-      identity_type: "deepchat_unique_id",
-      value: user_email2,
-    },
-  }),
-})
-  .then((response) => response.json())
-  .then((data) => {
-    console.log("START -> ", data);
-    participantId2 = data.uid;
-    userId2 = data.uid;
-    userRole2 = data.role;
-
-    clientAllowAudioInteraction2 = data.client_allow_audio_interactions;
-    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
-    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
-    selectedResponseType = data.preferences?.response_style;
-
-    fetch(
-      `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${basicAuthToken2}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("get-client-information : ", data);
-
-        if (!data.data.user_info[0].msg) {
-          clientuserInformationSTT = data.data.user_info[0];
-
-          allowPastingAtClientLevelStt =
-            data.data.user_info[0].ui_information.allow_paste_answer;
-
-          clientBasedBotHeaderText =
-            data.data.user_info[0].ui_information.header;
-          clientBasedBotFooterText =
-            data.data.user_info[0].ui_information.bottom_text;
-          clientBasedReadHereText =
-            data.data.user_info[0].ui_information.read_text;
-
-          const headerText = document.getElementById("header-text");
-          const footerText = document.getElementById("footer-text");
-          const instructionsPaneList =
-            document.getElementById("instructions-list");
-          console.log(headerText);
-          console.log(footerText);
-
-          if (clientBasedBotHeaderText) {
-            headerText.innerText = clientBasedBotHeaderText;
-          }
-
-          if (clientBasedBotFooterText) {
-            footerText.innerText = clientBasedBotFooterText;
-          }
-
-          if (clientBasedReadHereText) {
-            const list = clientBasedReadHereText
-              .trim()
-              .split("\n")
-              .map((item) => {
-                return `<li>${item.trim()}</li>`;
-              });
-
-            instructionsPaneList.innerHTML = list;
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error("Error fetching client Info");
-      });
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email2,
+      },
+    }),
   })
-  .catch((err) => {
-    console.log(err);
-    throw new Error("Error User Info");
-  });
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("START -> ", data);
+      participantId2 = data.uid;
+      userId2 = data.uid;
+      userRole2 = data.role;
+
+      clientAllowAudioInteraction2 = data.client_allow_audio_interactions;
+      userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
+      selectedResponseType = data.preferences?.response_style;
+
+      console.log("user_info : ", clientAllowAudioInteraction2, userAllowAudioInteraction2, prioritiseUserAllowInteraction2);
+
+      fetch(
+        `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken2}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+
+          if (!data.data.user_info[0].msg) {
+            clientuserInformationSTT = data.data.user_info[0];
+
+            allowPastingAtClientLevelStt =
+              data.data.user_info[0].ui_information.allow_paste_answer;
+
+            clientBasedBotHeaderText =
+              data.data.user_info[0].ui_information.header;
+            clientBasedBotFooterText =
+              data.data.user_info[0].ui_information.bottom_text;
+            clientBasedReadHereText =
+              data.data.user_info[0].ui_information.read_text;
+
+            const headerText = document.getElementById("header-text");
+            const footerText = document.getElementById("footer-text");
+            const instructionsPaneList =
+              document.getElementById("instructions-list");
+            console.log(headerText);
+            console.log(footerText);
+
+            if (clientBasedBotHeaderText) {
+              headerText.innerText = clientBasedBotHeaderText;
+            }
+
+            if (clientBasedBotFooterText) {
+              footerText.innerText = clientBasedBotFooterText;
+            }
+
+            if (clientBasedReadHereText) {
+              const list = clientBasedReadHereText
+                .trim()
+                .split("\n")
+                .map((item) => {
+                  return `<li>${item.trim()}</li>`;
+                });
+
+              instructionsPaneList.innerHTML = list;
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error("Error fetching client Info");
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      throw new Error("Error User Info");
+    });
+};
+
+initialiseUser();
+
 
 const createUserSTT = async (user_name, user_email) => {
   console.log("newusername", user_name);
@@ -12198,6 +12206,15 @@ const openChatContainer2 = () => {
     chatIcon2.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+
+    const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
+    if(previousPathsStt && previousPathsStt.includes("/profile")){
+      console.log("refreshing api")
+      initialiseUser()
+
+      localStorage.setItem("visitedPaths", JSON.stringify([]));
+    }
+
     chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
