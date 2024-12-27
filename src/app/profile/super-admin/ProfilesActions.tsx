@@ -217,7 +217,25 @@ const ProfileActions = () => {
       const coachProfileTypes = ["coach", "mentor", "coach-mentor"];
       const coacheeProfileTypes = ["coachee", "mentee"];
       if (coachProfileTypes.includes(profileType)) {
-        return `/intake?type=coach&edit=true&bot_id=${botId}&profile_id=${profileId}&profile_type=${profileType}&bot_type=avatar_bot&uid=${botUid}&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+        console.log('botlink: ', botId,botUid)
+        let formVersion = '1'
+        let botType = 'no-copilot';
+        if (botId?.includes("avatar-bot") || botId?.includes("avatar_bot")) {
+          formVersion = "3";
+          botType = 'avatar_bot'
+        } else if (botId?.includes("subject-spe")) {
+          formVersion = "2";
+          botType = 'subject_specific_bot'
+
+        }
+
+        if (botType === "avatar_bot" || botType === "subject_specific_bot") {
+          return `/intake/?type=coach&edit=true&bot_id=${botId}&profile_id=${profileId}&profile_type=${profileType}&bot_type=${botType}&v=${formVersion}&uid=${botUid}&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+        } else if(botType === "no-copilot"){
+          return `/intake/?type=coach&edit=true&profile_id=${profileId}&no-copilot=1&uid=${botUid}&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+        }
+        
+        return `/intake?type=coach&edit=true&v=${formVersion}&bot_id=${botId}&profile_id=${profileId}&profile_type=${profileType}&bot_type=avatar_bot&uid=${botUid}&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
       } else if (coacheeProfileTypes.includes(profileType)) {
         return `/intake?type=coachee&edit=true&bot_id=&profile_id=${profileId}&profile_type=${profileType}&bot_type=coachee&uid=&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
       } else if (profileType === "knowledge_bot") {
@@ -253,7 +271,7 @@ const ProfileActions = () => {
         headers: { Authorization: basicAuth },
       });
       const data = await response.json();
-      console.log(data);
+      console.log('admin -profiles',data);
       const parsedData = data
         // .filter(
         //   (profile: CoachesDataType) =>
@@ -294,8 +312,10 @@ const ProfileActions = () => {
                 profileType={profile.profile_type}
                 botId={
                   profile.profile_type === "knowledge_bot"
-                    ? profile.custom_user_bot_id!
-                    : profile.avatar_bot_id
+                    ? profile.custom_user_bot_id ?? null
+                    : profile.bot_type === "avatar_bot"
+                    ? profile.avatar_bot_id ?? null
+                    : profile.subject_specific_bot_id ?? null
                 }
                 botUid={profile.bot_uid!}
                 userEmail={profile.email}

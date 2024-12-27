@@ -3854,7 +3854,7 @@ function createMessageNode2(message,isMarkdown=false) {
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
-  messageBubble.style.color = "#374151";
+  messageBubble.style.color = "#000000";
 
   const messageText = document.createElement("p");
   if( isMarkdown){
@@ -5023,6 +5023,8 @@ const handleProceedClickStt = async (choice) => {
 
           }
           
+        } else{
+          appendMessage2(initialQuestionTextStt)
         }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
@@ -5186,7 +5188,7 @@ const handleProceedClickStt = async (choice) => {
    
      const chatInputBox = tShadowRoot.getElementById("text-input")
      chatInputBox.classList.remove("text-input-disabled")
-     chatElement.contentEditable = true
+     chatInputBox.contentEditable = true
 
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -5642,7 +5644,7 @@ async function setMcqVariablesStt() {
     
       const chatInputBox = tShadowRoot.getElementById("text-input")
       chatInputBox.classList.remove("text-input-disabled")
-      chatElement.contentEditable = true
+      chatInputBox.contentEditable = true
       return;
     }
 
@@ -5810,7 +5812,7 @@ async function submitEmailAndName2() {
 
   const chatInputBox = tShadowRoot.getElementById("text-input")
   chatInputBox.classList.remove("text-input-disabled")
-  chatElement.contentEditable = true
+  chatInputBox.contentEditable = true
 
   if (page_name !== "explore") {
     increaseActionPointStt(userId2, "interaction_attempted");
@@ -10207,7 +10209,7 @@ loadExternalModule().then(() => {
           
             const chatInputBox = tShadowRoot.getElementById("text-input")
             chatInputBox.classList.remove("text-input-disabled")
-            chatElement.contentEditable = true
+            chatInputBox.contentEditable = true
           }
           const userAcessAvailability2 = latestMessage; //body.messages[0].text;
           if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
@@ -10305,7 +10307,7 @@ loadExternalModule().then(() => {
 
               const chatInputBox = tShadowRoot.getElementById("text-input");
               chatInputBox.classList.remove("text-input-disabled");
-              chatElement.contentEditable = true;
+              chatInputBox.contentEditable = true;
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -10414,7 +10416,7 @@ loadExternalModule().then(() => {
               
                 const chatInputBox = tShadowRoot.getElementById("text-input")
                 chatInputBox.classList.remove("text-input-disabled")
-                chatElement.contentEditable = true
+                chatInputBox.contentEditable = true
                 return;
               }
               //************* check if user message is atleast 10 words */
@@ -10438,7 +10440,7 @@ loadExternalModule().then(() => {
                 
                   const chatInputBox = tShadowRoot.getElementById("text-input")
                   chatInputBox.classList.remove("text-input-disabled")
-                  chatElement.contentEditable = true
+                  chatInputBox.contentEditable = true
                   return;
                 }
                 signals.onResponse({
