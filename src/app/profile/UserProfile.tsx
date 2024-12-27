@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 import MeetingPrefrences from "./MeetingPreferences";
+import Script from "next/script";
 
 const UserProfile = ({ user, userRole, helpModeText }: any) => {
   const [testAttempedCount, setTestAttemptedCount] = useState();
@@ -238,6 +239,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
                 No
               </span>
               <Switch
+                id="bot-audio-interaction-switch"
                 disabled={interactionLoading || !isAllowToggle}
                 checked={userAllowAudioInteractions}
                 onCheckedChange={(val) => {

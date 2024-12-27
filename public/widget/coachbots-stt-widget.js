@@ -292,105 +292,113 @@ if (window.LogRocket) {
 // 2 - account creation
 console.log("user_name2", user_name2);
 console.log("user_email2", user_email2);
-fetch(`${baseURL2}/accounts/`, {
-  method: "POST",
-  headers: {
-    Authorization: `Basic ${basicAuthToken2}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    user_context: {
-      name: user_name2,
-      role: "member",
-      user_attributes: {
-        tag: "deepchat_profile",
-        attributes: {
-          name: user_name2,
-          username: user_name2,
-          email: user_email2,
+
+const initialiseUser = async () => {
+  fetch(`${baseURL2}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken2}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name2,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name2,
+            username: user_name2,
+            email: user_email2,
+          },
         },
       },
-    },
-    identity_context: {
-      identity_type: "deepchat_unique_id",
-      value: user_email2,
-    },
-  }),
-})
-  .then((response) => response.json())
-  .then((data) => {
-    console.log("START -> ", data);
-    participantId2 = data.uid;
-    userId2 = data.uid;
-    userRole2 = data.role;
-
-    clientAllowAudioInteraction2 = data.client_allow_audio_interactions;
-    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
-    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
-    selectedResponseType = data.preferences?.response_style;
-
-    fetch(
-      `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${basicAuthToken2}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("get-client-information : ", data);
-
-        if (!data.data.user_info[0].msg) {
-          clientuserInformationSTT = data.data.user_info[0];
-
-          allowPastingAtClientLevelStt =
-            data.data.user_info[0].ui_information.allow_paste_answer;
-
-          clientBasedBotHeaderText =
-            data.data.user_info[0].ui_information.header;
-          clientBasedBotFooterText =
-            data.data.user_info[0].ui_information.bottom_text;
-          clientBasedReadHereText =
-            data.data.user_info[0].ui_information.read_text;
-
-          const headerText = document.getElementById("header-text");
-          const footerText = document.getElementById("footer-text");
-          const instructionsPaneList =
-            document.getElementById("instructions-list");
-          console.log(headerText);
-          console.log(footerText);
-
-          if (clientBasedBotHeaderText) {
-            headerText.innerText = clientBasedBotHeaderText;
-          }
-
-          if (clientBasedBotFooterText) {
-            footerText.innerText = clientBasedBotFooterText;
-          }
-
-          if (clientBasedReadHereText) {
-            const list = clientBasedReadHereText
-              .trim()
-              .split("\n")
-              .map((item) => {
-                return `<li>${item.trim()}</li>`;
-              });
-
-            instructionsPaneList.innerHTML = list;
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error("Error fetching client Info");
-      });
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email2,
+      },
+    }),
   })
-  .catch((err) => {
-    console.log(err);
-    throw new Error("Error User Info");
-  });
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("START -> ", data);
+      participantId2 = data.uid;
+      userId2 = data.uid;
+      userRole2 = data.role;
+
+      clientAllowAudioInteraction2 = data.client_allow_audio_interactions;
+      userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
+      selectedResponseType = data.preferences?.response_style;
+
+      console.log("user_info : ", clientAllowAudioInteraction2, userAllowAudioInteraction2, prioritiseUserAllowInteraction2);
+
+      fetch(
+        `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken2}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+
+          if (!data.data.user_info[0].msg) {
+            clientuserInformationSTT = data.data.user_info[0];
+
+            allowPastingAtClientLevelStt =
+              data.data.user_info[0].ui_information.allow_paste_answer;
+
+            clientBasedBotHeaderText =
+              data.data.user_info[0].ui_information.header;
+            clientBasedBotFooterText =
+              data.data.user_info[0].ui_information.bottom_text;
+            clientBasedReadHereText =
+              data.data.user_info[0].ui_information.read_text;
+
+            const headerText = document.getElementById("header-text");
+            const footerText = document.getElementById("footer-text");
+            const instructionsPaneList =
+              document.getElementById("instructions-list");
+            console.log(headerText);
+            console.log(footerText);
+
+            if (clientBasedBotHeaderText) {
+              headerText.innerText = clientBasedBotHeaderText;
+            }
+
+            if (clientBasedBotFooterText) {
+              footerText.innerText = clientBasedBotFooterText;
+            }
+
+            if (clientBasedReadHereText) {
+              const list = clientBasedReadHereText
+                .trim()
+                .split("\n")
+                .map((item) => {
+                  return `<li>${item.trim()}</li>`;
+                });
+
+              instructionsPaneList.innerHTML = list;
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error("Error fetching client Info");
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      throw new Error("Error User Info");
+    });
+};
+
+initialiseUser();
+
 
 const createUserSTT = async (user_name, user_email) => {
   console.log("newusername", user_name);
@@ -3854,7 +3862,7 @@ function createMessageNode2(message,isMarkdown=false) {
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
-  messageBubble.style.color = "#374151";
+  messageBubble.style.color = "#000000";
 
   const messageText = document.createElement("p");
   if( isMarkdown){
@@ -4524,9 +4532,10 @@ const handleGameQuestion = async (
             : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
         )
         .join("")}
-      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
-         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; bacground-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
-      </div>
+      <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top:8px;">
+          <button style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fca5a5; background-color: #fecaca; color : #ef4444;" id="exit-button-${randomNumber}" class="deep-chat-button">Exit</button>
+          <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+        </div>
       ${
         extractedData.feedback
           ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #e5e7eb; border-radius: 8px; border: 1px solid #d1d5db;">
@@ -4539,6 +4548,15 @@ const handleGameQuestion = async (
         #multiple-select-${randomNumber}:hover {
           cursor: pointer;
           background-color: #f0f0f0;
+        }
+        #exit-button-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #fee2e2;
+        }
+        #exit-button-${randomNumber}:disabled {
+          background-color: #f3f4f6;
+          border: 1px solid lightgray;
+          color: #111827;
         }
       </style>
     </div>
@@ -4574,9 +4592,10 @@ const handleGameQuestion = async (
             : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
         )
         .join("")}
-      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
-         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
-      </div>
+        <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top:8px;">
+          <button style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fca5a5; background-color: #fecaca; color : #ef4444;" id="exit-button-${randomNumber}" class="deep-chat-button">Exit</button>
+          <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+        </div>
       ${
         extractedData.feedback
           ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #d1d5db; border-radius: 8px; border: 1px solid #4b5563;">
@@ -4592,6 +4611,15 @@ const handleGameQuestion = async (
           background-color: #f0f0f0;
           border: 1px solid darkgray;
         }
+        #exit-button-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #fee2e2;
+        }
+        #exit-button-${randomNumber}:disabled {
+          background-color: #f3f4f6;
+          border: 1px solid lightgray;
+          color: #111827;
+        }
       </style>
     </div>`);
   }
@@ -4604,6 +4632,10 @@ const handleGameQuestion = async (
     `multiple-select-${randomNumber}`
   );
   console.log("Button : ", multipleSelectSubmitButton);
+
+  const exitButton = tShadowRoot.getElementById(
+    `exit-button-${randomNumber}`
+  );
 
   const items = tShadowRoot.querySelectorAll(
     `input[name="option-${randomNumber}"]`
@@ -4645,11 +4677,34 @@ const handleGameQuestion = async (
       item.disabled = true;
     });
 
+    exitButton.disabled = true;
+    exitButton.style.backgroundColor = "#f3f4f6";
+    exitButton.style.border = "1px solid lightgray";
+    exitButton.style.color = "#111827";
+
     setTimeout(() => {
       chatInputBox.classList.add("text-input-disabled")
       chatInputBox.contentEditable = false
     }, 250);
   });
+
+  exitButton.addEventListener("click", function (event) {
+    console.log("Event : ", event);
+    sendUserMessage("STOP", tShadowRoot);
+
+    chatInputBox.classList.remove("text-input-disabled")
+    chatInputBox.contentEditable = true
+    chatInputBox.placeholder = ""
+
+    multipleSelectSubmitButton.disabled = true;
+    items.forEach((item) => {
+      item.disabled = true;
+    });
+    exitButton.disabled = true;
+    exitButton.style.backgroundColor = "#f3f4f6";
+    exitButton.style.border = "1px solid lightgray";
+    exitButton.style.color = "#111827";
+  })
 };
 
 const handleProceedClickStt = async (choice) => {
@@ -4976,6 +5031,8 @@ const handleProceedClickStt = async (choice) => {
 
           }
           
+        } else{
+          appendMessage2(initialQuestionTextStt)
         }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
@@ -5139,7 +5196,7 @@ const handleProceedClickStt = async (choice) => {
    
      const chatInputBox = tShadowRoot.getElementById("text-input")
      chatInputBox.classList.remove("text-input-disabled")
-     chatElement.contentEditable = true
+     chatInputBox.contentEditable = true
 
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -5595,7 +5652,7 @@ async function setMcqVariablesStt() {
     
       const chatInputBox = tShadowRoot.getElementById("text-input")
       chatInputBox.classList.remove("text-input-disabled")
-      chatElement.contentEditable = true
+      chatInputBox.contentEditable = true
       return;
     }
 
@@ -5763,7 +5820,7 @@ async function submitEmailAndName2() {
 
   const chatInputBox = tShadowRoot.getElementById("text-input")
   chatInputBox.classList.remove("text-input-disabled")
-  chatElement.contentEditable = true
+  chatInputBox.contentEditable = true
 
   if (page_name !== "explore") {
     increaseActionPointStt(userId2, "interaction_attempted");
@@ -7083,7 +7140,7 @@ loadExternalModule().then(() => {
     chatContainer2.style.top = "0";
     chatContainer2.style.height = "100vh";
     chatContainer2.style.bottom = "0";
-    chatElementRef2.style.height = "85vh";
+    chatElementRef2.style.height = "80vh";
     chatElementRef2.style.fontSize = "12px";
     chatElementRef2.style.width = "100vw";
     chatIconContainer2.style.position = "fixed";
@@ -8241,17 +8298,17 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
-    const audioDiv = document.createElement("div");
-    audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
-    audioDiv.style.width = "100%";
-    audioDiv.style.height = "3rem";
-    audioDiv.style.border = "1px solid lightgray";
-    audioDiv.style.borderRadius = "4px";
-    audioDiv.style.backgroundColor = "white";
-    audioDiv.style.overflow = "hidden";
-    audioDiv.style.marginBottom = "6px";
-    // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
-    audioDiv.style.display = "none";
+    let audioDiv;
+    // audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
+    // audioDiv.style.width = "100%";
+    // audioDiv.style.height = "3rem";
+    // audioDiv.style.border = "1px solid lightgray";
+    // audioDiv.style.borderRadius = "4px";
+    // audioDiv.style.backgroundColor = "white";
+    // audioDiv.style.overflow = "hidden";
+    // audioDiv.style.marginBottom = "6px";
+    // // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
+    // audioDiv.style.display = "none";
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
@@ -8274,20 +8331,20 @@ loadExternalModule().then(() => {
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
-          if (streamWithAudio) {
-            messageBubble.appendChild(audioDiv);
-            audioSourceOpen(
-              text,
-              audioDiv,
-              0,
-              randomIdForAudioElement,
-              signals
-            );
-          } else {
-            signals.onResponse({
-              html: ".",
-            });
-          }
+          // if (streamWithAudio) {
+          //   messageBubble.appendChild(audioDiv);
+          //   audioSourceOpen(
+          //     text,
+          //     audioDiv,
+          //     0,
+          //     randomIdForAudioElement,
+          //     signals
+          //   );
+          // } else {
+          //   signals.onResponse({
+          //     html: ".",
+          //   });
+          // }
 
           allMessages.forEach((indvMessage) => {
             if (
@@ -8311,12 +8368,14 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               " \n\n Please explain your question or comment in different words which I may be able to understand better.";
             if (streamWithAudio) {
-              audioSourceOpen(
-                "Please explain your question or comment in different words which I may be able to understand better.",
-                audioDiv,
-                1,
-                randomIdForAudioElement
-              );
+              // audioSourceOpen(
+              //   "Please explain your question or comment in different words which I may be able to understand better.",
+              //   audioDiv,
+              //   1,
+              //   randomIdForAudioElement
+              // );
+
+              text += " Please explain your question or comment in different words which I may be able to understand better.";
             }
           }
 
@@ -8324,24 +8383,115 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
-              audioSourceOpen(
-                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-                audioDiv,
-                1,
-                randomIdForAudioElement
-              );
+              // audioSourceOpen(
+              //   " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+              //   audioDiv,
+              //   1,
+              //   randomIdForAudioElement
+              // );
+
+              text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                audioDiv,
-                1,
-                randomIdForAudioElement
-              );
+              // audioSourceOpen(
+              //   "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+              //   audioDiv,
+              //   1,
+              //   randomIdForAudioElement
+              // );
+
+              text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
             }
+          }
+
+          if (streamWithAudio) {
+            const encodedText = encodeURIComponent(text);
+            
+            const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
+            const response = await fetch(url, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              },
+            });
+        
+            const blob = await response.blob();
+            console.log("respnse", blob);
+        
+            const objectUrl = URL.createObjectURL(blob);
+        
+            console.log(objectUrl, "url");
+        
+            audioDiv = document.createElement("div");
+            audioDiv.id = `audioDiv-${randomIdForAudioElement}`;
+            audioDiv.style.cssText =
+              "border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;";
+        
+            const audioPlayer = document.createElement("audio");
+            audioPlayer.id = `audio-player-${randomIdForAudioElement}`;
+            audioPlayer.autoplay = true;
+            audioPlayer.style.cssText =
+              window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : "min-width: 50vw !important;";
+        
+            const audioSource = document.createElement("source");
+            audioSource.src = objectUrl;
+        
+            const fallbackMessage = document.createTextNode(
+              "Your browser does not support the audio element."
+            );
+        
+            audioPlayer.appendChild(audioSource);
+            audioPlayer.appendChild(fallbackMessage);
+        
+            const audioCanvas = document.createElement("canvas");
+            audioCanvas.id = `canvas-audio-${randomIdForAudioElement}`;
+            audioCanvas.width = 800;
+            audioCanvas.height = 40;
+        
+            audioDiv.appendChild(audioPlayer);
+            audioDiv.appendChild(audioCanvas);
+        
+            messageBubble.appendChild(audioDiv);
+        
+            setTimeout(() => {
+              const audioElement = shadowRoot.getElementById(
+                `audio-player-${randomIdForAudioElement}`
+              );
+              const canvasElement = shadowRoot.getElementById(
+                `canvas-audio-${randomIdForAudioElement}`
+              );
+              const audioDiv = shadowRoot.getElementById(
+                `audioDiv-${randomIdForAudioElement}`
+              );
+             
+              console.log(audioElement, canvasElement);
+              audioCanvasUiForQuestions(audioElement, canvasElement);
+        
+              audioElement.addEventListener("ended", () => {
+                canvasElement.remove();
+                audioDiv.remove();
+                signals.onResponse({
+                  html: "",
+                });
+               setTimeout(() => {
+                allMessages.forEach((indvMessage) => {
+                  if (
+                    indvMessage.innerText === "." ||
+                    indvMessage.innerText === "..." ||
+                    indvMessage.innerText === " " ||
+                    indvMessage.innerText === ""
+                  ) {
+                    indvMessage.remove();
+                  }
+                });
+               }, 20);
+              });
+            }, 100);
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
@@ -10067,7 +10217,7 @@ loadExternalModule().then(() => {
           
             const chatInputBox = tShadowRoot.getElementById("text-input")
             chatInputBox.classList.remove("text-input-disabled")
-            chatElement.contentEditable = true
+            chatInputBox.contentEditable = true
           }
           const userAcessAvailability2 = latestMessage; //body.messages[0].text;
           if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
@@ -10165,7 +10315,7 @@ loadExternalModule().then(() => {
 
               const chatInputBox = tShadowRoot.getElementById("text-input");
               chatInputBox.classList.remove("text-input-disabled");
-              chatElement.contentEditable = true;
+              chatInputBox.contentEditable = true;
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -10274,7 +10424,7 @@ loadExternalModule().then(() => {
               
                 const chatInputBox = tShadowRoot.getElementById("text-input")
                 chatInputBox.classList.remove("text-input-disabled")
-                chatElement.contentEditable = true
+                chatInputBox.contentEditable = true
                 return;
               }
               //************* check if user message is atleast 10 words */
@@ -10298,7 +10448,7 @@ loadExternalModule().then(() => {
                 
                   const chatInputBox = tShadowRoot.getElementById("text-input")
                   chatInputBox.classList.remove("text-input-disabled")
-                  chatElement.contentEditable = true
+                  chatInputBox.contentEditable = true
                   return;
                 }
                 signals.onResponse({
@@ -12058,6 +12208,15 @@ const openChatContainer2 = () => {
     chatIcon2.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+
+    const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
+    if(previousPathsStt && previousPathsStt.includes("/profile")){
+      console.log("refreshing api")
+      initialiseUser()
+
+      localStorage.setItem("visitedPaths", JSON.stringify([]));
+    }
+
     chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";

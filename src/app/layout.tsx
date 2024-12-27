@@ -11,6 +11,7 @@ import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UserProvider } from "@/context/UserContext";
 import { ConfigProvider } from "antd";
+import { ReadPaths } from "@/lib/ReadPaths";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -158,6 +159,7 @@ export default async function RootLayout({
                           isDemoUser={isDemoUser}
                           isRestricted={isRestricted}
                         />
+                        <ReadPaths />
                       </Providers>
                     </AntdRegistry>
                   </ConfigProvider>

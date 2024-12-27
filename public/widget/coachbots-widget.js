@@ -151,92 +151,98 @@ console.log(user === undefined);
       email: user_email,
     });
   }
-  fetch(`${baseURL}/accounts/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuthToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user_context: {
-        name: user_name,
-        role: "member",
-        user_attributes: {
-          tag: "deepchat_profile",
-          attributes: {
-            name: user_name,
-            username: user_name,
-            email: user_email,
+
+  const initialiseUser2 = async () => {
+    fetch(`${baseURL}/accounts/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basicAuthToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_context: {
+          name: user_name,
+          role: "member",
+          user_attributes: {
+            tag: "deepchat_profile",
+            attributes: {
+              name: user_name,
+              username: user_name,
+              email: user_email,
+            },
           },
         },
-      },
-      identity_context: {
-        identity_type: "deepchat_unique_id",
-        value: user_email,
-      },
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
-      userAllowAudioInteraction = data.user_allow_audio_interactions;
-      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+        identity_context: {
+          identity_type: "deepchat_unique_id",
+          value: user_email,
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        clientAllowAudioInteraction = data.client_allow_audio_interactions;
+        userAllowAudioInteraction = data.user_allow_audio_interactions;
+        prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
 
-      participantId = data.uid;
-      userId = data.uid;
-      userRole = data.role;
+        participantId = data.uid;
+        userId = data.uid;
+        userRole = data.role;
 
+        fetch(
+          `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${basicAuthToken}`,
+            },
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("get-client-information : ", data);
+            if (!data.data.user_info[0].msg) {
+              ClientUserInformation = data.data.user_info[0];
+            }
+            allowPastingAtClientLevel =
+              data.data.user_info[0].ui_information.allow_paste_answer;
+            clientBasedBotHeaderText2 =
+              data.data.user_info[0].ui_information.header;
+            clientBasedBotFooterText2 =
+              data.data.user_info[0].ui_information.bottom_text;
+            clientBasedReadHereText2 =
+              data.data.user_info[0].ui_information.read_text;
 
-      fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${basicAuthToken}`,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("get-client-information : ", data);
-          if (!data.data.user_info[0].msg){
-            ClientUserInformation = data.data.user_info[0];
-          }
-          allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
-          clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
-          clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
-          clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
-      
-      
-          const headerText2 = document.getElementById("header-text2");
-          const footerText2 = document.getElementById("footer-text2");
-          const instructionsPaneList2 = document.getElementById('instructions-list2')
-          console.log(headerText2);
-          console.log(footerText2);
-      
-          if (clientBasedBotHeaderText2) {
-            headerText2.innerText = clientBasedBotHeaderText2;
-          }
-      
-          if (clientBasedBotFooterText2) {
-            footerText2.innerText = clientBasedBotFooterText2;
-          }
-      
-          if (clientBasedReadHereText2) {
-            const list = clientBasedReadHereText2
-              .trim()
-              .split("\n")
-              .map((item) => {
+            const headerText2 = document.getElementById("header-text2");
+            const footerText2 = document.getElementById("footer-text2");
+            const instructionsPaneList2 =
+              document.getElementById("instructions-list2");
+            console.log(headerText2);
+            console.log(footerText2);
+
+            if (clientBasedBotHeaderText2) {
+              headerText2.innerText = clientBasedBotHeaderText2;
+            }
+
+            if (clientBasedBotFooterText2) {
+              footerText2.innerText = clientBasedBotFooterText2;
+            }
+
+            if (clientBasedReadHereText2) {
+              const list = clientBasedReadHereText2
+                .trim()
+                .split("\n")
+                .map((item) => {
                   return `<li>${item.trim()}</li>`;
-              });
+                });
 
               instructionsPaneList2.innerHTML = list;
-          }
-        });
+            }
+          });
+      })
+      .catch((err) => console.log(err));
+  };
 
-    })
-    .catch((err) => console.log(err));
-
+initialiseUser2()
 
 const CreateUser = async(username,useremail)=>{
   console.log("newusername", username)
@@ -605,7 +611,7 @@ function createMessageNode(message) {
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
-  messageBubble.style.color = "#374151";
+  messageBubble.style.color = "#000000";
   const messageText = document.createElement("p");
   messageText.innerHTML = message;
 
@@ -3198,9 +3204,11 @@ loadExternalModule().then(() => {
     chatContainer.style.borderRadius = "0";
     chatContainer.style.width = "100vw";
     chatContainer.style.left = "0";
+    chatContainer.style.top = "0";
     chatContainer.style.height = "100vh";
     chatContainer.style.bottom = "0";
-    chatElementRef.style.height = "85vh";
+    chatElementRef.style.height = "80vh";
+    chatContainer.style.fontSize = "12px";
     chatElementRef.style.width = "100vw";
     chatContainer.style.position = "fixed";
     chatIcon.style.width = "3rem";
@@ -6444,6 +6452,15 @@ const openChatContainer = () => {
       alert("Pasting is not allowed.")
       return false
     }
+  }
+
+  const previousPaths = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
+  console.log("previousPaths-coachtalk", previousPaths)
+  if(previousPaths && previousPaths.includes("/profile")){
+    console.log("refreshing api")
+    initialiseUser2()
+
+    localStorage.setItem("visitedPaths", JSON.stringify([]));
   }
 
   let backdrop2 = document.getElementById("backdrop2")
