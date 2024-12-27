@@ -605,7 +605,7 @@ function createMessageNode(message) {
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
-  messageBubble.style.color = "#374151";
+  messageBubble.style.color = "#000000";
   const messageText = document.createElement("p");
   messageText.innerHTML = message;
 
