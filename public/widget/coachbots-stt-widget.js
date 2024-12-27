@@ -4524,9 +4524,10 @@ const handleGameQuestion = async (
             : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
         )
         .join("")}
-      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
-         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; bacground-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
-      </div>
+      <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top:8px;">
+          <button style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fca5a5; background-color: #fecaca; color : #ef4444;" id="exit-button-${randomNumber}" class="deep-chat-button">Exit</button>
+          <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+        </div>
       ${
         extractedData.feedback
           ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #e5e7eb; border-radius: 8px; border: 1px solid #d1d5db;">
@@ -4539,6 +4540,15 @@ const handleGameQuestion = async (
         #multiple-select-${randomNumber}:hover {
           cursor: pointer;
           background-color: #f0f0f0;
+        }
+        #exit-button-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #fee2e2;
+        }
+        #exit-button-${randomNumber}:disabled {
+          background-color: #f3f4f6;
+          border: 1px solid lightgray;
+          color: #111827;
         }
       </style>
     </div>
@@ -4574,9 +4584,10 @@ const handleGameQuestion = async (
             : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
         )
         .join("")}
-      <div style="width: 100%; display: flex; justify-content: flex-end; margin-top:8px;">
-         <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
-      </div>
+        <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top:8px;">
+          <button style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fca5a5; background-color: #fecaca; color : #ef4444;" id="exit-button-${randomNumber}" class="deep-chat-button">Exit</button>
+          <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
+        </div>
       ${
         extractedData.feedback
           ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #d1d5db; border-radius: 8px; border: 1px solid #4b5563;">
@@ -4592,6 +4603,15 @@ const handleGameQuestion = async (
           background-color: #f0f0f0;
           border: 1px solid darkgray;
         }
+        #exit-button-${randomNumber}:hover {
+          cursor: pointer;
+          background-color: #fee2e2;
+        }
+        #exit-button-${randomNumber}:disabled {
+          background-color: #f3f4f6;
+          border: 1px solid lightgray;
+          color: #111827;
+        }
       </style>
     </div>`);
   }
@@ -4604,6 +4624,10 @@ const handleGameQuestion = async (
     `multiple-select-${randomNumber}`
   );
   console.log("Button : ", multipleSelectSubmitButton);
+
+  const exitButton = tShadowRoot.getElementById(
+    `exit-button-${randomNumber}`
+  );
 
   const items = tShadowRoot.querySelectorAll(
     `input[name="option-${randomNumber}"]`
@@ -4645,11 +4669,34 @@ const handleGameQuestion = async (
       item.disabled = true;
     });
 
+    exitButton.disabled = true;
+    exitButton.style.backgroundColor = "#f3f4f6";
+    exitButton.style.border = "1px solid lightgray";
+    exitButton.style.color = "#111827";
+
     setTimeout(() => {
       chatInputBox.classList.add("text-input-disabled")
       chatInputBox.contentEditable = false
     }, 250);
   });
+
+  exitButton.addEventListener("click", function (event) {
+    console.log("Event : ", event);
+    sendUserMessage("STOP", tShadowRoot);
+
+    chatInputBox.classList.remove("text-input-disabled")
+    chatInputBox.contentEditable = true
+    chatInputBox.placeholder = ""
+
+    multipleSelectSubmitButton.disabled = true;
+    items.forEach((item) => {
+      item.disabled = true;
+    });
+    exitButton.disabled = true;
+    exitButton.style.backgroundColor = "#f3f4f6";
+    exitButton.style.border = "1px solid lightgray";
+    exitButton.style.color = "#111827";
+  })
 };
 
 const handleProceedClickStt = async (choice) => {
