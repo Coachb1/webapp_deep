@@ -4483,9 +4483,73 @@ const handleGameQuestion = async (
   //   feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
   // };
 
-
   questionText = JSON.parse(questionText)
+  console.log(questionText)
   
+  const heading = questionText?.context
+  ? Object.entries(questionText?.context).map(([key, value]) => `${value}`)
+  .join('\n')
+  : "";
+
+
+  const details = questionText?.details
+  ? Object.entries(questionText.details)
+      .map(([key, value]) => {
+        // If the value is an object, recursively convert its properties to a readable string
+        if (typeof value === 'object') {
+          value = Object.entries(value)
+            .map(([subKey, subValue]) => `<b>${subKey.charAt(0).toUpperCase() + subKey.slice(1)}:</b> ${subValue} `)
+            .join(); // Join sub-object properties with line breaks
+        }
+        return `<p><b>${key.charAt(0).toUpperCase() + key.slice(1)}:</b> ${value}</p>`;
+      })
+      .join("\n")
+  : "";
+
+
+  const contentString = questionText?.content
+  ? Object.entries(questionText.content)
+      .map(([key, value]) => {
+        let result = "";
+        console.log(key, value);
+
+        if (key === "instruction") {
+          const instructionHTML = value
+            ? `<b>${value}:</b><br>`
+            : isSingleSelect
+            ? "<b>Please choose option A, B, C, or D:</b><br>"
+            : "<b>Select one or more options from A, B, C, or D:</b><br>";
+          result += instructionHTML;
+        } else if (key === "options") {
+          const optionsHTML = Object.entries(value || {})
+            .map(([key, value]) =>
+              isSingleSelect
+                ? `<label><input type="radio" name="option-${randomNumber}" value="${key}"> <b>${key}</b> - ${value}</label><br>`
+                : `<label><input type="checkbox" name="option-${randomNumber}" value="${key}"> <b>${key}</b> - ${value}</label><br>`
+            )
+            .join(" ");
+          console.log("optionsHTML", optionsHTML);
+          result += optionsHTML;
+        } else {
+          result += `<b>${key.charAt(0).toUpperCase() + key.slice(1)}</b>: ${value}<br>`;
+        }
+        console.log('result: ',result)
+        return result;
+      })
+      .join("") // Join the mapped array into a single string
+  : "";
+
+
+
+  console.log(
+    contentString,
+    questionText?.content,
+    heading,
+    details,
+    questionText?.details
+  )
+
+
   const extractedData = {
     heading: questionText?.level || null,
     scenario: questionText?.scenario || null,
@@ -4495,7 +4559,7 @@ const handleGameQuestion = async (
       ? Object.entries(questionText.options).map(([option, description]) => ({ option, description }))
       : null,
     feedback: questionText?.feedback ?? null,
-    instruction: questionText?.instruction ?? null
+    instruction: questionText?.instruction ?? null 
   };
   
   
@@ -4505,49 +4569,21 @@ const handleGameQuestion = async (
   if (signals) {
     signals.onResponse({
       html: `
-    <h3>${extractedData.heading}</h3>
-    ${
-      extractedData.scenario &&
-      `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
-    }
-    ${
-      extractedData.objective ? `<p><b>Objective</b> : ${extractedData.objective}</p>`: ''
-    }
-    ${
-      extractedData.decisionMatch ? `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`: ''
-    }
-   
+    <h3>${heading}</h3>
+    ${details}
+
     <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
-      ${
-        extractedData.instruction 
-          ? `<b>${extractedData.instruction}:</b><br>` 
-          : isSingleSelect
-            ? "<b>Please choose option A, B, C, or D:</b><br>" 
-            : "<b>Select one or more options from A, B, C, or D:</b><br>"
-      }
-      ${extractedData.options
-        .map((option) =>
-          isSingleSelect == true
-            ? `<label><input type="radio" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
-            : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
-        )
-        .join("")}
+      ${contentString}
       <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top:8px;">
           <button style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fca5a5; background-color: #fecaca; color : #ef4444;" id="exit-button-${randomNumber}" class="deep-chat-button">Exit</button>
           <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
-        </div>
-      ${
-        extractedData.feedback
-          ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #e5e7eb; border-radius: 8px; border: 1px solid #d1d5db;">
-          <b>Feedback:</b>
-          <p style="font-size:14px;">${extractedData.feedback}</p>
-        </div>`
-          : ""
-      }
+      </div>
+
       <style>
         #multiple-select-${randomNumber}:hover {
           cursor: pointer;
           background-color: #f0f0f0;
+          border: 1px solid darkgray;
         }
         #exit-button-${randomNumber}:hover {
           cursor: pointer;
@@ -4564,46 +4600,15 @@ const handleGameQuestion = async (
     });
   } else {
     appendMessage2(`
-    <h3>${extractedData.heading}</h3>
-    ${
-      extractedData.scenario &&
-      `<p><b>Scenario</b> :  ${extractedData.scenario}</p>`
-    }
-    
-    ${
-      extractedData.objective ? `<p><b>Objective</b> : ${extractedData.objective}</p>`: ''
-    }
-    ${
-      extractedData.decisionMatch ? `<p><b>Decision</b> : ${extractedData.decisionMatch}</p>`: ""
-    }
+    <h3>${heading}</h3>
+    <p>${details}</p>
 
     <div id="answer-selection-form-${randomNumber}" style="min-width: 200px;">
-    ${
-      extractedData.instruction 
-        ? `<b>${extractedData.instruction}:</b><br>` 
-        : isSingleSelect
-          ? "<b>Please choose option A, B, C, or D:</b><br>" 
-          : "<b>Select one or more options from A, B, C, or D:</b><br>"
-    }
-      ${extractedData.options
-        .map((option) =>
-          isSingleSelect == true
-            ? `<label><input type="radio" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
-            : `<label><input type="checkbox" name="option-${randomNumber}" value="${option.option}"> <b>${option.option}</b> -  ${option.description}</label><br>`
-        )
-        .join("")}
+        ${contentString}
         <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top:8px;">
           <button style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fca5a5; background-color: #fecaca; color : #ef4444;" id="exit-button-${randomNumber}" class="deep-chat-button">Exit</button>
           <button style="padding: 6px; border-radius: 8px; border: 1px solid lightgray; background-color:white;" id="multiple-select-${randomNumber}" class="deep-chat-button">Submit</button>
         </div>
-      ${
-        extractedData.feedback
-          ? `<div style="margin-top: 8px; padding: 8px; border-radius: 8px; background-color: #d1d5db; border-radius: 8px; border: 1px solid #4b5563;">
-          <b>Feedback:</b>
-          <p style="font-size:14px;">${extractedData.feedback}</p>
-        </div>`
-          : ""
-      }
       
       <style>
         #multiple-select-${randomNumber}:hover {
@@ -4947,7 +4952,7 @@ const handleProceedClickStt = async (choice) => {
             responderName = `<b>${strLIst[0]}:</b><br>`;
           }
         }
-        if (isImmersiveStt) {
+        if (isImmersiveStt && !['game'].includes(senarioCase2)) {
           const queText = initialQuestionTextStt;
 
           console.log("dyna", initialQuestionTextStt);
@@ -10757,7 +10762,7 @@ loadExternalModule().then(() => {
                     questionLength2 = 1;
                     questionIndex2 = 0;
                       // getting question for the game scenario:
-                      questionText2 = `${data.next_question_text}}`
+                      questionText2 = `${data.next_question_text}`
 
                     
                   }
@@ -11039,7 +11044,7 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
-                    initialQuestionTextStt = questionText2.replace("}", "");
+                    initialQuestionTextStt = questionText2;
                     initialIndexStt = questionIndex2 + 1;
                     isProceedStt = "false";
                     questionText2 = `
