@@ -293,7 +293,7 @@ if (window.LogRocket) {
 console.log("user_name2", user_name2);
 console.log("user_email2", user_email2);
 
-const initialiseUser = async () => {
+const initialiseUserSTT = async () => {
   fetch(`${baseURL2}/accounts/`, {
     method: "POST",
     headers: {
@@ -397,7 +397,7 @@ const initialiseUser = async () => {
     });
 };
 
-initialiseUser();
+initialiseUserSTT();
 
 
 const createUserSTT = async (user_name, user_email) => {
@@ -12214,12 +12214,17 @@ const openChatContainer2 = () => {
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
 
-    const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
-    if(previousPathsStt && previousPathsStt.includes("/profile")){
-      console.log("refreshing api")
-      initialiseUser()
+    // const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
+    // if(previousPathsStt && previousPathsStt.includes("/profile")){
+    //   console.log("refreshing api")
+    //   initialiseUser()
 
-      localStorage.setItem("visitedPaths", JSON.stringify([]));
+    //   localStorage.setItem("visitedPaths", JSON.stringify([]));
+    // }
+    if (localStorage.getItem('coachscribe_user_refresh')){
+      console.log("refreshing api")
+      initialiseUserSTT()
+      localStorage.removeItem("coachscribe_user_refresh");
     }
 
     chatIconContainer2.style.backgroundColor = "white";
