@@ -1,8 +1,13 @@
 export default {
   e2e: {
     setupNodeEvents(on: any, config: any) {
-      // implement node event listeners here
+      on("task", {
+        logToCloud(message: any) {
+          console.log(message);
+          return null;
+        },
+      });
     },
   },
-  projectId: "boc1nm",
+  projectId: "2shdx5",
 };

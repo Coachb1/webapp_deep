@@ -143,6 +143,8 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
           setUserAllowAudioInteractions(
             data.updated.user_allow_audio_interactions
           );
+          localStorage.setItem("coachtalk_user_refresh", "true");
+          localStorage.setItem("coachscribe_user_refresh", "true");
           toast.success("Saved your changes.");
           getAllUserData();
         } else {

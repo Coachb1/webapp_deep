@@ -152,7 +152,7 @@ console.log(user === undefined);
     });
   }
 
-  const initialiseUser2 = async () => {
+  const initialiseUser = async () => {
     fetch(`${baseURL}/accounts/`, {
       method: "POST",
       headers: {
@@ -242,7 +242,7 @@ console.log(user === undefined);
       .catch((err) => console.log(err));
   };
 
-initialiseUser2()
+initialiseUser()
 
 const CreateUser = async(username,useremail)=>{
   console.log("newusername", username)
@@ -6454,13 +6454,19 @@ const openChatContainer = () => {
     }
   }
 
-  const previousPaths = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
-  console.log("previousPaths-coachtalk", previousPaths)
-  if(previousPaths && previousPaths.includes("/profile")){
-    console.log("refreshing api")
-    initialiseUser2()
+  // const previousPaths = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
+  // console.log("previousPaths-coachtalk", previousPaths)
+  // if(previousPaths && previousPaths.includes("/profile")){
+  //   console.log("refreshing api")
+  //   initialiseUser2()
 
-    localStorage.setItem("visitedPaths", JSON.stringify([]));
+  //   localStorage.setItem("visitedPaths", JSON.stringify([]));
+  // }
+
+  if (localStorage.getItem('coachtalk_user_refresh')){
+    console.log("refreshing api")
+    initialiseUser()
+    localStorage.removeItem("coachtalk_user_refresh");
   }
 
   let backdrop2 = document.getElementById("backdrop2")
