@@ -1,47 +1,15 @@
-import { baseURL, shortenUrl } from "../fixtures/utils";
+import { baseURL, shortenUrl, WEB_URL } from "../fixtures/utils";
 
-const staticTestCodes = [
-  "Q877O08",
-  "Q9SSEH3",
-  "QV4UZ2Y",
-  "QYEJEPC",
-  "Q9PYJY2",
-  "QXHKY39",
-  "Q2L3L5J",
-  "QD5T9IG",
-  "QJZC3Q8",
-  "QN0AGCU",
-];
+const staticTestCodes = ["Q877O08", "Q9SSEH3", "Q9PYJY2"];
 
 describe("Init", () => {
   beforeEach(() => {
-    cy.session("loggedInUser", () => {
-      cy.visit("http://localhost:3000/");
-      cy.contains("Login").click();
-
-      cy.origin("https://coachbotsdev.kinde.com", () => {
-        // cy.get('[data-testid="login-account-link"]').click();
-        cy.title()
-          .should("eq", "Sign in | Coachbots Dev")
-          .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type(
-              "xivij12069@hutov.com"
-            );
-            cy.get('[data-testid="auth-submit-button"]').click();
-            cy.get("#verify_password_p_password").type("demo#1234");
-            cy.contains("Continue").click();
-          });
-      });
-
-      cy.title()
-        .should("eq", "Network - Coachbots")
-        .visit("http://localhost:3000/content-library");
-    });
+    cy.loginAndNavigate();
   });
 
   staticTestCodes.forEach((testCode, i) => {
     it(`${i} Static - ${testCode}`, () => {
-      cy.visit("http://localhost:3000/content-library?dev-bot");
+      cy.visit(`${WEB_URL}/content-library?dev-bot`);
 
       //open the bot
       cy.get(".chat-icon2", { timeout: 30000 }).click();
@@ -117,6 +85,8 @@ describe("Init", () => {
 
             shortenUrl(reportUrl).then((shortenedUrl) => {
               console.log("Shortened Report URL:", shortenedUrl);
+
+              cy.task("logToCloud", `${testCode} : ${shortenedUrl}`);
 
               cy.readFile("cypress/results/staticReports.txt").then(
                 (existingFileContents) => {

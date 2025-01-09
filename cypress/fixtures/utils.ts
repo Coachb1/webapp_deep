@@ -1,8 +1,18 @@
 export const baseURL = "https://coach-api-gke-dev.coachbots.com/api/v1";
 export const localhost = "http://localhost:3000";
 export const playground = "https://playground.coachbots.com";
-export const visitingBaseUrl = localhost;
+export const platform = "https://platform.coachbots.com";
 export const userId = "817f6f9c-8c69-463a-87ea-64a8ffc264cd";
+
+export const login_creds = {
+  email: "mevibok234@vasomly.com",
+  password: "demo#1234",
+};
+
+export const WEB_URL = localhost;
+export const AUTH = WEB_URL.includes("localhost")
+  ? "https://coachbotsdev.kinde.com/"
+  : "https://coachbotsdev.kinde.com/";
 
 export const shortenUrl = (longUrl: string) => {
   const getSidConfig = {

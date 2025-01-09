@@ -1,37 +1,37 @@
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+export {};
+
+Cypress.Commands.add("loginAndNavigate", () => {
+  cy.intercept({ resourceType: /xhr/ }, { log: false });
+
+  cy.session("loggedInUser", () => {
+    cy.visit("http://localhost:3000");
+    cy.contains("Login").click();
+
+    cy.origin("https://coachbotsdev.kinde.com", () => {
+      // cy.get('[data-testid="login-account-link"]').click();
+      cy.title()
+        .should("eq", "Sign in | Coachbots Dev")
+        .then(() => {
+          cy.get('[data-testid="auth-email-field"]').type(
+            "mevibok234@vasomly.com"
+          );
+          cy.get('[data-testid="auth-submit-button"]').click();
+          cy.get("#verify_password_p_password").type("demo#1234");
+          cy.contains("Continue").click();
+        });
+    });
+
+    cy.title()
+      .should("eq", "Network - Coachbots")
+      .visit(`http://localhost:3000/content-library`);
+  });
+});
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      loginAndNavigate(): Chainable<void>;
+    }
+  }
+}
