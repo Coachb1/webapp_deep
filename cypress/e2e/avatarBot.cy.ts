@@ -1,4 +1,4 @@
-import { baseURL } from "../fixtures/utils";
+import { baseURL, WEB_URL } from "../fixtures/utils";
 import Papa from "papaparse";
 
 const botId =
@@ -11,32 +11,11 @@ describe("Init", () => {
   let botMessages: string[] = [];
   let responseTexts: string[] = [];
   beforeEach(() => {
-    cy.viewport(1280, 1000);
-    cy.session("loggedInUser", () => {
-      cy.visit("http://localhost:3000/");
-      cy.contains("Login").click();
-
-      cy.origin("https://coachbotsdev.kinde.com", () => {
-        cy.title()
-          .should("eq", "Sign in | Coachbotsdev")
-          .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type(
-              "xivij12069@hutov.com"
-            );
-            cy.get('[data-testid="auth-submit-button"]').click();
-            cy.get("#input_field_p_password_password").type("demo#1234");
-            cy.contains("Continue").click();
-          });
-      });
-
-      cy.title()
-        .should("eq", "Network - Coachbots")
-        .visit("http://localhost:3000/content-library");
-    });
+    cy.loginAndNavigate();
   });
 
   it("Avatar bot", () => {
-    cy.visit(`http://localhost:3000/coach/${botId}`);
+    cy.visit(`${WEB_URL}/coach/${botId}`);
 
     cy.intercept(
       "GET",
@@ -178,6 +157,8 @@ describe("Init", () => {
       botMessages.length,
       responseTexts.length
     );
+
+    cy.task("logToCloud", `${botMessages} : ${responseTexts}`);
 
     generateCSV();
   });

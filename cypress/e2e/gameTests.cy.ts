@@ -1,3 +1,5 @@
+import { AUTH, login_creds, WEB_URL } from "../fixtures/utils";
+
 const gameTestCodes = [
   "Q742R5A",
   "QZTKIRM",
@@ -10,33 +12,12 @@ const gameTestCodes = [
 
 describe("Game Tests", () => {
   beforeEach(() => {
-    cy.session("loggedInUser", () => {
-      cy.visit("http://localhost:3000/");
-      cy.contains("Login").click();
-
-      cy.origin("https://coachbotsdev.kinde.com", () => {
-        // cy.get('[data-testid="login-account-link"]').click();
-        cy.title()
-          .should("eq", "Sign in | Coachbots Dev")
-          .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type(
-              "xivij12069@hutov.com"
-            );
-            cy.get('[data-testid="auth-submit-button"]').click();
-            cy.get("#verify_password_p_password").type("demo#1234");
-            cy.contains("Continue").click();
-          });
-      });
-
-      cy.title()
-        .should("eq", "Network - Coachbots")
-        .visit("http://localhost:3000/content-library");
-    });
+    cy.loginAndNavigate();
   });
 
   gameTestCodes.forEach((testCode, i) => {
     it(`${i} Game - ${testCode}`, () => {
-      cy.visit("http://localhost:3000/content-library?dev-bot");
+      cy.visit(`${WEB_URL}/content-library?dev-bot`);
 
       //open the bot
       cy.get(".chat-icon2", { timeout: 30000 }).click();
