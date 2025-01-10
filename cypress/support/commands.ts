@@ -13,10 +13,10 @@ Cypress.Commands.add("loginAndNavigate", () => {
       cy.title()
         .should("eq", "Sign in | Coachbots Dev")
         .then(() => {
-          cy.get('[data-testid="auth-email-field"]').type(
+          cy.get("#sign_up_sign_in_credentials_p_email").type(
             "mevibok234@vasomly.com"
           );
-          cy.get('[data-testid="auth-submit-button"]').click();
+          cy.get("button").contains("Continue").click();
           cy.get("#verify_password_p_password").type("demo#1234");
           cy.contains("Continue").click();
         });
