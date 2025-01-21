@@ -5069,51 +5069,99 @@ const handleProceedClickStt = async (choice) => {
 
         // Displaying the separated text
         if (isImmersiveStt) {
-          const audioPromises = separatedText.map(async (entry) => {
+          const audioPromises = separatedText.map(async (entry, index) => {
             const responderName = `<b>${entry[0]}:</b><br>`;
             console.log(entry);
             let queText = entry[1];
-            const queDiv = `<p>${queText}</p><br>`;
+            const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`;
-
+        
             const response = await fetch(url, {
               method: "GET",
               headers: {
                 Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
               },
             });
-
+        
             const blob = await response.blob();
-            console.log("respnse", blob);
-
+            console.log("response", blob);
+        
             const objectUrl = URL.createObjectURL(blob);
-
+            const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+        
+            const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             console.log(objectUrl, "url");
-            let audioCont =
-              queDiv +
-              `<div ><audio style="${
-                window.innerWidth < 600
-                  ? "width: 200px; max-width: 200px !important;"
-                  : " min-width: 50vw !important;"
-              }" controls>
-              <source src=${objectUrl} type="audio/mpeg" />
-              Your browser does not support the audio element.
-              </audio></div>`;
+        
+            let audioCont = queDiv + `
+              <div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;">
+                <audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : "min-width: 50vw !important;"}">
+                  <source src=${objectUrl} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+                <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
+              </div>
+            `;
+        
             if (responderName) {
               audioCont = responderName + audioCont;
             }
-
-            return audioCont;
+        
+            return {
+              audioCont,
+              randomIdForAudioElement
+            };
           });
-
+        
           console.log(audioPromises, "audioPromises");
-
+        
           const audioContents = await Promise.all(audioPromises);
-          console.log('Ahere1')
-          audioContents.forEach((content) => {
-            appendMessage2(content);
+          console.log('Ahere1');
+
+
+          audioContents.forEach((audioCont) => {
+            console.log('audiocont ahere1',audioCont);
+            appendMessage2(audioCont.audioCont);
           });
-        } else {
+        
+          // Function to play audios one by one
+          async function playAudioSequentially(index = 0) {
+            if (index >= audioContents.length) return;
+        
+            const { audioCont, randomIdForAudioElement } = audioContents[index];
+        
+            const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+            const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`);
+            const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`);
+            const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`);
+            const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`);
+        
+            audioCanvasUiForQuestions(audioElement, canvasElement);
+        
+            // Ensure the audio starts playing immediately
+            audioElement.play().then(() => {
+              console.log('Audio playing:', audioElement);
+            }).catch(error => {
+              console.error('Error playing audio:', error);
+            });
+        
+            // Wait for the audio to finish before moving to the next
+            await new Promise(resolve => {
+              audioElement.addEventListener("ended", () => {
+                canvasElement.remove();
+                audioDiv.remove();
+                breakElement.remove();
+                resolve();
+              });
+            });
+        
+            // After the current audio ends, play the next one
+            playAudioSequentially(index + 1);
+          }
+        
+          // Start playing the first audio
+          playAudioSequentially(0);
+        }        
+         else {
           console.log('Ahere2')
 
           separatedText.forEach((entry) => {
