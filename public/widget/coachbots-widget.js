@@ -1254,17 +1254,41 @@ if (emailAdress.match(regex))
   return false; 
 }
 
+const isBusinessEmail = (email) => {
+  const genericDomains = [
+    'gmail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'outlook.com',
+    'icloud.com',
+    'aol.com',
+  ];
+  const domain = email.split('@')[1];
+  return !genericDomains.includes(domain);
+};
+
 let queryParams;
 
-async function proceedFormFlow(msg) {
+async function proceedFormFlow(msg, isWorkingEmail=false) {
     if (formFields.length === 0) {
       return [true, "None"];
     }
   
     isEmailForm = true;
     const fieldName = formFields[0];
-    if (fieldName === 'email' && !isEmail(msg)) {
-      return [false, `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`];
+    if (fieldName === "email") {
+      if (!isEmail(msg)){
+        return [
+          false,
+          `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`,
+        ];
+      } else if(isWorkingEmail && !isBusinessEmail(msg)){
+        return [
+          false,
+          `<p style='font-size: 14px;color: #991b1b;'>Please use your organization email only!</b></p>`,
+        ];
+      }
+  
     }
     
     formFields = formFields.slice(1);
@@ -1274,6 +1298,39 @@ async function proceedFormFlow(msg) {
   
   
 }
+
+const increaseSessionForAccesscode = async (userId, accessCode) => {
+  const requestData = {
+    access_code: accessCode,
+    user_id: userId
+  };
+
+  try {
+    const response = await fetch(`${baseURL}/accounts/increase_test_attempts_in_accesscode/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data)
+      return true
+    } else {
+      const data = await response.json();
+      console.log(data)
+      return false
+    }
+  } catch (error) {
+    console.error('Error during API call:', error);
+  }
+
+  return false;
+};
+
 //*********** hit mail sending api */
 
 function sendEmail(session_id, reportUrl) {
@@ -3343,9 +3400,13 @@ loadExternalModule().then(() => {
   if (Object.keys(snnipetConfig).length > 0){
 
     if (snnipetConfig['psychometric'] === 'true'){
+      let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`
+      if (snnipetConfig?.["welcomeMessage"]) {
+        welcomeMessage = `<p>${snnipetConfig["welcomeMessage"]}</p>`;
+      }
       chatElementRef.initialMessages = [
         {
-        html: `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b> and b) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`,
+        html: welcomeMessage,
         role: "ai",
         },
         {
@@ -3355,10 +3416,14 @@ loadExternalModule().then(() => {
       ];
 
     } else{
+      let welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+      if (snnipetConfig?.["welcomeMessage"]) {
+        welcomeMessage = `<p>${snnipetConfig["welcomeMessage"]}</p>`;
+      }
 
       chatElementRef.initialMessages = [
         {
-          html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`,
+          html: welcomeMessage,
           role: "ai",
         },
         {
@@ -3665,6 +3730,43 @@ loadExternalModule().then(() => {
     }
   };
   
+  const validateSnippetAccessCode = async (accessCode, userId, clientId) => {
+    const requestData = {
+      access_code: accessCode,
+      user_id: userId,
+      client_name: clientId
+    };
+  
+    try {
+      const response = await fetch(`${baseURL}/accounts/validate-snippet-access-code/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`
+        },
+        body: JSON.stringify(requestData),
+      });
+      console.log(response.ok)
+      if (response.ok) {
+        const data = await response.json();
+        console.log('success',data)
+        return {isvalidAccessCode:true, error_msg: null}
+      } else {
+        const data = await response.json();
+        console.log('error',data)
+        if (data.error.includes('expired')){
+          return {isvalidAccessCode:false, error_msg:'Your access code has expired. Please contact your admin or our helpdesk.'}
+        }
+        return {isvalidAccessCode:false, error_msg: null}
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+    }
+    console.log('failed')
+    return {isvalidAccessCode:false, error_msg: null}
+  };
+
+ 
 
   const getClientInformation = async (use_case, email=null, client_name=null) => {
     let url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
@@ -4640,27 +4742,31 @@ loadExternalModule().then(() => {
             document.getElementById("chat-element").shadowRoot;
 
           if (askAccessBotCode){
-            // fetching client information to get access code "AccessCode"
-            console.log(`client:`,ClientUserInformation) 
-              ClientUserInformation = await getClientInformation('only_client_data',
-                                                                  null,
-                                                                  widgetClientId)
-              // await new Promise(resolve => setTimeout(resolve, 15000)); 
-              
-            console.log(`client-new:`,ClientUserInformation,latestMessage) 
+            let result = await validateSnippetAccessCode(
+              latestMessage,
+              userId,
+              widgetClientId
+            );
+          
+            result = result || { isvalidAccessCode: null, error_msg: null };
+          
+            const { isvalidAccessCode, error_msg } = result;
+            console.log(
+              'isvalidaccesscode', isvalidAccessCode,
+              'error_msg', error_msg
+            );
 
-            
+            if (!isvalidAccessCode && error_msg){
+              signals.onResponse({
+                html: `<b style='font-size: 14px;color: #991b1b;'>${error_msg}</b>`,
 
-
-
-            // if (!ClientUserInformation?.widget_access_code){
-            //   signals.onResponse({
-            //     html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
-            //   })
-            //   return;
-            // }
-
-            if (latestMessage === ClientUserInformation?.widget_access_code){
+              })
+              return;
+            }
+            console.log('isvalidAccessCode', isvalidAccessCode)
+            if (
+              isvalidAccessCode
+            ) {
               console.log("Access Code Matched")
               updateClientInfo(widgetClientId,user_email, user_email)
               askAccessBotCode = false
@@ -4671,6 +4777,10 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: `Great! Please enter the assessment code to get started. A scenario will be presented & few questions will follow based on the same.`
                 })
+                increaseSessionForAccesscode(
+                  userId,
+                  latestMessage
+                );
 
               } 
               else{
@@ -4698,7 +4808,8 @@ loadExternalModule().then(() => {
           }
 
           if (isEmailForm) {
-            const [proceed,errorMsg] = await proceedFormFlow(latestMessage);
+            const [proceed,errorMsg] = await proceedFormFlow(latestMessage, snnipetConfig?.['isBussinessEmail'] === 'true' || false);
+
             console.log(proceed, errorMsg)
             if (!proceed){
               console.log("email not valid 1")
