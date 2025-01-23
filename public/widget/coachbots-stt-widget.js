@@ -5709,7 +5709,7 @@ async function setMcqVariablesStt() {
       resetAllVariablesStt();
 
       appendMessage2(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
       );
       enableEndSessionButton();
 
@@ -8870,7 +8870,7 @@ loadExternalModule().then(() => {
       } else {
         enableEndSessionButton();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
         });
         allMessages.forEach((indvMessage) => {
           if (
@@ -11794,7 +11794,7 @@ loadExternalModule().then(() => {
                       if (response.error) {
                         resetAllVariablesStt();
                         signals.onResponse({
-                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
+                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
                         });
                         //@disable the input
                         const tChatElementRef = document.getElementById("chat-element2")
@@ -11863,7 +11863,6 @@ loadExternalModule().then(() => {
                             // signals.onResponse({
                             //   html: parseMarkdown(next_question_text)
                             // })'gemini-2.0-flash-exp',
-'gemini-2.0-flash-exp',
                             handleGameQuestion(next_question_text, randomIdForAudioElement, false, signals)
                           }
                         } else{
@@ -12007,6 +12006,10 @@ loadExternalModule().then(() => {
                         }),
                       }
                     );
+                    console.log('Question number',questionIndex2,resQuestionNumber2, userResponse2)
+                    if (!response.ok) {
+                      throw new Error(`API call failed with status ${response.status}`);
+                    }
                     const responseData = await response.json();
                     resQuestionNumber2 = responseData.question.question_number;
                   }
@@ -12132,7 +12135,7 @@ loadExternalModule().then(() => {
                     }
                     resetAllVariablesStt();
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
                     });
                     //@disable the input
                     const tChatElementRef =
@@ -12249,7 +12252,7 @@ loadExternalModule().then(() => {
                   // console.log(resp)
                   // if (!resp.ok){
                   //   signals.onResponse({
-                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
+                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
                   //   })
                   // }
                   if (window.user) {
@@ -12303,11 +12306,20 @@ loadExternalModule().then(() => {
                 msg.parentNode.replaceChild(que_msg, msg);
               }
               resetAllVariablesStt();
-
+              console.log(body.messages[0].text.toUpperCase() != 'STOP')
               if (body.messages[0].text.toUpperCase() !== "STOP") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
-                });
+                  if(botId === undefined){
+                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
+                    signals.onResponse({
+                      html: "Please Enter a Interaction Code to Start Your Session..",
+                    })
+                  } else {
+                    signals.onResponse({
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                      
+                    });
+
+                  }
                 enableEndSessionButton();
               }
               //@disable the input
@@ -12349,7 +12361,7 @@ loadExternalModule().then(() => {
 
         resetAllVariablesStt();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
         });
         enableEndSessionButton();
         //@disable the input
