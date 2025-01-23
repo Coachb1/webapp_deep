@@ -624,7 +624,7 @@ function createMessageNode(message) {
 
 //* function to test if a text can be a test code
 function isTestCode(text) {
-  return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+  return (text[0] == "q" || text[0] == "Q");
 }
 
 //* check for duplicate response
@@ -1225,7 +1225,7 @@ async function setMcqVariables() {
           //* send message to start new session
 
           appendMessage(
-            "<b>Please enter another access code to start a new interaction.</b>"
+            "<b>Please enter another interaction code to start a new interaction.</b>"
           );
           submitEmailAndName();
         }
@@ -1767,7 +1767,7 @@ function findRelatedItems(data, targetCode) {
   let resultDiv =
     "<b>System Recommendation: If you like this scenario you can try:<b> <br>";
   matchingItems.forEach((item) => {
-    resultDiv += `<strong>Title:</strong> ${item.title}<br> <strong>Code:</strong> ${item.code} <br>`;
+    resultDiv += `<strong>Title:</strong> ${item.title}<br> <strong>Interaction Code:</strong> ${item.code} <br>`;
   });
 
   return matchingItems.length > 0 && targetTitle
@@ -1835,7 +1835,7 @@ const handleEndCoachingClick = async (randomId) => {
       textInputElement.removeAttribute("onpaste")
                   
     appendMessage(
-      "<b>Please enter another access code to start a new interaction.</b>"
+      "<b>Please enter another interaction code to start a new interaction.</b>"
     );
   } else {
     // appendMessage(getCredentialsForm());
@@ -2380,7 +2380,7 @@ const handleProceedClick = async (choice) => {
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
     if (Object.keys(snnipetConfig).length > 0){
-      appendMessage("<b>Your session is terminated. You can either enter a simulation code or refresh the page for generating the a new simulation.</b>");
+      appendMessage("<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>");
       
     } else{
       appendMessage("<b>Your session is terminated. You can restart again!</b>");
@@ -3191,7 +3191,7 @@ loadExternalModule().then(() => {
       displayLoadingBubble="true"
       errorMessages='{
         "overrides": {
-          "default": "System Error. But please continue and/or retry."
+          "default": "System Error: This issue may be browser-specific but please continue and/or retry. For a better experience, please use Google Chrome. 🌐"
         }
       }'
       attachmentContainerStyle='{"backgroundColor": "transparent", "width" : "fit-content", "position": "absolute", "right": "10%"}'
@@ -3199,9 +3199,9 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer2" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
-          Read here
+          Instructions
         </button>
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
@@ -3444,7 +3444,7 @@ loadExternalModule().then(() => {
   if (Object.keys(snnipetConfig).length > 0){
 
     if (snnipetConfig['psychometric'] === 'true'){
-      let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`
+      let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
       if (snnipetConfig?.["welcomeMessage"]) {
         welcomeMessage = `<p>${snnipetConfig["welcomeMessage"]}</p>`;
       }
@@ -3485,7 +3485,7 @@ loadExternalModule().then(() => {
 
     chatElementRef.initialMessages = [
       {
-        html: `<p>Welcome to Coachbots. Do you have access code for your simulation?
+        html: `<p>Welcome to Coachbots. Do you have interaction code for your simulation?
         </p>`,
         role: "ai",
       },
@@ -4250,7 +4250,7 @@ loadExternalModule().then(() => {
               responsesDone
             );
             signals.onResponse({
-              html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+              html: "<b>To Start Your Session Please Enter a Valid Interaction Code..</b>",
             });
             return;
           } else if (sessionStatus === "in_progress" && isSessionExpired) {
@@ -4735,7 +4735,7 @@ loadExternalModule().then(() => {
                       appendMessage(message);
                       // //* send message to start new session
                       signals.onResponse({
-                        html: "<b>Please enter another access code to start a new interaction.</b>",
+                        html: "<b>Please enter another interaction code to start a new interaction.</b>",
                       });
                       submitEmailAndName();
 
@@ -4819,7 +4819,7 @@ loadExternalModule().then(() => {
                 handleOptionButtonClick("",signals)
               } else if (snnipetConfig['psychometric'] === 'true'){
                 signals.onResponse({
-                  html: `Great! Please enter the assessment code to get started. A scenario will be presented & few questions will follow based on the same.`
+                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
                 })
                 increaseSessionForAccesscode(
                   userId,
@@ -4830,7 +4830,7 @@ loadExternalModule().then(() => {
               else{
                 signals.onResponse(
                   {
-                    html: `<b>Do you have access code for your simulation?</b><br/><br/>
+                    html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
                   <div class="deep-chat-temporary-message">
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -4846,7 +4846,7 @@ loadExternalModule().then(() => {
               LoadingMessageWithText2("Coachbot is thinking...", shadowRoot)
             }
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Pass Code</b> to proceed.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Access Code</b> to proceed.</p>",
             });
             return;
           }
@@ -4895,7 +4895,7 @@ loadExternalModule().then(() => {
                 // //* send message to start new session
 
                 signals.onResponse({
-                  html: "<b>Please enter another access code to start a new interaction.</b>",
+                  html: "<b>Please enter another interaction code to start a new interaction.</b>",
                 });
                 submitEmailAndName();
               }
@@ -4937,7 +4937,7 @@ loadExternalModule().then(() => {
           const userAcessAvailability = latestMessage// body.messages[0].text;
           if (userAcessAvailability === "Yes" && !isSessionActive) {
             signals.onResponse({
-              html: "<b>Please enter the access code to get started.</b>",
+              html: "<b>Please enter the interaction code to get started.</b>",
             });
             return;
           } else if (userAcessAvailability === "No" && !isSessionActive) {
@@ -4948,7 +4948,7 @@ loadExternalModule().then(() => {
               handleOptionButtonClick("",signals)
             } else {
               signals.onResponse({
-                html: "<b>Please ask your administrator for test codes.</b>",
+                html: "<b>Please ask your administrator for interaction codes.</b>",
               });
             }
             // signals.onResponse({
@@ -5011,7 +5011,7 @@ loadExternalModule().then(() => {
 
               if (Object.keys(snnipetConfig).length > 0){
                 signals.onResponse({
-                  html: "<b>Your session is terminated. You can either enter a simulation code or refresh the page for generating the a new simulation.</b>",
+                  html: "<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>",
                 });
               } else{
                 signals.onResponse({
@@ -5080,7 +5080,7 @@ loadExternalModule().then(() => {
             if (!buttonTextArray.includes(latestMessage)) {
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
-                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+                  html: "<b>To Start Your Session Please Enter a Valid Interaction Code..</b>",
                 });
                 return;
               } else if (sessionStatus === "in_progress" && isSessionExpired) {
@@ -5191,7 +5191,7 @@ loadExternalModule().then(() => {
 
                 if (questionData.results.length === 0) {
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Interaction code is Invalid. Please enter a valid code.</b></p>",
                   });
                   return;
                 }
@@ -5297,7 +5297,7 @@ loadExternalModule().then(() => {
                   if (!group_list.includes(clientName)) {
                     // clientName Demo means Free type test
                     signals.onResponse({
-                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your interaction code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                     });
                     return;
                   }
@@ -5305,7 +5305,7 @@ loadExternalModule().then(() => {
                   console.log("signedin", isTestSignedIn);
                   if (isTestSignedIn) {
                     signals.onResponse({
-                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your interaction code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                     });
                     return;
                   }
@@ -5319,7 +5319,7 @@ loadExternalModule().then(() => {
                   
                   if (!group_list.includes(clientName)) {
                     signals.onResponse({
-                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your interaction code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                     });
                     return;
                   }
@@ -5344,7 +5344,7 @@ loadExternalModule().then(() => {
                   !testPrevilage.data.includes(testCode)
                 ) {
                   signals.onResponse({
-                    html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your interaction code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                   });
                   return;
                 }
@@ -5356,7 +5356,7 @@ loadExternalModule().then(() => {
                     await getAttemptedTestList(participantId);
                     if (testCodeList.includes(testCode)) {
                       signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction again. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                        html: "<b>You are not allowed to attempt this interaction again. Please check if you are logged in with the correct account and if your interaction code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
                       return;
                     }
@@ -6496,7 +6496,7 @@ loadExternalModule().then(() => {
                     // //* send message to start new session
 
                     signals.onResponse({
-                      html: "<b>Please enter another access code to start a new interaction.</b>",
+                      html: "<b>Please enter another interaction code to start a new interaction.</b>",
                     });
                     submitEmailAndName();
 
