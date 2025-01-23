@@ -6251,6 +6251,9 @@ loadExternalModule().then(() => {
                         },
                       }),
                     });
+                    if(!response.ok){
+                      throw new Error("api call failed with stautus "+response.status)
+                    }
                     const responseData = await response.json();
                     console.log(
                       "Response from submit response : ",
@@ -6539,9 +6542,13 @@ loadExternalModule().then(() => {
               resetAllVariables(); //reseting variables
 
               if (body.messages[0].text.toUpperCase() !== "STOP") {
+                // signals.onResponse({
+                //   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
+                // });
+                appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
-                });
+                  html: "Please Enter a Interaction Code to Start Your Session..",
+                })
               }
             }
           }
