@@ -6795,8 +6795,7 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
               <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
         </ul>
       </div>
-      ${snippetOrigin() === "internal"
-          ? `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot Coaching interaction guide</b>
         <ol style="list-style-type: none;">
           <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
@@ -6826,8 +6825,7 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
           <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
         </ol>
       </div>`
-          : ""
-      }`
+ 
   }
 }
 
@@ -7133,6 +7131,8 @@ loadExternalModule().then(() => {
               <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
+
+        
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -7215,20 +7215,23 @@ loadExternalModule().then(() => {
     const _ = getBotDetails2(botId);
   }
 
-  if (
-    snippetOrigin() === "external"
-  ) {
-    const list = getDefaultInstractionsStt("system", 'simulations')
-    instructionsPaneList.innerHTML = list;  
+  // if (
+  //   snippetOrigin() === "external"
+  // ) {
+  //   const list = getDefaultInstractionsStt("system", 'simulations')
+  //   instructionsPaneList.innerHTML = list;  
+  // } else {
+  if (botId){
+    const list = getDefaultInstractionsStt("bot")
+    console.log('botinstruction: ', list)
+    instructionsPane.innerHTML = list;
+    const footerText = document.getElementById("footer-text");
+    footerText.innerHTML = `Available only on Google Chrome 🌐. Follow the instructions for optimum performance.`
   } else {
-    if (botId){
-      const list = getDefaultInstractionsStt("bot")
-      instructionsPane.innerHTML = list;
-    } else {
-      const list = getDefaultInstractionsStt("system", 'simulations')
-      instructionsPaneList.innerHTML = list; 
-    }
+    const list = getDefaultInstractionsStt("system", 'simulations')
+    instructionsPaneList.innerHTML = list; 
   }
+  // }
 
   if (!user2) {
     if (window.location.href.includes("engagement-survey")) {
