@@ -624,7 +624,7 @@ function createMessageNode(message) {
 
 //* function to test if a text can be a test code
 function isTestCode(text) {
-  return (text[0] == "q" || text[0] == "Q");
+  return text.split(" ").length == 1 && (text[0] == "q" || text[0] == "Q");
 }
 
 //* check for duplicate response
