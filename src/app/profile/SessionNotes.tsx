@@ -433,7 +433,7 @@ const SessionNotes = ({ user }: any) => {
                                             .writeText(recommendation)
                                             .then(() => {
                                               toast.success(
-                                                "Test code copied to clipboard",
+                                                "Interaction code copied to clipboard",
                                                 {
                                                   duration: 4000,
                                                 }
@@ -441,7 +441,7 @@ const SessionNotes = ({ user }: any) => {
                                             })
                                             .catch((err) => {
                                               toast.error(
-                                                "Error copying test code",
+                                                "Error copying interaction code",
                                                 {
                                                   duration: 4000,
                                                 }
@@ -514,7 +514,7 @@ const SessionNotes = ({ user }: any) => {
                                               .writeText(recommendation)
                                               .then(() => {
                                                 toast.success(
-                                                  "Test code copied to clipboard",
+                                                  "Interaction code copied to clipboard",
                                                   {
                                                     duration: 4000,
                                                   }
@@ -522,7 +522,7 @@ const SessionNotes = ({ user }: any) => {
                                               })
                                               .catch((err) => {
                                                 toast.error(
-                                                  "Error copying test code",
+                                                  "Error copying interaction code",
                                                   {
                                                     duration: 4000,
                                                   }
@@ -780,7 +780,7 @@ const SessionNotes = ({ user }: any) => {
                                             .writeText(recommendation)
                                             .then(() => {
                                               toast.success(
-                                                "Test code copied to clipboard",
+                                                "Interaction code copied to clipboard",
                                                 {
                                                   duration: 4000,
                                                 }
@@ -788,7 +788,7 @@ const SessionNotes = ({ user }: any) => {
                                             })
                                             .catch((err) => {
                                               toast.error(
-                                                "Error copying test code",
+                                                "Error copying interaction code",
                                                 {
                                                   duration: 4000,
                                                 }
@@ -861,7 +861,7 @@ const SessionNotes = ({ user }: any) => {
                                               .writeText(recommendation)
                                               .then(() => {
                                                 toast.success(
-                                                  "Test code copied to clipboard",
+                                                  "Interaction code copied to clipboard",
                                                   {
                                                     duration: 4000,
                                                   }
@@ -869,7 +869,7 @@ const SessionNotes = ({ user }: any) => {
                                               })
                                               .catch((err) => {
                                                 toast.error(
-                                                  "Error copying test code",
+                                                  "Error copying interaction code",
                                                   {
                                                     duration: 4000,
                                                   }
