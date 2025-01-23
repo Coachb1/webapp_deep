@@ -624,7 +624,7 @@ function createMessageNode(message) {
 
 //* function to test if a text can be a test code
 function isTestCode(text) {
-  return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+  return (text[0] == "q" || text[0] == "Q");
 }
 
 //* check for duplicate response
@@ -3191,7 +3191,7 @@ loadExternalModule().then(() => {
       displayLoadingBubble="true"
       errorMessages='{
         "overrides": {
-          "default": "System Error. But please continue and/or retry."
+          "default": "System Error: This issue may be browser-specific but please continue and/or retry. For a better experience, please use Google Chrome. 🌐"
         }
       }'
       attachmentContainerStyle='{"backgroundColor": "transparent", "width" : "fit-content", "position": "absolute", "right": "10%"}'
@@ -3199,9 +3199,9 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer2" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
-          Read here
+          Instructions
         </button>
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
@@ -4250,7 +4250,7 @@ loadExternalModule().then(() => {
               responsesDone
             );
             signals.onResponse({
-              html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+              html: "<b>To Start Your Session Please Enter a Valid Interaction Code..</b>",
             });
             return;
           } else if (sessionStatus === "in_progress" && isSessionExpired) {
@@ -5080,7 +5080,7 @@ loadExternalModule().then(() => {
             if (!buttonTextArray.includes(latestMessage)) {
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
-                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+                  html: "<b>To Start Your Session Please Enter a Valid Interaction Code..</b>",
                 });
                 return;
               } else if (sessionStatus === "in_progress" && isSessionExpired) {
@@ -5191,7 +5191,7 @@ loadExternalModule().then(() => {
 
                 if (questionData.results.length === 0) {
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Intraction code is Invalid. Please enter a valid code.</b></p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Interaction code is Invalid. Please enter a valid code.</b></p>",
                   });
                   return;
                 }

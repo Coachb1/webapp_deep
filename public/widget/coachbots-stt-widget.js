@@ -738,7 +738,7 @@ const fitment_analysis = {
 };
 
 function isTestCode2(text) {
-  return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+  return (text[0] == "q" || text[0] == "Q");
 }
 
 function isDuplicateResponseStt(text) {
@@ -7074,7 +7074,7 @@ loadExternalModule().then(() => {
       }}'
       errorMessages='{
         "overrides": {
-          "default": "System Error. But please continue and/or retry."
+          "default": "System Error: This issue may be browser-specific but please continue and/or retry. For a better experience, please use Google Chrome. 🌐"
         }
       }'
       auxiliaryStyle="
@@ -7113,10 +7113,10 @@ loadExternalModule().then(() => {
       window.innerWidth < 768 ? "10px" : "12px"
     }; width: ${
     snippetOrigin() == "internal" ? "100%" : "80%"
-  }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
+  }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
-          Read here
+          Instructions
         </button>
       </span> 
       <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${
@@ -10628,7 +10628,7 @@ loadExternalModule().then(() => {
               }
               if (sessionStatusStt != "in_progress") {
                 signals.onResponse({
-                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+                  html: "<b>To Start Your Session Please Enter a Valid Interaction Code..</b>",
                 });
                 return;
               } else if (
