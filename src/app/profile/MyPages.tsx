@@ -116,13 +116,13 @@ const MyPages = ({ user }: any) => {
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "Coaching co-pilot";
+      return "Co-pilot Level 2";
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
     } else if (botType === "user_bot") {
-      return "Knowledge Bot";
+      return "AI Knowledge Agent";
     } else if (botType === "subject_specific_bot") {
-      return "Subject co-pilot";
+      return "Co-pilot Level 1";
     }
   };
 

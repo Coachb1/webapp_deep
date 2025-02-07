@@ -5,7 +5,7 @@ import Script from "next/script";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export const metadata = constructMetadata({
-  title: "Knowledge Bot",
+  title: "AI Knowledge Agent",
 });
 
 const Page = async () => {

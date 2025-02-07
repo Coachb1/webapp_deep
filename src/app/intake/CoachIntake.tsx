@@ -2857,11 +2857,11 @@ const CoachIntake = ({ user }: any) => {
                           value: "no-co-pilot",
                         },
                         {
-                          label: "Subject Co-pilot (10 mins)",
+                          label: "Co-pilot Level 1 (10 mins)",
                           value: "subject-copilot",
                         },
                         {
-                          label: "Coaching Co-pilot (25 Mins)",
+                          label: "Co-pilot Level 2 (25 Mins)",
                           value: "coaching-copilot",
                         },
                       ]}

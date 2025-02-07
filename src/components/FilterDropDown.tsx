@@ -118,7 +118,7 @@ const FilterDropDown = ({
                           : option === "feedback_bot"
                           ? "Feedback Requests"
                           : option === "icons_by_ai"
-                          ? "Icons by AI"
+                          ? "AI Coaching Agent"
                           : convertTextToCorrectFormat(option)}
                       </label>
                     </div>
@@ -161,7 +161,7 @@ const FilterDropDown = ({
                 : checkedItem === "feedback_bot"
                 ? "Feedback Requests"
                 : checkedItem === "icons_by_ai"
-                ? "Icons by AI"
+                ? "AI Coaching Agent"
                 : convertTextToCorrectFormat(checkedItem)}
             </p>{" "}
             <X

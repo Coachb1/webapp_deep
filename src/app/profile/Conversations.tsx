@@ -210,7 +210,7 @@ const Conversations = ({ user }: any) => {
                         (convo) => convo.bot_type === "avatar_bot"
                       ).length > 0 && (
                         <p className="mt-2 font-semibold">
-                          Avatar Bots / Icons by AI
+                          Avatar Bots / AI Coaching Agents
                         </p>
                       )}
                       {conversationDataAdmin
@@ -280,11 +280,11 @@ const Conversations = ({ user }: any) => {
                           />
                         ))}
 
-                      {/* KNOWLEDGE BOT */}
+                      {/* AI Knowledge Agent */}
                       {conversationDataAdmin.filter(
                         (convo) => convo.bot_type === "user_bot"
                       ).length > 0 && (
-                        <p className="mt-2 font-semibold">Knowledge Bots</p>
+                        <p className="mt-2 font-semibold">AI Knowledge Agents</p>
                       )}
                       {conversationDataAdmin
                         .filter((convo) => convo.bot_type === "user_bot")
@@ -319,7 +319,7 @@ const Conversations = ({ user }: any) => {
                         (convo) => convo.bot_type === "avatar_bot"
                       ).length > 0 && (
                         <p className="mt-2 font-semibold">
-                          Avatar Bots / Icons by AI
+                          Avatar Bots / AI Coaching Agents
                         </p>
                       )}
                       {conversationData
@@ -403,11 +403,11 @@ const Conversations = ({ user }: any) => {
                           />
                         ))}
 
-                      {/* KNOWLEDGE BOT */}
+                      {/* AI Knowledge Agent */}
                       {conversationData.filter(
                         (convo) => convo.bot_type === "user_bot"
                       ).length > 0 && (
-                        <p className="mt-2 font-semibold">Knowledge Bots</p>
+                        <p className="mt-2 font-semibold">AI Knowledge Agents</p>
                       )}
                       {conversationData
                         .filter((convo) => convo.bot_type === "user_bot")

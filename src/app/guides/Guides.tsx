@@ -61,7 +61,7 @@ const Guides = ({
                 <span>
                   {" "}
                   Introducing Guides! These are multi-purpose creative bots.
-                  Knowledge bots are user-created bots for any purpose e.g.
+                  AI Knowledge Agents are user-created bots for any purpose e.g.
                   providing project updates or querying documents. Guides for
                   roles or skills follow a curated collection of frameworks that
                   are scientifically proven to enhance skills and role

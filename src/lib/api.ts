@@ -453,7 +453,7 @@ export const getKnowledgeBots = async (clientName: string, userId: string) => {
     }
   });
 
-  console.log("Parsed knowledge Bots : ", knowledgeBots);
+  console.log("Parsed AI Knowledge Agents : ", knowledgeBots);
 
   return knowledgeBots;
 };
