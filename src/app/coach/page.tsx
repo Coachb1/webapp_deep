@@ -3,7 +3,7 @@ import { constructMetadata } from "@/lib/utils";
 import Coach from "./Coach";
 
 export const metadata = constructMetadata({
-  title: "AI Frame - Coachbots",
+  title: "AI Copilot - Coachbots",
 });
 
 const Page = async () => {

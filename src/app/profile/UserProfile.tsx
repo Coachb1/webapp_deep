@@ -69,7 +69,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
         target: "#directory-profile",
         content: dynamicHelpText?.directory_profile
           ? dynamicHelpText.directory_profile
-          : "Ability to view and update directory profile, AI frames and feedback network profiles. ",
+          : "Ability to view and update directory profile, AI Copilots and feedback network profiles. ",
       },
       {
         target: "#mcon",

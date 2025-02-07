@@ -490,7 +490,7 @@ const Coach = ({ user, renderType }: any) => {
                           variant={"secondary"}
                           className="border border-gray-200 h-8 hover:cursor-pointer"
                         >
-                          How AI Frame works
+                          How AI Copilot works
                         </Button>
                       </Link>
                     )}
@@ -514,7 +514,7 @@ const Coach = ({ user, renderType }: any) => {
                           variant={"secondary"}
                           className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
                         >
-                          How AI Frame works
+                          How AI Copilot works
                         </Badge>
                       </div>
                       <div className="w-full">

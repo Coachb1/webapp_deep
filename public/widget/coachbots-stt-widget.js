@@ -1626,11 +1626,8 @@ const getBotDetails2 = async (botId) => {
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
         (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
-          ? "Welcome to the world of AI agents. I am the subject matter expert agent that can make you 10x smarter. Let's start!"
-          :(botType === 'avatar_bot')
-          ? "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!"
-          : 'Hello! Welcome to your "Subjected" coaching assistant. Please don\'t hesitate to ask questions about this subject matter and continue your session. The session transcripts are available to view later.';
-
+          ? "Welcome to the world of AI coaching agents. As your personal coaching agent, I can make you 10x smarter. Let's start!"
+          : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
       console.log(shadowRoot.getElementById("text-input"));
 
@@ -1660,7 +1657,7 @@ const getBotDetails2 = async (botId) => {
     //   botFooterElement.innerHTML =
     //     "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 15 words or more in response.</p>";
     // } else if (botType === "avatar_bot") {
-    //   botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 15 words or more in response.</p>`;
+    //   botFooterElement.innerHTML = `<p>AI Copilot works based on the coach-provided background. For optimum results use 15 words or more in response.</p>`;
     // } else if (botType === "feedback_bot") {
     //   botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
     // } else if (botType === "user_bot") {

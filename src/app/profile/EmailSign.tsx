@@ -160,7 +160,7 @@ const EmailSign = ({ user }: any) => {
                         fontFamily: "monospace",
                       }}
                     >
-                      👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
+                      👨‍🏫👩‍🏫 My AI Copilot 🗣️{" "}
                     </a>
                   </div>
                 </div>

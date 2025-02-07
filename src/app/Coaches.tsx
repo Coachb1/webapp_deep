@@ -1386,7 +1386,7 @@ const Coaches = ({
                               color: "black",
                               padding: "8px",
                             }}
-                            title="You can Join the CoachBot network as a Coach Our platform facilitates coaches in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                            title="You can Join the CoachBot network as a Coach Our platform facilitates coaches in forming profiles, which evolve into AI Copilots. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
                           >
                             <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
                           </Tooltip>
