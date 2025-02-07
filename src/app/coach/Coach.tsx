@@ -383,9 +383,19 @@ const Coach = ({ user, renderType }: any) => {
                 {botType !== "subject_specific_bot" ? (
                   <p className="p-2 pb-4 border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs w-[85%] max-sm:w-full">
                     {" "}
-                    Note: The coaching advice is derived from the knowledge base for AI-Agents. 
+                    {botScenarioCase === "icons_by_ai" ? 
+                    `Note: The coaching advice is derived from the knowledge base for AI-Agents. 
                     Coach-specific AI-agent's may not ALWAYS represent the point of view of the coach. 
-                    The discussion transcript is provided in the Bot response section and shared by email for validation.
+                    The discussion transcript is provided in the Bot response section and shared by email for validation.`
+                    :
+                    `Note : Please note that the AI communication is driven by
+                    curated information as provided by the user. The coaching
+                    advise is derived from the knowledge base. But it may not
+                    always depict the coach response in real life situation.
+                    Transcript is provided in Bot response and email for
+                    validation.`
+                    }
+
                   </p>
                 ) : (
                   <div className="p-3 pb-4 border mx-4 rounded-2xl border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs w-[85%] max-sm:w-full">
