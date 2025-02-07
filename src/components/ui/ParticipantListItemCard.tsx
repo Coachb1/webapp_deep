@@ -192,11 +192,11 @@ export function ParticipantListItemCard({
                       : coach.subject_specific_bot_id?.includes("subject")
                       ? `${convertTextToCorrectFormat(
                           coach.profile_type
-                        )} - Subject co-pilot`
+                        )} - Co-pilot Level 1`
                       : coach.avatar_bot_id?.includes("avatar")
                       ? `${convertTextToCorrectFormat(
                           coach.profile_type
-                        )} - Coaching co-pilot`
+                        )} - Co-pilot Level 2`
                       : convertTextToCorrectFormat(coach.profile_type)}
                   </Badge>
                 )}
@@ -318,10 +318,10 @@ export function ParticipantListItemCard({
                               : coach.subject_specific_bot_id?.includes(
                                   "subject"
                                 )
-                              ? "Subject co-pilot"
+                              ? "Co-pilot Level 1"
                               : coach.profile_type === "icons_by_ai"
                               ? "AI Coaching Agent"
-                              : "AI Frame"}{" "}
+                              : "AI Copilot"}{" "}
                           </p>
                           <ExternalLink className="ml-1 h-4 w-4 inline" />
                         </Link>
