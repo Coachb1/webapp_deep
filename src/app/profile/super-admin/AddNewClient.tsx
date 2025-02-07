@@ -98,7 +98,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     { value: "EQ-Areas", label: "EQ Areas" },
     { value: "Learning-ideas", label: "Learning ideas" },
     { value: "Simulation-creator", label: "Simulation creator" },
-    { value: "Knowledge-bots", label: "Knowledge bots" },
+    { value: "Knowledge-bots", label: "AI Knowledge Agents" },
     { value: "Team-connect", label: "Team connect" },
     { value: "My-connections", label: "My connections" },
     { value: "Action-session-notes", label: "Action session notes" },

@@ -3,7 +3,7 @@ import { constructMetadata } from "@/lib/utils";
 import KnowledgeBot from "./KnowledgeBot";
 
 export const metadata = constructMetadata({
-  title: "Knowledge Bot",
+  title: "AI Knowledge Agent",
 });
 
 const Page = async () => {

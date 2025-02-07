@@ -437,12 +437,12 @@ const UserBotIntake = ({
 
               if (data.error && data.msg) {
                 toast.error(
-                  "Error creating your Knowledge Bot, Please try again."
+                  "Error creating your AI Knowledge Agent, Please try again."
                 );
               } else {
                 resetAllStates();
                 if (checkIfEdit) {
-                  toast.success("Successfully Updated your Knowledge Bot.", {
+                  toast.success("Successfully Updated your AI Knowledge Agent.", {
                     duration: 6000,
                   });
                   setTimeout(() => {
@@ -480,7 +480,7 @@ const UserBotIntake = ({
               "This bot already exists, please change the Name of the bot and try again."
             );
           } else {
-            toast.error("Error creating your Knowledge Bot, Please try again.");
+            toast.error("Error creating your AI Knowledge Agent, Please try again.");
           }
         }
         setSubmitLoading(false);
@@ -631,10 +631,10 @@ const UserBotIntake = ({
     <div className="flex flex-col justify-center items-center w-full">
       <div className="bg-white border w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
         <h1 className="text-xl text-left text-gray-600 font-bold">
-          Knowledge bot intake
+          AI Knowledge Agent intake
         </h1>
         <p className="mb-3 text-left text-sm max-sm:text-xs text-gray-600">
-          Use this form to create your Knowledge bot.
+          Use this form to create your AI Knowledge Agent.
         </p>
         <form
           className="text-left"
@@ -648,7 +648,7 @@ const UserBotIntake = ({
                 className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                 variant={"outline"}
               >
-                You are viewing your knowledge bot Intake.
+                You are viewing your AI Knowledge Agent Intake.
               </Badge>
             )}
             {!checkIfView && (

@@ -389,12 +389,12 @@ const initialiseUserSTT = async () => {
         })
         .catch((err) => {
           console.log(err);
-          throw new Error("Error fetching client Info");
+          throw new Error( `Error fetching client Info ${err}`);
         });
     })
     .catch((err) => {
       console.log(err);
-      throw new Error("Error User Info");
+      throw new Error(`Error User Info ${err}`);
     });
 };
 
@@ -504,12 +504,12 @@ const createUserSTT = async (user_name, user_email) => {
         })
         .catch((err) => {
           console.log(err);
-          throw new Error("Error fetching client Info");
+          throw new Error(`Error fetching client Info ${err}`);
         });
     })
     .catch((err) => {
       console.log(err);
-      throw new Error("Error User Info");
+      throw new Error(`Error User Info: ${err}`);
     });
 };
 
@@ -2650,7 +2650,7 @@ async function handleFaqButtonClick(question) {
       appendMessage2(
         addStickerToMessage(
           "Match Score",
-          "In certain cases, the 'Match Scores' caluclation may fail. For Icons by AI / external coaches and mentors no Match Scores available. For internal coaches and mentors, we can calculate it based on the options selected. Scores are not generated/valid, in case you are interacting with the Coachbot as a coach/mentor.",
+          "In certain cases, the 'Match Scores' caluclation may fail. For AI Coaching Agent / external coaches and mentors no Match Scores available. For internal coaches and mentors, we can calculate it based on the options selected. Scores are not generated/valid, in case you are interacting with the Coachbot as a coach/mentor.",
           "#fb923c"
         )
       );
@@ -6752,8 +6752,8 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
   if (type === 'system'){
     if (condition === "normal") {
       return `
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
-              <li><strong>2. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
+              <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
               <li><strong>3. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>4. Psychometric Assessments and Simulations:</strong> These may take several forms depending on the subject and context. The short version contains 3 questions, and the standard version may have 8 or more. At the end of any session, a detailed feedback report will be generated. The premium version will contain speech & voice analytics.</li>
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
@@ -6761,8 +6761,8 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
             `
     }else if (condition === "bot") {
       return `
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
-              <li><strong>2. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
+              <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
               <li><strong>3. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>4. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
@@ -6788,8 +6788,8 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
     return `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
         <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
-              <li><strong>2. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
+              <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
               <li><strong>3. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>4. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
@@ -6835,6 +6835,7 @@ async function loadExternalModule() {
       // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
       "https://storage.googleapis.com/coachbots-simulator/deepchat-bundle.js"
     );
+    // const {DeepChat} = await import('./public/widget/coachbots-stt-widget.js');
   } catch (error) {
     console.error("Error loading external module:", error);
   }
@@ -6960,7 +6961,7 @@ loadExternalModule().then(() => {
       window.innerWidth < 768 ? "10px" : "12px"
     };"> ${
     window.location.href.includes("knowledge-bot")
-      ? "Simple Knowledge Bot. Check 'Read Me' for more"
+      ? "Simple AI Knowledge Agent. Check 'Read Me' for more"
       : "Accessibility features may not work inside the bot."
   } </p>
   </div>
@@ -7123,9 +7124,9 @@ loadExternalModule().then(() => {
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
           <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
           <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-              <li><strong>3. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
+              <li><strong>3. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
               <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
@@ -7272,7 +7273,7 @@ loadExternalModule().then(() => {
     <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
         <ul id="instructions-list">
-            <li><strong>1. Purpose:</strong> This knowledge bot is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
+            <li><strong>1. Purpose:</strong> This AI Knowledge Agent is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
             <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
             <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
         </ul>
@@ -11980,6 +11981,7 @@ loadExternalModule().then(() => {
                     });
                     console.log(questionData2);
                   } else {
+                    console.log('test-response1:', userResponse2)
                     const response = await fetch(
                       `${baseURL2}/test-responses/`,
                       {
