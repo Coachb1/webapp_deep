@@ -210,7 +210,7 @@ const Conversations = ({ user }: any) => {
                         (convo) => convo.bot_type === "avatar_bot"
                       ).length > 0 && (
                         <p className="mt-2 font-semibold">
-                          Avatar Bots / AI Agents
+                          Avatar Bots / AI Coaching Agents
                         </p>
                       )}
                       {conversationDataAdmin
@@ -319,7 +319,7 @@ const Conversations = ({ user }: any) => {
                         (convo) => convo.bot_type === "avatar_bot"
                       ).length > 0 && (
                         <p className="mt-2 font-semibold">
-                          Avatar Bots / AI Agents
+                          Avatar Bots / AI Coaching Agents
                         </p>
                       )}
                       {conversationData
