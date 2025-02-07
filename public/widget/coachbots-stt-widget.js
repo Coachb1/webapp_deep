@@ -6963,7 +6963,7 @@ loadExternalModule().then(() => {
       window.innerWidth < 768 ? "10px" : "12px"
     };"> ${
     window.location.href.includes("knowledge-bot")
-      ? "Simple AI Knowledge Agent. Check 'Read Me' for more"
+      ? "Simple AI Knowledge Agent. Check 'Instructions' for more"
       : "Accessibility features may not work inside the bot."
   } </p>
   </div>

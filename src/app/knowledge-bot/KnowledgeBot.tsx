@@ -28,7 +28,7 @@ const howItWorks = [
   {
     heading: "Creation of the Bot",
     description:
-      "A AI Knowledge Agent can be created by an intake form and attaching documents. The AI Knowledge Agent can be for individual use or it can be made available to everyone in the enterprise. It can also be available for public use if desired.",
+      "An AI Knowledge Agent can be created by an intake form and attaching documents. The AI Knowledge Agent can be for individual use or it can be made available to everyone in the enterprise. It can also be available for public use if desired.",
   },
   {
     heading: "Usage of the Bot",
