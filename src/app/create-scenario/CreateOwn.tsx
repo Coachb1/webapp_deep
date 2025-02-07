@@ -857,7 +857,7 @@ const CreateOwn = ({
           description="Welcome to the Studio, your hub for collaborative
                 innovation. Here, you'll find a suite of tools designed to
                 empower your team's performance. Generate simulations, resolve
-                team queries, assign simulations, craft knowledge bots, and
+                team queries, assign simulations, craft AI Knowledge Agents, and
                 generate deep dives. Elevate collaboration and innovation
                 effortlessly."
           className="w-full"
@@ -940,7 +940,7 @@ const CreateOwn = ({
                       }}
                       className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                     >
-                      Knowledge Bots
+                      AI Knowledge Agents
                     </Button>
                   )}
                 </div>
@@ -1322,7 +1322,7 @@ const CreateOwn = ({
                             id="kb-id"
                             className="text-xl mt-2 mb-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                           >
-                            Knowledge Bots
+                            AI Knowledge Agents
                           </h1>
                           <Button
                             asChild
@@ -1337,7 +1337,7 @@ const CreateOwn = ({
                                 {" "}
                                 <BadgePlus className="mr-2 h-4 w-4" />{" "}
                               </span>{" "}
-                              Create your knowledge bot
+                              Create your AI Knowledge Agent
                             </Link>
                           </Button>
                           <div className="w-full mt-3">

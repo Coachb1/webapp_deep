@@ -28,7 +28,7 @@ const howItWorks = [
   {
     heading: "Creation of the Bot",
     description:
-      "A knowledge bot can be created by an intake form and attaching documents. The knowledge bot can be for individual use or it can be made available to everyone in the enterprise. It can also be available for public use if desired.",
+      "An AI Knowledge Agent can be created by an intake form and attaching documents. The AI Knowledge Agent can be for individual use or it can be made available to everyone in the enterprise. It can also be available for public use if desired.",
   },
   {
     heading: "Usage of the Bot",
@@ -41,7 +41,7 @@ const benefitsData = [
   {
     heading: "Conversational Analysis",
     description:
-      "The knowledge bots can synthesize information from one or multiple documents. It saves time by presenting a unified simple response.",
+      "The AI Knowledge Agents can synthesize information from one or multiple documents. It saves time by presenting a unified simple response.",
   },
   {
     heading: "Multiple Use Cases",
@@ -152,7 +152,7 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
 
     if (!isLoading && !user) {
       const data = apiData;
-      console.log("KNOWLEDGE BOT DETAILS : ", data);
+      console.log("AI Knowledge Agent DETAILS : ", data);
 
       if (data) {
         const coachScribe = document.getElementsByClassName(
@@ -359,7 +359,7 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
                 Disclaimer
               </Badge>
               <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-                Knowledge Bots are created based on knowledge repositories
+                AI Knowledge Agents are created based on knowledge repositories
                 offered by the individuals. AI can make mistakes, always double
                 check the responses.
               </p>

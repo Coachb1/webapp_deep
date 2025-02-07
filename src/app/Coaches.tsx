@@ -450,19 +450,19 @@ const Coaches = ({
           target: "#search-filter",
           content: dynamicHelpTextt?.search_filter
             ? dynamicHelpTextt.search_filter
-            : "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
+            : "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or AI Coaching Agent Avatars which are tailored to you profile.",
         },
         {
           target: "#ai-recc",
           content: dynamicHelpTextt?.ai_reccomentation
             ? dynamicHelpTextt.ai_reccomentation
-            : "Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
+            : "Our AI Recommendation feature suggests the best coach or AI Coaching Agent Avatars which are tailored to you profile.",
         },
         {
           target: "#participant-listing",
           content: dynamicHelpTextt?.participant_listing
             ? dynamicHelpTextt.participant_listing
-            : `All participants are listed. Coach, coachees, and mentees. Coach  can have dual role profiles as well. "Icons by AI" are external coaches  whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
+            : `All participants are listed. Coach, coachees, and mentees. Coach  can have dual role profiles as well. "AI Coaching Agent" are external coaches  whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
         },
       ]);
 

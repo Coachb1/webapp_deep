@@ -120,7 +120,7 @@ const MyPages = ({ user }: any) => {
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
     } else if (botType === "user_bot") {
-      return "Knowledge Bot";
+      return "AI Knowledge Agent";
     } else if (botType === "subject_specific_bot") {
       return "Subject co-pilot";
     }

@@ -188,7 +188,7 @@ export function ParticipantListItemCard({
                       : convertTextToCorrectFormat(coach.profile_type)} */}
 
                     {coach.profile_type === "icons_by_ai"
-                      ? "Icons by AI"
+                      ? "AI Coaching Agent"
                       : coach.subject_specific_bot_id?.includes("subject")
                       ? `${convertTextToCorrectFormat(
                           coach.profile_type
@@ -319,6 +319,8 @@ export function ParticipantListItemCard({
                                   "subject"
                                 )
                               ? "Subject co-pilot"
+                              : coach.profile_type === "icons_by_ai"
+                              ? "AI Coaching Agent"
                               : "AI Frame"}{" "}
                           </p>
                           <ExternalLink className="ml-1 h-4 w-4 inline" />
