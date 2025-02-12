@@ -4775,7 +4775,7 @@ const handleProceedClickStt = async (choice) => {
         if (embeddingUrl) {
           console.log('Ahere11')
 
-          appendMessage2(`▪ Media <br>  <iframe
+          appendMessage2(`▪ <b>Optional Enrichment Media</b><br>  <iframe
                             allow="autoplay; encrypted-media; fullscreen;"
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                             src=${embeddingUrl}
@@ -5418,7 +5418,7 @@ async function setMcqVariablesStt() {
           }
 
           if (embeddingUrl) {
-            questionText2 = `▪ Media <br>  <iframe
+            questionText2 = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                         allow="autoplay; encrypted-media; fullscreen;"
                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                         src=${embeddingUrl}
@@ -11104,7 +11104,7 @@ loadExternalModule().then(() => {
                             embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
                           }
                           if (embeddingUrl) {
-                            questionText2 = `▪ Media <br>  <iframe
+                            questionText2 = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
@@ -11296,7 +11296,7 @@ loadExternalModule().then(() => {
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
                                ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ Media  <iframe
+                               ▪ <b>Optional Enrichment Media</b> <iframe
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl2}
                                           frameborder="0"
@@ -11317,7 +11317,7 @@ loadExternalModule().then(() => {
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
                                ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ Media  <iframe
+                               ▪ <b>Optional Enrichment Media</b> <iframe
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl2}
                                           frameborder="0"
@@ -11336,7 +11336,7 @@ loadExternalModule().then(() => {
                             `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
                                  ▪ Instructions : Response should be at least 15 words. <br><br>
-                                 ▪ Media  <iframe
+                                 ▪ <b>Optional Enrichment Media</b> <iframe
                                             allow="autoplay; encrypted-media; fullscreen;
                                             style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                             src=${embeddingUrl2}
@@ -11435,7 +11435,7 @@ loadExternalModule().then(() => {
                                 `▪ Title : ${senarioTitle2} <br><br>
                                     ▪ Description : ${senarioDescription2} <br><br>
                                     ▪ Instructions : Response should be at least 15 words. <br><br>
-                                    ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
+                                    ▪ <b>Optional Enrichment Media</b>: <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
                                     `
                               );
                             }
@@ -11454,7 +11454,7 @@ loadExternalModule().then(() => {
                         //      `▪ Title : ${senarioTitle2} <br><br>
                         //        ▪ Description : ${senarioDescription2} <br><br>
                         //        ▪ Instructions : Response should be at least 15 words. <br><br>
-                        //        ▪ Media  <iframe
+                        //        ▪ <b>Optional Enrichment Media</b> <iframe
                         //                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
                         //                   src=${embeddingUrl2}
                         //                   frameborder="0"
@@ -11628,7 +11628,7 @@ loadExternalModule().then(() => {
                             embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
                           }
                           if (embeddingUrl) {
-                            questionText2 = `▪ Media <br>  <iframe
+                            questionText2 = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}

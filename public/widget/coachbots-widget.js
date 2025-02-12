@@ -887,7 +887,7 @@ async function setMcqVariables() {
           }
 
           if (embeddingUrl) {
-            questionText = `▪ Media <br>  <iframe
+            questionText = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                           allow="autoplay; encrypted-media; fullscreen;"
                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                           src=${embeddingUrl}
@@ -1961,7 +1961,7 @@ const handleProceedClick = async (choice) => {
         }
 
         if (embeddingUrl) {
-          appendMessage(`▪ Media <br>  <iframe
+          appendMessage(`▪ <b>Optional Enrichment Media</b><br>  <iframe
                           allow="autoplay; encrypted-media; fullscreen;"
                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                           src=${embeddingUrl}
@@ -4373,7 +4373,7 @@ loadExternalModule().then(() => {
                   }
 
                   if (embeddingUrl) {
-                    questionText = `▪ Media <br>  <iframe
+                    questionText = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                             allow="autoplay; encrypted-media; fullscreen;"
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                             src=${embeddingUrl}
@@ -5515,7 +5515,7 @@ loadExternalModule().then(() => {
                           }
 
                           if (embeddingUrl) {
-                            questionText = `▪ Media <br>  <iframe
+                            questionText = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
@@ -5717,7 +5717,7 @@ loadExternalModule().then(() => {
                             `▪ Title : ${senarioTitle} <br><br>
                                ▪ Description : ${senarioDescription} <br><br>
                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                               ▪ Media <br>  <iframe
+                               ▪ <b>Optional Enrichment Media</b><br>  <iframe
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
@@ -5738,7 +5738,7 @@ loadExternalModule().then(() => {
                             `▪ Title : ${senarioTitle} <br><br>
                                ▪ Description : ${senarioDescription} <br><br>
                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                               ▪ Media <br>  <iframe
+                               ▪ <b>Optional Enrichment Media</b><br>  <iframe
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
@@ -5756,7 +5756,7 @@ loadExternalModule().then(() => {
                             `▪ Title : ${senarioTitle} <br><br>
                                  ▪ Description : ${senarioDescription} <br><br>
                                  ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
-                                 ▪ Media <br> <iframe
+                                 ▪ <b>Optional Enrichment Media</b><br> <iframe
                                             allow="autoplay; encrypted-media; fullscreen;
                                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                             src=${embeddingUrl}
@@ -5845,7 +5845,7 @@ loadExternalModule().then(() => {
                                 `▪ Title : ${senarioTitle} <br><br>
                                     ▪ Description : ${senarioDescription} <br><br>
                                     ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
-                                    ▪ Media : <a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>
+                                    ▪ <b>Optional Enrichment Media</b>: <a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>
                                     `
                               );
                             }
@@ -5856,7 +5856,7 @@ loadExternalModule().then(() => {
                         //     `▪ Title : ${senarioTitle} <br><br>
                         //        ▪ Description : ${senarioDescription} <br><br>
                         //        ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                        //        ▪ Media <br>  <iframe
+                        //        ▪ <b>Optional Enrichment Media</b><br>  <iframe
                         //                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                         //                         src=${embeddingUrl}
                         //                         frameborder="0"
@@ -6004,7 +6004,7 @@ loadExternalModule().then(() => {
                           }
 
                           if (embeddingUrl) {
-                            questionText = `▪ Media <br>  <iframe
+                            questionText = `▪ <b>Optional Enrichment Media</b><br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
