@@ -127,19 +127,7 @@ const CreateYourOwn = ({
       const url: any = new URL(
         `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
       );
-      const params = new URLSearchParams();
-      params.set("mode", "A");
-      params.set(
-        "information",
-        JSON.stringify({
-          data: {
-            information: `${userContextRef.current.value}\nObjective : ${objective}\nIndustry : ${industry}\nDepartment : ${department}\nKey Stakeholders : ${keyStakeholders}`,
-          },
-          title: "",
-        })
-      );
-      params.set("access_token", basicAuth);
-      params.set("creator_user_id", userId);
+
       const add_prompt_list = [
         "role_play",
         "normal",
@@ -147,11 +135,23 @@ const CreateYourOwn = ({
         "checkin",
         "case",
       ];
-      console.log(add_prompt_list[numOfTries], numOfTries, "numoftries");
-      params.set("flavour", add_prompt_list[numOfTries]);
-      params.set("is_micro", `${simulationType === "short" ? true : false}`);
 
-      url.search = params;
+      const params = {
+        mode: "A",
+        information: JSON.stringify({
+          data: {
+            information: `${userContextRef.current.value}\nObjective: ${objective}\nIndustry: ${industry}\nDepartment: ${department}\nKey Stakeholders: ${keyStakeholders}`,
+          },
+          title: "",
+        }),
+        access_token: basicAuth,
+        creator_user_id: userId,
+        flavour: add_prompt_list[numOfTries],
+        is_micro: simulationType === "short",
+      };
+
+      console.log(add_prompt_list[numOfTries], numOfTries, "numoftries");
+
 
       let awaitedData: NodeJS.Timeout | undefined;
       let retryTimeout: NodeJS.Timeout | undefined;
@@ -180,6 +180,7 @@ const CreateYourOwn = ({
             Authorization: basicAuth,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(params)
         })
           .then((response) => response.json())
           .then((data) => {

@@ -277,20 +277,18 @@ const CreateOwn = ({
       const url: any = new URL(
         `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
       );
-      const params = new URLSearchParams();
-      params.set("mode", "A");
-      params.set(
-        "information",
-        JSON.stringify({
+      const params = {
+        mode: "A",
+        information: JSON.stringify({
           data: {
             information: generatedSummary,
           },
           title: video_title,
-        })
-      );
-      params.set("access_token", basicAuth);
-      params.set("creator_user_id", userId);
-      url.search = params;
+        }),
+        access_token: basicAuth,
+        creator_user_id: userId,
+      };
+
 
       console.log(url);
       fetch(url, {
@@ -299,6 +297,7 @@ const CreateOwn = ({
           Authorization: basicAuth,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(params)
       })
         .then((response) => response.json())
         .then((data) => {

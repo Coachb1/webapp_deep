@@ -2515,21 +2515,16 @@ async function handleScenarioRegenerationCT(signals) {
   const url = new URL(
     `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
   );
-  const params = new URLSearchParams();
-  params.set("mode", "A");
-  params.set(
-    "url",
-    currentURL
-  );
-  params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log('is_micro', snnipetConfig.isMicro)
-  if (snnipetConfig.isMicro !== undefined){
-    params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
-  }
 
-  params.set("regeneration", true);
+  const data_params = {
+    mode: "A",
+    url: currentURL,
+    access_token: `Basic ${createBasicAuthToken(key, secret)}`,
+    regeneration: true,
+    is_micro: `${snnipetConfig.isMicro === 'true'? true : false}`,
 
-  url.search = params;
+  };
+
 
   await fetch(url, {
     method: "POST",
@@ -2537,6 +2532,7 @@ async function handleScenarioRegenerationCT(signals) {
       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data_params)
   })
     .then((response) => response.json())
     .then((data) => {
@@ -2773,21 +2769,16 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
   const allMessages = gShadowRoot.getElementById("messages").childNodes;
 
   const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
-  const params = new URLSearchParams();
-  params.set("mode", "A");
-  params.set(
-    "url",
-    currentURL
-  );
-  params.set("access_token", `Basic ${createBasicAuthToken(key, secret)}`);
+  const data_params = {
+    mode: "A",
+    url: currentURL,
+    access_token: `Basic ${createBasicAuthToken(key, secret)}`,
+    is_micro: `${snnipetConfig.isMicro === 'true'? true : false}`,
+    flavour: snnipetConfig.flavour
+
+  };
+
   console.log('is_micro', snnipetConfig.isMicro)
-  if (snnipetConfig.isMicro !== undefined){
-    params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
-  }
-  if (snnipetConfig.flavour !== undefined){
-    params.set("flavour", snnipetConfig.flavour);
-  }
-  url.search = params;
 
   const shadowRoot = document.getElementById("chat-element").shadowRoot
 
@@ -2797,6 +2788,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data_params)
   })
     .then((response) => response.json())
     .then((data) => {
