@@ -5954,6 +5954,14 @@ async function submitEmailAndName2() {
     appendMessage2(recommDiv);
   }
 
+  if (snnipetConfigSTT["psychometric"] === "true" ||
+    Object.keys(snnipetConfigSTT).length > 0) {
+    increaseSessionForAccesscodeStt(
+      userId2,
+      AccessCodeStt
+    );
+  }
+
   // })
   // .catch((err) => {
   //   console.log(err);
@@ -9226,10 +9234,10 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
                 });
-                increaseSessionForAccesscodeStt(
-                  userId2,
-                  latestMessage
-                );
+                // increaseSessionForAccesscodeStt(
+                //   userId2,
+                //   AccessCodeStt
+                // );
               } else {
                 signals.onResponse({
                   html: `<b>Do you have interaction code for your simulation?</b><br/><br/>

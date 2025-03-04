@@ -116,6 +116,7 @@ let isEmptyAudio = false;
 let EmailCandidate;
 let ClientUserInformation;
 let responseWordLimit = 15;
+let accessCode;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -1424,6 +1425,16 @@ async function submitEmailAndName() {
       if ( page_name !== 'explore'){
         increaseActionPoint(userId, "interaction_attempted");
       }
+
+
+      if (snnipetConfig["psychometric"] === "true" ||
+        Object.keys(snnipetConfig).length > 0){
+        increaseSessionForAccesscode(
+          userId,
+          accessCode
+        );
+
+      } 
     // })
     // .catch((err) => {
     //   console.log(err);
@@ -4813,6 +4824,7 @@ loadExternalModule().then(() => {
             ) {
               console.log("Access Code Matched")
               updateClientInfo(widgetClientId,user_email, user_email)
+              accessCode = latestMessage
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
                 LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
@@ -4821,10 +4833,10 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
                 })
-                increaseSessionForAccesscode(
-                  userId,
-                  latestMessage
-                );
+                // increaseSessionForAccesscode(
+                //   userId,
+                //   accessCode
+                // );
 
               } 
               else{
