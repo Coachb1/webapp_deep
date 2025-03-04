@@ -6252,21 +6252,16 @@ async function handleScenarioRegeneration(signals) {
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
   );
-  const params = new URLSearchParams();
-  params.set("mode", "A");
-  params.set("url", currentURL);
-  params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log("is_micro", snnipetConfigSTT.isMicro);
-  if (snnipetConfigSTT.isMicro !== undefined) {
-    params.set(
-      "is_micro",
-      `${snnipetConfigSTT.isMicro === "true" ? true : false}`
-    );
-  }
-
-  params.set("regeneration", true);
-
-  url.search = params;
+  const data_params = {
+    mode: "A",
+    url: currentURL,
+    access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+    regeneration: true,
+    is_micro: `${snnipetConfigSTT.isMicro === 'true'? true : false}`
+  };  
+  
+  console.log("is_micro", snnipetConfigSTT.isMicro, data_params);
+  
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
     method: "POST",
@@ -6274,6 +6269,7 @@ async function handleScenarioRegeneration(signals) {
       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data_params)
   })
     .then((response) => response.json())
     .then((data) => {
@@ -6527,22 +6523,16 @@ async function handleOptionButtonClick2(
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
   );
-  const params = new URLSearchParams();
-  params.set("mode", "A");
-  params.set("url", currentURL);
-  params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log("is_micro", snnipetConfigSTT.isMicro);
-  if (snnipetConfigSTT.isMicro !== undefined) {
-    params.set(
-      "is_micro",
-      `${snnipetConfigSTT.isMicro === "true" ? true : false}`
-    );
-  }
-  if (snnipetConfigSTT.flavour !== undefined) {
-    params.set("flavour", snnipetConfigSTT.flavour);
-  }
 
-  url.search = params;
+  const data_params = {
+    mode: "A",
+    url: currentURL,
+    access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+    is_micro: `${snnipetConfigSTT.isMicro === "true" ? true : false}`,
+    flavour: snnipetConfigSTT.flavour
+  };
+  
+
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
     method: "POST",
@@ -6550,6 +6540,7 @@ async function handleOptionButtonClick2(
       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data_params)
   })
     .then((response) => response.json())
     .then((data) => {
