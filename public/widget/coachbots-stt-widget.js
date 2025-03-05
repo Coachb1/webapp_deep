@@ -257,6 +257,13 @@ let responderDisplayNameStt;
 let IsSingleSelectSTT;
 let AccessCodeStt;
 
+let startScenarioRecommendationsStt=false;
+let PreviousSessionInfoSTT = {
+  "sessionId": null,
+  "skills": null
+}
+let userScenarioRecommendationStt;
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -3789,9 +3796,24 @@ const handleEndCoachingClick2 = async (randomId) => {
     //   appendMessage(message);
 
     //* send message to start new session
-    appendMessage2(
-      "<b>Please enter another interaction code to start a new interaction.</b>"
-    );
+    userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
+    console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
+    if (['psychometric', 'game'].includes(senarioCase2) 
+      || !clientuserInformationSTT.show_recommendations 
+      || userScenarioRecommendationStt.total_recommendation >= 2){
+        appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
+    } else {
+
+          appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+              <div class="deep-chat-temporary-message" id='related-recommendation2'>
+              <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+              <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+        `)
+      startScenarioRecommendationsStt = true
+      PreviousSessionInfoSTT['sessionId'] =  sessionId2
+      PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+    }
+
     submitEmailAndName2();
   } else {
     // appendMessage2(getCredentialsForm2());
@@ -5745,7 +5767,7 @@ async function setMcqVariablesStt() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then(async (data) => {
         reportUrl2 = data.url;
         globalReportUrl2 = data.url;
         console.log("Report Url : ", reportUrl2, globalReportUrl2);
@@ -5764,9 +5786,23 @@ async function setMcqVariablesStt() {
           appendMessage2(message2);
 
           //* send message to start new session
-          appendMessage2(
-            "<b>Please enter another interaction code to start a new interaction.</b>"
-          );
+          userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
+          console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
+          if (['psychometric', 'game'].includes(senarioCase2) 
+            || !clientuserInformationSTT.show_recommendations 
+            || userScenarioRecommendationStt.total_recommendation >= 2){
+            appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
+          } else {
+    
+              appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                  <div class="deep-chat-temporary-message" id='related-recommendation2'>
+                  <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                  <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+            `)
+          startScenarioRecommendationsStt = true
+          PreviousSessionInfoSTT['sessionId'] =  sessionId2
+          PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+        }
           submitEmailAndName2();
         }
       });
@@ -5918,7 +5954,10 @@ async function submitEmailAndName2() {
   }
   sendEmail2(sessionId2, globalReportUrl2);
   const page_name = questionData2.results[0].page_name;
-  const test_code = testCode2;
+  const test_code = testCode2
+  const skills = questionData2.results[0].skills_to_evaluate;
+  const session_id = sessionId2
+  const scenario_case = senarioCase2
   resetAllVariablesStt();
   //@disable the input
   const tChatElementRef = document.getElementById("chat-element2")
@@ -6131,6 +6170,140 @@ function generateOptionButtons2() {
     // Append the button to the container
     container.appendChild(button);
   });
+}
+
+async function getTestRecommendationsStt(origin_test_id, test_case, session_id, user_id) {
+  const params = new URLSearchParams({
+      origin_test_id: origin_test_id || "",
+      test_case: test_case || "",
+      session_id: session_id || "",
+      user_id: user_id || ""
+  });
+
+  const url = `${baseURL2}/tests/test-recommendations/?${params.toString()}`;
+
+  try {
+      const response = await fetch(url, {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
+          }
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}, ${response}`);
+      }
+
+      const data = await response.json();
+      console.log("Test Recommendations:", data);
+      return data;
+  } catch (error) {
+      console.error("Failed to fetch test recommendations:", error);
+      throw new Error(`Error: ${error}`);
+
+  }
+}
+
+async function testRecommendationExceededStt(origin_test_id, test_case, session_id, user_id){
+  const data = await getTestRecommendationsStt(origin_test_id, test_case, session_id, user_id)
+  if (data.total_recommendation > 2) {
+    return true
+  } else{
+    return false
+  }
+}
+
+async function createTestRecommendationStt(recommended_test_id, session_id, test_case) {
+  const url = `${baseURL2}/tests/test-recommendations/`;
+
+  const payload = {
+      recommended_test_id: recommended_test_id,
+      session_id: session_id,
+      test_case: test_case
+  };
+
+  try {
+      const response = await fetch(url, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
+          },
+          body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Test Recommendation Created:", data);
+      return data;
+  } catch (error) {
+      console.error("Failed to create test recommendation:", error);
+      throw new Error(`Error: ${error}`);
+
+  }
+}
+
+
+async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro }) {
+  const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
+  const params = {
+      mode: "A",
+      information: JSON.stringify({
+          data: {
+              information: `Targeted Skills: ${skills}`,
+          },
+          title: "",
+      }),
+      access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      creator_user_id: userId,
+      flavour: flavour,
+      is_micro: isMicro,
+      previous_session_id: sessionId,
+  };
+
+  try {
+      const response = await fetch(url, {
+          method: "POST",
+          headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(params),
+      });
+
+      const data = await response.json();
+      console.log("Created Test Result:", data);
+
+      if (data[0]?.message || data[0]?.error) {
+          console.error("Error generating the scenarios.");
+          throw new Error("Failed to generate scenario");
+      }
+
+      return data[0]; // Ensure we return the resolved data
+  } catch (err) {
+      console.error("Fetch Error:", err);
+      throw new Error("Failed to generate scenario");
+  }
+}
+
+
+function copyClipboard(block_id_to_copy) {
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
+    
+    if (testCodeBlock) {
+        navigator.clipboard.writeText(testCodeBlock.innerText)
+            .then(() => {
+                console.log("Text copied successfully!");
+            })
+            .catch(err => console.error("Failed to copy text:", err));
+    } else {
+        console.error("Element not found:", block_id_to_copy);
+    }
 }
 
 const handleAttemptScenaiosSTT = async (title, test_code) => {
@@ -9172,6 +9345,79 @@ loadExternalModule().then(() => {
           // get latest message
           let latestMessage = body.messages[body.messages.length - 1].text;
 
+          if (startScenarioRecommendationsStt){
+            var chatElement = document.getElementById("chat-element2");
+            const shdwroot = chatElement.shadowRoot;
+            const buttons = shdwroot.querySelectorAll("#related-recommendation2 button");
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.style.opacity = "0.5"; // Grey out
+                button.style.cursor = "not-allowed";
+            });
+            if (latestMessage === 'Yes'){
+              LoadingMessageWithText("Fetching your AI curated simulation...");
+              console.log('userScenarioRecommendation', userScenarioRecommendationStt)
+              const test_case = userScenarioRecommendationStt.results.length > 0 
+                  ? userScenarioRecommendationStt.results[0].test_case === 'soft_skills' 
+                      ? "hard_skills" 
+                      : "soft_skills"
+                  : "hard_skills";  
+              console.log('test_case', test_case);
+
+              try {
+                const data = await generateTestScenarioStt({ 
+                    userId: userId2, 
+                    sessionId: PreviousSessionInfoSTT['sessionId'], 
+                    skills: PreviousSessionInfoSTT['skills'],
+                    flavour: test_case,
+                    isMicro: true
+                });
+                console.log(data);
+        
+                const testCodeMessage = `
+                  <b>Title</b>: ${data.title} <br>
+                  <b>Description</b>: ${data.description} <br>
+                  <b>Test Code</b>: <br> 
+                  <pre id="test-code-block">${data.test_code}</pre>
+                  <button id="copy-test-code2" style="
+                      padding: 6px 12px;
+                      background: #007bff;
+                      color: white;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                      margin-top: 10px;
+                  " onclick="copyClipboard('test-code-block')">Copy</button>
+              `;
+
+        
+                signals.onResponse({
+                    html: testCodeMessage,
+                    text: 'Please enter interaction code to start a new interaction.'
+                });
+
+                createTestRecommendationStt(
+                  data.test_id,
+                  PreviousSessionInfoSTT['sessionId'],
+                  test_case
+                )
+        
+            } catch (error) {
+                console.log(error);
+            }
+        
+            console.log('hi..........');
+            } else {
+              signals.onResponse(
+                {
+                  html: "Thank you! If you wish to try another interaction code you can try now."
+                }        
+              )
+            }
+            startScenarioRecommendationsStt= false;
+            return;
+          }
+
           if (askAccessBotCodeSTT) {
             // fetching client information to get access code "AccessCode"
             // console.log(`client:`, clientuserInformationSTT);
@@ -9414,9 +9660,26 @@ loadExternalModule().then(() => {
                 }
                 appendMessage2(message);
                 // //* send message to start new session
-                signals.onResponse({
-                  html: "<b>Please enter another interaction code to start a new interaction.</b>",
-                });
+                userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
+                console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
+                if (['psychometric', 'game'].includes(senarioCase2) 
+                  || !clientuserInformationSTT.show_recommendations 
+                  || userScenarioRecommendationStt.total_recommendation >= 2){
+                  signals.onResponse({
+                    html: "<b>Please enter another interaction code to start a new interaction.</b>",
+                  });
+                } else {
+                  signals.onResponse({
+                    html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                          <div class="deep-chat-temporary-message" id='related-recommendation2'>
+                          <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                          <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                    `
+                  })
+                  startScenarioRecommendationsStt = true
+                  PreviousSessionInfoSTT['sessionId'] =  sessionId2
+                  PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+                }
                 submitEmailAndName2();
               }
             }
@@ -12235,9 +12498,26 @@ loadExternalModule().then(() => {
                       }
                       appendMessage2(message);
                       // //* send message to start new session
-                      signals.onResponse({
-                        html: "<b>Please enter another interaction code to start a new interaction.</b>",
-                      });
+                      userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
+                      console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
+                      if (['psychometric', 'game'].includes(senarioCase2) 
+                        || !clientuserInformationSTT.show_recommendations 
+                        || userScenarioRecommendationStt.total_recommendation >= 2){
+                        signals.onResponse({
+                          html: "<b>Please enter another interaction code to start a new interaction.</b>",
+                        });
+                      } else {
+                        signals.onResponse({
+                          html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                                <div class="deep-chat-temporary-message" id='related-recommendation2'>
+                                <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                                <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                          `
+                        })
+                        startScenarioRecommendationsStt = true
+                        PreviousSessionInfoSTT['sessionId'] =  sessionId2
+                        PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+                      }
                       submitEmailAndName2();
                     }
                   }
@@ -12264,10 +12544,33 @@ loadExternalModule().then(() => {
                     }
                     appendMessage2(message);
                     // //* send message to start new session
-                    signals.onResponse({
-                      html: "<b>Please enter another interaction code to start a new interaction.</b>",
-                    });
+
+                    userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
+                    console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
+                    if (['psychometric', 'game'].includes(senarioCase2) 
+                      || !clientuserInformationSTT.show_recommendations 
+                      || userScenarioRecommendationStt.total_recommendation >= 2){
+
+                      signals.onResponse({
+                        html: "<b>Please enter another interaction code to start a new interaction.</b>",
+                      });
+                    } else {
+                      signals.onResponse({
+                        html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                              <div class="deep-chat-temporary-message" id='related-recommendation2'>
+                              <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                              <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                        `
+                      })
+                      startScenarioRecommendationsStt = true
+                      PreviousSessionInfoSTT['sessionId'] =  sessionId2
+                      PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+                    }
+                    
+                    
                     submitEmailAndName2();
+
+
 
                     //Enable Copy Paste
                     var chatElementRef2 =
@@ -12388,7 +12691,7 @@ const openChatContainer2 = () => {
 
   const container = shadowR.getElementById("container");
   container.oncopy = () => {
-    if (!subdomainStt.includes("localhost")) {
+    if (!subdomainStt.includes("localhost") && !subdomainStt.includes('playground')) {
       alert("Copying is not allowed");
       return false;
     }
