@@ -5003,7 +5003,16 @@ loadExternalModule().then(() => {
                   <b>Title</b>: ${data.title} <br>
                   <b>Description</b>: ${data.description} <br>
                   <b>Test Code</b>: <br> 
-                  <pre id="test-code-block">${data.test_code}</pre>
+                  <pre id="test-code-block" style="
+                      background: #f8f9fa; /* Light gray background */
+                      color: #6c757d; /* Gray text */
+                      padding: 10px;
+                      border-radius: 4px;
+                      font-size: 14px;
+                      opacity: 0.9; /* Makes it slightly transparent */
+                      border: 1px solid #b0b0b0; 
+                      border-radius: 8px; /* Rounded corners */
+                  ">${data.test_code}</pre>
                   <button id="copy-test-code" style="
                       padding: 6px 12px;
                       background: #007bff;
