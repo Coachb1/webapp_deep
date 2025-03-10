@@ -8276,6 +8276,7 @@ loadExternalModule().then(() => {
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
+      // throw new Error(`Failed to run anthropic : ${response}`);
       if (nextLLM?.toLowerCase().includes("gemini")) {
         GeminiAiResponse(
           userInputMessage,
@@ -8688,7 +8689,7 @@ loadExternalModule().then(() => {
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
-        selectedModel: selectedModel || "gemini-1.5-flash",
+        selectedModel: selectedModel || "gemini-2.0-flash",
         systemInstructions: LLMsystemInstructions,
       }),
     });
@@ -9037,7 +9038,7 @@ loadExternalModule().then(() => {
           conversationId,
           latestMessage,
           streamWithAudio,
-          nextModel
+          nextModel || selectedModel
         );
       } else {
         enableEndSessionButton();
@@ -10275,345 +10276,59 @@ loadExternalModule().then(() => {
                   conversation_id2,
                   latestMessage,
                   true, // True by Default | allowAudioInteraction,
-                  "gemini-1.5-pro",
+                  "gemini-2.0-flash",
                   "gemini-1.5-flash"
                 );
               } else {
-                console.log(
-                  "#similarity LAST QUESTION : ",
-                  userQuestionsHistory[userQuestionsHistory.length - 1]
-                );
+                console.log("#similarity LAST QUESTION:", userQuestionsHistory.at(-1));
+              
                 let similarityValue = 0;
-
-                if (userQuestionsHistory[userQuestionsHistory.length - 1]) {
+                const lastQuestion = userQuestionsHistory.at(-1)?.toLowerCase();
+              
+                if (lastQuestion) {
                   const response = await fetch("/api/string-similarity", {
                     method: "POST",
-                    body: JSON.stringify({
-                      sentence1:
-                        userQuestionsHistory[
-                          userQuestionsHistory.length - 1
-                        ].toLowerCase(),
-                      sentence2: latestMessage.toLowerCase(),
-                    }),
+                    body: JSON.stringify({ sentence1: lastQuestion, sentence2: latestMessage.toLowerCase() }),
                   });
-
+              
                   if (response.ok) {
                     const data = await response.json();
-                    console.log("#similarity Data : ", data);
                     similarityValue = Number(data.similarity);
+                    console.log("#similarity Data:", data);
                   }
                 }
-
-                console.log("#similarity SIMILARITY VALUE : ", similarityValue);
-                console.log("#similarity LLM Queue : ", conversationLlmQueue);
-
-                botSelectedLLM = {
-                  model1: "gemini-1.5-flash",
-                  model2: "gemini-1.5-pro",
-                  model3: "gemini-1.0-pro",
-                };
-
-                if (
-                  botSelectedLLM.model1.toLocaleLowerCase() ===
-                  "gemini-1.5-flash"
-                ) {
-                  if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini-1.5-pro")
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.5-pro",
-                      "gemini-1.0-pro"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-pro");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 2
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.0-pro",
-                      "gemini-1.5-flash"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-pro");
-                  } else {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.5-flash",
-                      "gemini-1.5-pro"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-flash");
-                  }
-                } else if (
-                  botSelectedLLM.model1.toLocaleLowerCase() === "gemini-1.5-pro"
-                ) {
-                  if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini-1.5-flash")
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.5-flash",
-                      "gemini-1.0-pro"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-flash");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 2
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.0-pro",
-                      "gemini-1.5-pro"
-                    );
-                    conversationLlmQueue.push("gemini-1.0-pro");
-                  } else {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.5-pro",
-                      "gemini-1.5-flash"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-pro");
-                  }
-                } else if (
-                  botSelectedLLM.model1.toLocaleLowerCase() === "gemini-1.0-pro"
-                ) {
-                  if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini-1.5-flash")
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.5-flash",
-                      "gemini-1.5-pro"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-flash");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 2
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.5-pro",
-                      "gemini-1.0-pro"
-                    );
-                    conversationLlmQueue.push("gemini-1.5-pro");
-                  } else {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gemini-1.0-pro",
-                      "gemini-1.5-flash"
-                    );
-                    conversationLlmQueue.push("gemini-1.0-pro");
-                  }
+              
+                console.log("#similarity SIMILARITY VALUE:", similarityValue);
+                console.log("#similarity LLM Queue:", conversationLlmQueue);
+              
+                const botSelectedLLM = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+                const messageFrequency = userQuestionsHistory.filter(
+                  (msg) => msg?.toLowerCase() === latestMessage.toLowerCase()
+                ).length;
+              
+                let selectedModel = botSelectedLLM[0]; // Default to "gemini-2.0-flash"
+                let fallbackModel = botSelectedLLM[1]; // Default fallback to "gemini-1.5-flash"
+              
+                if (messageFrequency === 1 || (similarityValue > 90)) {
+                  selectedModel = botSelectedLLM[1]; // Use "gemini-1.5-flash"
+                  fallbackModel = botSelectedLLM[2]; // Fallback to "gemini-1.5-pro"
+                } else if (messageFrequency === 2) {
+                  selectedModel = botSelectedLLM[2]; // Use "gemini-1.5-pro"
+                  fallbackModel = botSelectedLLM[0]; // Fallback to "gemini-2.0-flash"
                 }
-
-                //   if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
-                //     if (
-                //       userQuestionsHistory.filter(
-                //         (msg) =>
-                //           msg?.toLowerCase() === latestMessage.toLowerCase()
-                //       ).length === 1 ||
-                //       (similarityValue > 90 &&
-                //         conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                //           "gpt")
-                //     ) {
-                //       GeminiAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("gemini");
-                //     } else if (
-                //       userQuestionsHistory.filter(
-                //         (msg) =>
-                //           msg?.toLowerCase() === latestMessage.toLowerCase()
-                //       ).length === 2
-                //     ) {
-                //       OpenAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueuepush("gpt");
-                //     } else {
-                //       anthropicAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("anthropic");
-                //     }
-                //   } else if (
-                //     botSelectedLLM?.llm1?.toLowerCase().includes("gpt")
-                //   ) {
-                //     if (
-                //       userQuestionsHistory.filter(
-                //         (msg) =>
-                //           msg?.toLowerCase() === latestMessage.toLowerCase()
-                //       ).length === 1 ||
-                //       (similarityValue > 90 &&
-                //         conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                //           "gemini")
-                //     ) {
-                //       GeminiAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("gemini");
-                //     } else if (
-                //       userQuestionsHistory.filter(
-                //         (msg) =>
-                //           msg?.toLowerCase() === latestMessage.toLowerCase()
-                //       ).length === 2
-                //     ) {
-                //       anthropicAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("anthropic");
-                //     } else {
-                //       OpenAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("gpt");
-                //     }
-                //   } else {
-                //     if (
-                //       userQuestionsHistory.filter(
-                //         (msg) =>
-                //           msg?.toLowerCase() === latestMessage.toLowerCase()
-                //       ).length === 1 ||
-                //       (similarityValue > 90 &&
-                //         conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                //           "gpt")
-                //     ) {
-                //       OpenAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("gpt");
-                //     } else if (
-                //       userQuestionsHistory.filter(
-                //         (msg) =>
-                //           msg?.toLowerCase() === latestMessage.toLowerCase()
-                //       ).length === 2
-                //     ) {
-                //       anthropicAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("anthropic");
-                //     } else {
-                //       GeminiAiResponse(
-                //         responseData.coach_message_metadata.prompt,
-                //         signals,
-                //         conversation_id2,
-                //         latestMessage,
-                //         allowAudioInteraction,
-                //         botSelectedLLM.llm2,
-                //         botSelectedLLM.llm3
-                //       );
-                //       conversationLlmQueue.push("gemini");
-                //     }
-                //   }
+              
+                GeminiAiResponse(
+                  responseData.coach_message_metadata.prompt,
+                  signals,
+                  conversation_id2,
+                  latestMessage,
+                  allowAudioInteraction,
+                  selectedModel,
+                  fallbackModel
+                );
+                conversationLlmQueue.push(selectedModel);
               }
+              
 
               userQuestionsHistory.push(latestMessage);
 
