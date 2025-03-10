@@ -198,12 +198,13 @@ async function* generateResponseSequence(
 export async function POST(req: Request) {
   try {
     const { prompt, selectedModel, systemInstructions } = await req.json();
-    console.log(`Selected Model : `, selectedModel)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${
       selectedModel || "gemini-1.5-pro"
     }:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
-
+    
     let options: any;
+    console.log(`Selected Model : `, selectedModel)
+    console.log('url', url)
 
     if (selectedModel === "gemini-1.0-pro") {
       options = {
