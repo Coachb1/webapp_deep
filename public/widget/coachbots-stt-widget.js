@@ -2947,7 +2947,7 @@ async function handleFaqButtonClick(question) {
         await getUserProfile(userId2);
         if (UserProfileInfo) {
           console.log("======profileType: ", UserProfileInfo.profile_type);
-          if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
+          if (["coach", "mentor"].includes(UserProfileInfo.profile_type) && !['icons_by_ai'].includes(botScenarioCase)) {
             appendMessage2(
               addStickerToMessage(
                 "Begin Session",
