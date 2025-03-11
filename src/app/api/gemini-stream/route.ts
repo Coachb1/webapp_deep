@@ -199,7 +199,7 @@ export async function POST(req: Request) {
   try {
     const { prompt, selectedModel, systemInstructions } = await req.json();
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${
-      selectedModel || "gemini-1.5-pro"
+      selectedModel || "gemini-2.0-flash"
     }:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
     
     let options: any;
