@@ -6,7 +6,7 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
+const baseURL2 = ["platform", 'www'].includes(subdomainStt) ? prodUrlStt : devUrlStt;
 
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {
@@ -2947,7 +2947,7 @@ async function handleFaqButtonClick(question) {
         await getUserProfile(userId2);
         if (UserProfileInfo) {
           console.log("======profileType: ", UserProfileInfo.profile_type);
-          if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
+          if (["coach", "mentor"].includes(UserProfileInfo.profile_type) && !['icons_by_ai'].includes(botScenarioCase)) {
             appendMessage2(
               addStickerToMessage(
                 "Begin Session",
@@ -10277,7 +10277,7 @@ loadExternalModule().then(() => {
                   latestMessage,
                   true, // True by Default | allowAudioInteraction,
                   "gemini-2.0-flash",
-                  "gemini-1.5-flash"
+                  "gemini-2.0-flash-lite-001"
                 );
               } else {
                 console.log("#similarity LAST QUESTION:", userQuestionsHistory.at(-1));
@@ -10301,20 +10301,20 @@ loadExternalModule().then(() => {
                 console.log("#similarity SIMILARITY VALUE:", similarityValue);
                 console.log("#similarity LLM Queue:", conversationLlmQueue);
               
-                const botSelectedLLM = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+                const botSelectedLLM = ["gemini-2.0-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
                 const messageFrequency = userQuestionsHistory.filter(
                   (msg) => msg?.toLowerCase() === latestMessage.toLowerCase()
                 ).length;
               
-                let selectedModel = botSelectedLLM[0]; // Default to "gemini-2.0-flash"
-                let fallbackModel = botSelectedLLM[1]; // Default fallback to "gemini-1.5-flash"
+                let selectedModel = botSelectedLLM[0]; 
+                let fallbackModel = botSelectedLLM[1];
               
                 if (messageFrequency === 1 || (similarityValue > 90)) {
-                  selectedModel = botSelectedLLM[1]; // Use "gemini-1.5-flash"
-                  fallbackModel = botSelectedLLM[2]; // Fallback to "gemini-1.5-pro"
+                  selectedModel = botSelectedLLM[1]; 
+                  fallbackModel = botSelectedLLM[2];
                 } else if (messageFrequency === 2) {
-                  selectedModel = botSelectedLLM[2]; // Use "gemini-1.5-pro"
-                  fallbackModel = botSelectedLLM[0]; // Fallback to "gemini-2.0-flash"
+                  selectedModel = botSelectedLLM[2];
+                  fallbackModel = botSelectedLLM[0];
                 }
               
                 GeminiAiResponse(
