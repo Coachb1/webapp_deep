@@ -6,7 +6,7 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
+const baseURL2 = ["platform", 'www'].includes(subdomainStt) ? prodUrlStt : devUrlStt;
 
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {

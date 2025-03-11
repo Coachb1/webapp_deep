@@ -5,7 +5,7 @@ const devUrl = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrl = "http://127.0.0.1:8001/api/v1"   // local baseurl
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+const baseURL = ["platform", 'www'].includes(subdomain) ? prodUrl : devUrl;
 
 // const baseURL="https://coach-api-gke-prod.coachbots.com/api/v1" //local
 
