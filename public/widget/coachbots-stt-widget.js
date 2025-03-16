@@ -290,11 +290,23 @@ if (window.user) {
   user_email2 = getAnonymousEmail();
 }
 
-if (window.LogRocket) {
-  window.LogRocket.identify(user_email2, {
-    name: user_name2,
-    email: user_email2,
-  });
+function initLogRocketAndIdentifyUser() {
+  if (window.LogRocket) {
+    window.LogRocket.init("irkulq/coachbots");
+    window.LogRocket.identify(user_email2, {
+      name: user_name2,
+      email: user_email2,
+    });
+    return true;
+  }
+  return false;
+}
+
+if (!initLogRocketAndIdentifyUser()) {
+  let script = document.createElement("script");
+  script.src = "https://cdn.lrkt-in.com/LogRocket.min.js";
+  script.onload = initLogRocketAndIdentifyUser;
+  document.head.appendChild(script);
 }
 
 // 2 - account creation
