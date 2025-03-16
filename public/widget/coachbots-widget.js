@@ -5,10 +5,9 @@ const devUrl = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrl = "http://127.0.0.1:8001/api/v1"   // local baseurl
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL = ["platform", 'www'].includes(subdomain) ? prodUrl : devUrl;
+const baseURL = ["platform", "www"].includes(subdomain) ? prodUrl : devUrl;
 
 // const baseURL="https://coach-api-gke-prod.coachbots.com/api/v1" //local
-
 
 let deepChatPocElement;
 let sessionId = "";
@@ -118,11 +117,11 @@ let ClientUserInformation;
 let responseWordLimit = 15;
 let accessCode;
 
-let startScenarioRecommendations=false;
+let startScenarioRecommendations = false;
 let PreviousSessionInfo = {
-  "sessionId": null,
-  "skills": null
-}
+  sessionId: null,
+  skills: null,
+};
 let userScenarioRecommendation;
 
 function createBasicAuthToken(key = "", secret = "") {
@@ -139,125 +138,136 @@ user = window.user;
 console.log(" User details ", user);
 console.log(user === undefined);
 
+let user_name;
+let user_email;
 
-  let user_name;
-  let user_email;
+console.log(user);
 
-  console.log(user)
+if (user) {
+  user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+  user_email = user.email;
+} else {
+  user_name = "coachbots_anonyoususer";
+  user_email = getAnonymousEmail();
+}
 
-  if (user) {
-    user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
-    user_email = user.email;
-  } else {
-    user_name = "coachbots_anonyoususer";
-    user_email = getAnonymousEmail();
-  }
-
+function initLogRocketAndIdentifyUser() {
   if (window.LogRocket) {
+    window.LogRocket.init("irkulq/coachbots");
     window.LogRocket.identify(user_email, {
       name: user_name,
       email: user_email,
     });
+    return true;
   }
+  return false;
+}
 
-  const initialiseUser = async () => {
-    fetch(`${baseURL}/accounts/`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${basicAuthToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_context: {
-          name: user_name,
-          role: "member",
-          user_attributes: {
-            tag: "deepchat_profile",
-            attributes: {
-              name: user_name,
-              username: user_name,
-              email: user_email,
-            },
+if (!initLogRocketAndIdentifyUser()) {
+  let script = document.createElement("script");
+  script.src = "https://cdn.lrkt-in.com/LogRocket.min.js";
+  script.onload = initLogRocketAndIdentifyUser;
+  document.head.appendChild(script);
+}
+
+const initialiseUser = async () => {
+  fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name,
+            username: user_name,
+            email: user_email,
           },
         },
-        identity_context: {
-          identity_type: "deepchat_unique_id",
-          value: user_email,
-        },
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        clientAllowAudioInteraction = data.client_allow_audio_interactions;
-        userAllowAudioInteraction = data.user_allow_audio_interactions;
-        prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email,
+      },
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      clientAllowAudioInteraction = data.client_allow_audio_interactions;
+      userAllowAudioInteraction = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
 
-        participantId = data.uid;
-        userId = data.uid;
-        userRole = data.role;
+      participantId = data.uid;
+      userId = data.uid;
+      userRole = data.role;
 
-        fetch(
-          `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${basicAuthToken}`,
-            },
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+          if (!data.data.user_info[0].msg) {
+            ClientUserInformation = data.data.user_info[0];
           }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("get-client-information : ", data);
-            if (!data.data.user_info[0].msg) {
-              ClientUserInformation = data.data.user_info[0];
-            }
-            allowPastingAtClientLevel =
-              data.data.user_info[0].ui_information.allow_paste_answer;
-            clientBasedBotHeaderText2 =
-              data.data.user_info[0].ui_information.header;
-            clientBasedBotFooterText2 =
-              data.data.user_info[0].ui_information.bottom_text;
-            clientBasedReadHereText2 =
-              data.data.user_info[0].ui_information.read_text;
+          allowPastingAtClientLevel =
+            data.data.user_info[0].ui_information.allow_paste_answer;
+          clientBasedBotHeaderText2 =
+            data.data.user_info[0].ui_information.header;
+          clientBasedBotFooterText2 =
+            data.data.user_info[0].ui_information.bottom_text;
+          clientBasedReadHereText2 =
+            data.data.user_info[0].ui_information.read_text;
 
-            const headerText2 = document.getElementById("header-text2");
-            const footerText2 = document.getElementById("footer-text2");
-            const instructionsPaneList2 =
-              document.getElementById("instructions-list2");
-            console.log(headerText2);
-            console.log(footerText2);
+          const headerText2 = document.getElementById("header-text2");
+          const footerText2 = document.getElementById("footer-text2");
+          const instructionsPaneList2 =
+            document.getElementById("instructions-list2");
+          console.log(headerText2);
+          console.log(footerText2);
 
-            if (clientBasedBotHeaderText2) {
-              headerText2.innerText = clientBasedBotHeaderText2;
-            }
+          if (clientBasedBotHeaderText2) {
+            headerText2.innerText = clientBasedBotHeaderText2;
+          }
 
-            if (clientBasedBotFooterText2) {
-              footerText2.innerText = clientBasedBotFooterText2;
-            }
+          if (clientBasedBotFooterText2) {
+            footerText2.innerText = clientBasedBotFooterText2;
+          }
 
-            if (clientBasedReadHereText2) {
-              const list = clientBasedReadHereText2
-                .trim()
-                .split("\n")
-                .map((item) => {
-                  return `<li>${item.trim()}</li>`;
-                });
+          if (clientBasedReadHereText2) {
+            const list = clientBasedReadHereText2
+              .trim()
+              .split("\n")
+              .map((item) => {
+                return `<li>${item.trim()}</li>`;
+              });
 
-              instructionsPaneList2.innerHTML = list;
-            }
-          });
-      })
-      .catch((err) => console.log(err));
-  };
+            instructionsPaneList2.innerHTML = list;
+          }
+        });
+    })
+    .catch((err) => console.log(err));
+};
 
-initialiseUser()
+initialiseUser();
 
-const CreateUser = async(username,useremail)=>{
-  console.log("newusername", username)
-  user_name = username
-  user_email = useremail
-  console.log("newuser_name", user_name)
-  console.log("newuser_email", user_email)
+const CreateUser = async (username, useremail) => {
+  console.log("newusername", username);
+  user_name = username;
+  user_email = useremail;
+  console.log("newuser_name", user_name);
+  console.log("newuser_email", user_email);
 
   fetch(`${baseURL}/accounts/`, {
     method: "POST",
@@ -286,20 +296,19 @@ const CreateUser = async(username,useremail)=>{
   })
     .then((response) => response.json())
     .then((data) => {
-      if (!window.user){
+      if (!window.user) {
         window.user = {
-          "given_name": user_name,
-          "email": user_email,
+          given_name: user_name,
+          email: user_email,
+        };
       }
-      }
-      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+      clientAllowAudioInteraction = data.client_allow_audio_interactions;
       userAllowAudioInteraction = data.user_allow_audio_interactions;
       prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
 
       participantId = data.uid;
       userId = data.uid;
       userRole = data.role;
-
 
       fetch(
         `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
@@ -313,47 +322,47 @@ const CreateUser = async(username,useremail)=>{
         .then((res) => res.json())
         .then((data) => {
           console.log("get-client-information : ", data);
-          if (!data.data.user_info[0].msg){
+          if (!data.data.user_info[0].msg) {
             ClientUserInformation = data.data.user_info[0];
           }
-          allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
-          clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
-          clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
-          clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
-      
-      
+          allowPastingAtClientLevel =
+            data.data.user_info[0].ui_information.allow_paste_answer;
+          clientBasedBotHeaderText2 =
+            data.data.user_info[0].ui_information.header;
+          clientBasedBotFooterText2 =
+            data.data.user_info[0].ui_information.bottom_text;
+          clientBasedReadHereText2 =
+            data.data.user_info[0].ui_information.read_text;
+
           const headerText2 = document.getElementById("header-text2");
           const footerText2 = document.getElementById("footer-text2");
-          const instructionsPaneList2 = document.getElementById('instructions-list2')
+          const instructionsPaneList2 =
+            document.getElementById("instructions-list2");
           console.log(headerText2);
           console.log(footerText2);
-      
+
           if (clientBasedBotHeaderText2) {
             headerText2.innerText = clientBasedBotHeaderText2;
           }
-      
+
           if (clientBasedBotFooterText2) {
             footerText2.innerText = clientBasedBotFooterText2;
           }
-      
+
           if (clientBasedReadHereText2) {
             const list = clientBasedReadHereText2
               .trim()
               .split("\n")
               .map((item) => {
-                  return `<li>${item.trim()}</li>`;
+                return `<li>${item.trim()}</li>`;
               });
 
-              instructionsPaneList2.innerHTML = list;
+            instructionsPaneList2.innerHTML = list;
           }
         });
-
     })
     .catch((err) => console.log(err));
-
-
-}
-
+};
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -458,8 +467,6 @@ let recommendationsData = [
     },
   ], // batch seven
 ];
-
-
 
 function getCredentialsForm() {
   let credentialsForm;
@@ -602,15 +609,15 @@ function createMessageNode(message) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
 
-  const avatarNode = document.createElement("div")
+  const avatarNode = document.createElement("div");
   avatarNode.classList.add(["avatar-container", "left-item-position"]);
 
-  const avatarImage = document.createElement("img")
-  avatarImage.setAttribute("src", botAvatarImageURL)
-  avatarImage.setAttribute("class", "avatar")
+  const avatarImage = document.createElement("img");
+  avatarImage.setAttribute("src", botAvatarImageURL);
+  avatarImage.setAttribute("class", "avatar");
   avatarImage.style.marginRight = "8px";
 
-  avatarNode.appendChild(avatarImage)
+  avatarNode.appendChild(avatarImage);
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
@@ -651,12 +658,14 @@ function appendMessage(message) {
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
 }
 
-function snippetDiv(url){
-  if(url.includes("pulse")){
+function snippetDiv(url) {
+  if (url.includes("pulse")) {
     return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
-      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${
+        window.innerWidth < 768 ? "100%" : "45vw"
+      }; scrollbar-width: none;"
       src=${url}
       frameborder="0"
       allowfullscreen
@@ -665,12 +674,14 @@ function snippetDiv(url){
       allowtransparency
       scrolling="no"
     >
-    `
+    `;
   } else {
     return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
-      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${
+        window.innerWidth < 768 ? "100%" : "45vw"
+      }; scrollbar-width: none;"
       src=${url}
       frameborder="0"
       allowfullscreen
@@ -679,27 +690,31 @@ function snippetDiv(url){
       allowtransparency
       scrolling="no"
     >
-    `
+    `;
   }
 }
 
-//* loading element with message 
-function LoadingMessageWithText2(message, shadowRoot){
-  console.log(shadowRoot)
-   //loading message 
-   const loadingElement = shadowRoot.querySelector(".loading-message-text")
-   //  const dotsFlashingElement = shadowRoot.querySelector(".dots-flashing")
-   //  dotsFlashingElement.style.color = "#1f2937"
-    loadingElement.style.display = "flex"
-    loadingElement.style.flexDirection = "row"
-    loadingElement.style.alignItems = "center"
-    const messageElement = document.createElement("span")
-    messageElement.innerHTML = `<b style="color : black; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${ message || "Coachbot is thinking..."}</b>` //${message}
-    messageElement.setAttribute("id", "loading-message")
-    
-    loadingElement.style.width = "fit-content"
-    loadingElement.appendChild(messageElement)
-    shadowRoot.getElementById("messages").scrollBy(0, 500);
+//* loading element with message
+function LoadingMessageWithText2(message, shadowRoot) {
+  console.log(shadowRoot);
+  //loading message
+  const loadingElement = shadowRoot.querySelector(".loading-message-text");
+  //  const dotsFlashingElement = shadowRoot.querySelector(".dots-flashing")
+  //  dotsFlashingElement.style.color = "#1f2937"
+  loadingElement.style.display = "flex";
+  loadingElement.style.flexDirection = "row";
+  loadingElement.style.alignItems = "center";
+  const messageElement = document.createElement("span");
+  messageElement.innerHTML = `<b style="color : black; font-size: ${
+    window.innerWidth < 768 ? "12px" : "14px"
+  }; min-width: 4rem; margin-left: 2rem;">${
+    message || "Coachbot is thinking..."
+  }</b>`; //${message}
+  messageElement.setAttribute("id", "loading-message");
+
+  loadingElement.style.width = "fit-content";
+  loadingElement.appendChild(messageElement);
+  shadowRoot.getElementById("messages").scrollBy(0, 500);
 }
 
 //************** session management :start */
@@ -1212,8 +1227,10 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          if (!EmailCandidate){
-            appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
+          if (!EmailCandidate) {
+            appendMessage(
+              "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+            );
           } else {
             appendMessage(
               `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
@@ -1224,30 +1241,39 @@ async function setMcqVariables() {
           //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
           //   appendMessage(message);
 
-            //Enable Copy Paste
-            var chatElementRef2 = document.getElementById("chat-element");
-            const shadowRoot = chatElementRef2.shadowRoot;
-        
-            const textInputElement = shadowRoot.getElementById("text-input")
-            textInputElement.removeAttribute("onpaste")
+          //Enable Copy Paste
+          var chatElementRef2 = document.getElementById("chat-element");
+          const shadowRoot = chatElementRef2.shadowRoot;
+
+          const textInputElement = shadowRoot.getElementById("text-input");
+          textInputElement.removeAttribute("onpaste");
           //* send message to start new session
 
-          userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
-          console.log(senarioCase, ClientUserInformation.show_recommendations )
-          if (['psychometric', 'game'].includes(senarioCase) 
-            || !ClientUserInformation.show_recommendations 
-            || userScenarioRecommendation.total_recommendation >= 2){
-              appendMessage("<b>Please enter another interaction code to start a new interaction.</b>")
+          userScenarioRecommendation = await getTestRecommendations(
+            questionData.results[0].uid,
+            null,
+            null,
+            userId
+          );
+          console.log(senarioCase, ClientUserInformation.show_recommendations);
+          if (
+            ["psychometric", "game"].includes(senarioCase) ||
+            !ClientUserInformation.show_recommendations ||
+            userScenarioRecommendation.total_recommendation >= 2
+          ) {
+            appendMessage(
+              "<b>Please enter another interaction code to start a new interaction.</b>"
+            );
           } else {
-
-                appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+            appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
                     <div class="deep-chat-temporary-message" id='related-recommendation'>
                     <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                     <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-              `)
-            startScenarioRecommendations = true
-            PreviousSessionInfo['sessionId'] =  sessionId
-            PreviousSessionInfo['skills'] = questionData.results[0].skills_to_evaluate
+              `);
+            startScenarioRecommendations = true;
+            PreviousSessionInfo["sessionId"] = sessionId;
+            PreviousSessionInfo["skills"] =
+              questionData.results[0].skills_to_evaluate;
           }
           submitEmailAndName();
         }
@@ -1266,88 +1292,86 @@ async function setMcqVariables() {
 }
 
 //* handle MCQ type test : end
-function isEmail(emailAdress){
+function isEmail(emailAdress) {
   let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-if (emailAdress.match(regex)) 
-  return true; 
-
- else 
-  return false; 
+  if (emailAdress.match(regex)) return true;
+  else return false;
 }
 
 const isBusinessEmail = (email) => {
   const genericDomains = [
-    'gmail.com',
-    'yahoo.com',
-    'hotmail.com',
-    'outlook.com',
-    'icloud.com',
-    'aol.com',
+    "gmail.com",
+    "yahoo.com",
+    "hotmail.com",
+    "outlook.com",
+    "icloud.com",
+    "aol.com",
   ];
-  const domain = email.split('@')[1];
+  const domain = email.split("@")[1];
   return !genericDomains.includes(domain);
 };
 
 let queryParams;
 
-async function proceedFormFlow(msg, isWorkingEmail=false) {
-    if (formFields.length === 0) {
-      return [true, "None"];
-    }
-  
-    isEmailForm = true;
-    const fieldName = formFields[0];
-    if (fieldName === "email") {
-      if (!isEmail(msg)){
-        return [
-          false,
-          `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`,
-        ];
-      } else if(isWorkingEmail && !isBusinessEmail(msg)){
-        return [
-          false,
-          `<p style='font-size: 14px;color: #991b1b;'>Please use your organization email only!</b></p>`,
-        ];
-      }
-  
-    }
-    
-    formFields = formFields.slice(1);
-  
-    emailNameformJson[fieldName] = fieldName === 'email' ? msg.toLowerCase() : msg;
+async function proceedFormFlow(msg, isWorkingEmail = false) {
+  if (formFields.length === 0) {
     return [true, "None"];
-  
-  
+  }
+
+  isEmailForm = true;
+  const fieldName = formFields[0];
+  if (fieldName === "email") {
+    if (!isEmail(msg)) {
+      return [
+        false,
+        `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`,
+      ];
+    } else if (isWorkingEmail && !isBusinessEmail(msg)) {
+      return [
+        false,
+        `<p style='font-size: 14px;color: #991b1b;'>Please use your organization email only!</b></p>`,
+      ];
+    }
+  }
+
+  formFields = formFields.slice(1);
+
+  emailNameformJson[fieldName] =
+    fieldName === "email" ? msg.toLowerCase() : msg;
+  return [true, "None"];
 }
 
 const increaseSessionForAccesscode = async (userId, accessCode) => {
   const requestData = {
     access_code: accessCode,
-    user_id: userId
+    user_id: userId,
   };
 
   try {
-    const response = await fetch(`${baseURL}/accounts/increase_test_attempts_in_accesscode/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`
-      },
-      body: JSON.stringify(requestData),
-    });
+    const response = await fetch(
+      `${baseURL}/accounts/increase_test_attempts_in_accesscode/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+        body: JSON.stringify(requestData),
+      }
+    );
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data)
-      return true
+      console.log(data);
+      return true;
     } else {
       const data = await response.json();
-      console.log(data)
-      return false
+      console.log(data);
+      return false;
     }
   } catch (error) {
-    console.error('Error during API call:', error);
+    console.error("Error during API call:", error);
   }
 
   return false;
@@ -1407,7 +1431,7 @@ async function submitEmailAndName() {
       name: window.user.given_name,
     });
   }
-  if (!window.user){
+  if (!window.user) {
     await fetch(
       `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
       {
@@ -1420,46 +1444,43 @@ async function submitEmailAndName() {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("name email updated, sending email",data);
+        console.log("name email updated, sending email", data);
       });
-    }
-      sendEmail(sessionId, globalReportUrl);
-      // increaseActionPoint(userId, "interaction_attempted");
+  }
+  sendEmail(sessionId, globalReportUrl);
+  // increaseActionPoint(userId, "interaction_attempted");
 
-      if (!window.user) {
-        // append custom message to chat
-        // const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-        // appendMessage(message);
-        // //* send message to start new session
-        // appendMessage(
-        //   "<b>Please enter another access code to start a new interaction.</b>"
-        // );
-      }
-      const recommDiv = findRelatedItems(recommendationsData, testCode);
-      if (recommDiv) {
-        appendMessage(recommDiv);
-      }
-      const page_name = questionData.results[0].page_name
-      console.log(page_name,'page_name')
+  if (!window.user) {
+    // append custom message to chat
+    // const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+    // appendMessage(message);
+    // //* send message to start new session
+    // appendMessage(
+    //   "<b>Please enter another access code to start a new interaction.</b>"
+    // );
+  }
+  const recommDiv = findRelatedItems(recommendationsData, testCode);
+  if (recommDiv) {
+    appendMessage(recommDiv);
+  }
+  const page_name = questionData.results[0].page_name;
+  console.log(page_name, "page_name");
 
-      resetAllVariables();
-      if ( page_name !== 'explore'){
-        increaseActionPoint(userId, "interaction_attempted");
-      }
+  resetAllVariables();
+  if (page_name !== "explore") {
+    increaseActionPoint(userId, "interaction_attempted");
+  }
 
-
-      if (snnipetConfig["psychometric"] === "true" ||
-        Object.keys(snnipetConfig).length > 0){
-        increaseSessionForAccesscode(
-          userId,
-          accessCode
-        );
-
-      } 
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    // });
+  if (
+    snnipetConfig["psychometric"] === "true" ||
+    Object.keys(snnipetConfig).length > 0
+  ) {
+    increaseSessionForAccesscode(userId, accessCode);
+  }
+  // })
+  // .catch((err) => {
+  //   console.log(err);
+  // });
 
   // await sendEmail();
 
@@ -1486,140 +1507,160 @@ async function submitEmailAndName() {
   //     .catch((err) => console.log(err));
 }
 
-
-
-async function getTestRecommendations(origin_test_id, test_case, session_id, user_id) {
+async function getTestRecommendations(
+  origin_test_id,
+  test_case,
+  session_id,
+  user_id
+) {
   const params = new URLSearchParams({
-      origin_test_id: origin_test_id || "",
-      test_case: test_case || "",
-      session_id: session_id || "",
-      user_id: user_id || ""
+    origin_test_id: origin_test_id || "",
+    test_case: test_case || "",
+    session_id: session_id || "",
+    user_id: user_id || "",
   });
 
   const url = `${baseURL}/tests/test-recommendations/?${params.toString()}`;
 
   try {
-      const response = await fetch(url, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Basic ${createBasicAuthToken(key, secret)}`
-          }
-      });
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      },
+    });
 
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status}, ${response}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}, ${response}`);
+    }
 
-      const data = await response.json();
-      console.log("Test Recommendations:", data);
-      return data;
+    const data = await response.json();
+    console.log("Test Recommendations:", data);
+    return data;
   } catch (error) {
-      console.error("Failed to fetch test recommendations:", error);
-      throw new Error(`Error: ${error}`);
-
+    console.error("Failed to fetch test recommendations:", error);
+    throw new Error(`Error: ${error}`);
   }
 }
 
-async function testRecommendationExceeded(origin_test_id, test_case, session_id, user_id){
-  const data = await getTestRecommendations(origin_test_id, test_case, session_id, user_id)
+async function testRecommendationExceeded(
+  origin_test_id,
+  test_case,
+  session_id,
+  user_id
+) {
+  const data = await getTestRecommendations(
+    origin_test_id,
+    test_case,
+    session_id,
+    user_id
+  );
   if (data.total_recommendation > 2) {
-    return true
-  } else{
-    return false
+    return true;
+  } else {
+    return false;
   }
 }
 
-async function createTestRecommendation(recommended_test_id, session_id, test_case) {
+async function createTestRecommendation(
+  recommended_test_id,
+  session_id,
+  test_case
+) {
   const url = `${baseURL}/tests/test-recommendations/`;
 
   const payload = {
-      recommended_test_id: recommended_test_id,
-      session_id: session_id,
-      test_case: test_case
+    recommended_test_id: recommended_test_id,
+    session_id: session_id,
+    test_case: test_case,
   };
 
   try {
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Basic ${createBasicAuthToken(key, secret)}`
-          },
-          body: JSON.stringify(payload)
-      });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
 
-      const data = await response.json();
-      console.log("Test Recommendation Created:", data);
-      return data;
+    const data = await response.json();
+    console.log("Test Recommendation Created:", data);
+    return data;
   } catch (error) {
-      console.error("Failed to create test recommendation:", error);
-      throw new Error(`Error: ${error}`);
-
+    console.error("Failed to create test recommendation:", error);
+    throw new Error(`Error: ${error}`);
   }
 }
 
-
-async function generateTestScenario({ userId, sessionId, skills, flavour, isMicro }) {
+async function generateTestScenario({
+  userId,
+  sessionId,
+  skills,
+  flavour,
+  isMicro,
+}) {
   const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
   const params = {
-      mode: "A",
-      information: JSON.stringify({
-          data: {
-              information: `Targeted Skills: ${skills}`,
-          },
-          title: "",
-      }),
-      access_token: `Basic ${createBasicAuthToken(key, secret)}`,
-      creator_user_id: userId,
-      flavour: flavour,
-      is_micro: isMicro,
-      previous_session_id: sessionId,
+    mode: "A",
+    information: JSON.stringify({
+      data: {
+        information: `Targeted Skills: ${skills}`,
+      },
+      title: "",
+    }),
+    access_token: `Basic ${createBasicAuthToken(key, secret)}`,
+    creator_user_id: userId,
+    flavour: flavour,
+    is_micro: isMicro,
+    previous_session_id: sessionId,
   };
 
   try {
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify(params),
-      });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
 
-      const data = await response.json();
-      console.log("Created Test Result:", data);
+    const data = await response.json();
+    console.log("Created Test Result:", data);
 
-      if (data[0]?.message || data[0]?.error) {
-          console.error("Error generating the scenarios.");
-          throw new Error("Failed to generate scenario");
-      }
-
-      return data[0]; // Ensure we return the resolved data
-  } catch (err) {
-      console.error("Fetch Error:", err);
+    if (data[0]?.message || data[0]?.error) {
+      console.error("Error generating the scenarios.");
       throw new Error("Failed to generate scenario");
+    }
+
+    return data[0]; // Ensure we return the resolved data
+  } catch (err) {
+    console.error("Fetch Error:", err);
+    throw new Error("Failed to generate scenario");
   }
 }
 
-
 function copyclipboard(block_id_to_copy) {
-    gShadowRoot2 = document.getElementById("chat-element").shadowRoot;
-    const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
-    
-    if (testCodeBlock) {
-        navigator.clipboard.writeText(testCodeBlock.innerText)
-            .then(() => {
-                console.log("Text copied successfully!");
-            })
-            .catch(err => console.error("Failed to copy text:", err));
-    } else {
-        console.error("Element not found:", block_id_to_copy);
-    }
+  gShadowRoot2 = document.getElementById("chat-element").shadowRoot;
+  const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
+
+  if (testCodeBlock) {
+    navigator.clipboard
+      .writeText(testCodeBlock.innerText)
+      .then(() => {
+        console.log("Text copied successfully!");
+      })
+      .catch((err) => console.error("Failed to copy text:", err));
+  } else {
+    console.error("Element not found:", block_id_to_copy);
+  }
 }
 
 //* submit email and name for report generation : end
@@ -1977,14 +2018,16 @@ const handleEndCoachingClick = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    if (!EmailCandidate){
-      appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    if (!EmailCandidate) {
+      appendMessage(
+        "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+      );
     } else {
       appendMessage(
         `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
       );
     }
-    
+
     //   gShadowRoot.getElementById(
     //     `mcq-option-${mcqFormId}`
     //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -1997,28 +2040,36 @@ const handleEndCoachingClick = async (randomId) => {
     //Enable Copy Paste
     var chatElementRef2 = document.getElementById("chat-element");
     const shadowRoot = chatElementRef2.shadowRoot;
-    
-    const textInputElement = shadowRoot.getElementById("text-input")
-    textInputElement.removeAttribute("onpaste")
-    
-    userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
-    console.log(senarioCase, ClientUserInformation.show_recommendations )
-    if (['psychometric', 'game'].includes(senarioCase) 
-      || !ClientUserInformation.show_recommendations 
-      || userScenarioRecommendation.total_recommendation >= 2){
-        appendMessage("<b>Please enter another interaction code to start a new interaction.</b>")
-    } else {
 
-          appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+    const textInputElement = shadowRoot.getElementById("text-input");
+    textInputElement.removeAttribute("onpaste");
+
+    userScenarioRecommendation = await getTestRecommendations(
+      questionData.results[0].uid,
+      null,
+      null,
+      userId
+    );
+    console.log(senarioCase, ClientUserInformation.show_recommendations);
+    if (
+      ["psychometric", "game"].includes(senarioCase) ||
+      !ClientUserInformation.show_recommendations ||
+      userScenarioRecommendation.total_recommendation >= 2
+    ) {
+      appendMessage(
+        "<b>Please enter another interaction code to start a new interaction.</b>"
+      );
+    } else {
+      appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
               <div class="deep-chat-temporary-message" id='related-recommendation'>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-        `)
-      startScenarioRecommendations = true
-      PreviousSessionInfo['sessionId'] =  sessionId
-      PreviousSessionInfo['skills'] = questionData.results[0].skills_to_evaluate
+        `);
+      startScenarioRecommendations = true;
+      PreviousSessionInfo["sessionId"] = sessionId;
+      PreviousSessionInfo["skills"] =
+        questionData.results[0].skills_to_evaluate;
     }
-
 
     submitEmailAndName();
   } else {
@@ -2043,9 +2094,8 @@ function generateRandomAlphanumeric(length) {
 }
 
 const audioCanvasUiForQuestionsStt = (audio, canvas) => {
-
-  const shadowRoot = document.getElementById("chat-element").shadowRoot
-  const audioElements = shadowRoot.querySelectorAll("audio")
+  const shadowRoot = document.getElementById("chat-element").shadowRoot;
+  const audioElements = shadowRoot.querySelectorAll("audio");
   if (audioElements.length > 1) {
     audioElements.forEach((element, i) => {
       if (
@@ -2097,8 +2147,8 @@ const audioCanvasUiForQuestionsStt = (audio, canvas) => {
     }
   }
 
-  draw()
-}
+  draw();
+};
 
 const handleProceedClick = async (choice) => {
   if (choice == "Yes") {
@@ -2106,27 +2156,24 @@ const handleProceedClick = async (choice) => {
     const gshadowRoot = document.getElementById("chat-element").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option");
     // button.parentNode.removeChild(button)
-    if (msg){
+    if (msg) {
       const que_msg = document.createElement("div");
       que_msg.innerHTML = "Please Wait.."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
     }
 
-    if(
-      questionSnippetLink
-    ){                                          
+    if (questionSnippetLink) {
       console.log(questionSnippetLink);
-      if (questionSnippetLink.length > 0){
-        const linkList = questionSnippetLink.split(',');
-        linkList.forEach(element => {
-          appendMessage(snippetDiv(element))
+      if (questionSnippetLink.length > 0) {
+        const linkList = questionSnippetLink.split(",");
+        linkList.forEach((element) => {
+          appendMessage(snippetDiv(element));
         });
       }
-
     }
     //disable Copy Paste
-    const textInputElement = gshadowRoot.getElementById("text-input")
+    const textInputElement = gshadowRoot.getElementById("text-input");
     // textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
 
     if (questionMediaLink && testType != "mcq" && testType != "dynamic_mcq") {
@@ -2224,7 +2271,7 @@ const handleProceedClick = async (choice) => {
           if (isImmersive) {
             console.log(initialQuestionText);
             const queText = initialQuestionText;
-           
+
             const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
             const response = await fetch(urltts, {
               method: "GET",
@@ -2241,9 +2288,10 @@ const handleProceedClick = async (choice) => {
             console.log(objectUrl, "url");
 
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
-            const shadowRoot = document.getElementById("chat-element").shadowRoot
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
             const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
-            
+
             initialQuestionText =
               queDiv +
               `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -2257,20 +2305,28 @@ const handleProceedClick = async (choice) => {
               <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" style="overflow-x: hidden;" height="40"></canvas>
               </div>`;
 
-              setTimeout(() => {
-                const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
-                const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
-                const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}}`)
-                console.log(audioElement, canvasElement)
-                const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
-                audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+            setTimeout(() => {
+              const audioElement = shadowRoot.getElementById(
+                `audio-player-${randomIdForAudioElement}`
+              );
+              const canvasElement = shadowRoot.getElementById(
+                `canvas-audio-${randomIdForAudioElement}`
+              );
+              const breakElement = shadowRoot.getElementById(
+                `break-${randomIdForAudioElement}}`
+              );
+              console.log(audioElement, canvasElement);
+              const audioDiv = shadowRoot.getElementById(
+                `audioDiv-${randomIdForAudioElement}`
+              );
+              audioCanvasUiForQuestionsStt(audioElement, canvasElement);
 
-                audioElement.addEventListener("ended",() => {
-                  canvasElement.remove()
-                  audioDiv.remove()
-                  breakElement.remove()
-                })
-              }, 100);
+              audioElement.addEventListener("ended", () => {
+                canvasElement.remove();
+                audioDiv.remove();
+                breakElement.remove();
+              });
+            }, 100);
 
             console.log(initialQuestionText);
           }
@@ -2310,7 +2366,7 @@ const handleProceedClick = async (choice) => {
         }
         if (isImmersive) {
           const queText = initialQuestionText;
-         
+
           const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
           const response = await fetch(url, {
             method: "GET",
@@ -2327,8 +2383,8 @@ const handleProceedClick = async (choice) => {
           console.log(objectUrl, "url");
 
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
-          const shadowRoot = document.getElementById("chat-element").shadowRoot
-          
+          const shadowRoot = document.getElementById("chat-element").shadowRoot;
+
           const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
           initialQuestionText =
             queDiv +
@@ -2345,19 +2401,26 @@ const handleProceedClick = async (choice) => {
           </div>`;
 
           setTimeout(() => {
-            const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
-            const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
-            const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
-            const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
-            console.log(audioElement, canvasElement)
-            audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+            const audioElement = shadowRoot.getElementById(
+              `audio-player-${randomIdForAudioElement}`
+            );
+            const canvasElement = shadowRoot.getElementById(
+              `canvas-audio-${randomIdForAudioElement}`
+            );
+            const audioDiv = shadowRoot.getElementById(
+              `audioDiv-${randomIdForAudioElement}`
+            );
+            const breakElement = shadowRoot.getElementById(
+              `break-${randomIdForAudioElement}`
+            );
+            console.log(audioElement, canvasElement);
+            audioCanvasUiForQuestionsStt(audioElement, canvasElement);
 
             audioElement.addEventListener("ended", () => {
-              canvasElement.remove()
-              audioDiv.remove()
-              breakElement.remove()
-            })
-
+              canvasElement.remove();
+              audioDiv.remove();
+              breakElement.remove();
+            });
           }, 100);
         }
         if (responderName) {
@@ -2388,77 +2451,95 @@ const handleProceedClick = async (choice) => {
             let queText = entry[1];
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const url = `${baseURL}/test-responses/get-text-to-speech/?text=${entry[1]}`;
-        
+
             const response = await fetch(url, {
               method: "GET",
               headers: {
                 Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
               },
             });
-        
+
             const blob = await response.blob();
             console.log("response", blob);
-        
+
             const objectUrl = URL.createObjectURL(blob);
-            const shadowRoot = document.getElementById("chat-element").shadowRoot;
-        
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
+
             const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             console.log(objectUrl, "url");
-        
-            let audioCont = queDiv + `
+
+            let audioCont =
+              queDiv +
+              `
               <div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;">
-                <audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : "min-width: 50vw !important;"}">
+                <audio id="audio-player-${randomIdForAudioElement}" style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : "min-width: 50vw !important;"
+              }">
                   <source src=${objectUrl} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
                 <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
               </div>
             `;
-        
+
             if (responderName) {
               audioCont = responderName + audioCont;
             }
-        
+
             return {
               audioCont,
-              randomIdForAudioElement
+              randomIdForAudioElement,
             };
           });
-        
-          console.log(audioPromises, "audioPromises");
-        
-          const audioContents = await Promise.all(audioPromises);
-          console.log('Ahere1');
 
+          console.log(audioPromises, "audioPromises");
+
+          const audioContents = await Promise.all(audioPromises);
+          console.log("Ahere1");
 
           audioContents.forEach((audioCont) => {
-            console.log('audiocont ahere1',audioCont);
+            console.log("audiocont ahere1", audioCont);
             appendMessage(audioCont.audioCont);
           });
-        
+
           // Function to play audios one by one
           async function playAudioSequentially(index = 0) {
             if (index >= audioContents.length) return;
-        
+
             const { audioCont, randomIdForAudioElement } = audioContents[index];
-        
-            const shadowRoot = document.getElementById("chat-element").shadowRoot;
-            const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`);
-            const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`);
-            const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`);
-            const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`);
-        
+
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
+            const audioElement = shadowRoot.getElementById(
+              `audio-player-${randomIdForAudioElement}`
+            );
+            const canvasElement = shadowRoot.getElementById(
+              `canvas-audio-${randomIdForAudioElement}`
+            );
+            const breakElement = shadowRoot.getElementById(
+              `break-${randomIdForAudioElement}`
+            );
+            const audioDiv = shadowRoot.getElementById(
+              `audioDiv-${randomIdForAudioElement}`
+            );
+
             audioCanvasUiForQuestions(audioElement, canvasElement);
-        
+
             // Ensure the audio starts playing immediately
-            audioElement.play().then(() => {
-              console.log('Audio playing:', audioElement);
-            }).catch(error => {
-              console.error('Error playing audio:', error);
-            });
-        
+            audioElement
+              .play()
+              .then(() => {
+                console.log("Audio playing:", audioElement);
+              })
+              .catch((error) => {
+                console.error("Error playing audio:", error);
+              });
+
             // Wait for the audio to finish before moving to the next
-            await new Promise(resolve => {
+            await new Promise((resolve) => {
               audioElement.addEventListener("ended", () => {
                 canvasElement.remove();
                 audioDiv.remove();
@@ -2466,11 +2547,11 @@ const handleProceedClick = async (choice) => {
                 resolve();
               });
             });
-        
+
             // After the current audio ends, play the next one
             playAudioSequentially(index + 1);
           }
-        
+
           // Start playing the first audio
           playAudioSequentially(0);
         } else {
@@ -2563,36 +2644,41 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    if (Object.keys(snnipetConfig).length > 0){
-      appendMessage("<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>");
-      
-    } else{
-      appendMessage("<b>Your session is terminated. You can restart again!</b>");
+    if (Object.keys(snnipetConfig).length > 0) {
+      appendMessage(
+        "<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>"
+      );
+    } else {
+      appendMessage(
+        "<b>Your session is terminated. You can restart again!</b>"
+      );
     }
 
-     //enable Copy Paste
-     const textInputElement = gshadowRoot.getElementById("text-input")
-     textInputElement.removeAttribute("onpaste")
+    //enable Copy Paste
+    const textInputElement = gshadowRoot.getElementById("text-input");
+    textInputElement.removeAttribute("onpaste");
   }
 };
 
-const handleAttemptScenaios = async (title, test_code) =>{
-  console.log('Attempting Scenaios', test_code, title)
+const handleAttemptScenaios = async (title, test_code) => {
+  console.log("Attempting Scenaios", test_code, title);
   testCode = test_code;
   userAcessAvailability = true;
   optedNo = true;
   AttemptTestDirect = true;
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  const createScenraiobtn = gShadowRoot.querySelectorAll("#create-scenario-section button")
-  if (createScenraiobtn){
+  const createScenraiobtn = gShadowRoot.querySelectorAll(
+    "#create-scenario-section button"
+  );
+  if (createScenraiobtn) {
     createScenraiobtn.forEach((btn) => {
       btn.disabled = true;
       btn.style.cursor = "not-allowed";
       btn.removeAttribute("onclick");
-      btn.removeAttribute('onmouseover');
-      btn.removeAttribute('onmouseout');
-    })
+      btn.removeAttribute("onmouseover");
+      btn.removeAttribute("onmouseout");
+    });
   }
   // gShadowRoot.getElementById("text-input").focus();
   // setTimeout(() => {
@@ -2607,29 +2693,25 @@ const handleAttemptScenaios = async (title, test_code) =>{
     gShadowRoot.getElementById("text-input").textContent = title;
     gShadowRoot.querySelector(".input-button").click();
 
-    
     setTimeout(() => {
-
       var chatElement = document.getElementById("chat-element");
-    const shdwroot = chatElement.shadowRoot;
-    const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
-    messageContainers.forEach((container) => {
-      const messageText = container.querySelector(".user-message-text p");
-      if (
-        messageText &&
-        messageText.textContent.trim() === title.trim()
-      ) {
-        container.remove();
-      }
-    });
+      const shdwroot = chatElement.shadowRoot;
+      const messageContainers = shdwroot.querySelectorAll(
+        ".outer-message-container"
+      );
+      messageContainers.forEach((container) => {
+        const messageText = container.querySelector(".user-message-text p");
+        if (messageText && messageText.textContent.trim() === title.trim()) {
+          container.remove();
+        }
+      });
     }, 100);
   }, 100);
-}
+};
 
 async function handleScenarioRegenerationCT(signals) {
   const gShadowRoot2 = document.getElementById("chat-element").shadowRoot;
-  console.log(signals)
-
+  console.log(signals);
 
   const regenerateButton = gShadowRoot2.getElementById(
     "scenario-regenerate-button"
@@ -2639,65 +2721,67 @@ async function handleScenarioRegenerationCT(signals) {
     regenerateButton.style.cursor = "wait";
     regenerateButton.removeAttribute("onclick");
 
-    regenerateButton.innerText = "Regenerating..."
+    regenerateButton.innerText = "Regenerating...";
   }
 
   const errRegenerateButton = gShadowRoot2.getElementById(
     "scenario-err-regenerate-button"
   );
 
-  if(errRegenerateButton) {
+  if (errRegenerateButton) {
     errRegenerateButton.disabled = true;
     errRegenerateButton.style.cursor = "wait";
     errRegenerateButton.removeAttribute("onclick");
 
-    errRegenerateButton.innerText = "Regenerating..."
+    errRegenerateButton.innerText = "Regenerating...";
   }
- if(false){
-  gShadowRoot2.getElementById("text-input").focus();
-  setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = "No";
-    gShadowRoot2.querySelectorAll(".input-button")[1].click();
-
+  if (false) {
+    gShadowRoot2.getElementById("text-input").focus();
     setTimeout(() => {
-      var chatElement = document.getElementById("chat-element2");
-      const shdwroot = chatElement.shadowRoot;
-      let cont = [];
-      const messageContainers = shdwroot.querySelectorAll(
-        ".outer-message-container"
-      );
-      messageContainers.forEach((container, i) => {
-        const messageText = container.querySelector(".user-message-text p");
-        if (messageText && messageText.textContent.trim() === "No") {
-          cont.push(container);
-        }
-      });
-      cont.forEach((element, i) => {
-        if (i === cont.length - 1) {
-          element.remove();
-        }
-      });
+      gShadowRoot2.getElementById("text-input").textContent = "No";
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
+
+      setTimeout(() => {
+        var chatElement = document.getElementById("chat-element2");
+        const shdwroot = chatElement.shadowRoot;
+        let cont = [];
+        const messageContainers = shdwroot.querySelectorAll(
+          ".outer-message-container"
+        );
+        messageContainers.forEach((container, i) => {
+          const messageText = container.querySelector(".user-message-text p");
+          if (messageText && messageText.textContent.trim() === "No") {
+            cont.push(container);
+          }
+        });
+        cont.forEach((element, i) => {
+          if (i === cont.length - 1) {
+            element.remove();
+          }
+        });
+      }, 100);
     }, 100);
-  }, 100);
- }
+  }
 
-
-  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  var currentURL =
+    window.location.protocol +
+    "//" +
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "") +
+    window.location.pathname +
+    window.location.search +
+    window.location.hash;
   // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
 
-  const url = new URL(
-    `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
-  );
+  const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
 
   const data_params = {
     mode: "A",
     url: currentURL,
     access_token: `Basic ${createBasicAuthToken(key, secret)}`,
     regeneration: true,
-    is_micro: `${snnipetConfig.isMicro === 'true'? true : false}`,
-
+    is_micro: `${snnipetConfig.isMicro === "true" ? true : false}`,
   };
-
 
   await fetch(url, {
     method: "POST",
@@ -2705,13 +2789,13 @@ async function handleScenarioRegenerationCT(signals) {
       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data_params)
+    body: JSON.stringify(data_params),
   })
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result stt", data);
 
-      if(regenerateButton){
+      if (regenerateButton) {
         regenerateButton.style.cursor = "not-allowed";
       }
       // allMessages.forEach((indvMessage) => {
@@ -2755,11 +2839,11 @@ async function handleScenarioRegenerationCT(signals) {
         console.error(`go error ${e}`);
       }
 
-      console.log('sucessfully crated scenarios: ', scenarios)
-      if (scenarios.length == 0){
-        console.log('failed to generate')
-        
-        const ErrorDiv =  `
+      console.log("sucessfully crated scenarios: ", scenarios);
+      if (scenarios.length == 0) {
+        console.log("failed to generate");
+
+        const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
@@ -2784,7 +2868,7 @@ async function handleScenarioRegenerationCT(signals) {
         </button>
         </div>
         </div>
-        `
+        `;
 
         setTimeout(() => {
           setTimeout(() => {
@@ -2796,13 +2880,13 @@ async function handleScenarioRegenerationCT(signals) {
             };
           }, 50);
         }, 100);
-       
-        if (false){
+
+        if (false) {
           signals.onResponse({
-            html: ErrorDiv
-          })
-        } else{
-          appendMessage(ErrorDiv)
+            html: ErrorDiv,
+          });
+        } else {
+          appendMessage(ErrorDiv);
         }
         return;
       }
@@ -2811,26 +2895,32 @@ async function handleScenarioRegenerationCT(signals) {
         "create-scenario-section"
       );
 
-      if(prevScenarioComponent){
-        prevScenarioComponent.parentNode.remove()
+      if (prevScenarioComponent) {
+        prevScenarioComponent.parentNode.remove();
       }
 
-      const prevErrorSection = gShadowRoot2.getElementById(
-        "error-section"
-      );
+      const prevErrorSection = gShadowRoot2.getElementById("error-section");
 
-      if(prevErrorSection){
-        prevErrorSection.parentNode.remove()
+      if (prevErrorSection) {
+        prevErrorSection.parentNode.remove();
       }
 
-      const shadowRoot = document.getElementById("chat-element2").shadowRoot
-      let divCont = '';
+      const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+      let divCont = "";
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${
+          i === 1 && "margin-top : 10px"
+        }">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${
+          element.test_type === "test" ? "Simulation" : "Roleplay"
+        }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${
+          element.title
+        }</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${
+          element.description
+        }</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -2851,17 +2941,15 @@ async function handleScenarioRegenerationCT(signals) {
           </button>
         </div>
         </div>
-        `
+        `;
 
         setTimeout(() => {
-          const btn = gShadowRoot.getElementById(`attempt-btn-regen-${i}`)
+          const btn = gShadowRoot.getElementById(`attempt-btn-regen-${i}`);
           btn.onclick = () => {
-            handleAttemptScenaios(element.title, element.test_code)
-          }
+            handleAttemptScenaios(element.title, element.test_code);
+          };
         }, 100);
-
-      }); 
-
+      });
 
       if (false) {
         signals.onResponse({
@@ -2881,60 +2969,68 @@ async function handleScenarioRegenerationCT(signals) {
 }
 
 //* Function to handle button click for no-code flow : start
-async function handleOptionButtonClick(labelText, signals, is_regenerate=false) {
+async function handleOptionButtonClick(
+  labelText,
+  signals,
+  is_regenerate = false
+) {
   console.log("button clicked", labelText, is_regenerate);
   const gShadowRoot = document.getElementById("chat-element").shadowRoot;
 
-  if(is_regenerate){
+  if (is_regenerate) {
     gShadowRoot.getElementById("text-input").focus();
-  setTimeout(() => {
-    gShadowRoot.getElementById("text-input").textContent = "No";
-    gShadowRoot.querySelector(".input-button").click();
-
-    
     setTimeout(() => {
+      gShadowRoot.getElementById("text-input").textContent = "No";
+      gShadowRoot.querySelector(".input-button").click();
 
-      var chatElement = document.getElementById("chat-element");
-      const shdwroot = chatElement.shadowRoot;
-      let cont = []
-      const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
-      messageContainers.forEach((container,i) => {
-        console.log(i,messageContainers.length - 1)
-        const messageText = container.querySelector(".user-message-text p");
-        if (
-          messageText &&
-          messageText.textContent.trim() === "No"
-           
-        ) {
-          cont.push(container)
-        }
-
-      });
-      cont.forEach((element,i) => {
-        if ( i === (cont.length-1)){
-          element.remove();
-        }
-      });
-
+      setTimeout(() => {
+        var chatElement = document.getElementById("chat-element");
+        const shdwroot = chatElement.shadowRoot;
+        let cont = [];
+        const messageContainers = shdwroot.querySelectorAll(
+          ".outer-message-container"
+        );
+        messageContainers.forEach((container, i) => {
+          console.log(i, messageContainers.length - 1);
+          const messageText = container.querySelector(".user-message-text p");
+          if (messageText && messageText.textContent.trim() === "No") {
+            cont.push(container);
+          }
+        });
+        cont.forEach((element, i) => {
+          if (i === cont.length - 1) {
+            element.remove();
+          }
+        });
       }, 100);
     }, 100);
-    
+
     return;
   }
-      
+
   const button = gShadowRoot.getElementById("create-new-scenario");
   if (button) {
     button.disabled = true;
   }
 
-  if (gShadowRoot.querySelector("#create-scenario-section")){
-    console.log(`already existed`,gShadowRoot.querySelector("#create-scenario-section") )
-    return
+  if (gShadowRoot.querySelector("#create-scenario-section")) {
+    console.log(
+      `already existed`,
+      gShadowRoot.querySelector("#create-scenario-section")
+    );
+    return;
   }
   optedNo = true;
-  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  var currentURL =
+    window.location.protocol +
+    "//" +
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "") +
+    window.location.pathname +
+    window.location.search +
+    window.location.hash;
   // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
-  console.log('currenturl',currentURL);
+  console.log("currenturl", currentURL);
 
   // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
   // appendMessage(generationLoader)
@@ -2946,14 +3042,13 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
     mode: "A",
     url: currentURL,
     access_token: `Basic ${createBasicAuthToken(key, secret)}`,
-    is_micro: `${snnipetConfig.isMicro === 'true'? true : false}`,
-    flavour: snnipetConfig.flavour
-
+    is_micro: `${snnipetConfig.isMicro === "true" ? true : false}`,
+    flavour: snnipetConfig.flavour,
   };
 
-  console.log('is_micro', snnipetConfig.isMicro)
+  console.log("is_micro", snnipetConfig.isMicro);
 
-  const shadowRoot = document.getElementById("chat-element").shadowRoot
+  const shadowRoot = document.getElementById("chat-element").shadowRoot;
 
   await fetch(url, {
     method: "POST",
@@ -2961,14 +3056,16 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data_params)
+    body: JSON.stringify(data_params),
   })
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result", data);
       allMessages.forEach((indvMessage) => {
         if (
-          indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+          indvMessage.innerText ===
+          "Please wait, we are generating your scenarios..."
+        ) {
           indvMessage.remove();
         }
       });
@@ -3007,10 +3104,10 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
         console.error(`go error ${e}`);
       }
 
-      if (scenarios.length == 0){
-        console.log('failed to generate')
-        
-        const ErrorDiv =  `
+      if (scenarios.length == 0) {
+        console.log("failed to generate");
+
+        const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
@@ -3034,7 +3131,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
         </button>
         </div>
         </div>
-        `
+        `;
 
         setTimeout(() => {
           const regenerateButton = shadowRoot.getElementById(
@@ -3044,30 +3141,37 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
             handleScenarioRegenerationCT(signals);
           };
         }, 100);
-        if (signals){
+        if (signals) {
           signals.onResponse({
-            html: ErrorDiv
-          })
-        } else{
-          appendMessage(ErrorDiv)
+            html: ErrorDiv,
+          });
+        } else {
+          appendMessage(ErrorDiv);
         }
         return;
       }
 
-      console.log('sucessfully crated scenarios: ', scenarios)
+      console.log("sucessfully crated scenarios: ", scenarios);
       // console.log(randomChallenge);
       // testCode = randomChallenge.test_code;
       // codeAvailabilityUserChoice = true;
 
-      
-      let divCont = '';
-      scenarios.forEach((element,i) => {
-        console.log('element', element);
+      let divCont = "";
+      scenarios.forEach((element, i) => {
+        console.log("element", element);
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test'? "Simulation" : "Roleplay" }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${
+          i === 1 && "margin-top : 10px"
+        }">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${
+          element.test_type === "test" ? "Simulation" : "Roleplay"
+        }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${
+          element.title
+        }</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${
+          element.description
+        }</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -3088,20 +3192,18 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
           </button>
         </div>
         </div>
-        `
+        `;
         setTimeout(() => {
-          const btn = gShadowRoot.getElementById(`attempt-btn-${i}`)
+          const btn = gShadowRoot.getElementById(`attempt-btn-${i}`);
           btn.onclick = () => {
-            handleAttemptScenaios(element.title, element.test_code)
-          }
+            handleAttemptScenaios(element.title, element.test_code);
+          };
         }, 100);
-      }); 
+      });
 
-
-      if (signals){
-        signals.onResponse(
-          {
-            html: `
+      if (signals) {
+        signals.onResponse({
+          html: `
             <div id='create-scenario-section' style="padding: 15px 8px; max-width: 500px;">
             ${divCont}
             <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
@@ -3125,17 +3227,18 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
             </button>
             </div>
             </div>
-            `
-          }
-        )
+            `,
+        });
         setTimeout(() => {
-          const regenerateButton = shadowRoot.getElementById("scenario-regenerate-button")
+          const regenerateButton = shadowRoot.getElementById(
+            "scenario-regenerate-button"
+          );
           regenerateButton.onclick = () => {
-            handleScenarioRegenerationCT(signals)
-          }
-      }, 50);
-      } else{
-      appendMessage(`
+            handleScenarioRegenerationCT(signals);
+          };
+        }, 50);
+      } else {
+        appendMessage(`
       <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
@@ -3147,18 +3250,22 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
 
 let chatInputFontSize2 = "14px";
 let messageBubbleMaxWidth2 = "60%";
-if(window.innerWidth < 768) {
-  chatInputFontSize2 = "12px"
-  messageBubbleMaxWidth2 = "80%"
+if (window.innerWidth < 768) {
+  chatInputFontSize2 = "12px";
+  messageBubbleMaxWidth2 = "80%";
 }
 
 const snippetOrigin2 = () => {
-  if(window.location.hostname === "localhost" || window.location.hostname === "playground.coachbots.com" || window.location.hostname === "platform.coachbots.com"  ) {
-    return "internal"
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "playground.coachbots.com" ||
+    window.location.hostname === "platform.coachbots.com"
+  ) {
+    return "internal";
   } else {
-    return "external"
+    return "external";
   }
-}
+};
 
 //* Function to handle button click for no-code flow : end
 
@@ -3175,7 +3282,9 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
-  deepChatPocElement = document.getElementsByClassName("coachbots-coachtalk")?.[0];
+  deepChatPocElement = document.getElementsByClassName(
+    "coachbots-coachtalk"
+  )?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
       <div
@@ -3310,14 +3419,18 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin2() == "internal" ? "68vh" : "64vh" }; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${
+        snippetOrigin2() == "internal" ? "68vh" : "64vh"
+      }; border: none;"
       microphone='{
         "files": {"format": "mp3", "maxNumberOfFiles": 1},
         "button": {"position": "outside-right"}
       }'
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth2)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(
+            messageBubbleMaxWidth2
+          )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
@@ -3375,12 +3488,16 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer2" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: ${
+    snippetOrigin2() === "internal" ? "100%" : "80%"
+  }; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Instructions
         </button>
       </span> 
-      <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
+      <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${
+        window.innerWidth < 768 ? "5px" : "25px"
+      }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
           <ul id="instructions-list2" style="list-style-type: none; padding-left:20px; font-size: 12px;">
@@ -3400,66 +3517,64 @@ loadExternalModule().then(() => {
   </div>
   `;
 
-  const readMoreButton = document.getElementById('read-more-button2')
-  const instructionsPane = document.getElementById('instructions-pane2')
-  const instructionsList = document.getElementById('instructions-list2')
-  const closeInstructionsPane = document.getElementById('close-intructions-pane2')
-  const botFooter2 = document.getElementById('bot-footer2')
-  const headerText2 = document.getElementById('header-text2')
+  const readMoreButton = document.getElementById("read-more-button2");
+  const instructionsPane = document.getElementById("instructions-pane2");
+  const instructionsList = document.getElementById("instructions-list2");
+  const closeInstructionsPane = document.getElementById(
+    "close-intructions-pane2"
+  );
+  const botFooter2 = document.getElementById("bot-footer2");
+  const headerText2 = document.getElementById("header-text2");
 
-  if(snippetOrigin2() === "external"){
-    if(botFooter2){
-      botFooter2.style.margin = "0"
+  if (snippetOrigin2() === "external") {
+    if (botFooter2) {
+      botFooter2.style.margin = "0";
     }
-    if(headerText2){
-      headerText2.style.display = "none"
+    if (headerText2) {
+      headerText2.style.display = "none";
     }
   }
 
- 
-
   readMoreButton.addEventListener("click", () => {
-    instructionsPane.style.display = "flex"
-  })
+    instructionsPane.style.display = "flex";
+  });
 
   closeInstructionsPane.addEventListener("click", () => {
-    instructionsPane.style.display = "none"
-  })
-
+    instructionsPane.style.display = "none";
+  });
 
   const chatContainer = document.getElementById("chat-container");
   const chatElementRef = document.getElementById("chat-element");
   const chatIcon = document.getElementById("chat-icon");
   const chatbotHeading = document.getElementById("chatbot-heading");
   const closeFromTopp = document.getElementById("close-top");
-  widgetClientId = document.querySelector(".coachbots-coachtalk").dataset.clientId;
+  widgetClientId = document.querySelector(".coachbots-coachtalk").dataset
+    .clientId;
   snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
-  console.log("widgetInfo: ",document.querySelector(".coachbots-coachtalk").dataset )
-  
-  if (chatContainer && snippetOrigin2() === "external") {
-      chatContainer.style.paddingBottom = "0";
-    }
+  console.log(
+    "widgetInfo: ",
+    document.querySelector(".coachbots-coachtalk").dataset
+  );
 
-    
-    if (
-      snippetOrigin2() === "external"
-    ) {
-    const list = 
-    `<li><strong>1. Psychometric Assessments and Simulations:</strong> These may take several forms depending on the subject and context. The short version contains 3 questions, and the standard version may have 8 or more. At the end of any session, a detailed feedback report will be generated. The premium version will contain speech & voice analytics.</li>
-      <li><strong>2. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
-      <li><strong>3. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-      `
-    instructionsList.innerHTML = list
-    instructionsList.style.display = "flex"
-    instructionsList.style.flexDirection = "column"
-    instructionsList.style.fontSize = "12px"
-    instructionsList.style.padding = "10px"
-    instructionsList.style.listStyleType = "none"
-    instructionsList.style.gap = "2px"
+  if (chatContainer && snippetOrigin2() === "external") {
+    chatContainer.style.paddingBottom = "0";
   }
 
+  if (snippetOrigin2() === "external") {
+    const list = `<li><strong>1. Psychometric Assessments and Simulations:</strong> These may take several forms depending on the subject and context. The short version contains 3 questions, and the standard version may have 8 or more. At the end of any session, a detailed feedback report will be generated. The premium version will contain speech & voice analytics.</li>
+      <li><strong>2. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
+      <li><strong>3. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
+      `;
+    instructionsList.innerHTML = list;
+    instructionsList.style.display = "flex";
+    instructionsList.style.flexDirection = "column";
+    instructionsList.style.fontSize = "12px";
+    instructionsList.style.padding = "10px";
+    instructionsList.style.listStyleType = "none";
+    instructionsList.style.gap = "2px";
+  }
 
-  console.log("widget cliennt Id :",widgetClientId)
+  console.log("widget cliennt Id :", widgetClientId);
   //responsive styles for phones
   // if (window.innerWidth < 600) {
   //   chatContainer.style.width = "80vw";
@@ -3495,7 +3610,6 @@ loadExternalModule().then(() => {
     closeFromTopp.style.right = "0.3rem";
     closeFromTopp.style.top = "1rem";
   }
-
 
   let credentialsForm;
   if (window.innerWidth > 868) {
@@ -3617,26 +3731,24 @@ loadExternalModule().then(() => {
       `;
   }
 
-  if (Object.keys(snnipetConfig).length > 0){
-
-    if (snnipetConfig['psychometric'] === 'true'){
-      let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
+  if (Object.keys(snnipetConfig).length > 0) {
+    if (snnipetConfig["psychometric"] === "true") {
+      let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`;
       if (snnipetConfig?.["welcomeMessage"]) {
         welcomeMessage = `<p>${snnipetConfig["welcomeMessage"]}</p>`;
       }
       chatElementRef.initialMessages = [
         {
-        html: welcomeMessage,
-        role: "ai",
+          html: welcomeMessage,
+          role: "ai",
         },
         {
-        html: `Please enter your email to get started.`,
-        role: "ai",
+          html: `Please enter your email to get started.`,
+          role: "ai",
         },
       ];
-
-    } else{
-      let welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+    } else {
+      let welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`;
       if (snnipetConfig?.["welcomeMessage"]) {
         welcomeMessage = `<p>${snnipetConfig["welcomeMessage"]}</p>`;
       }
@@ -3649,16 +3761,18 @@ loadExternalModule().then(() => {
         {
           html: `Please enter your email to get started.`,
           role: "ai",
-          },
+        },
       ];
-      
     }
-    isEmailForm=true;
-    formFields = ["email","name"];
-    console.log("### formFields : ",formFields, "other data: ",`Please enter your ${formFields[0]}`)
-
-  } else{
-
+    isEmailForm = true;
+    formFields = ["email", "name"];
+    console.log(
+      "### formFields : ",
+      formFields,
+      "other data: ",
+      `Please enter your ${formFields[0]}`
+    );
+  } else {
     chatElementRef.initialMessages = [
       {
         html: `<p>Welcome to Coachbots. Do you have interaction code for your simulation?
@@ -3689,8 +3803,6 @@ loadExternalModule().then(() => {
       },
     };
   }
-
-  
 
   // set email and name
   //   const setNameEmail = async (inputEmail, inputName) => {
@@ -3744,7 +3856,7 @@ loadExternalModule().then(() => {
   //   };
 
   function excludeSpecialCharacters2(inputString) {
-    return  inputString.replace(/[*#]+/g, '');
+    return inputString.replace(/[*#]+/g, "");
   }
 
   function removeResponderTypeName(responderDisplayName, responseText) {
@@ -3759,7 +3871,7 @@ loadExternalModule().then(() => {
   }
 
   // to check word limit
-  function isValidMessage(text, limit=responseWordLimit,is_greater=false) {
+  function isValidMessage(text, limit = responseWordLimit, is_greater = false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -3768,14 +3880,13 @@ loadExternalModule().then(() => {
     ) {
       return true;
     }
-    if(is_greater){
+    if (is_greater) {
       if (words.length > limit) {
         return false;
       } else {
         return true;
       }
-    }
-    else{
+    } else {
       if (words.length < limit) {
         return false;
       } else {
@@ -3922,19 +4033,22 @@ loadExternalModule().then(() => {
 
   const updateClientInfo = async (clientName, emails, demo_emails) => {
     try {
-      const response = await fetch(`${baseURL}/accounts/get-create-or-update-client-id/`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          client_name: clientName,
-          member_emails: emails,
-          demo_ids: demo_emails
-        }),
-      });
-  
+      const response = await fetch(
+        `${baseURL}/accounts/get-create-or-update-client-id/`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            client_name: clientName,
+            member_emails: emails,
+            demo_ids: demo_emails,
+          }),
+        }
+      );
+
       if (response.ok) {
         const data = await response.json();
         console.log("Response Data:", data);
@@ -3942,60 +4056,73 @@ loadExternalModule().then(() => {
       } else {
         const errorData = await response.json();
         console.error("Error Response:", errorData);
-        console.error(`Failed to update client details. ${errorData.message || ""}`);
+        console.error(
+          `Failed to update client details. ${errorData.message || ""}`
+        );
       }
     } catch (error) {
       console.error("Network or unexpected error:", error);
-      console.error("An unexpected error occurred while updating client details.");
+      console.error(
+        "An unexpected error occurred while updating client details."
+      );
     }
   };
-  
+
   const validateSnippetAccessCode = async (accessCode, userId, clientId) => {
     const requestData = {
       access_code: accessCode,
       user_id: userId,
-      client_name: clientId
+      client_name: clientId,
     };
-  
+
     try {
-      const response = await fetch(`${baseURL}/accounts/validate-snippet-access-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`
-        },
-        body: JSON.stringify(requestData),
-      });
-      console.log(response.ok)
+      const response = await fetch(
+        `${baseURL}/accounts/validate-snippet-access-code/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+      console.log(response.ok);
       if (response.ok) {
         const data = await response.json();
-        console.log('success',data)
-        return {isvalidAccessCode:true, error_msg: null}
+        console.log("success", data);
+        return { isvalidAccessCode: true, error_msg: null };
       } else {
         const data = await response.json();
-        console.log('error',data)
-        if (data.error.includes('expired')){
-          return {isvalidAccessCode:false, error_msg:'Your access code has expired. Please contact your admin or our helpdesk.'}
+        console.log("error", data);
+        if (data.error.includes("expired")) {
+          return {
+            isvalidAccessCode: false,
+            error_msg:
+              "Your access code has expired. Please contact your admin or our helpdesk.",
+          };
         }
-        return {isvalidAccessCode:false, error_msg: null}
+        return { isvalidAccessCode: false, error_msg: null };
       }
     } catch (error) {
-      console.error('Error during API call:', error);
+      console.error("Error during API call:", error);
     }
-    console.log('failed')
-    return {isvalidAccessCode:false, error_msg: null}
+    console.log("failed");
+    return { isvalidAccessCode: false, error_msg: null };
   };
 
- 
-
-  const getClientInformation = async (use_case, email=null, client_name=null) => {
+  const getClientInformation = async (
+    use_case,
+    email = null,
+    client_name = null
+  ) => {
     let url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
     if (email && use_case === "user_info") {
       url += `&email=${email}`;
     }
-    if (client_name && use_case === 'only_client_data'){
-      url += `&client_name=${client_name}`
+    if (client_name && use_case === "only_client_data") {
+      url += `&client_name=${client_name}`;
     }
     try {
       const response = await fetch(url, {
@@ -4051,7 +4178,7 @@ loadExternalModule().then(() => {
     console.log(objectUrl, "url");
 
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
-    const shadowRoot = document.getElementById("chat-element").shadowRoot
+    const shadowRoot = document.getElementById("chat-element").shadowRoot;
     const queDiv = `${text}<br id="break-${randomIdForAudioElement}">`;
     const audioCont =
       queDiv +
@@ -4068,18 +4195,26 @@ loadExternalModule().then(() => {
     </div>`;
 
     setTimeout(() => {
-      const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
-      const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
-      const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
-      const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
-      console.log(audioElement, canvasElement)
-      audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+      const audioElement = shadowRoot.getElementById(
+        `audio-player-${randomIdForAudioElement}`
+      );
+      const canvasElement = shadowRoot.getElementById(
+        `canvas-audio-${randomIdForAudioElement}`
+      );
+      const breakElement = shadowRoot.getElementById(
+        `break-${randomIdForAudioElement}`
+      );
+      const audioDiv = shadowRoot.getElementById(
+        `audioDiv-${randomIdForAudioElement}`
+      );
+      console.log(audioElement, canvasElement);
+      audioCanvasUiForQuestionsStt(audioElement, canvasElement);
 
       audioElement.addEventListener("ended", () => {
-        canvasElement.remove()
-        audioDiv.remove()
-        breakElement.remove()
-      })
+        canvasElement.remove();
+        audioDiv.remove();
+        breakElement.remove();
+      });
     }, 100);
 
     return audioCont;
@@ -4305,14 +4440,17 @@ loadExternalModule().then(() => {
           questionText = testResponseText.response_text;
 
           // checking if botname is present or not
-          const responder_name = capitalizeFirstLetter(testResponseText.responder_display_name);
+          const responder_name = capitalizeFirstLetter(
+            testResponseText.responder_display_name
+          );
           if (!questionText.includes(responder_name)) {
             questionText = responder_name + " : " + questionText;
           }
           if (isImmersive) {
             questionText = questionText.replace(`${responder_name}`, "");
             questionText = questionText.replace(`:`, "");
-            questionText = capitalizeFirstLetter(responder_name) + " : " + questionText;
+            questionText =
+              capitalizeFirstLetter(responder_name) + " : " + questionText;
           }
 
           console.log(testResponseText);
@@ -4346,27 +4484,25 @@ loadExternalModule().then(() => {
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
-        console.log("bodybody", body)
+        console.log("bodybody", body);
         if (body instanceof FormData) {
           const bodyLength = [...body.entries()].length;
           console.log(bodyLength);
           if (bodyLength > 1) {
-              console.log("FROM HERE", body);
-              const userMessageValue = JSON.parse(body.get("message1"));
-              const newObj = {
-                messages: [userMessageValue],
-              };
-              body = newObj;
+            console.log("FROM HERE", body);
+            const userMessageValue = JSON.parse(body.get("message1"));
+            const newObj = {
+              messages: [userMessageValue],
+            };
+            body = newObj;
 
-              console.log(body);
-              const shadowRoot =
-                document.getElementById("chat-element").shadowRoot;
-              const lastAudioMessageBubble = shadowRoot.querySelectorAll(
-                ".user-message-text.audio-message"
-              );
-              lastAudioMessageBubble[
-                lastAudioMessageBubble.length - 1
-              ].remove();
+            console.log(body);
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
+            const lastAudioMessageBubble = shadowRoot.querySelectorAll(
+              ".user-message-text.audio-message"
+            );
+            lastAudioMessageBubble[lastAudioMessageBubble.length - 1].remove();
           }
 
           // const audioFileBodySize = body.get("files").size
@@ -4439,9 +4575,9 @@ loadExternalModule().then(() => {
             //Enable Copy Paste
             // var chatElementRef2 = document.getElementById("chat-element");
             // var shadowRoot = chatElementRef2.shadowRoot;
-        
-            const textInputElement = shadowRoot.getElementById("text-input")
-            textInputElement.removeAttribute("onpaste")
+
+            const textInputElement = shadowRoot.getElementById("text-input");
+            textInputElement.removeAttribute("onpaste");
             return;
           }
 
@@ -4458,7 +4594,11 @@ loadExternalModule().then(() => {
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
           let file = audioFile;
-          if (file === undefined || file?.name.length === 0 || file?.size === "") {
+          if (
+            file === undefined ||
+            file?.name.length === 0 ||
+            file?.size === ""
+          ) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
             });
@@ -4481,8 +4621,8 @@ loadExternalModule().then(() => {
             return;
           }
 
-          body = undefined
-          audioFile = undefined
+          body = undefined;
+          audioFile = undefined;
 
           const formdata = new FormData();
           formdata.append("owner_type", "user");
@@ -4512,7 +4652,9 @@ loadExternalModule().then(() => {
               let strList = questionText.replaceAll("*", "").split(":", 2);
               if (strList.length > 1) {
                 questionText = strList[1];
-                responderName = `<b>${capitalizeFirstLetter(strList[0])}:</b><br>`;
+                responderName = `<b>${capitalizeFirstLetter(
+                  strList[0]
+                )}:</b><br>`;
               }
               if (isImmersive) {
                 questionText = await TTSContainer(questionText);
@@ -4524,13 +4666,12 @@ loadExternalModule().then(() => {
 
               const linkPattern = /(http[s]?:\/\/[^\s]+)/;
               const is_link = linkPattern.test(questionText);
-              
 
               if (questionSnippetLink) {
-                if (questionSnippetLink.length > 0){
-                  const linkList = questionSnippetLink.split(',');
-                  linkList.forEach(element => {
-                    appendMessage(snippetDiv(element))
+                if (questionSnippetLink.length > 0) {
+                  const linkList = questionSnippetLink.split(",");
+                  linkList.forEach((element) => {
+                    appendMessage(snippetDiv(element));
                   });
                 }
               }
@@ -4664,11 +4805,10 @@ loadExternalModule().then(() => {
           }
 
           if (questionIndex === questionLength) {
-            
             const shadowRoot =
-            document.getElementById("chat-element").shadowRoot;
-            
-            LoadingMessageWithText2("Crunching report data", shadowRoot)
+              document.getElementById("chat-element").shadowRoot;
+
+            LoadingMessageWithText2("Crunching report data", shadowRoot);
 
             // const messageNode = document.createElement("div");
             // messageNode.classList.add("inner-message-container");
@@ -4684,9 +4824,11 @@ loadExternalModule().then(() => {
             // messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
             //   user ? "" : "<b> Hang tight for next steps </b>"
             // }`;
-            appendMessage(`<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
-              user ? "" : "<b> Hang tight for next steps </b>"
-            }`)
+            appendMessage(
+              `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
+                user ? "" : "<b> Hang tight for next steps </b>"
+              }`
+            );
             // messageBubble.appendChild(messageText);
             // messageNode.appendChild(messageBubble);
             // shadowRoot.getElementById("messages").appendChild(messageNode);
@@ -4753,8 +4895,12 @@ loadExternalModule().then(() => {
                   console.log(stringList);
                   let responderName;
                   if (stringList.length > 1) {
-                    responderName = `<b>${capitalizeFirstLetter(stringList[0])}:</b><br>`;
-                    questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
+                    responderName = `<b>${capitalizeFirstLetter(
+                      stringList[0]
+                    )}:</b><br>`;
+                    questionText = excludeSpecialCharacters2(
+                      stringList.join("").replace(stringList[0], "")
+                    );
                   }
                   if (isImmersive && questionIndex != 0) {
                     questionText = await TTSContainer(questionText);
@@ -4900,47 +5046,59 @@ loadExternalModule().then(() => {
                     reportUrl = data.url;
                     globalReportUrl = reportUrl;
                     console.log("Report Url : ", reportUrl, globalReportUrl);
-                    clearMultipleBodyData = true
+                    clearMultipleBodyData = true;
                     //* send report message or form to collect data : start
                     if (window.user) {
                       // sendEmail();
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                      if (!EmailCandidate){
-                        message ="<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      if (!EmailCandidate) {
+                        message =
+                          "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                       }
                       appendMessage(message);
                       // //* send message to start new session
-                      userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
-                      console.log(senarioCase, ClientUserInformation.show_recommendations )
-                      if (['psychometric', 'game'].includes(senarioCase) 
-                        || !ClientUserInformation.show_recommendations 
-                        || userScenarioRecommendation.total_recommendation >= 2){
-                          signals.onResponse({
-                            html : "<b>Please enter another interaction code to start a new interaction.</b>"
-                          })
-                      } else {
-
+                      userScenarioRecommendation = await getTestRecommendations(
+                        questionData.results[0].uid,
+                        null,
+                        null,
+                        userId
+                      );
+                      console.log(
+                        senarioCase,
+                        ClientUserInformation.show_recommendations
+                      );
+                      if (
+                        ["psychometric", "game"].includes(senarioCase) ||
+                        !ClientUserInformation.show_recommendations ||
+                        userScenarioRecommendation.total_recommendation >= 2
+                      ) {
                         signals.onResponse({
-                            html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                          html: "<b>Please enter another interaction code to start a new interaction.</b>",
+                        });
+                      } else {
+                        signals.onResponse({
+                          html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
                               <div class="deep-chat-temporary-message" id='related-recommendation'>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                        `});
-                        startScenarioRecommendations = true
-                        PreviousSessionInfo['sessionId'] =  sessionId
-                        PreviousSessionInfo['skills'] = questionData.results[0].skills_to_evaluate
+                        `,
+                        });
+                        startScenarioRecommendations = true;
+                        PreviousSessionInfo["sessionId"] = sessionId;
+                        PreviousSessionInfo["skills"] =
+                          questionData.results[0].skills_to_evaluate;
                       }
 
                       submitEmailAndName();
 
+                      //Enable Copy Paste
+                      var chatElementRef2 =
+                        document.getElementById("chat-element");
+                      const shadowRoot = chatElementRef2.shadowRoot;
 
-
-                    //Enable Copy Paste
-                    var chatElementRef2 = document.getElementById("chat-element");
-                    const shadowRoot = chatElementRef2.shadowRoot;
-                
-                    const textInputElement = shadowRoot.getElementById("text-input")
-                    textInputElement.removeAttribute("onpaste")
+                      const textInputElement =
+                        shadowRoot.getElementById("text-input");
+                      textInputElement.removeAttribute("onpaste");
                       return;
                     }
                   });
@@ -4963,42 +5121,52 @@ loadExternalModule().then(() => {
           }
         } else {
           // TEXT RESPONSES
-          clearMultipleBodyData = false
+          clearMultipleBodyData = false;
           // get latest message
           // const latestMessage = body.messages[body.messages.length - 1].text;
 
           let latestMessage = body.messages[body.messages.length - 1].text;
-          globalSignals = signals
+          globalSignals = signals;
 
-          if (startScenarioRecommendations){
+          if (startScenarioRecommendations) {
             var chatElement = document.getElementById("chat-element");
             const shdwroot = chatElement.shadowRoot;
-            const buttons = shdwroot.querySelectorAll("#related-recommendation button");
-            buttons.forEach(button => {
-                button.disabled = true;
-                button.style.opacity = "0.5"; // Grey out
-                button.style.cursor = "not-allowed";
+            const buttons = shdwroot.querySelectorAll(
+              "#related-recommendation button"
+            );
+            buttons.forEach((button) => {
+              button.disabled = true;
+              button.style.opacity = "0.5"; // Grey out
+              button.style.cursor = "not-allowed";
             });
-            if (latestMessage === 'Yes'){
-              LoadingMessageWithText2("Fetching your AI curated simulation...", shdwroot);
-              console.log('userScenarioRecommendation', userScenarioRecommendation)
-              const test_case = userScenarioRecommendation.results.length > 0 
-                  ? userScenarioRecommendation.results[0].test_case === 'soft_skills' 
-                      ? "hard_skills" 
-                      : "soft_skills"
-                  : "hard_skills";  
-              console.log('test_case', test_case);
+            if (latestMessage === "Yes") {
+              LoadingMessageWithText2(
+                "Fetching your AI curated simulation...",
+                shdwroot
+              );
+              console.log(
+                "userScenarioRecommendation",
+                userScenarioRecommendation
+              );
+              const test_case =
+                userScenarioRecommendation.results.length > 0
+                  ? userScenarioRecommendation.results[0].test_case ===
+                    "soft_skills"
+                    ? "hard_skills"
+                    : "soft_skills"
+                  : "hard_skills";
+              console.log("test_case", test_case);
 
               try {
-                const data = await generateTestScenario({ 
-                    userId: userId2, 
-                    sessionId: PreviousSessionInfo['sessionId'], 
-                    skills: PreviousSessionInfo['skills'],
-                    flavour: test_case,
-                    isMicro: true
+                const data = await generateTestScenario({
+                  userId: userId2,
+                  sessionId: PreviousSessionInfo["sessionId"],
+                  skills: PreviousSessionInfo["skills"],
+                  flavour: test_case,
+                  isMicro: true,
                 });
                 console.log(data);
-        
+
                 const testCodeMessage = `
                   <b>Title</b>: ${data.title} <br>
                   <b>Description</b>: ${data.description} <br>
@@ -5024,104 +5192,94 @@ loadExternalModule().then(() => {
                   " onclick="copyclipboard('test-code-block')">Copy</button>
               `;
 
-        
                 signals.onResponse({
-                    html: testCodeMessage,
-                    text: 'Please enter interaction code to start a new interaction.'
+                  html: testCodeMessage,
+                  text: "Please enter interaction code to start a new interaction.",
                 });
 
                 createTestRecommendation(
                   data.test_id,
-                  PreviousSessionInfo['sessionId'],
+                  PreviousSessionInfo["sessionId"],
                   test_case
-                )
-        
-            } catch (error) {
+                );
+              } catch (error) {
                 console.log(error);
-            }
-        
-            console.log('hi..........');
+              }
+
+              console.log("hi..........");
             } else {
-              signals.onResponse(
-                {
-                  html: "Thank you! If you wish to try another interaction code you can try now."
-                }        
-              )
+              signals.onResponse({
+                html: "Thank you! If you wish to try another interaction code you can try now.",
+              });
             }
-            startScenarioRecommendations= false;
+            startScenarioRecommendations = false;
             return;
           }
 
           //slicing 400 words from user responses > 400 words
-          if(latestMessage.split(" ").length >= 400){
-            latestMessage = latestMessage.split(" ").slice(0, 400).join(" ")
+          if (latestMessage.split(" ").length >= 400) {
+            latestMessage = latestMessage.split(" ").slice(0, 400).join(" ");
 
-            console.log("SLICED \n", latestMessage)
-          } 
+            console.log("SLICED \n", latestMessage);
+          }
 
-          const shadowRoot =
-            document.getElementById("chat-element").shadowRoot;
+          const shadowRoot = document.getElementById("chat-element").shadowRoot;
 
-          if (askAccessBotCode){
+          if (askAccessBotCode) {
             let result = await validateSnippetAccessCode(
               latestMessage,
               userId,
               widgetClientId
             );
-          
+
             result = result || { isvalidAccessCode: null, error_msg: null };
-          
+
             const { isvalidAccessCode, error_msg } = result;
             console.log(
-              'isvalidaccesscode', isvalidAccessCode,
-              'error_msg', error_msg
+              "isvalidaccesscode",
+              isvalidAccessCode,
+              "error_msg",
+              error_msg
             );
 
-            if (!isvalidAccessCode && error_msg){
+            if (!isvalidAccessCode && error_msg) {
               signals.onResponse({
                 html: `<b style='font-size: 14px;color: #991b1b;'>${error_msg}</b>`,
-
-              })
+              });
               return;
             }
-            console.log('isvalidAccessCode', isvalidAccessCode)
-            if (
-              isvalidAccessCode
-            ) {
-              console.log("Access Code Matched")
-              updateClientInfo(widgetClientId,user_email, user_email)
-              accessCode = latestMessage
-              askAccessBotCode = false
-              if (snnipetConfig.isDemo === 'true'){
-                LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
-                handleOptionButtonClick("",signals)
-              } else if (snnipetConfig['psychometric'] === 'true'){
+            console.log("isvalidAccessCode", isvalidAccessCode);
+            if (isvalidAccessCode) {
+              console.log("Access Code Matched");
+              updateClientInfo(widgetClientId, user_email, user_email);
+              accessCode = latestMessage;
+              askAccessBotCode = false;
+              if (snnipetConfig.isDemo === "true") {
+                LoadingMessageWithText2(
+                  "Please wait, we are generating your scenario!!",
+                  shadowRoot
+                );
+                handleOptionButtonClick("", signals);
+              } else if (snnipetConfig["psychometric"] === "true") {
                 signals.onResponse({
-                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
-                })
+                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
+                });
                 // increaseSessionForAccesscode(
                 //   userId,
                 //   accessCode
                 // );
-
-              } 
-              else{
-                signals.onResponse(
-                  {
-                    html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
+              } else {
+                signals.onResponse({
+                  html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
                   <div class="deep-chat-temporary-message">
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                  `
-
-                  }
-                )
-                
-                
+                  `,
+                });
               }
               return;
             } else {
-              LoadingMessageWithText2("Coachbot is thinking...", shadowRoot)
+              LoadingMessageWithText2("Coachbot is thinking...", shadowRoot);
             }
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Access Code</b> to proceed.</p>",
@@ -5130,13 +5288,16 @@ loadExternalModule().then(() => {
           }
 
           if (isEmailForm) {
-            const [proceed,errorMsg] = await proceedFormFlow(latestMessage, snnipetConfig?.['isBussinessEmail'] === 'true' || false);
+            const [proceed, errorMsg] = await proceedFormFlow(
+              latestMessage,
+              snnipetConfig?.["isBussinessEmail"] === "true" || false
+            );
 
-            console.log(proceed, errorMsg)
-            if (!proceed){
-              console.log("email not valid 1")
+            console.log(proceed, errorMsg);
+            if (!proceed) {
+              console.log("email not valid 1");
               signals.onResponse({
-                html: errorMsg
+                html: errorMsg,
               });
               return;
             }
@@ -5148,49 +5309,67 @@ loadExternalModule().then(() => {
             } else {
               isEmailForm = false;
 
-              if (snnipetConfig['psychometric'] === 'true' || Object.keys(snnipetConfig).length > 0){
+              if (
+                snnipetConfig["psychometric"] === "true" ||
+                Object.keys(snnipetConfig).length > 0
+              ) {
                 //  creating user after getting name, email "CreateUser"
-                console.log(emailNameformJson)
+                console.log(emailNameformJson);
                 try {
-                  await CreateUser(emailNameformJson['name'], emailNameformJson['email']);
-                  // await new Promise(resolve => setTimeout(resolve, 5000)); 
+                  await CreateUser(
+                    emailNameformJson["name"],
+                    emailNameformJson["email"]
+                  );
+                  // await new Promise(resolve => setTimeout(resolve, 5000));
                   signals.onResponse({
-                    html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
+                    html: "<p>Fantastic. Please enter your access code provided by your admin.</p>",
                   });
                   askAccessBotCode = true;
                 } catch (error) {
                   console.error("Error creating user:", error);
                   signals.onResponse({
-                    html: "<p>Oops! Something went wrong. Please try again later.</p>"
+                    html: "<p>Oops! Something went wrong. Please try again later.</p>",
                   });
                 }
-              }else {
+              } else {
                 let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                if (!EmailCandidate){
-                  message ="<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                if (!EmailCandidate) {
+                  message =
+                    "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                 }
                 appendMessage(message);
                 // //* send message to start new session
 
-               userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
-                console.log(senarioCase, ClientUserInformation.show_recommendations )
-                if (['psychometric', 'game'].includes(senarioCase) 
-                  || !ClientUserInformation.show_recommendations 
-                  || userScenarioRecommendation.total_recommendation >= 2){
-                    signals.onResponse({
-                      html : "<b>Please enter another interaction code to start a new interaction.</b>"
-                    })
-                } else {
-
+                userScenarioRecommendation = await getTestRecommendations(
+                  questionData.results[0].uid,
+                  null,
+                  null,
+                  userId
+                );
+                console.log(
+                  senarioCase,
+                  ClientUserInformation.show_recommendations
+                );
+                if (
+                  ["psychometric", "game"].includes(senarioCase) ||
+                  !ClientUserInformation.show_recommendations ||
+                  userScenarioRecommendation.total_recommendation >= 2
+                ) {
                   signals.onResponse({
-                      html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                    html: "<b>Please enter another interaction code to start a new interaction.</b>",
+                  });
+                } else {
+                  signals.onResponse({
+                    html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
                         <div class="deep-chat-temporary-message" id='related-recommendation'>
                         <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                         <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                  `});
-                  startScenarioRecommendations = true
-                  PreviousSessionInfo['sessionId'] =  sessionId
-                  PreviousSessionInfo['skills'] = questionData.results[0].skills_to_evaluate
+                  `,
+                  });
+                  startScenarioRecommendations = true;
+                  PreviousSessionInfo["sessionId"] = sessionId;
+                  PreviousSessionInfo["skills"] =
+                    questionData.results[0].skills_to_evaluate;
                 }
                 submitEmailAndName();
               }
@@ -5229,7 +5408,7 @@ loadExternalModule().then(() => {
             resetAllVariables();
           }
 
-          const userAcessAvailability = latestMessage// body.messages[0].text;
+          const userAcessAvailability = latestMessage; // body.messages[0].text;
           if (userAcessAvailability === "Yes" && !isSessionActive) {
             signals.onResponse({
               html: "<b>Please enter the interaction code to get started.</b>",
@@ -5237,10 +5416,15 @@ loadExternalModule().then(() => {
             return;
           } else if (userAcessAvailability === "No" && !isSessionActive) {
             optedNo = true;
-            console.log(window.location.hostname,'domain')
-            if (!["playground.coachbots.com","platform.coachbots.com",'localhost'].includes(window.location.hostname)){
-
-              handleOptionButtonClick("",signals)
+            console.log(window.location.hostname, "domain");
+            if (
+              ![
+                "playground.coachbots.com",
+                "platform.coachbots.com",
+                "localhost",
+              ].includes(window.location.hostname)
+            ) {
+              handleOptionButtonClick("", signals);
             } else {
               signals.onResponse({
                 html: "<b>Please ask your administrator for interaction codes.</b>",
@@ -5304,11 +5488,11 @@ loadExternalModule().then(() => {
             resetAllVariables().then(() => {
               console.log("Your session is terminated. You can restart again!");
 
-              if (Object.keys(snnipetConfig).length > 0){
+              if (Object.keys(snnipetConfig).length > 0) {
                 signals.onResponse({
                   html: "<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>",
                 });
-              } else{
+              } else {
                 signals.onResponse({
                   html: "<b>Your session is terminated. You can restart again!</b>",
                 });
@@ -5317,9 +5501,9 @@ loadExternalModule().then(() => {
               //Enable Copy Paste
               var chatElementRef2 = document.getElementById("chat-element");
               var shadowRoot = chatElementRef2.shadowRoot;
-          
-              const textInputElement = shadowRoot.getElementById("text-input")
-              textInputElement.removeAttribute("onpaste")
+
+              const textInputElement = shadowRoot.getElementById("text-input");
+              textInputElement.removeAttribute("onpaste");
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -5351,11 +5535,13 @@ loadExternalModule().then(() => {
               buttonTextArray.push(buttonText);
             });
 
-            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section p")
-            opiton_scenarios.forEach((b) =>{
+            const opiton_scenarios = shadowRoot.querySelectorAll(
+              "#create-scenario-section p"
+            );
+            opiton_scenarios.forEach((b) => {
               const buttonText = b.textContent.trim();
               buttonTextArray.push(buttonText);
-            })
+            });
             // adding sample test code title
             const sampleTestCodesValues = Object.values(sampleTestCodes);
             sampleTestCodesValues.forEach((value) => {
@@ -5363,7 +5549,7 @@ loadExternalModule().then(() => {
             });
 
             //end
-            if ( buttonTextArray.includes(latestMessage)){
+            if (buttonTextArray.includes(latestMessage)) {
               if (responsesDone === false && questionIndex > 0) {
                 signals.onResponse({
                   html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
@@ -5388,9 +5574,10 @@ loadExternalModule().then(() => {
                 //Enable Copy Paste
                 // var chatElementRef2 = document.getElementById("chat-element2");
                 // var shadowRoot = chatElementRef2.shadowRoot;
-            
-                const textInputElement = shadowRoot.getElementById("text-input")
-                textInputElement.removeAttribute("onpaste")
+
+                const textInputElement =
+                  shadowRoot.getElementById("text-input");
+                textInputElement.removeAttribute("onpaste");
                 return;
               }
 
@@ -5434,19 +5621,26 @@ loadExternalModule().then(() => {
             "QBEWUOM",
           ];
           if (questionIndex === 0 && userAcessAvailability.length !== 0) {
-            if (snnipetConfig.isDemo === 'true' && isTestCode(latestMessage)){
+            if (snnipetConfig.isDemo === "true" && isTestCode(latestMessage)) {
               signals.onResponse({
                 html: "<p style='font-size: 14px;color: #991b1b;'><b>This feature blocked...</b></p>",
-              })
+              });
               return;
             }
-            const shadowRoot = document.getElementById("chat-element").shadowRoot;
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
             if (optedNo === false) {
-              testCode = latestMessage // body.messages[0].text;
-              LoadingMessageWithText2("Please wait while we are processing ...", shadowRoot)
+              testCode = latestMessage; // body.messages[0].text;
+              LoadingMessageWithText2(
+                "Please wait while we are processing ...",
+                shadowRoot
+              );
               // appendMessage("Please wait while we are processing ...");
             } else {
-              LoadingMessageWithText2("Please wait while we are processing ...", shadowRoot)
+              LoadingMessageWithText2(
+                "Please wait while we are processing ...",
+                shadowRoot
+              );
               // appendMessage("Please wait while we are processing ...");
               // //wait while test code is being processed
               // while (!codeAvailabilityUserChoice) {
@@ -5458,7 +5652,7 @@ loadExternalModule().then(() => {
           }
 
           if (questionIndex > 0 && !responsesDone) {
-            userResponse = latestMessage// body.messages[0].text;
+            userResponse = latestMessage; // body.messages[0].text;
           }
 
           if (
@@ -5499,7 +5693,11 @@ loadExternalModule().then(() => {
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
                 EmailCandidate = questionData.results[0].email_candidate;
-                if (ClientUserInformation?.report_on && ClientUserInformation?.report_on != null && senarioCase !== 'assessment') {
+                if (
+                  ClientUserInformation?.report_on &&
+                  ClientUserInformation?.report_on != null &&
+                  senarioCase !== "assessment"
+                ) {
                   EmailCandidate = ClientUserInformation.report_on;
                 }
                 senarioMediaDescription =
@@ -5521,32 +5719,41 @@ loadExternalModule().then(() => {
                 orch_details =
                   questionData.results[0].orchestrated_conversation_details;
 
-                senarioSnippetURL = 
-                questionData.results[0].snippet_url;
-              console.log(senarioSnippetURL,'senarioSnippetURL');
-                
-                responseWordLimit = senarioCase === 'psychometric'? 20 : 15
-                console.log('responseWordLimit: ',responseWordLimit)
-                
-                if (Object.keys(snnipetConfig).length > 0){
-                  isImmersive = snnipetConfig.allowAudioInteraction === 'true';
-                  if (ClientUserInformation && 'client_name' in ClientUserInformation){
-                    widgetClientId = ClientUserInformation.client_name
+                senarioSnippetURL = questionData.results[0].snippet_url;
+                console.log(senarioSnippetURL, "senarioSnippetURL");
+
+                responseWordLimit = senarioCase === "psychometric" ? 20 : 15;
+                console.log("responseWordLimit: ", responseWordLimit);
+
+                if (Object.keys(snnipetConfig).length > 0) {
+                  isImmersive = snnipetConfig.allowAudioInteraction === "true";
+                  if (
+                    ClientUserInformation &&
+                    "client_name" in ClientUserInformation
+                  ) {
+                    widgetClientId = ClientUserInformation.client_name;
                   }
                 } else {
-                  console.log("clientAllowAudioInteraction" , clientAllowAudioInteraction)
-                  console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
-                  console.log("prioritiseUserAllowInteraction" , prioritiseUserAllowInteraction)
+                  console.log(
+                    "clientAllowAudioInteraction",
+                    clientAllowAudioInteraction
+                  );
+                  console.log(
+                    "userAllowAudioInteraction",
+                    userAllowAudioInteraction
+                  );
+                  console.log(
+                    "prioritiseUserAllowInteraction",
+                    prioritiseUserAllowInteraction
+                  );
 
-                  if(clientAllowAudioInteraction){
-                    isImmersive = userAllowAudioInteraction
+                  if (clientAllowAudioInteraction) {
+                    isImmersive = userAllowAudioInteraction;
                   } else {
-                    isImmersive = false
+                    isImmersive = false;
                   }
-
                 }
-                  console.log('isImmersive', isImmersive)
-                  
+                console.log("isImmersive", isImmersive);
 
                 if (TestUIInfo) {
                   if (Object.keys(TestUIInfo).length > 0) {
@@ -5566,7 +5773,7 @@ loadExternalModule().then(() => {
                   globalQuestionData = questionData;
                 }
 
-                if (['game'].includes(senarioCase)){
+                if (["game"].includes(senarioCase)) {
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachScribe</b> for this interaction.</p>",
                   });
@@ -5578,9 +5785,9 @@ loadExternalModule().then(() => {
                 if (user) {
                   const group_list = ["Demo", "free", "Free"];
                   // const my_lib = await getTestCodesByRule("my_lib");
-                  console.log('widgetClientId',widgetClientId)
-                  if (widgetClientId != null){
-                    group_list.push(widgetClientId)
+                  console.log("widgetClientId", widgetClientId);
+                  if (widgetClientId != null) {
+                    group_list.push(widgetClientId);
                   } else {
                     const my_lib = await getClientInformation("my_lib");
                     for (const item of my_lib) {
@@ -5607,11 +5814,11 @@ loadExternalModule().then(() => {
 
                   const group_list = ["Demo", "free", "Free"];
 
-                  console.log('widgetClientId',widgetClientId)
-                  if (widgetClientId != null){
-                    group_list.push(widgetClientId)
+                  console.log("widgetClientId", widgetClientId);
+                  if (widgetClientId != null) {
+                    group_list.push(widgetClientId);
                   }
-                  
+
                   if (!group_list.includes(clientName)) {
                     signals.onResponse({
                       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your interaction code is correct. Contact the administrator if you face problems, via the help widget.</b>",
@@ -5787,10 +5994,10 @@ loadExternalModule().then(() => {
                       const option2Text = mcqOptions[option2Name]["opt"];
 
                       if (questionSnippetLink) {
-                        if (questionSnippetLink.length > 0){
-                          const linkList = questionSnippetLink.split(',');
-                          linkList.forEach(element => {
-                            appendMessage(snippetDiv(element))
+                        if (questionSnippetLink.length > 0) {
+                          const linkList = questionSnippetLink.split(",");
+                          linkList.forEach((element) => {
+                            appendMessage(snippetDiv(element));
                           });
                         }
                       }
@@ -5990,14 +6197,13 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
                         <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
                     </div>`;
-                    if ( AttemptTestDirect){
+                    if (AttemptTestDirect) {
                       signals.onResponse({
                         html: "Get ready! Your scenario starts now. Good luck!",
-                      })
+                      });
                       setTimeout(() => {
-                        handleProceedClick('Yes')
+                        handleProceedClick("Yes");
                       }, 1000);
-                      
                     }
 
                     if (senarioMediaDescription && !AttemptTestDirect) {
@@ -6170,22 +6376,22 @@ loadExternalModule().then(() => {
                       }
                       //   if (testType != "coaching") {
                       if (senarioSnippetURL) {
-                        if (senarioSnippetURL.length > 0){
-                          const linkList = senarioSnippetURL.split(',');
-                          linkList.forEach(element => {
-                            appendMessage(snippetDiv(element))
+                        if (senarioSnippetURL.length > 0) {
+                          const linkList = senarioSnippetURL.split(",");
+                          linkList.forEach((element) => {
+                            appendMessage(snippetDiv(element));
                           });
                         }
                       }
-                      
+
                       signals.onResponse({
                         html: questionText,
                       });
                       //   }
                     } else if (
                       mediaProps &&
-                      Object.keys(mediaProps).includes("test_image")
-                      && !AttemptTestDirect
+                      Object.keys(mediaProps).includes("test_image") &&
+                      !AttemptTestDirect
                     ) {
                       console.log("Media props here", mediaProps);
                       console.log("SHOW MEDIA PROPS here", mediaProps);
@@ -6234,21 +6440,23 @@ loadExternalModule().then(() => {
                       );
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
-                      if (!AttemptTestDirect){
-                        const temp_que_text = questionText
-                        signals.onResponse({
-                          text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                        }).then(()=>{
-                          if (senarioSnippetURL) {
-                            if (senarioSnippetURL.length > 0){
-                              const linkList = senarioSnippetURL.split(',');
-                              linkList.forEach(element => {
-                                appendMessage(snippetDiv(element))
-                              });
+                      if (!AttemptTestDirect) {
+                        const temp_que_text = questionText;
+                        signals
+                          .onResponse({
+                            text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                          })
+                          .then(() => {
+                            if (senarioSnippetURL) {
+                              if (senarioSnippetURL.length > 0) {
+                                const linkList = senarioSnippetURL.split(",");
+                                linkList.forEach((element) => {
+                                  appendMessage(snippetDiv(element));
+                                });
+                              }
                             }
-                          }
-                          appendMessage(temp_que_text)
-                        })
+                            appendMessage(temp_que_text);
+                          });
                       }
                     }
                     // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
@@ -6257,13 +6465,16 @@ loadExternalModule().then(() => {
                       testType != "orchestrated_conversation" &&
                       testType != "dynamic_discussion_thread" &&
                       testType != "coaching"
-                      
                     ) {
                       let responderName;
-                      let strList = questionText.replaceAll("*", "").split(":", 2);
+                      let strList = questionText
+                        .replaceAll("*", "")
+                        .split(":", 2);
                       if (strList.length > 1) {
                         questionText = strList[1];
-                        responderName = `<b>${capitalizeFirstLetter(strList[0])}:</b><br>`;
+                        responderName = `<b>${capitalizeFirstLetter(
+                          strList[0]
+                        )}:</b><br>`;
                       }
                       if (isImmersive) {
                         questionText = await TTSContainer(questionText);
@@ -6274,10 +6485,10 @@ loadExternalModule().then(() => {
                       }
 
                       if (questionSnippetLink) {
-                        if (questionSnippetLink.length > 0){
-                          const linkList = questionSnippetLink.split(',');
-                          linkList.forEach(element => {
-                            appendMessage(snippetDiv(element))
+                        if (questionSnippetLink.length > 0) {
+                          const linkList = questionSnippetLink.split(",");
+                          linkList.forEach((element) => {
+                            appendMessage(snippetDiv(element));
                           });
                         }
                       }
@@ -6425,7 +6636,7 @@ loadExternalModule().then(() => {
                         } else {
                           console.log("resp", questionText);
                           signals.onResponse({
-                            html: questionText.replace("}",""),
+                            html: questionText.replace("}", ""),
                           });
                         }
                       }
@@ -6437,9 +6648,9 @@ loadExternalModule().then(() => {
                   userResponse.length > 0
                 ) {
                   const shadowRoot =
-                     document.getElementById("chat-element").shadowRoot;
+                    document.getElementById("chat-element").shadowRoot;
 
-                  LoadingMessageWithText2("Crunching report data", shadowRoot)
+                  LoadingMessageWithText2("Crunching report data", shadowRoot);
 
                   // const messageNode = document.createElement("div");
                   // messageNode.classList.add("inner-message-container");
@@ -6546,8 +6757,10 @@ loadExternalModule().then(() => {
                         },
                       }),
                     });
-                    if(!response.ok){
-                      throw new Error("api call failed with stautus "+response.status)
+                    if (!response.ok) {
+                      throw new Error(
+                        "api call failed with stautus " + response.status
+                      );
                     }
                     const responseData = await response.json();
                     console.log(
@@ -6597,9 +6810,11 @@ loadExternalModule().then(() => {
 
                       const qRespnse = await questionResponse.json();
                       questionText = qRespnse["response_text"];
-                      console.log('dynamic or orch response',qRespnse)
+                      console.log("dynamic or orch response", qRespnse);
                       // checking if botname is present or not
-                      const responder_name = capitalizeFirstLetter(qRespnse.responder_display_name);
+                      const responder_name = capitalizeFirstLetter(
+                        qRespnse.responder_display_name
+                      );
                       if (!questionText.includes(responder_name)) {
                         questionText = responder_name + " : " + questionText;
                       }
@@ -6626,8 +6841,12 @@ loadExternalModule().then(() => {
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      responderName = `<b>${capitalizeFirstLetter(stringList[0])}:</b><br>`;
-                      questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
+                      responderName = `<b>${capitalizeFirstLetter(
+                        stringList[0]
+                      )}:</b><br>`;
+                      questionText = excludeSpecialCharacters2(
+                        stringList.join("").replace(stringList[0], "")
+                      );
                     }
                     if (isImmersive && questionIndex != 0) {
                       questionText = await TTSContainer(questionText);
@@ -6787,40 +7006,54 @@ loadExternalModule().then(() => {
                   if (window.user) {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    if (!EmailCandidate){
-                      message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    if (!EmailCandidate) {
+                      message =
+                        "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                     }
                     appendMessage(message);
                     // //* send message to start new session
 
-                    userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
-                      console.log(senarioCase, ClientUserInformation.show_recommendations )
-                      if (['psychometric', 'game'].includes(senarioCase) 
-                        || !ClientUserInformation.show_recommendations 
-                        || userScenarioRecommendation.total_recommendation >= 2){
-                          signals.onResponse({
-                            html : "<b>Please enter another interaction code to start a new interaction.</b>"
-                          })
-                      } else {
-
-                        signals.onResponse({
-                            html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                    userScenarioRecommendation = await getTestRecommendations(
+                      questionData.results[0].uid,
+                      null,
+                      null,
+                      userId
+                    );
+                    console.log(
+                      senarioCase,
+                      ClientUserInformation.show_recommendations
+                    );
+                    if (
+                      ["psychometric", "game"].includes(senarioCase) ||
+                      !ClientUserInformation.show_recommendations ||
+                      userScenarioRecommendation.total_recommendation >= 2
+                    ) {
+                      signals.onResponse({
+                        html: "<b>Please enter another interaction code to start a new interaction.</b>",
+                      });
+                    } else {
+                      signals.onResponse({
+                        html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
                               <div class="deep-chat-temporary-message" id='related-recommendation'>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                        `});
-                        startScenarioRecommendations = true
-                        PreviousSessionInfo['sessionId'] =  sessionId
-                        PreviousSessionInfo['skills'] = questionData.results[0].skills_to_evaluate
-                      }
+                        `,
+                      });
+                      startScenarioRecommendations = true;
+                      PreviousSessionInfo["sessionId"] = sessionId;
+                      PreviousSessionInfo["skills"] =
+                        questionData.results[0].skills_to_evaluate;
+                    }
                     submitEmailAndName();
 
                     //Enable Copy Paste
-                    var chatElementRef2 = document.getElementById("chat-element");
+                    var chatElementRef2 =
+                      document.getElementById("chat-element");
                     const shadowRoot = chatElementRef2.shadowRoot;
-                
-                    const textInputElement = shadowRoot.getElementById("text-input")
-                    textInputElement.removeAttribute("onpaste")
+
+                    const textInputElement =
+                      shadowRoot.getElementById("text-input");
+                    textInputElement.removeAttribute("onpaste");
                     return;
                   }
 
@@ -6857,10 +7090,12 @@ loadExternalModule().then(() => {
                 // signals.onResponse({
                 //   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
                 // });
-                appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
+                appendMessage(
+                  "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                );
                 signals.onResponse({
                   html: "Please Enter a Interaction Code to Start Your Session..",
-                })
+                });
               }
             }
           }
@@ -6898,34 +7133,37 @@ loadExternalModule().then(() => {
 });
 
 let sendBtn;
-let InputField; 
+let InputField;
 const openChatContainer = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
 
-  const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
-  const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
-  console.log(coachScribeChatIcon, coachScribeContainer)
+  const coachScribeChatIcon =
+    document.getElementsByClassName("chat-icon2")?.[0];
+  const coachScribeContainer = document.getElementsByClassName(
+    "chat-icon-container2"
+  )?.[0];
+  console.log(coachScribeChatIcon, coachScribeContainer);
 
-  if(window.innerWidth < 600){
-    coachScribeChatIcon.style.display = "none"
-    coachScribeContainer.style.display = "none"
+  if (window.innerWidth < 600) {
+    coachScribeChatIcon.style.display = "none";
+    coachScribeContainer.style.display = "none";
   }
 
-  const shadowR = document.getElementById("chat-element").shadowRoot
+  const shadowR = document.getElementById("chat-element").shadowRoot;
 
-  const container = shadowR.getElementById("container")
+  const container = shadowR.getElementById("container");
   container.oncopy = () => {
-    alert("Copying is not allowed")
-    return false
-  }
+    alert("Copying is not allowed");
+    return false;
+  };
 
-  const inputField = shadowR.getElementById("text-input")
-  if(allowPastingAtClientLevel){
+  const inputField = shadowR.getElementById("text-input");
+  if (allowPastingAtClientLevel) {
     inputField.onpaste = () => {
-      alert("Pasting is not allowed.")
-      return false
-    }
+      alert("Pasting is not allowed.");
+      return false;
+    };
   }
 
   // const previousPaths = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
@@ -6937,20 +7175,20 @@ const openChatContainer = () => {
   //   localStorage.setItem("visitedPaths", JSON.stringify([]));
   // }
 
-  if (localStorage.getItem('coachtalk_user_refresh')){
-    console.log("refreshing api")
-    initialiseUser()
+  if (localStorage.getItem("coachtalk_user_refresh")) {
+    console.log("refreshing api");
+    initialiseUser();
     localStorage.removeItem("coachtalk_user_refresh");
   }
 
-  let backdrop2 = document.getElementById("backdrop2")
-  backdrop2.style.display = "block"
+  let backdrop2 = document.getElementById("backdrop2");
+  backdrop2.style.display = "block";
   document.body.style.overflowY = "hidden";
 
   const chatE = document.getElementById("chat-element");
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   sendBtn = chatE.shadowRoot.querySelector(".input-button");
-  InputField = chatE.shadowRoot.getElementById("text-input")
+  InputField = chatE.shadowRoot.getElementById("text-input");
   let isRecording = false;
   let audioChunks = [];
   let stream;
@@ -7004,7 +7242,8 @@ const openChatContainer = () => {
       console.error("Error accessing microphone:", error);
     }
 
-    const fileAttachmentContainer = chatE.shadowRoot.querySelector(".file-attachment");
+    const fileAttachmentContainer =
+      chatE.shadowRoot.querySelector(".file-attachment");
     console.log("Target Node : ", fileAttachmentContainer);
     const config = { childList: true, subtree: true };
 
@@ -7012,8 +7251,10 @@ const openChatContainer = () => {
       for (const mutation of mutationsList) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
           mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('remove-file-attachment-button')) {
-
+            if (
+              node.nodeType === Node.ELEMENT_NODE &&
+              node.classList.contains("remove-file-attachment-button")
+            ) {
               node.addEventListener("click", () => {
                 if (isRecording) {
                   stream.getTracks().forEach((track) => track.stop());
@@ -7025,7 +7266,7 @@ const openChatContainer = () => {
                   isRecording = false;
                   console.log("cancelled the recording!!");
                 }
-              })
+              });
             }
           });
         }
@@ -7040,13 +7281,13 @@ const openChatContainer = () => {
     const rawData = audioBuffer.getChannelData(0); // Get audio data for the first channel
     const threshold = 0.01; // Amplitude threshold for silence
     let silentSamples = 0;
-  
+
     for (let i = 0; i < rawData.length; i++) {
       if (Math.abs(rawData[i]) < threshold) {
         silentSamples++;
       }
     }
-  
+
     const silentRatio = silentSamples / rawData.length;
     return silentRatio > 0.99; // Consider audio empty if more than 99% is silent
   }
@@ -7060,7 +7301,7 @@ const openChatContainer = () => {
           mediaRecorder.stop();
           console.log("glrecor", isRecordingGlobal);
         }
-  
+
         isRecording = false;
         console.log("cancelled the recording!!");
       }
@@ -7073,7 +7314,7 @@ const openChatContainer = () => {
 
   if (sendBtn) {
     sendBtn.addEventListener("click", () => {
-      if(isRecording){
+      if (isRecording) {
         stream.getTracks().forEach((track) => track.stop());
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
@@ -7083,13 +7324,13 @@ const openChatContainer = () => {
     });
   }
 
-  const chatIconContainer = document.getElementById("chat-icon")
+  const chatIconContainer = document.getElementById("chat-icon");
 
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
     chatContainer.style["transform-origin"] = "0% 100%";
     document.body.style.overflowY = "scroll";
-    backdrop2.style.display = "none"
+    backdrop2.style.display = "none";
   } else {
     chatContainer.style.scale = 1;
     chatContainer.style["transform-origin"] = "100% 0%";
@@ -7098,8 +7339,8 @@ const openChatContainer = () => {
     const chatContainer2 = document.getElementById("chat-container2");
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
-    const backdrop = document.getElementById("backdrop")
-    backdrop.style.display ="none";
+    const backdrop = document.getElementById("backdrop");
+    backdrop.style.display = "none";
 
     const chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
     chatIcon2.src =
@@ -7110,11 +7351,11 @@ const openChatContainer = () => {
     chatIcon.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
-    chatIconContainer.style.backgroundColor = "white"
+    chatIconContainer.style.backgroundColor = "white";
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
-     chatIconContainer.style.backgroundColor = "#06ddb8"
+    chatIconContainer.style.backgroundColor = "#06ddb8";
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
@@ -7124,15 +7365,18 @@ const closeFromTop = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
   document.body.style.overflowY = "scroll";
-  let backdrop2 = document.getElementById("backdrop2")
-  backdrop2.style.display = "none"
+  let backdrop2 = document.getElementById("backdrop2");
+  backdrop2.style.display = "none";
   chatContainer.style.scale = 0;
   chatContainer.style["transform-origin"] = "0% 100%";
 
-  const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
-  const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
-  console.log(coachScribeChatIcon, coachScribeContainer)
-  const chatIconContainer = document.getElementById("chat-icon")
+  const coachScribeChatIcon =
+    document.getElementsByClassName("chat-icon2")?.[0];
+  const coachScribeContainer = document.getElementsByClassName(
+    "chat-icon-container2"
+  )?.[0];
+  console.log(coachScribeChatIcon, coachScribeContainer);
+  const chatIconContainer = document.getElementById("chat-icon");
 
   if (window.innerWidth < 600) {
     coachScribeChatIcon.style.display = "block";
@@ -7143,11 +7387,11 @@ const closeFromTop = () => {
     chatIcon.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
-    chatIconContainer.style.backgroundColor = "white"
+    chatIconContainer.style.backgroundColor = "white";
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
-     chatIconContainer.style.backgroundColor = "#06ddb8"
+    chatIconContainer.style.backgroundColor = "#06ddb8";
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
@@ -7156,8 +7400,8 @@ const closeFromTop = () => {
 // handling for enter key send while recording
 document.addEventListener("keydown", (event) => {
   if (event.keyCode === 13 || event.which === 13) {
-    if(isRecordingGlobal) {
-      sendBtn.click()
+    if (isRecordingGlobal) {
+      sendBtn.click();
     }
   }
 });

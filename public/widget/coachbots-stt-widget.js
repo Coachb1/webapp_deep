@@ -6,7 +6,9 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL2 = ["platform", 'www'].includes(subdomainStt) ? prodUrlStt : devUrlStt;
+const baseURL2 = ["platform", "www"].includes(subdomainStt)
+  ? prodUrlStt
+  : devUrlStt;
 
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {
@@ -257,11 +259,11 @@ let responderDisplayNameStt;
 let IsSingleSelectSTT;
 let AccessCodeStt;
 
-let startScenarioRecommendationsStt=false;
+let startScenarioRecommendationsStt = false;
 let PreviousSessionInfoSTT = {
-  "sessionId": null,
-  "skills": null
-}
+  sessionId: null,
+  skills: null,
+};
 let userScenarioRecommendationStt;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
@@ -290,11 +292,23 @@ if (window.user) {
   user_email2 = getAnonymousEmail();
 }
 
-if (window.LogRocket) {
-  window.LogRocket.identify(user_email2, {
-    name: user_name2,
-    email: user_email2,
-  });
+function initLogRocketAndIdentifyUser() {
+  if (window.LogRocket) {
+    window.LogRocket.init("irkulq/coachbots");
+    window.LogRocket.identify(user_email2, {
+      name: user_name2,
+      email: user_email2,
+    });
+    return true;
+  }
+  return false;
+}
+
+if (!initLogRocketAndIdentifyUser()) {
+  let script = document.createElement("script");
+  script.src = "https://cdn.lrkt-in.com/LogRocket.min.js";
+  script.onload = initLogRocketAndIdentifyUser;
+  document.head.appendChild(script);
 }
 
 // 2 - account creation
@@ -339,7 +353,12 @@ const initialiseUserSTT = async () => {
       prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
       selectedResponseType = data.preferences?.response_style;
 
-      console.log("user_info : ", clientAllowAudioInteraction2, userAllowAudioInteraction2, prioritiseUserAllowInteraction2);
+      console.log(
+        "user_info : ",
+        clientAllowAudioInteraction2,
+        userAllowAudioInteraction2,
+        prioritiseUserAllowInteraction2
+      );
 
       fetch(
         `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
@@ -396,7 +415,7 @@ const initialiseUserSTT = async () => {
         })
         .catch((err) => {
           console.log(err);
-          throw new Error( `Error fetching client Info ${err}`);
+          throw new Error(`Error fetching client Info ${err}`);
         });
     })
     .catch((err) => {
@@ -406,7 +425,6 @@ const initialiseUserSTT = async () => {
 };
 
 initialiseUserSTT();
-
 
 const createUserSTT = async (user_name, user_email) => {
   console.log("newusername", user_name);
@@ -1632,9 +1650,9 @@ const getBotDetails2 = async (botId) => {
         " Welcome to the Engagement survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this page. The response to the survey can be totally anonymous - so respond frankly and give voice to critical topics important to the team. Click 'Begin Session' to get started and respond in detail.";
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
-        (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
+        botType === "avatar_bot" && botScenarioCase === "icons_by_ai"
           ? "Welcome to the world of AI coaching agents. As your personal coaching agent, I can make you 10x smarter. Let's start!"
-          : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
+          : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!";
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
       console.log(shadowRoot.getElementById("text-input"));
 
@@ -2947,7 +2965,10 @@ async function handleFaqButtonClick(question) {
         await getUserProfile(userId2);
         if (UserProfileInfo) {
           console.log("======profileType: ", UserProfileInfo.profile_type);
-          if (["coach", "mentor"].includes(UserProfileInfo.profile_type) && !['icons_by_ai'].includes(botScenarioCase)) {
+          if (
+            ["coach", "mentor"].includes(UserProfileInfo.profile_type) &&
+            !["icons_by_ai"].includes(botScenarioCase)
+          ) {
             appendMessage2(
               addStickerToMessage(
                 "Begin Session",
@@ -3796,22 +3817,31 @@ const handleEndCoachingClick2 = async (randomId) => {
     //   appendMessage(message);
 
     //* send message to start new session
-    userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-    console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-    if (['psychometric', 'game'].includes(senarioCase2) 
-      || !clientuserInformationSTT.show_recommendations 
-      || userScenarioRecommendationStt.total_recommendation >= 2){
-        appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
+    userScenarioRecommendationStt = await getTestRecommendationsStt(
+      questionData2.results[0].uid,
+      null,
+      null,
+      userId2
+    );
+    console.log(senarioCase2, clientuserInformationSTT.show_recommendations);
+    if (
+      ["psychometric", "game"].includes(senarioCase2) ||
+      !clientuserInformationSTT.show_recommendations ||
+      userScenarioRecommendationStt.total_recommendation >= 2
+    ) {
+      appendMessage2(
+        "<b>Please enter another interaction code to start a new interaction.</b>"
+      );
     } else {
-
-          appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+      appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
               <div class="deep-chat-temporary-message" id='related-recommendation2'>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-        `)
-      startScenarioRecommendationsStt = true
-      PreviousSessionInfoSTT['sessionId'] =  sessionId2
-      PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+        `);
+      startScenarioRecommendationsStt = true;
+      PreviousSessionInfoSTT["sessionId"] = sessionId2;
+      PreviousSessionInfoSTT["skills"] =
+        questionData2.results[0].skills_to_evaluate;
     }
 
     submitEmailAndName2();
@@ -3863,7 +3893,7 @@ function appendMessageForUser2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
-function createMessageNode2(message,isMarkdown=false) {
+function createMessageNode2(message, isMarkdown = false) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
 
@@ -3887,10 +3917,9 @@ function createMessageNode2(message,isMarkdown=false) {
   messageBubble.style.color = "#000000";
 
   const messageText = document.createElement("p");
-  if( isMarkdown){
+  if (isMarkdown) {
     messageText.innerHTML = parseMarkdown(message);
-  }
-  else if (message?.includes("<")) {
+  } else if (message?.includes("<")) {
     // Parse the message as markdown and set it as HTML
     messageText.innerHTML = message;
   } else {
@@ -3916,7 +3945,10 @@ function parseMarkdown(markdown) {
   // Handle italic text (_text_ or *text*)
   markdown = markdown.replace(/(?:\*|_)(.*?)\1/g, "<em>$1</em>");
   // Handle links [text](url)
-  markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  markdown = markdown.replace(
+    /\[(.*?)\]\((.*?)\)/g,
+    '<a href="$2" target="_blank">$1</a>'
+  );
   // Convert newlines (\n) to <br>
   markdown = markdown.replace(/\n/g, "<br>");
   // Preserve spaces for better formatting
@@ -3927,14 +3959,14 @@ function parseMarkdown(markdown) {
 
 const isBusinessEmailStt = (email) => {
   const genericDomains = [
-    'gmail.com',
-    'yahoo.com',
-    'hotmail.com',
-    'outlook.com',
-    'icloud.com',
-    'aol.com',
+    "gmail.com",
+    "yahoo.com",
+    "hotmail.com",
+    "outlook.com",
+    "icloud.com",
+    "aol.com",
   ];
-  const domain = email.split('@')[1];
+  const domain = email.split("@")[1];
   return !genericDomains.includes(domain);
 };
 
@@ -3999,9 +4031,9 @@ function addStickerToMessage(sticker, msg, color = "#3b82f6") {
   return divWithLabel;
 }
 
-function appendMessage2(message2, isMarkdown=false) {
+function appendMessage2(message2, isMarkdown = false) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const messageNode = createMessageNode2(message2,isMarkdown);
+  const messageNode = createMessageNode2(message2, isMarkdown);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
@@ -4217,7 +4249,7 @@ const resetAllVariablesStt = async () => {
   isTranscriptOnlyStt = false;
   allowRecommendationTestCode = false;
   recommendationClicked = false;
-  responderDisplayNameStt=null;
+  responderDisplayNameStt = null;
 
   console.log("resetting variables completed");
 };
@@ -4399,7 +4431,6 @@ const audioCanvasUI = (audio, canvas) => {
   };
 };
 
-
 const handleGameTypeConversation = async () => {
   try {
     const response = await fetch(`${baseURL2}/test-responses/`, {
@@ -4429,41 +4460,38 @@ const handleGameTypeConversation = async () => {
 
     const responseData = await response.json();
 
-    console.log('gameresponse: ', responseData)
+    console.log("gameresponse: ", responseData);
 
     // Extract next question text
     let next_question_text = responseData.question_text || null;
 
     // Check if it is the last question using specific conditions
-    const is_last_question = responseData.is_last_question !== undefined 
-        ? responseData.is_last_question 
-        : (next_question_text === null || /end of quiz|achieved a score of/i.test(next_question_text));
-   
+    const is_last_question =
+      responseData.is_last_question !== undefined
+        ? responseData.is_last_question
+        : next_question_text === null ||
+          /end of quiz|achieved a score of/i.test(next_question_text);
 
-        console.log(
-      is_last_question,
-      next_question_text
-    )
+    console.log(is_last_question, next_question_text);
 
-    if (is_last_question){
-      next_question_text = JSON.parse(next_question_text)
+    if (is_last_question) {
+      next_question_text = JSON.parse(next_question_text);
       next_question_text = `<div>
       <b>${next_question_text.end_message}</b>
       <div>
         <h3>Feedback:</h3>
         <p>${next_question_text.feedback}</p>
       </div>
-    </div>`
+    </div>`;
     }
 
-    return { is_last_question, next_question_text}
-    
+    return { is_last_question, next_question_text };
   } catch (error) {
     console.error("Error handling game type conversation:", error.message);
-    
+
     return {
-      error: `${error}`
-    }
+      error: `${error}`,
+    };
   }
 };
 
@@ -4473,17 +4501,14 @@ const handleGameQuestion = async (
   isSingleSelect,
   signals
 ) => {
-
-
-  const tChatElementRef = document.getElementById("chat-element2")
+  const tChatElementRef = document.getElementById("chat-element2");
   const tShadowRoot = tChatElementRef.shadowRoot;
 
-  const chatInputBox = tShadowRoot.getElementById("text-input")
-  chatInputBox.classList.add("text-input-disabled")
-  chatInputBox.contentEditable = false
-  chatInputBox.placeholder = "Please wait for the next question..."
+  const chatInputBox = tShadowRoot.getElementById("text-input");
+  chatInputBox.classList.add("text-input-disabled");
+  chatInputBox.contentEditable = false;
+  chatInputBox.placeholder = "Please wait for the next question...";
   //@disable the input
-  
 
   // const inputText = questionText;
   // const headingRegex = /^##\s+(.*)$/m;
@@ -4518,63 +4543,69 @@ const handleGameQuestion = async (
   //   feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
   // };
 
-  questionText = JSON.parse(questionText)
-  console.log(questionText)
-  
-  const heading = questionText?.context
-  ? Object.entries(questionText?.context).map(([key, value]) => `${value}`)
-  .join('\n')
-  : "";
+  questionText = JSON.parse(questionText);
+  console.log(questionText);
 
+  const heading = questionText?.context
+    ? Object.entries(questionText?.context)
+        .map(([key, value]) => `${value}`)
+        .join("\n")
+    : "";
 
   const details = questionText?.details
-  ? Object.entries(questionText.details)
-      .map(([key, value]) => {
-        // If the value is an object, recursively convert its properties to a readable string
-        if (typeof value === 'object') {
-          value = Object.entries(value)
-            .map(([subKey, subValue]) => `<b>${subKey.charAt(0).toUpperCase() + subKey.slice(1)}:</b> ${subValue} `)
-            .join(); // Join sub-object properties with line breaks
-        }
-        return `<p><b>${key.charAt(0).toUpperCase() + key.slice(1)}:</b> ${value}</p>`;
-      })
-      .join("\n")
-  : "";
-
+    ? Object.entries(questionText.details)
+        .map(([key, value]) => {
+          // If the value is an object, recursively convert its properties to a readable string
+          if (typeof value === "object") {
+            value = Object.entries(value)
+              .map(
+                ([subKey, subValue]) =>
+                  `<b>${
+                    subKey.charAt(0).toUpperCase() + subKey.slice(1)
+                  }:</b> ${subValue} `
+              )
+              .join(); // Join sub-object properties with line breaks
+          }
+          return `<p><b>${
+            key.charAt(0).toUpperCase() + key.slice(1)
+          }:</b> ${value}</p>`;
+        })
+        .join("\n")
+    : "";
 
   const contentString = questionText?.content
-  ? Object.entries(questionText.content)
-      .map(([key, value]) => {
-        let result = "";
-        console.log(key, value);
+    ? Object.entries(questionText.content)
+        .map(([key, value]) => {
+          let result = "";
+          console.log(key, value);
 
-        if (key === "instruction") {
-          const instructionHTML = value
-            ? `<b>${value}:</b><br>`
-            : isSingleSelect
-            ? "<b>Please choose option A, B, C, or D:</b><br>"
-            : "<b>Select one or more options from A, B, C, or D:</b><br>";
-          result += instructionHTML;
-        } else if (key === "options") {
-          const optionsHTML = Object.entries(value || {})
-            .map(([key, value]) =>
-              isSingleSelect
-                ? `<label><input type="radio" name="option-${randomNumber}" value="${key}"> <b>${key}</b> - ${value}</label><br>`
-                : `<label><input type="checkbox" name="option-${randomNumber}" value="${key}"> <b>${key}</b> - ${value}</label><br>`
-            )
-            .join(" ");
-          console.log("optionsHTML", optionsHTML);
-          result += optionsHTML;
-        } else {
-          result += `<b>${key.charAt(0).toUpperCase() + key.slice(1)}</b>: ${value}<br>`;
-        }
-        console.log('result: ',result)
-        return result;
-      })
-      .join("") // Join the mapped array into a single string
-  : "";
-
-
+          if (key === "instruction") {
+            const instructionHTML = value
+              ? `<b>${value}:</b><br>`
+              : isSingleSelect
+              ? "<b>Please choose option A, B, C, or D:</b><br>"
+              : "<b>Select one or more options from A, B, C, or D:</b><br>";
+            result += instructionHTML;
+          } else if (key === "options") {
+            const optionsHTML = Object.entries(value || {})
+              .map(([key, value]) =>
+                isSingleSelect
+                  ? `<label><input type="radio" name="option-${randomNumber}" value="${key}"> <b>${key}</b> - ${value}</label><br>`
+                  : `<label><input type="checkbox" name="option-${randomNumber}" value="${key}"> <b>${key}</b> - ${value}</label><br>`
+              )
+              .join(" ");
+            console.log("optionsHTML", optionsHTML);
+            result += optionsHTML;
+          } else {
+            result += `<b>${
+              key.charAt(0).toUpperCase() + key.slice(1)
+            }</b>: ${value}<br>`;
+          }
+          console.log("result: ", result);
+          return result;
+        })
+        .join("") // Join the mapped array into a single string
+    : "";
 
   console.log(
     contentString,
@@ -4582,8 +4613,7 @@ const handleGameQuestion = async (
     heading,
     details,
     questionText?.details
-  )
-
+  );
 
   const extractedData = {
     heading: questionText?.level || null,
@@ -4591,13 +4621,15 @@ const handleGameQuestion = async (
     decisionMatch: questionText?.decision ?? null,
     objective: questionText?.objective ?? null,
     options: questionText?.options
-      ? Object.entries(questionText.options).map(([option, description]) => ({ option, description }))
+      ? Object.entries(questionText.options).map(([option, description]) => ({
+          option,
+          description,
+        }))
       : null,
     feedback: questionText?.feedback ?? null,
-    instruction: questionText?.instruction ?? null 
+    instruction: questionText?.instruction ?? null,
   };
-  
-  
+
   // Output the extracted data
   console.log(extractedData);
 
@@ -4673,9 +4705,7 @@ const handleGameQuestion = async (
   );
   console.log("Button : ", multipleSelectSubmitButton);
 
-  const exitButton = tShadowRoot.getElementById(
-    `exit-button-${randomNumber}`
-  );
+  const exitButton = tShadowRoot.getElementById(`exit-button-${randomNumber}`);
 
   const items = tShadowRoot.querySelectorAll(
     `input[name="option-${randomNumber}"]`
@@ -4697,8 +4727,8 @@ const handleGameQuestion = async (
   multipleSelectSubmitButton.addEventListener("click", function (event) {
     console.log("Event : ", event);
 
-    chatInputBox.classList.remove("text-input-disabled")
-    chatInputBox.contentEditable = true
+    chatInputBox.classList.remove("text-input-disabled");
+    chatInputBox.contentEditable = true;
 
     const selectedItems = tShadowRoot.querySelectorAll(
       `input[name="option-${randomNumber}"]:checked`
@@ -4723,8 +4753,8 @@ const handleGameQuestion = async (
     exitButton.style.color = "#111827";
 
     setTimeout(() => {
-      chatInputBox.classList.add("text-input-disabled")
-      chatInputBox.contentEditable = false
+      chatInputBox.classList.add("text-input-disabled");
+      chatInputBox.contentEditable = false;
     }, 250);
   });
 
@@ -4732,9 +4762,9 @@ const handleGameQuestion = async (
     console.log("Event : ", event);
     sendUserMessage("STOP", tShadowRoot);
 
-    chatInputBox.classList.remove("text-input-disabled")
-    chatInputBox.contentEditable = true
-    chatInputBox.placeholder = ""
+    chatInputBox.classList.remove("text-input-disabled");
+    chatInputBox.contentEditable = true;
+    chatInputBox.placeholder = "";
 
     multipleSelectSubmitButton.disabled = true;
     items.forEach((item) => {
@@ -4744,7 +4774,7 @@ const handleGameQuestion = async (
     exitButton.style.backgroundColor = "#f3f4f6";
     exitButton.style.border = "1px solid lightgray";
     exitButton.style.color = "#111827";
-  })
+  });
 };
 
 const handleProceedClickStt = async (choice) => {
@@ -4763,7 +4793,7 @@ const handleProceedClickStt = async (choice) => {
       console.log(questionSnippetLinkStt);
       if (questionSnippetLinkStt.length > 0) {
         const linkList = questionSnippetLinkStt.split(",");
-        console.log('Ahere12')
+        console.log("Ahere12");
 
         linkList.forEach((element) => {
           appendMessage2(snippetDivSTT(element));
@@ -4795,7 +4825,7 @@ const handleProceedClickStt = async (choice) => {
         }
 
         if (embeddingUrl) {
-          console.log('Ahere11')
+          console.log("Ahere11");
 
           appendMessage2(`▪ <b>Optional Enrichment Media</b><br>  <iframe
                             allow="autoplay; encrypted-media; fullscreen;"
@@ -4817,7 +4847,7 @@ const handleProceedClickStt = async (choice) => {
                 element.split("edit?")[0] +
                 "embed?start=true&loop=true&delayms=3000";
               console.log(url);
-          console.log('Ahere10')
+              console.log("Ahere10");
 
               appendMessage2(`<iframe src=${url}
                                 frameborder="0" 
@@ -4828,7 +4858,7 @@ const handleProceedClickStt = async (choice) => {
                                 ></iframe>`);
             } else {
               console.log(element);
-          console.log('Ahere8')
+              console.log("Ahere8");
 
               appendMessage2(`<div ><audio style="${
                 window.innerWidth < 600
@@ -4846,7 +4876,7 @@ const handleProceedClickStt = async (choice) => {
               questionMediaLinkStt.split("edit?")[0] +
               "embed?start=true&loop=true&delayms=3000";
             console.log(url);
-          console.log('Ahere7')
+            console.log("Ahere7");
 
             appendMessage2(`<iframe src=${url}
                               frameborder="0" 
@@ -4857,7 +4887,7 @@ const handleProceedClickStt = async (choice) => {
                               ></iframe>`);
           } else if (questionMediaLinkStt.includes("guidejar.com")) {
             const guidejarId = questionMediaLinkStt.split("/").pop();
-          console.log('Ahere6')
+            console.log("Ahere6");
 
             appendMessage2(`
               <div style="width:640px">
@@ -4948,7 +4978,7 @@ const handleProceedClickStt = async (choice) => {
             initialQuestionTextStt =
               `<b>${responderName}:</b><br>` + `${initialQuestionTextStt}`;
           }
-          console.log('Aher51')
+          console.log("Aher51");
 
           appendMessage2(initialQuestionTextStt);
         }
@@ -4964,8 +4994,7 @@ const handleProceedClickStt = async (choice) => {
         let responderName;
 
         if (testType2 === "dynamic_discussion_thread") {
-          if (!['game'].includes(senarioCase2)){
-
+          if (!["game"].includes(senarioCase2)) {
             if (initialQuestionTextStt.includes(":")) {
               initialQuestionTextStt = initialQuestionTextStt.replace(
                 /<\/?p>/g,
@@ -4987,7 +5016,7 @@ const handleProceedClickStt = async (choice) => {
             responderName = `<b>${strLIst[0]}:</b><br>`;
           }
         }
-        if (isImmersiveStt && !['game'].includes(senarioCase2)) {
+        if (isImmersiveStt && !["game"].includes(senarioCase2)) {
           const queText = initialQuestionTextStt;
 
           console.log("dyna", initialQuestionTextStt);
@@ -5050,29 +5079,37 @@ const handleProceedClickStt = async (choice) => {
         if (responderName) {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
-        console.log('here1',initialQuestionTextStt)
+        console.log("here1", initialQuestionTextStt);
         const randomIdForAudioElement = generateRandomAlphanumeric(10);
-      
-        if (['game'].includes(senarioCase2) ){
-          if (IsSingleSelectSTT !== null){
 
-            if(IsSingleSelectSTT){
-              console.log("HERE 2")
+        if (["game"].includes(senarioCase2)) {
+          if (IsSingleSelectSTT !== null) {
+            if (IsSingleSelectSTT) {
+              console.log("HERE 2");
               // add logic to add single box
               // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
               // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
-              handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
-            } else{
+              handleGameQuestion(
+                initialQuestionTextStt,
+                randomIdForAudioElement,
+                true
+              );
+            } else {
               // add logic to add multiselect
-              handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
+              handleGameQuestion(
+                initialQuestionTextStt,
+                randomIdForAudioElement,
+                false
+              );
             }
           } else {
-            appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
-
+            appendMessage2(
+              initialQuestionTextStt,
+              ["game"].includes(senarioCase2)
+            );
           }
-          
-        } else{
-          appendMessage2(initialQuestionTextStt)
+        } else {
+          appendMessage2(initialQuestionTextStt);
         }
       } else if (testType2 === "orchestrated_conversation") {
         const regex = /<p>(.*?)<\/p>/g;
@@ -5096,77 +5133,95 @@ const handleProceedClickStt = async (choice) => {
             let queText = entry[1];
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`;
-        
+
             const response = await fetch(url, {
               method: "GET",
               headers: {
                 Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
               },
             });
-        
+
             const blob = await response.blob();
             console.log("response", blob);
-        
+
             const objectUrl = URL.createObjectURL(blob);
-            const shadowRoot = document.getElementById("chat-element2").shadowRoot;
-        
+            const shadowRoot =
+              document.getElementById("chat-element2").shadowRoot;
+
             const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             console.log(objectUrl, "url");
-        
-            let audioCont = queDiv + `
+
+            let audioCont =
+              queDiv +
+              `
               <div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;">
-                <audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : "min-width: 50vw !important;"}">
+                <audio id="audio-player-${randomIdForAudioElement}" style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : "min-width: 50vw !important;"
+              }">
                   <source src=${objectUrl} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
                 <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
               </div>
             `;
-        
+
             if (responderName) {
               audioCont = responderName + audioCont;
             }
-        
+
             return {
               audioCont,
-              randomIdForAudioElement
+              randomIdForAudioElement,
             };
           });
-        
-          console.log(audioPromises, "audioPromises");
-        
-          const audioContents = await Promise.all(audioPromises);
-          console.log('Ahere1');
 
+          console.log(audioPromises, "audioPromises");
+
+          const audioContents = await Promise.all(audioPromises);
+          console.log("Ahere1");
 
           audioContents.forEach((audioCont) => {
-            console.log('audiocont ahere1',audioCont);
+            console.log("audiocont ahere1", audioCont);
             appendMessage2(audioCont.audioCont);
           });
-        
+
           // Function to play audios one by one
           async function playAudioSequentially(index = 0) {
             if (index >= audioContents.length) return;
-        
+
             const { audioCont, randomIdForAudioElement } = audioContents[index];
-        
-            const shadowRoot = document.getElementById("chat-element2").shadowRoot;
-            const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`);
-            const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`);
-            const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`);
-            const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`);
-        
+
+            const shadowRoot =
+              document.getElementById("chat-element2").shadowRoot;
+            const audioElement = shadowRoot.getElementById(
+              `audio-player-${randomIdForAudioElement}`
+            );
+            const canvasElement = shadowRoot.getElementById(
+              `canvas-audio-${randomIdForAudioElement}`
+            );
+            const breakElement = shadowRoot.getElementById(
+              `break-${randomIdForAudioElement}`
+            );
+            const audioDiv = shadowRoot.getElementById(
+              `audioDiv-${randomIdForAudioElement}`
+            );
+
             audioCanvasUiForQuestions(audioElement, canvasElement);
-        
+
             // Ensure the audio starts playing immediately
-            audioElement.play().then(() => {
-              console.log('Audio playing:', audioElement);
-            }).catch(error => {
-              console.error('Error playing audio:', error);
-            });
-        
+            audioElement
+              .play()
+              .then(() => {
+                console.log("Audio playing:", audioElement);
+              })
+              .catch((error) => {
+                console.error("Error playing audio:", error);
+              });
+
             // Wait for the audio to finish before moving to the next
-            await new Promise(resolve => {
+            await new Promise((resolve) => {
               audioElement.addEventListener("ended", () => {
                 canvasElement.remove();
                 audioDiv.remove();
@@ -5174,16 +5229,15 @@ const handleProceedClickStt = async (choice) => {
                 resolve();
               });
             });
-        
+
             // After the current audio ends, play the next one
             playAudioSequentially(index + 1);
           }
-        
+
           // Start playing the first audio
           playAudioSequentially(0);
-        }        
-         else {
-          console.log('Ahere2')
+        } else {
+          console.log("Ahere2");
 
           separatedText.forEach((entry) => {
             const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`;
@@ -5244,7 +5298,7 @@ const handleProceedClickStt = async (choice) => {
         const imageIdStt = `mediaImageStt${initialIndexStt}`;
         const imageMapNameStt = `image-mapStt${initialIndexStt}`;
         const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`;
-        console.log('Ahere3')
+        console.log("Ahere3");
 
         appendMessage2(`▪  ${ttsNarration}<br><br>
                           ▪ <img src=${imageUrlStt} ${
@@ -5270,7 +5324,7 @@ const handleProceedClickStt = async (choice) => {
               `<b>${strList[0]}:</b><br>` + `<p>${initialQuestionTextStt}</p>`;
           }
         }
-        console.log('Ahere4')
+        console.log("Ahere4");
 
         appendMessage2(initialQuestionTextStt);
       }
@@ -5278,13 +5332,13 @@ const handleProceedClickStt = async (choice) => {
   } else {
     resetAllVariablesStt();
 
-     //@disable the input
-     const tChatElementRef = document.getElementById("chat-element2")
-     const tShadowRoot = tChatElementRef.shadowRoot;
-   
-     const chatInputBox = tShadowRoot.getElementById("text-input")
-     chatInputBox.classList.remove("text-input-disabled")
-     chatInputBox.contentEditable = true
+    //@disable the input
+    const tChatElementRef = document.getElementById("chat-element2");
+    const tShadowRoot = tChatElementRef.shadowRoot;
+
+    const chatInputBox = tShadowRoot.getElementById("text-input");
+    chatInputBox.classList.remove("text-input-disabled");
+    chatInputBox.contentEditable = true;
 
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -5735,12 +5789,12 @@ async function setMcqVariablesStt() {
       enableEndSessionButton();
 
       //@disable the input
-      const tChatElementRef = document.getElementById("chat-element2")
+      const tChatElementRef = document.getElementById("chat-element2");
       const tShadowRoot = tChatElementRef.shadowRoot;
-    
-      const chatInputBox = tShadowRoot.getElementById("text-input")
-      chatInputBox.classList.remove("text-input-disabled")
-      chatInputBox.contentEditable = true
+
+      const chatInputBox = tShadowRoot.getElementById("text-input");
+      chatInputBox.classList.remove("text-input-disabled");
+      chatInputBox.contentEditable = true;
       return;
     }
 
@@ -5786,23 +5840,35 @@ async function setMcqVariablesStt() {
           appendMessage2(message2);
 
           //* send message to start new session
-          userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-          console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-          if (['psychometric', 'game'].includes(senarioCase2) 
-            || !clientuserInformationSTT.show_recommendations 
-            || userScenarioRecommendationStt.total_recommendation >= 2){
-            appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
+          userScenarioRecommendationStt = await getTestRecommendationsStt(
+            questionData2.results[0].uid,
+            null,
+            null,
+            userId2
+          );
+          console.log(
+            senarioCase2,
+            clientuserInformationSTT.show_recommendations
+          );
+          if (
+            ["psychometric", "game"].includes(senarioCase2) ||
+            !clientuserInformationSTT.show_recommendations ||
+            userScenarioRecommendationStt.total_recommendation >= 2
+          ) {
+            appendMessage2(
+              "<b>Please enter another interaction code to start a new interaction.</b>"
+            );
           } else {
-    
-              appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+            appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
                   <div class="deep-chat-temporary-message" id='related-recommendation2'>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-            `)
-          startScenarioRecommendationsStt = true
-          PreviousSessionInfoSTT['sessionId'] =  sessionId2
-          PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
-        }
+            `);
+            startScenarioRecommendationsStt = true;
+            PreviousSessionInfoSTT["sessionId"] = sessionId2;
+            PreviousSessionInfoSTT["skills"] =
+              questionData2.results[0].skills_to_evaluate;
+          }
           submitEmailAndName2();
         }
       });
@@ -5823,7 +5889,7 @@ async function setMcqVariablesStt() {
 
 let queryParams2;
 
-async function proceedFormFlowStt(msg, isWorkingEmail=false) {
+async function proceedFormFlowStt(msg, isWorkingEmail = false) {
   if (formFieldsstt.length === 0) {
     return [true, "None"];
   }
@@ -5831,18 +5897,17 @@ async function proceedFormFlowStt(msg, isWorkingEmail=false) {
   isEmailFormstt = true;
   const fieldName = formFieldsstt[0];
   if (fieldName === "email") {
-    if (!isEmailSTT(msg)){
+    if (!isEmailSTT(msg)) {
       return [
         false,
         `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`,
       ];
-    } else if(isWorkingEmail && !isBusinessEmailStt(msg)){
+    } else if (isWorkingEmail && !isBusinessEmailStt(msg)) {
       return [
         false,
         `<p style='font-size: 14px;color: #991b1b;'>Please use your organization email only!</b></p>`,
       ];
     }
-
   }
 
   formFieldsstt = formFieldsstt.slice(1);
@@ -5855,30 +5920,33 @@ async function proceedFormFlowStt(msg, isWorkingEmail=false) {
 const increaseSessionForAccesscodeStt = async (userId, accessCode) => {
   const requestData = {
     access_code: accessCode,
-    user_id: userId
+    user_id: userId,
   };
 
   try {
-    const response = await fetch(`${baseURL2}/accounts/increase_test_attempts_in_accesscode/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`
-      },
-      body: JSON.stringify(requestData),
-    });
+    const response = await fetch(
+      `${baseURL2}/accounts/increase_test_attempts_in_accesscode/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+        body: JSON.stringify(requestData),
+      }
+    );
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data)
-      return true
+      console.log(data);
+      return true;
     } else {
       const data = await response.json();
-      console.log(data)
-      return false
+      console.log(data);
+      return false;
     }
   } catch (error) {
-    console.error('Error during API call:', error);
+    console.error("Error during API call:", error);
   }
 
   return false;
@@ -5954,18 +6022,18 @@ async function submitEmailAndName2() {
   }
   sendEmail2(sessionId2, globalReportUrl2);
   const page_name = questionData2.results[0].page_name;
-  const test_code = testCode2
+  const test_code = testCode2;
   const skills = questionData2.results[0].skills_to_evaluate;
-  const session_id = sessionId2
-  const scenario_case = senarioCase2
+  const session_id = sessionId2;
+  const scenario_case = senarioCase2;
   resetAllVariablesStt();
   //@disable the input
-  const tChatElementRef = document.getElementById("chat-element2")
+  const tChatElementRef = document.getElementById("chat-element2");
   const tShadowRoot = tChatElementRef.shadowRoot;
 
-  const chatInputBox = tShadowRoot.getElementById("text-input")
-  chatInputBox.classList.remove("text-input-disabled")
-  chatInputBox.contentEditable = true
+  const chatInputBox = tShadowRoot.getElementById("text-input");
+  chatInputBox.classList.remove("text-input-disabled");
+  chatInputBox.contentEditable = true;
 
   if (page_name !== "explore") {
     increaseActionPointStt(userId2, "interaction_attempted");
@@ -5993,12 +6061,11 @@ async function submitEmailAndName2() {
     appendMessage2(recommDiv);
   }
 
-  if (snnipetConfigSTT["psychometric"] === "true" ||
-    Object.keys(snnipetConfigSTT).length > 0) {
-    increaseSessionForAccesscodeStt(
-      userId2,
-      AccessCodeStt
-    );
+  if (
+    snnipetConfigSTT["psychometric"] === "true" ||
+    Object.keys(snnipetConfigSTT).length > 0
+  ) {
+    increaseSessionForAccesscodeStt(userId2, AccessCodeStt);
   }
 
   // })
@@ -6172,138 +6239,162 @@ function generateOptionButtons2() {
   });
 }
 
-async function getTestRecommendationsStt(origin_test_id, test_case, session_id, user_id) {
+async function getTestRecommendationsStt(
+  origin_test_id,
+  test_case,
+  session_id,
+  user_id
+) {
   const params = new URLSearchParams({
-      origin_test_id: origin_test_id || "",
-      test_case: test_case || "",
-      session_id: session_id || "",
-      user_id: user_id || ""
+    origin_test_id: origin_test_id || "",
+    test_case: test_case || "",
+    session_id: session_id || "",
+    user_id: user_id || "",
   });
 
   const url = `${baseURL2}/tests/test-recommendations/?${params.toString()}`;
 
   try {
-      const response = await fetch(url, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
-          }
-      });
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
 
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status}, ${response}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}, ${response}`);
+    }
 
-      const data = await response.json();
-      console.log("Test Recommendations:", data);
-      return data;
+    const data = await response.json();
+    console.log("Test Recommendations:", data);
+    return data;
   } catch (error) {
-      console.error("Failed to fetch test recommendations:", error);
-      throw new Error(`Error: ${error}`);
-
+    console.error("Failed to fetch test recommendations:", error);
+    throw new Error(`Error: ${error}`);
   }
 }
 
-async function testRecommendationExceededStt(origin_test_id, test_case, session_id, user_id){
-  const data = await getTestRecommendationsStt(origin_test_id, test_case, session_id, user_id)
+async function testRecommendationExceededStt(
+  origin_test_id,
+  test_case,
+  session_id,
+  user_id
+) {
+  const data = await getTestRecommendationsStt(
+    origin_test_id,
+    test_case,
+    session_id,
+    user_id
+  );
   if (data.total_recommendation > 2) {
-    return true
-  } else{
-    return false
+    return true;
+  } else {
+    return false;
   }
 }
 
-async function createTestRecommendationStt(recommended_test_id, session_id, test_case) {
+async function createTestRecommendationStt(
+  recommended_test_id,
+  session_id,
+  test_case
+) {
   const url = `${baseURL2}/tests/test-recommendations/`;
 
   const payload = {
-      recommended_test_id: recommended_test_id,
-      session_id: session_id,
-      test_case: test_case
+    recommended_test_id: recommended_test_id,
+    session_id: session_id,
+    test_case: test_case,
   };
 
   try {
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
-          },
-          body: JSON.stringify(payload)
-      });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
 
-      const data = await response.json();
-      console.log("Test Recommendation Created:", data);
-      return data;
+    const data = await response.json();
+    console.log("Test Recommendation Created:", data);
+    return data;
   } catch (error) {
-      console.error("Failed to create test recommendation:", error);
-      throw new Error(`Error: ${error}`);
-
+    console.error("Failed to create test recommendation:", error);
+    throw new Error(`Error: ${error}`);
   }
 }
 
-
-async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro }) {
-  const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
+async function generateTestScenarioStt({
+  userId,
+  sessionId,
+  skills,
+  flavour,
+  isMicro,
+}) {
+  const url = new URL(
+    `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
+  );
   const params = {
-      mode: "A",
-      information: JSON.stringify({
-          data: {
-              information: `Targeted Skills: ${skills}`,
-          },
-          title: "",
-      }),
-      access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-      creator_user_id: userId,
-      flavour: flavour,
-      is_micro: isMicro,
-      previous_session_id: sessionId,
+    mode: "A",
+    information: JSON.stringify({
+      data: {
+        information: `Targeted Skills: ${skills}`,
+      },
+      title: "",
+    }),
+    access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+    creator_user_id: userId,
+    flavour: flavour,
+    is_micro: isMicro,
+    previous_session_id: sessionId,
   };
 
   try {
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify(params),
-      });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
 
-      const data = await response.json();
-      console.log("Created Test Result:", data);
+    const data = await response.json();
+    console.log("Created Test Result:", data);
 
-      if (data[0]?.message || data[0]?.error) {
-          console.error("Error generating the scenarios.");
-          throw new Error("Failed to generate scenario");
-      }
-
-      return data[0]; // Ensure we return the resolved data
-  } catch (err) {
-      console.error("Fetch Error:", err);
+    if (data[0]?.message || data[0]?.error) {
+      console.error("Error generating the scenarios.");
       throw new Error("Failed to generate scenario");
+    }
+
+    return data[0]; // Ensure we return the resolved data
+  } catch (err) {
+    console.error("Fetch Error:", err);
+    throw new Error("Failed to generate scenario");
   }
 }
-
 
 function copyClipboard(block_id_to_copy) {
-    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-    const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
-    
-    if (testCodeBlock) {
-        navigator.clipboard.writeText(testCodeBlock.innerText)
-            .then(() => {
-                console.log("Text copied successfully!");
-            })
-            .catch(err => console.error("Failed to copy text:", err));
-    } else {
-        console.error("Element not found:", block_id_to_copy);
-    }
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
+
+  if (testCodeBlock) {
+    navigator.clipboard
+      .writeText(testCodeBlock.innerText)
+      .then(() => {
+        console.log("Text copied successfully!");
+      })
+      .catch((err) => console.error("Failed to copy text:", err));
+  } else {
+    console.error("Element not found:", block_id_to_copy);
+  }
 }
 
 const handleAttemptScenaiosSTT = async (title, test_code) => {
@@ -6430,11 +6521,11 @@ async function handleScenarioRegeneration(signals) {
     url: currentURL,
     access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
     regeneration: true,
-    is_micro: `${snnipetConfigSTT.isMicro === 'true'? true : false}`
-  };  
-  
+    is_micro: `${snnipetConfigSTT.isMicro === "true" ? true : false}`,
+  };
+
   console.log("is_micro", snnipetConfigSTT.isMicro, data_params);
-  
+
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
     method: "POST",
@@ -6442,7 +6533,7 @@ async function handleScenarioRegeneration(signals) {
       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data_params)
+    body: JSON.stringify(data_params),
   })
     .then((response) => response.json())
     .then((data) => {
@@ -6702,9 +6793,8 @@ async function handleOptionButtonClick2(
     url: currentURL,
     access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
     is_micro: `${snnipetConfigSTT.isMicro === "true" ? true : false}`,
-    flavour: snnipetConfigSTT.flavour
+    flavour: snnipetConfigSTT.flavour,
   };
-  
 
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
@@ -6713,7 +6803,7 @@ async function handleOptionButtonClick2(
       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data_params)
+    body: JSON.stringify(data_params),
   })
     .then((response) => response.json())
     .then((data) => {
@@ -6919,8 +7009,8 @@ const snippetOrigin = () => {
   }
 };
 
-const getDefaultInstractionsStt = (type='system', condition ="normal") => {
-  if (type === 'system'){
+const getDefaultInstractionsStt = (type = "system", condition = "normal") => {
+  if (type === "system") {
     if (condition === "normal") {
       return `
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
@@ -6929,22 +7019,21 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
               <li><strong>4. Psychometric Assessments and Simulations:</strong> These may take several forms depending on the subject and context. The short version contains 3 questions, and the standard version may have 8 or more. At the end of any session, a detailed feedback report will be generated. The premium version will contain speech & voice analytics.</li>
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>6. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-            `
-    }else if (condition === "bot") {
+            `;
+    } else if (condition === "bot") {
       return `
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
               <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
               <li><strong>3. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>4. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-            `
-    } else if (condition === "simulations") {                                             
+            `;
+    } else if (condition === "simulations") {
       return `
               <li><strong>1. Psychometric Assessments and Simulations:</strong> These may take several forms depending on the subject and context. The short version contains 3 questions, and the standard version may have 8 or more. At the end of any session, a detailed feedback report will be generated. The premium version will contain speech & voice analytics.</li>
               <li><strong>2. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>3. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-            `
-
+            `;
     } else {
       return `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
@@ -6953,9 +7042,9 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
               <li><strong>2. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>3. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
               </ul>
-      </div>`
+      </div>`;
     }
-  } else if (type === 'bot'){
+  } else if (type === "bot") {
     return `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
         <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
@@ -6995,10 +7084,9 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
           <li><strong>7. Ask Follow-Up Questions:</strong> As you implement the suggestions from your AI Coach, don't hesitate to ask follow-up questions if you encounter challenges or need further clarification.</li>
           <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
         </ol>
-      </div>`
- 
+      </div>`;
   }
-}
+};
 
 async function loadExternalModule() {
   try {
@@ -7391,17 +7479,17 @@ loadExternalModule().then(() => {
   //   snippetOrigin() === "external"
   // ) {
   //   const list = getDefaultInstractionsStt("system", 'simulations')
-  //   instructionsPaneList.innerHTML = list;  
+  //   instructionsPaneList.innerHTML = list;
   // } else {
-  if (botId){
-    const list = getDefaultInstractionsStt("bot")
-    console.log('botinstruction: ', list)
+  if (botId) {
+    const list = getDefaultInstractionsStt("bot");
+    console.log("botinstruction: ", list);
     instructionsPane.innerHTML = list;
     const footerText = document.getElementById("footer-text");
-    footerText.innerHTML = `Available only on Google Chrome 🌐. Follow the instructions for optimum performance.`
+    footerText.innerHTML = `Available only on Google Chrome 🌐. Follow the instructions for optimum performance.`;
   } else {
-    const list = getDefaultInstractionsStt("system", 'simulations')
-    instructionsPaneList.innerHTML = list; 
+    const list = getDefaultInstractionsStt("system", "simulations");
+    instructionsPaneList.innerHTML = list;
   }
   // }
 
@@ -7601,11 +7689,11 @@ loadExternalModule().then(() => {
   if (botId == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT["psychometric"] === "true") {
-        let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
+        let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`;
         if (snnipetConfigSTT?.["welcomeMessage"]) {
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
         }
-        console.log(welcomeMessage)
+        console.log(welcomeMessage);
         isEmailFormstt = true;
         formFieldsstt = ["email", "name"];
         console.log(
@@ -7625,7 +7713,7 @@ loadExternalModule().then(() => {
           },
         ];
       } else {
-        let welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+        let welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`;
         if (snnipetConfigSTT?.["welcomeMessage"]) {
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
         }
@@ -7964,36 +8052,43 @@ loadExternalModule().then(() => {
     const requestData = {
       access_code: accessCode,
       user_id: userId,
-      client_name: clientId
+      client_name: clientId,
     };
-  
+
     try {
-      const response = await fetch(`${baseURL2}/accounts/validate-snippet-access-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`
-        },
-        body: JSON.stringify(requestData),
-      });
-      console.log(response.ok)
+      const response = await fetch(
+        `${baseURL2}/accounts/validate-snippet-access-code/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+      console.log(response.ok);
       if (response.ok) {
         const data = await response.json();
-        console.log('success',data)
-        return {isvalidAccessCode:true, error_msg: null}
+        console.log("success", data);
+        return { isvalidAccessCode: true, error_msg: null };
       } else {
         const data = await response.json();
-        console.log('error',data)
-        if (data.error.includes('expired')){
-          return {isvalidAccessCode:false, error_msg:'Your access code has expired. Please contact your admin or our helpdesk.'}
+        console.log("error", data);
+        if (data.error.includes("expired")) {
+          return {
+            isvalidAccessCode: false,
+            error_msg:
+              "Your access code has expired. Please contact your admin or our helpdesk.",
+          };
         }
-        return {isvalidAccessCode:false, error_msg: null}
+        return { isvalidAccessCode: false, error_msg: null };
       }
     } catch (error) {
-      console.error('Error during API call:', error);
+      console.error("Error during API call:", error);
     }
-    console.log('failed')
-    return {isvalidAccessCode:false, error_msg: null}
+    console.log("failed");
+    return { isvalidAccessCode: false, error_msg: null };
   };
 
   const SessionCheckStt = async (session_id) => {
@@ -8565,7 +8660,8 @@ loadExternalModule().then(() => {
         if (index === 0) {
           reader.read().then(processBuffer);
         } else {
-          const shadowRootAud = document.getElementById("chat-element2").shadowRoot;
+          const shadowRootAud =
+            document.getElementById("chat-element2").shadowRoot;
           const previousPlayer = shadowRootAud.getElementById(
             `audio-player-stream-${index - 1}-${randomTextForId}`
           );
@@ -8747,7 +8843,8 @@ loadExternalModule().then(() => {
               //   randomIdForAudioElement
               // );
 
-              text += " Please explain your question or comment in different words which I may be able to understand better.";
+              text +=
+                " Please explain your question or comment in different words which I may be able to understand better.";
             }
           }
 
@@ -8762,7 +8859,8 @@ loadExternalModule().then(() => {
               //   randomIdForAudioElement
               // );
 
-              text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
+              text +=
+                "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
@@ -8775,13 +8873,14 @@ loadExternalModule().then(() => {
               //   randomIdForAudioElement
               // );
 
-              text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+              text +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             }
           }
 
           if (streamWithAudio) {
             const encodedText = encodeURIComponent(text);
-            
+
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
             const response = await fetch(url, {
               method: "GET",
@@ -8789,19 +8888,19 @@ loadExternalModule().then(() => {
                 Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
               },
             });
-        
+
             const blob = await response.blob();
             console.log("respnse", blob);
-        
+
             const objectUrl = URL.createObjectURL(blob);
-        
+
             console.log(objectUrl, "url");
-        
+
             audioDiv = document.createElement("div");
             audioDiv.id = `audioDiv-${randomIdForAudioElement}`;
             audioDiv.style.cssText =
               "border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;";
-        
+
             const audioPlayer = document.createElement("audio");
             audioPlayer.id = `audio-player-${randomIdForAudioElement}`;
             audioPlayer.autoplay = true;
@@ -8809,27 +8908,27 @@ loadExternalModule().then(() => {
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : "min-width: 50vw !important;";
-        
+
             const audioSource = document.createElement("source");
             audioSource.src = objectUrl;
-        
+
             const fallbackMessage = document.createTextNode(
               "Your browser does not support the audio element."
             );
-        
+
             audioPlayer.appendChild(audioSource);
             audioPlayer.appendChild(fallbackMessage);
-        
+
             const audioCanvas = document.createElement("canvas");
             audioCanvas.id = `canvas-audio-${randomIdForAudioElement}`;
             audioCanvas.width = 800;
             audioCanvas.height = 40;
-        
+
             audioDiv.appendChild(audioPlayer);
             audioDiv.appendChild(audioCanvas);
-        
+
             messageBubble.appendChild(audioDiv);
-        
+
             setTimeout(() => {
               const audioElement = shadowRoot.getElementById(
                 `audio-player-${randomIdForAudioElement}`
@@ -8840,28 +8939,28 @@ loadExternalModule().then(() => {
               const audioDiv = shadowRoot.getElementById(
                 `audioDiv-${randomIdForAudioElement}`
               );
-             
+
               console.log(audioElement, canvasElement);
               audioCanvasUiForQuestions(audioElement, canvasElement);
-        
+
               audioElement.addEventListener("ended", () => {
                 canvasElement.remove();
                 audioDiv.remove();
                 signals.onResponse({
                   html: "",
                 });
-               setTimeout(() => {
-                allMessages.forEach((indvMessage) => {
-                  if (
-                    indvMessage.innerText === "." ||
-                    indvMessage.innerText === "..." ||
-                    indvMessage.innerText === " " ||
-                    indvMessage.innerText === ""
-                  ) {
-                    indvMessage.remove();
-                  }
-                });
-               }, 20);
+                setTimeout(() => {
+                  allMessages.forEach((indvMessage) => {
+                    if (
+                      indvMessage.innerText === "." ||
+                      indvMessage.innerText === "..." ||
+                      indvMessage.innerText === " " ||
+                      indvMessage.innerText === ""
+                    ) {
+                      indvMessage.remove();
+                    }
+                  });
+                }, 20);
               });
             }, 100);
           }
@@ -9346,35 +9445,42 @@ loadExternalModule().then(() => {
           // get latest message
           let latestMessage = body.messages[body.messages.length - 1].text;
 
-          if (startScenarioRecommendationsStt){
+          if (startScenarioRecommendationsStt) {
             var chatElement = document.getElementById("chat-element2");
             const shdwroot = chatElement.shadowRoot;
-            const buttons = shdwroot.querySelectorAll("#related-recommendation2 button");
-            buttons.forEach(button => {
-                button.disabled = true;
-                button.style.opacity = "0.5"; // Grey out
-                button.style.cursor = "not-allowed";
+            const buttons = shdwroot.querySelectorAll(
+              "#related-recommendation2 button"
+            );
+            buttons.forEach((button) => {
+              button.disabled = true;
+              button.style.opacity = "0.5"; // Grey out
+              button.style.cursor = "not-allowed";
             });
-            if (latestMessage === 'Yes'){
+            if (latestMessage === "Yes") {
               LoadingMessageWithText("Fetching your AI curated simulation...");
-              console.log('userScenarioRecommendation', userScenarioRecommendationStt)
-              const test_case = userScenarioRecommendationStt.results.length > 0 
-                  ? userScenarioRecommendationStt.results[0].test_case === 'soft_skills' 
-                      ? "hard_skills" 
-                      : "soft_skills"
-                  : "hard_skills";  
-              console.log('test_case', test_case);
+              console.log(
+                "userScenarioRecommendation",
+                userScenarioRecommendationStt
+              );
+              const test_case =
+                userScenarioRecommendationStt.results.length > 0
+                  ? userScenarioRecommendationStt.results[0].test_case ===
+                    "soft_skills"
+                    ? "hard_skills"
+                    : "soft_skills"
+                  : "hard_skills";
+              console.log("test_case", test_case);
 
               try {
-                const data = await generateTestScenarioStt({ 
-                    userId: userId2, 
-                    sessionId: PreviousSessionInfoSTT['sessionId'], 
-                    skills: PreviousSessionInfoSTT['skills'],
-                    flavour: test_case,
-                    isMicro: true
+                const data = await generateTestScenarioStt({
+                  userId: userId2,
+                  sessionId: PreviousSessionInfoSTT["sessionId"],
+                  skills: PreviousSessionInfoSTT["skills"],
+                  flavour: test_case,
+                  isMicro: true,
                 });
                 console.log(data);
-        
+
                 const testCodeMessage = `
                   <b>Title</b>: ${data.title} <br>
                   <b>Description</b>: ${data.description} <br>
@@ -9399,31 +9505,28 @@ loadExternalModule().then(() => {
                       margin-top: 10px;
                   " onclick="copyClipboard('test-code-block')">Copy</button>
               `;
-        
+
                 signals.onResponse({
-                    html: testCodeMessage,
-                    text: 'Please enter interaction code to start a new interaction.'
+                  html: testCodeMessage,
+                  text: "Please enter interaction code to start a new interaction.",
                 });
 
                 createTestRecommendationStt(
                   data.test_id,
-                  PreviousSessionInfoSTT['sessionId'],
+                  PreviousSessionInfoSTT["sessionId"],
                   test_case
-                )
-        
-            } catch (error) {
+                );
+              } catch (error) {
                 console.log(error);
-            }
-        
-            console.log('hi..........');
+              }
+
+              console.log("hi..........");
             } else {
-              signals.onResponse(
-                {
-                  html: "Thank you! If you wish to try another interaction code you can try now."
-                }        
-              )
+              signals.onResponse({
+                html: "Thank you! If you wish to try another interaction code you can try now.",
+              });
             }
-            startScenarioRecommendationsStt= false;
+            startScenarioRecommendationsStt = false;
             return;
           }
 
@@ -9450,26 +9553,25 @@ loadExternalModule().then(() => {
               userId2,
               sttWidgetClientId
             );
-          
+
             result = result || { isvalidAccessCode: null, error_msg: null };
-          
+
             const { isvalidAccessCode, error_msg } = result;
             console.log(
-              'isvalidaccesscode', isvalidAccessCode,
-              'error_msg', error_msg
+              "isvalidaccesscode",
+              isvalidAccessCode,
+              "error_msg",
+              error_msg
             );
 
-            if (!isvalidAccessCode && error_msg){
+            if (!isvalidAccessCode && error_msg) {
               signals.onResponse({
                 html: `<b style='font-size: 14px;color: #991b1b;'>${error_msg}</b>`,
-
-              })
+              });
               return;
             }
-            console.log('isvalidAccessCode', isvalidAccessCode)
-            if (
-              isvalidAccessCode
-            ) {
+            console.log("isvalidAccessCode", isvalidAccessCode);
+            if (isvalidAccessCode) {
               AccessCodeStt = latestMessage;
               console.log("Access Code Matched", snnipetConfigSTT.isDemo);
               updateClientInfoSTT(sttWidgetClientId, user_email2, user_email2);
@@ -9573,7 +9675,10 @@ loadExternalModule().then(() => {
           }
 
           if (isEmailFormstt) {
-            const [proceed, errorMsg] = await proceedFormFlowStt(latestMessage, snnipetConfigSTT?.['isBussinessEmail'] === 'true' || false);
+            const [proceed, errorMsg] = await proceedFormFlowStt(
+              latestMessage,
+              snnipetConfigSTT?.["isBussinessEmail"] === "true" || false
+            );
             console.log(proceed, errorMsg);
             if (!proceed) {
               console.log("email not valid 1");
@@ -9669,11 +9774,21 @@ loadExternalModule().then(() => {
                 }
                 appendMessage2(message);
                 // //* send message to start new session
-                userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-                console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-                if (['psychometric', 'game'].includes(senarioCase2) 
-                  || !clientuserInformationSTT.show_recommendations 
-                  || userScenarioRecommendationStt.total_recommendation >= 2){
+                userScenarioRecommendationStt = await getTestRecommendationsStt(
+                  questionData2.results[0].uid,
+                  null,
+                  null,
+                  userId2
+                );
+                console.log(
+                  senarioCase2,
+                  clientuserInformationSTT.show_recommendations
+                );
+                if (
+                  ["psychometric", "game"].includes(senarioCase2) ||
+                  !clientuserInformationSTT.show_recommendations ||
+                  userScenarioRecommendationStt.total_recommendation >= 2
+                ) {
                   signals.onResponse({
                     html: "<b>Please enter another interaction code to start a new interaction.</b>",
                   });
@@ -9683,11 +9798,12 @@ loadExternalModule().then(() => {
                           <div class="deep-chat-temporary-message" id='related-recommendation2'>
                           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                    `
-                  })
-                  startScenarioRecommendationsStt = true
-                  PreviousSessionInfoSTT['sessionId'] =  sessionId2
-                  PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+                    `,
+                  });
+                  startScenarioRecommendationsStt = true;
+                  PreviousSessionInfoSTT["sessionId"] = sessionId2;
+                  PreviousSessionInfoSTT["skills"] =
+                    questionData2.results[0].skills_to_evaluate;
                 }
                 submitEmailAndName2();
               }
@@ -10280,43 +10396,53 @@ loadExternalModule().then(() => {
                   "gemini-2.0-flash-lite-001"
                 );
               } else {
-                console.log("#similarity LAST QUESTION:", userQuestionsHistory.at(-1));
-              
+                console.log(
+                  "#similarity LAST QUESTION:",
+                  userQuestionsHistory.at(-1)
+                );
+
                 let similarityValue = 0;
                 const lastQuestion = userQuestionsHistory.at(-1)?.toLowerCase();
-              
+
                 if (lastQuestion) {
                   const response = await fetch("/api/string-similarity", {
                     method: "POST",
-                    body: JSON.stringify({ sentence1: lastQuestion, sentence2: latestMessage.toLowerCase() }),
+                    body: JSON.stringify({
+                      sentence1: lastQuestion,
+                      sentence2: latestMessage.toLowerCase(),
+                    }),
                   });
-              
+
                   if (response.ok) {
                     const data = await response.json();
                     similarityValue = Number(data.similarity);
                     console.log("#similarity Data:", data);
                   }
                 }
-              
+
                 console.log("#similarity SIMILARITY VALUE:", similarityValue);
                 console.log("#similarity LLM Queue:", conversationLlmQueue);
-              
-                const botSelectedLLM = ["gemini-2.0-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
+
+                const botSelectedLLM = [
+                  "gemini-2.0-flash",
+                  "gemini-2.0-flash-lite-001",
+                  "gemini-2.0-flash",
+                ];
                 const messageFrequency = userQuestionsHistory.filter(
                   (msg) => msg?.toLowerCase() === latestMessage.toLowerCase()
                 ).length;
-              
-                let selectedModel = botSelectedLLM[0]; 
+
+                let selectedModel = botSelectedLLM[0];
                 let fallbackModel = botSelectedLLM[1];
-              
-                if (messageFrequency === 1 || (similarityValue > 90)) {
-                  selectedModel = botSelectedLLM[1]; 
+
+                if (messageFrequency === 1 || similarityValue > 90) {
+                  selectedModel = botSelectedLLM[1];
                   fallbackModel = botSelectedLLM[2];
                 } else if (messageFrequency === 2) {
                   selectedModel = botSelectedLLM[2];
                   fallbackModel = botSelectedLLM[0];
                 }
-              
+
                 GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
@@ -10328,7 +10454,6 @@ loadExternalModule().then(() => {
                 );
                 conversationLlmQueue.push(selectedModel);
               }
-              
 
               userQuestionsHistory.push(latestMessage);
 
@@ -10423,12 +10548,12 @@ loadExternalModule().then(() => {
             resetAllVariablesStt(); // reseting session
 
             //@disable the input
-            const tChatElementRef = document.getElementById("chat-element2")
+            const tChatElementRef = document.getElementById("chat-element2");
             const tShadowRoot = tChatElementRef.shadowRoot;
-          
-            const chatInputBox = tShadowRoot.getElementById("text-input")
-            chatInputBox.classList.remove("text-input-disabled")
-            chatInputBox.contentEditable = true
+
+            const chatInputBox = tShadowRoot.getElementById("text-input");
+            chatInputBox.classList.remove("text-input-disabled");
+            chatInputBox.contentEditable = true;
           }
           const userAcessAvailability2 = latestMessage; //body.messages[0].text;
           if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
@@ -10630,23 +10755,30 @@ loadExternalModule().then(() => {
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
                 //@disable the input
-                const tChatElementRef = document.getElementById("chat-element2")
+                const tChatElementRef =
+                  document.getElementById("chat-element2");
                 const tShadowRoot = tChatElementRef.shadowRoot;
-              
-                const chatInputBox = tShadowRoot.getElementById("text-input")
-                chatInputBox.classList.remove("text-input-disabled")
-                chatInputBox.contentEditable = true
+
+                const chatInputBox = tShadowRoot.getElementById("text-input");
+                chatInputBox.classList.remove("text-input-disabled");
+                chatInputBox.contentEditable = true;
                 return;
               }
               //************* check if user message is atleast 10 words */
-              if (!isValidMessageStt(latestMessage) && !['game'].includes(senarioCase2)) {
+              if (
+                !isValidMessageStt(latestMessage) &&
+                !["game"].includes(senarioCase2)
+              ) {
                 console.log("4");
                 signals.onResponse({
                   html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
                 });
                 return;
               }
-              if (isDuplicateResponseStt(latestMessage) && !['game'].includes(senarioCase2)) {
+              if (
+                isDuplicateResponseStt(latestMessage) &&
+                !["game"].includes(senarioCase2)
+              ) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
                   resetAllVariablesStt();
@@ -10654,12 +10786,13 @@ loadExternalModule().then(() => {
                     html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
                   });
                   //@disable the input
-                  const tChatElementRef = document.getElementById("chat-element2")
+                  const tChatElementRef =
+                    document.getElementById("chat-element2");
                   const tShadowRoot = tChatElementRef.shadowRoot;
-                
-                  const chatInputBox = tShadowRoot.getElementById("text-input")
-                  chatInputBox.classList.remove("text-input-disabled")
-                  chatInputBox.contentEditable = true
+
+                  const chatInputBox = tShadowRoot.getElementById("text-input");
+                  chatInputBox.classList.remove("text-input-disabled");
+                  chatInputBox.contentEditable = true;
                   return;
                 }
                 signals.onResponse({
@@ -10778,7 +10911,7 @@ loadExternalModule().then(() => {
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
                 IsSingleSelectSTT = questionData2.results[0].is_single_select;
-                console.log( "IsSingleSelectSTT", IsSingleSelectSTT);
+                console.log("IsSingleSelectSTT", IsSingleSelectSTT);
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -10964,13 +11097,11 @@ loadExternalModule().then(() => {
                   isSessionActiveStt = true;
                   console.log("Session Created => ", sessionId2);
 
-                  if (senarioCase2 === 'game'){
+                  if (senarioCase2 === "game") {
                     questionLength2 = 1;
                     questionIndex2 = 0;
-                      // getting question for the game scenario:
-                      questionText2 = `${data.next_question_text}`
-
-                    
+                    // getting question for the game scenario:
+                    questionText2 = `${data.next_question_text}`;
                   }
 
                   // initialize coaching conversation if test is coaching type
@@ -11036,15 +11167,15 @@ loadExternalModule().then(() => {
                             "Start the discussion by commenting your thoughts on this.";
                         }
                       } else {
-                        if (senarioCase2 != 'game'){
+                        if (senarioCase2 != "game") {
                           let resultString2 = "";
-                            for (let i = 0; i < initial_msg2.length; i++) {
-                              resultString2 += "<p>" + initial_msg2[i] + "</p>";
-                              if (i < initial_msg2.length - 1) {
-                                resultString2 += "<br>";
-                              }
+                          for (let i = 0; i < initial_msg2.length; i++) {
+                            resultString2 += "<p>" + initial_msg2[i] + "</p>";
+                            if (i < initial_msg2.length - 1) {
+                              resultString2 += "<br>";
                             }
-                            questionText2 = resultString2;
+                          }
+                          questionText2 = resultString2;
                         }
                       }
                     }
@@ -11276,7 +11407,7 @@ loadExternalModule().then(() => {
                           const videoId =
                             senarioMediaDescription2.split("v=")[1];
                           embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
-                          console.log('desc section 1')
+                          console.log("desc section 1");
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
@@ -11296,7 +11427,7 @@ loadExternalModule().then(() => {
                             .split("/")
                             .pop();
                           embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
-                          console.log('desc section 2')
+                          console.log("desc section 2");
 
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
@@ -11315,8 +11446,8 @@ loadExternalModule().then(() => {
                         ) {
                           // console.log(tweetId);
                           embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
-                          console.log('desc section 3')
-                          
+                          console.log("desc section 3");
+
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
@@ -11334,7 +11465,7 @@ loadExternalModule().then(() => {
                           const urlList = senarioMediaDescription2.split(",");
                           console.log("list", urlList);
                           if (urlList.length > 1) {
-                          console.log('desc section 4')
+                            console.log("desc section 4");
 
                             appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
                                 ▪ Description : ${senarioDescription2} <br><br>
@@ -11377,7 +11508,7 @@ loadExternalModule().then(() => {
                                 senarioMediaDescription2.split("edit?")[0] +
                                 "embed?start=true&loop=true&delayms=3000";
                               console.log(url);
-                              console.log('desc section 5')
+                              console.log("desc section 5");
 
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
@@ -11399,8 +11530,8 @@ loadExternalModule().then(() => {
                                 .split("/")
                                 .pop();
 
-                          console.log('desc section 6')
-                              
+                              console.log("desc section 6");
+
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                               ▪ Description : ${senarioDescription2} <br><br>
@@ -11414,7 +11545,7 @@ loadExternalModule().then(() => {
                               ></div></div>
                               `);
                             } else {
-                          console.log('desc section 7')
+                              console.log("desc section 7");
 
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
@@ -11449,7 +11580,7 @@ loadExternalModule().then(() => {
                         //    );
                         // }
                       } else {
-                        console.log('desc section 8')
+                        console.log("desc section 8");
                         appendMessage2(
                           `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
@@ -11514,7 +11645,7 @@ loadExternalModule().then(() => {
                       const imageIdStt = "mediaImageStt";
                       const imageMapNameStt = "image-mapStt";
                       const imageTooltipIdStt = "tooltip-stt";
-                      console.log('desc section 9')
+                      console.log("desc section 9");
 
                       appendMessage2(
                         `▪ Title : ${senarioTitle2} <br><br>
@@ -11546,11 +11677,11 @@ loadExternalModule().then(() => {
 
                       if (!AttemptTestDirectSTT) {
                         const temp_que_text = questionText2;
-                        let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
-                        if (!['game'].includes(senarioCase2)){
-                          instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
+                        let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`;
+                        if (!["game"].includes(senarioCase2)) {
+                          instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`;
                         }
-                        console.log('desc section 11')
+                        console.log("desc section 11");
 
                         signals
                           .onResponse({
@@ -11765,16 +11896,16 @@ loadExternalModule().then(() => {
                     }
                   }
                 }
-                
+
                 // above we have creeate session and send proceed button
                 //now we will proceed for game type or similiar to game type
 
-                if (senarioCase2 === 'game') {
+                if (senarioCase2 === "game") {
                   if (questionIndex2 !== 0) {
                     try {
                       // Fetch the next game question
                       const response = await handleGameTypeConversation();
-                
+
                       // Handle API errors
                       if (response.error) {
                         resetAllVariablesStt();
@@ -11782,57 +11913,66 @@ loadExternalModule().then(() => {
                           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
                         });
                         //@disable the input
-                        const tChatElementRef = document.getElementById("chat-element2")
+                        const tChatElementRef =
+                          document.getElementById("chat-element2");
                         const tShadowRoot = tChatElementRef.shadowRoot;
-                      
-                        const chatInputBox = tShadowRoot.getElementById("text-input")
-                        chatInputBox.classList.remove("text-input-disabled")
-                        chatInputBox.contentEditable = true
+
+                        const chatInputBox =
+                          tShadowRoot.getElementById("text-input");
+                        chatInputBox.classList.remove("text-input-disabled");
+                        chatInputBox.contentEditable = true;
                         return;
                       }
 
-                      
                       // Extract the next question text
                       let next_question_text = response.next_question_text;
                       console.log("Game question text:", next_question_text);
-                      
-                      if (response.is_last_question){
-                          appendMessage2( `<b>That's it! Thank you for participating!</b>`)
 
-                          //@disable the input
-                          const tChatElementRef = document.getElementById("chat-element2")
-                          const tShadowRoot = tChatElementRef.shadowRoot;
-                        
-                          const chatInputBox = tShadowRoot.getElementById("text-input")
-                          chatInputBox.classList.remove("text-input-disabled")
-                          chatInputBox.contentEditable = true
+                      if (response.is_last_question) {
+                        appendMessage2(
+                          `<b>That's it! Thank you for participating!</b>`
+                        );
 
-                          resetAllVariablesStt()
+                        //@disable the input
+                        const tChatElementRef =
+                          document.getElementById("chat-element2");
+                        const tShadowRoot = tChatElementRef.shadowRoot;
+
+                        const chatInputBox =
+                          tShadowRoot.getElementById("text-input");
+                        chatInputBox.classList.remove("text-input-disabled");
+                        chatInputBox.contentEditable = true;
+
+                        resetAllVariablesStt();
                       }
-                
+
                       // If immersive mode is enabled, process with TTS (Text-to-Speech)
                       // if (isImmersiveStt) {
                       //   next_question_text = await TTSContainerStt(next_question_text);
                       // }
-                
-                      // Send the formatted question text for display
-                      if (response.is_last_question){
 
-                      signals.onResponse({
-                        html: next_question_text
-                      }).then(()=>{
-                          appendMessage2(`<b>Please enter another interaction code to start a new interaction.</b>`)
-                        })
-                      } else{
+                      // Send the formatted question text for display
+                      if (response.is_last_question) {
+                        signals
+                          .onResponse({
+                            html: next_question_text,
+                          })
+                          .then(() => {
+                            appendMessage2(
+                              `<b>Please enter another interaction code to start a new interaction.</b>`
+                            );
+                          });
+                      } else {
                         // Preserve spaces for better formatting
-                        const randomIdForAudioElement = generateRandomAlphanumeric(10);
-                        if (IsSingleSelectSTT !== null){
-                          if(IsSingleSelectSTT){
+                        const randomIdForAudioElement =
+                          generateRandomAlphanumeric(10);
+                        if (IsSingleSelectSTT !== null) {
+                          if (IsSingleSelectSTT) {
                             // signals.onResponse({
                             //   html: `
                             //       <div>
                             //           <div>
-                            //           ${parseMarkdown(next_question_text)} 
+                            //           ${parseMarkdown(next_question_text)}
                             //           </div>
                             //         <div class="deep-chat-temporary-message">
                             //           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">A</button>
@@ -11842,20 +11982,29 @@ loadExternalModule().then(() => {
                             //           </div>
                             //         </div>`
                             //         })
-                            handleGameQuestion(next_question_text, randomIdForAudioElement, true, signals)
-                          } else{
-                            // add logic to add multiselect 
+                            handleGameQuestion(
+                              next_question_text,
+                              randomIdForAudioElement,
+                              true,
+                              signals
+                            );
+                          } else {
+                            // add logic to add multiselect
                             // signals.onResponse({
                             //   html: parseMarkdown(next_question_text)
                             // })'gemini-2.0-flash-exp',
-                            handleGameQuestion(next_question_text, randomIdForAudioElement, false, signals)
+                            handleGameQuestion(
+                              next_question_text,
+                              randomIdForAudioElement,
+                              false,
+                              signals
+                            );
                           }
-                        } else{
+                        } else {
                           signals.onResponse({
-                            html: parseMarkdown(next_question_text)
-                          })
+                            html: parseMarkdown(next_question_text),
+                          });
                         }
-                        
                       }
                     } catch (error) {
                       console.error("Error handling game conversation:", error);
@@ -11865,15 +12014,13 @@ loadExternalModule().then(() => {
                     }
                     return;
                   }
-                
+
                   // Initialize the game (First question case)
                   if (questionIndex2 === 0) {
                     questionIndex2++;
                   }
                   return;
                 }
-                
-
 
                 // handling last question showing report
                 if (
@@ -11965,7 +12112,7 @@ loadExternalModule().then(() => {
                     });
                     console.log(questionData2);
                   } else {
-                    console.log('test-response1:', userResponse2)
+                    console.log("test-response1:", userResponse2);
                     const response = await fetch(
                       `${baseURL2}/test-responses/`,
                       {
@@ -11992,9 +12139,16 @@ loadExternalModule().then(() => {
                         }),
                       }
                     );
-                    console.log('Question number',questionIndex2,resQuestionNumber2, userResponse2)
+                    console.log(
+                      "Question number",
+                      questionIndex2,
+                      resQuestionNumber2,
+                      userResponse2
+                    );
                     if (!response.ok) {
-                      throw new Error(`API call failed with status ${response.status}`);
+                      throw new Error(
+                        `API call failed with status ${response.status}`
+                      );
                     }
                     const responseData = await response.json();
                     resQuestionNumber2 = responseData.question.question_number;
@@ -12221,11 +12375,22 @@ loadExternalModule().then(() => {
                       }
                       appendMessage2(message);
                       // //* send message to start new session
-                      userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-                      console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-                      if (['psychometric', 'game'].includes(senarioCase2) 
-                        || !clientuserInformationSTT.show_recommendations 
-                        || userScenarioRecommendationStt.total_recommendation >= 2){
+                      userScenarioRecommendationStt =
+                        await getTestRecommendationsStt(
+                          questionData2.results[0].uid,
+                          null,
+                          null,
+                          userId2
+                        );
+                      console.log(
+                        senarioCase2,
+                        clientuserInformationSTT.show_recommendations
+                      );
+                      if (
+                        ["psychometric", "game"].includes(senarioCase2) ||
+                        !clientuserInformationSTT.show_recommendations ||
+                        userScenarioRecommendationStt.total_recommendation >= 2
+                      ) {
                         signals.onResponse({
                           html: "<b>Please enter another interaction code to start a new interaction.</b>",
                         });
@@ -12235,11 +12400,12 @@ loadExternalModule().then(() => {
                                 <div class="deep-chat-temporary-message" id='related-recommendation2'>
                                 <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                                 <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                          `
-                        })
-                        startScenarioRecommendationsStt = true
-                        PreviousSessionInfoSTT['sessionId'] =  sessionId2
-                        PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+                          `,
+                        });
+                        startScenarioRecommendationsStt = true;
+                        PreviousSessionInfoSTT["sessionId"] = sessionId2;
+                        PreviousSessionInfoSTT["skills"] =
+                          questionData2.results[0].skills_to_evaluate;
                       }
                       submitEmailAndName2();
                     }
@@ -12268,12 +12434,22 @@ loadExternalModule().then(() => {
                     appendMessage2(message);
                     // //* send message to start new session
 
-                    userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-                    console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-                    if (['psychometric', 'game'].includes(senarioCase2) 
-                      || !clientuserInformationSTT.show_recommendations 
-                      || userScenarioRecommendationStt.total_recommendation >= 2){
-
+                    userScenarioRecommendationStt =
+                      await getTestRecommendationsStt(
+                        questionData2.results[0].uid,
+                        null,
+                        null,
+                        userId2
+                      );
+                    console.log(
+                      senarioCase2,
+                      clientuserInformationSTT.show_recommendations
+                    );
+                    if (
+                      ["psychometric", "game"].includes(senarioCase2) ||
+                      !clientuserInformationSTT.show_recommendations ||
+                      userScenarioRecommendationStt.total_recommendation >= 2
+                    ) {
                       signals.onResponse({
                         html: "<b>Please enter another interaction code to start a new interaction.</b>",
                       });
@@ -12283,17 +12459,15 @@ loadExternalModule().then(() => {
                               <div class="deep-chat-temporary-message" id='related-recommendation2'>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
-                        `
-                      })
-                      startScenarioRecommendationsStt = true
-                      PreviousSessionInfoSTT['sessionId'] =  sessionId2
-                      PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+                        `,
+                      });
+                      startScenarioRecommendationsStt = true;
+                      PreviousSessionInfoSTT["sessionId"] = sessionId2;
+                      PreviousSessionInfoSTT["skills"] =
+                        questionData2.results[0].skills_to_evaluate;
                     }
-                    
-                    
+
                     submitEmailAndName2();
-
-
 
                     //Enable Copy Paste
                     var chatElementRef2 =
@@ -12332,20 +12506,20 @@ loadExternalModule().then(() => {
                 msg.parentNode.replaceChild(que_msg, msg);
               }
               resetAllVariablesStt();
-              console.log(body.messages[0].text.toUpperCase() != 'STOP')
+              console.log(body.messages[0].text.toUpperCase() != "STOP");
               if (body.messages[0].text.toUpperCase() !== "STOP") {
-                  if(botId === undefined){
-                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
-                    signals.onResponse({
-                      html: "Please Enter a Interaction Code to Start Your Session..",
-                    })
-                  } else {
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
-                      
-                    });
-
-                  }
+                if (botId === undefined) {
+                  appendMessage2(
+                    "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                  );
+                  signals.onResponse({
+                    html: "Please Enter a Interaction Code to Start Your Session..",
+                  });
+                } else {
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                  });
+                }
                 enableEndSessionButton();
               }
               //@disable the input
@@ -12391,12 +12565,12 @@ loadExternalModule().then(() => {
         });
         enableEndSessionButton();
         //@disable the input
-        const tChatElementRef = document.getElementById("chat-element2")
+        const tChatElementRef = document.getElementById("chat-element2");
         const tShadowRoot = tChatElementRef.shadowRoot;
-      
-        const chatInputBox = tShadowRoot.getElementById("text-input")
-        chatInputBox.classList.remove("text-input-disabled")
-        chatInputBox.contentEditable = true
+
+        const chatInputBox = tShadowRoot.getElementById("text-input");
+        chatInputBox.classList.remove("text-input-disabled");
+        chatInputBox.contentEditable = true;
       }
     },
   };
@@ -12414,7 +12588,10 @@ const openChatContainer2 = () => {
 
   const container = shadowR.getElementById("container");
   container.oncopy = () => {
-    if (!subdomainStt.includes("localhost") && !subdomainStt.includes('playground')) {
+    if (
+      !subdomainStt.includes("localhost") &&
+      !subdomainStt.includes("playground")
+    ) {
       alert("Copying is not allowed");
       return false;
     }
@@ -12472,7 +12649,6 @@ const openChatContainer2 = () => {
     chatIcon2.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
-
     // const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
     // if(previousPathsStt && previousPathsStt.includes("/profile")){
     //   console.log("refreshing api")
@@ -12480,9 +12656,9 @@ const openChatContainer2 = () => {
 
     //   localStorage.setItem("visitedPaths", JSON.stringify([]));
     // }
-    if (localStorage.getItem('coachscribe_user_refresh')){
-      console.log("refreshing api")
-      initialiseUserSTT()
+    if (localStorage.getItem("coachscribe_user_refresh")) {
+      console.log("refreshing api");
+      initialiseUserSTT();
       localStorage.removeItem("coachscribe_user_refresh");
     }
 
