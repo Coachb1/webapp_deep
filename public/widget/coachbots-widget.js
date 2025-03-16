@@ -153,11 +153,23 @@ console.log(user === undefined);
     user_email = getAnonymousEmail();
   }
 
-  if (window.LogRocket) {
-    window.LogRocket.identify(user_email, {
-      name: user_name,
-      email: user_email,
-    });
+  function initLogRocketAndIdentifyUser() {
+    if (window.LogRocket) {
+      window.LogRocket.init("irkulq/coachbots");
+      window.LogRocket.identify(user_email, {
+        name: user_name,
+        email: user_email,
+      });
+      return true;
+    }
+    return false;
+  }
+  
+  if (!initLogRocketAndIdentifyUser()) {
+    let script = document.createElement("script");
+    script.src = "https://cdn.lrkt-in.com/LogRocket.min.js";
+    script.onload = initLogRocketAndIdentifyUser;
+    document.head.appendChild(script);
   }
 
   const initialiseUser = async () => {
