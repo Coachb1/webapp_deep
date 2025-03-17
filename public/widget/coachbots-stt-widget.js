@@ -3816,7 +3816,7 @@ const handleEndCoachingClick2 = async (randomId) => {
         appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
     } else {
 
-          appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+          appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
               <div class="deep-chat-temporary-message" id='related-recommendation2'>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -5806,7 +5806,7 @@ async function setMcqVariablesStt() {
             appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
           } else {
     
-              appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+              appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                   <div class="deep-chat-temporary-message" id='related-recommendation2'>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -9696,7 +9696,7 @@ loadExternalModule().then(() => {
                   });
                 } else {
                   signals.onResponse({
-                    html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                    html: `<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                           <div class="deep-chat-temporary-message" id='related-recommendation2'>
                           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -12248,7 +12248,7 @@ loadExternalModule().then(() => {
                         });
                       } else {
                         signals.onResponse({
-                          html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                          html: `<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                                 <div class="deep-chat-temporary-message" id='related-recommendation2'>
                                 <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                                 <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -12296,7 +12296,7 @@ loadExternalModule().then(() => {
                       });
                     } else {
                       signals.onResponse({
-                        html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                        html: `<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                               <div class="deep-chat-temporary-message" id='related-recommendation2'>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
