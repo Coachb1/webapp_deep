@@ -153,11 +153,23 @@ console.log(user === undefined);
     user_email = getAnonymousEmail();
   }
 
-  if (window.LogRocket) {
-    window.LogRocket.identify(user_email, {
-      name: user_name,
-      email: user_email,
-    });
+  function initLogRocketAndIdentifyUser() {
+    if (window.LogRocket) {
+      window.LogRocket.init("irkulq/coachbots");
+      window.LogRocket.identify(user_email, {
+        name: user_name,
+        email: user_email,
+      });
+      return true;
+    }
+    return false;
+  }
+  
+  if (!initLogRocketAndIdentifyUser()) {
+    let script = document.createElement("script");
+    script.src = "https://cdn.lrkt-in.com/LogRocket.min.js";
+    script.onload = initLogRocketAndIdentifyUser;
+    document.head.appendChild(script);
   }
 
   const initialiseUser = async () => {
@@ -1240,7 +1252,7 @@ async function setMcqVariables() {
               appendMessage("<b>Please enter another interaction code to start a new interaction.</b>")
           } else {
 
-                appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                     <div class="deep-chat-temporary-message" id='related-recommendation'>
                     <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                     <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -2009,7 +2021,7 @@ const handleEndCoachingClick = async (randomId) => {
         appendMessage("<b>Please enter another interaction code to start a new interaction.</b>")
     } else {
 
-          appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+          appendMessage(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
               <div class="deep-chat-temporary-message" id='related-recommendation'>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -3939,6 +3951,11 @@ loadExternalModule().then(() => {
         const data = await response.json();
         console.log("Response Data:", data);
         console.log("Successfully updated client details.");
+        const clientData = await getClientInformation(
+          "user_info",
+          emails
+        );
+        ClientUserInformation = clientData[0];
       } else {
         const errorData = await response.json();
         console.error("Error Response:", errorData);
@@ -4921,7 +4938,7 @@ loadExternalModule().then(() => {
                       } else {
 
                         signals.onResponse({
-                            html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                            html: `<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                               <div class="deep-chat-temporary-message" id='related-recommendation'>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -5183,7 +5200,7 @@ loadExternalModule().then(() => {
                 } else {
 
                   signals.onResponse({
-                      html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                      html: `<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                         <div class="deep-chat-temporary-message" id='related-recommendation'>
                         <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                         <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
@@ -6804,7 +6821,7 @@ loadExternalModule().then(() => {
                       } else {
 
                         signals.onResponse({
-                            html: `<b>Our skills discovery engine has suggested a new simulation based on new domain skills that may be relevant in the same industry? Do you want to try now? </b><br/><br/>
+                            html: `<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                               <div class="deep-chat-temporary-message" id='related-recommendation'>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
