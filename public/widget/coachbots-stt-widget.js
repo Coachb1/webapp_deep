@@ -7925,6 +7925,11 @@ loadExternalModule().then(() => {
         const data = await response.json();
         console.log("Response Data:", data);
         console.log("Successfully updated client details.");
+        const clientData = await getClientInformationStt(
+            "user_info",
+            emails
+          );
+        clientuserInformationSTT = clientData[0];
       } else {
         const errorData = await response.json();
         console.error("Error Response:", errorData);
