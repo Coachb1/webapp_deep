@@ -9393,34 +9393,18 @@ loadExternalModule().then(() => {
                 console.log(data);
         
                 const testCodeMessage = `
-                  <b>Title</b>: ${data.title} <br>
-                  <b>Description</b>: ${data.description} <br>
-                  <b>Test Code</b>: <br> 
-                  <pre id="test-code-block" style="
-                      background: #f8f9fa; /* Light gray background */
-                      color: #6c757d; /* Gray text */
-                      padding: 10px;
-                      border-radius: 4px;
-                      font-size: 14px;
-                      opacity: 0.9; /* Makes it slightly transparent */
-                      border: 1px solid #b0b0b0; 
-                      border-radius: 8px; /* Rounded corners */
-                  ">${data.test_code}</pre>
-                  <button id="copy-test-code2" style="
-                      padding: 6px 12px;
-                      background: #007bff;
-                      color: white;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                      margin-top: 10px;
-                  " onclick="copyClipboard('test-code-block')">Copy</button>
-              `;
+                  <div id='create-scenario-section'>
+                          <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; "margin-top : 10px"">
+                            <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${data.title}</p>
+                            <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${data.description}</p>
+                          </div>
+                  </div>
+                  `;
         
-                signals.onResponse({
+              signals.onResponse({
                     html: testCodeMessage,
-                    text: 'Please enter interaction code to start a new interaction.'
-                });
+              });
+              handleAttemptScenaiosSTT(data.title,data.test_code)
 
                 createTestRecommendationStt(
                   data.test_id,
@@ -11278,7 +11262,7 @@ loadExternalModule().then(() => {
                     </div>`;
                     if (AttemptTestDirectSTT) {
                       signals.onResponse({
-                        html: "Get ready! Your scenario starts now. Good luck!",
+                        html: "Get ready! Your scenario is starting now. Best of luck!",
                       });
                       setTimeout(() => {
                         handleProceedClickStt("Yes");
