@@ -6,8 +6,30 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL2 = ["platform", 'www'].includes(subdomainStt) ? prodUrlStt : devUrlStt;
+let baseURL2 = ["platform"].includes(subdomainStt) ? prodUrlStt : devUrlStt;
 
+if(!['playground', 'platform', 'localhost'].includes(subdomainStt)){
+  const scripts = document.getElementsByTagName('script');
+    for (let script of scripts) {
+        if (script.src.includes('/widget/coachbots-stt-widget.js')) {
+          try {
+            const url = new URL(script.src).origin;
+            console.log("url2", url);
+            if (url.includes("platform.coachbots.com") ){
+              baseURL2 = prodUrlStt;
+            } else if (url.includes("playground.coachbots.com")){
+              baseURL2 = devUrlStt;
+            }
+            console.log("baseURl2", baseURL2);
+          } catch (error) {
+              console.log("Invalid URL2:", script.src, error);
+          }
+        }
+    }
+}
+
+console.log('baseURl2', baseURL2)
+  
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {
   console.log("swipeHeader", swipeHeader);
