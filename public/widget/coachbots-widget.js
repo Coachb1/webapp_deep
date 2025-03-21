@@ -5,10 +5,31 @@ const devUrl = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // const devUrl = "http://127.0.0.1:8001/api/v1"   // local baseurl
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-gke-prod.coachbots.com/api/v1";
-const baseURL = ["platform", 'www'].includes(subdomain) ? prodUrl : devUrl;
+let baseURL = ["platform"].includes(subdomain) ? prodUrl : devUrl;
 
 // const baseURL="https://coach-api-gke-prod.coachbots.com/api/v1" //local
+if(!['playground', 'platform', 'localhost'].includes(subdomain)){
+  const scripts = document.getElementsByTagName('script');
+    for (let script of scripts) {
+      if (script.src.includes('/widget/coachbots-widget.js')) {
+          try {
+            const url = new URL(script.src).origin
+            console.log("url", url);
 
+            if (url.includes("platform.coachbots.com") ){
+              baseURL = prodUrl;
+            } else if (url.includes("playground.coachbots.com")){
+              baseURL = devUrl;
+            }
+            console.log(baseURL)
+          } catch (error) {
+              console.log("Invalid URL:", script.src, error);
+          }
+        }
+    }
+}
+
+console.log('baseURl', baseURL)
 
 let deepChatPocElement;
 let sessionId = "";
