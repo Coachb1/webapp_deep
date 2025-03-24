@@ -288,6 +288,7 @@ let PreviousSessionInfoSTT = {
   "skills": null
 }
 let userScenarioRecommendationStt;
+let increaseSessionForFirstTestStt = false;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -6040,12 +6041,12 @@ async function submitEmailAndName2() {
     appendMessage2(recommDiv);
   }
 
-  if (snnipetConfigSTT["psychometric"] === "true" ||
-    Object.keys(snnipetConfigSTT).length > 0) {
+  if (increaseSessionForFirstTestStt) {
     increaseSessionForAccesscodeStt(
       userId2,
       AccessCodeStt
     );
+    increaseSessionForFirstTestStt = false
   }
 
   // })
@@ -9510,6 +9511,7 @@ loadExternalModule().then(() => {
               isvalidAccessCode
             ) {
               AccessCodeStt = latestMessage;
+              increaseSessionForFirstTestStt = true;
               console.log("Access Code Matched", snnipetConfigSTT.isDemo);
               updateClientInfoSTT(sttWidgetClientId, user_email2, user_email2);
               askAccessBotCodeSTT = false;
@@ -9519,10 +9521,6 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
                 });
-                // increaseSessionForAccesscodeStt(
-                //   userId2,
-                //   AccessCodeStt
-                // );
               } else {
                 signals.onResponse({
                   html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
