@@ -36,6 +36,9 @@ if (swipeHeader) {
   swipeHeader.style.zIndex = 1;
 }
 
+function isChromeSTT() {
+  return /Chrome/.test(window.navigator.userAgent) && /Google Inc/.test(window.navigator.vendor);
+}
 // const baseURL2="https://coach-api-gke-prod.coachbots.com/api/v1" //local
 
 const style = document.createElement("style");
@@ -285,6 +288,7 @@ let PreviousSessionInfoSTT = {
   "skills": null
 }
 let userScenarioRecommendationStt;
+let increaseSessionForFirstTestStt = false;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -292,6 +296,16 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
   // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
   // "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
+}
+function displayBrowserWarning() {
+  if (!isChromeSTT()){
+    const warningBannerContainer = document.getElementById("warning-banner-stt");
+    warningBannerContainer.innerHTML = `<b style="color: red;text-align: center;font-size: 14px;font-size: ${
+        window.innerWidth < 768 ? "10px" : "12px"
+      };" >
+      Warning: we detected that you are on a non-supported browser. Please switch to Chrome to avoid interruptions.
+      </b>`
+  }
 }
 
 const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
@@ -6027,12 +6041,12 @@ async function submitEmailAndName2() {
     appendMessage2(recommDiv);
   }
 
-  if (snnipetConfigSTT["psychometric"] === "true" ||
-    Object.keys(snnipetConfigSTT).length > 0) {
+  if (increaseSessionForFirstTestStt) {
     increaseSessionForAccesscodeStt(
       userId2,
       AccessCodeStt
     );
+    increaseSessionForFirstTestStt = false
   }
 
   // })
@@ -7164,11 +7178,13 @@ loadExternalModule().then(() => {
     <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
     <p id="header-text" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    };"> ${
+    }; text-align:center;"> ${
     window.location.href.includes("knowledge-bot")
       ? "Simple AI Knowledge Agent. Check 'Instructions' for more"
       : "Accessibility features may not work inside the bot."
   } </p>
+    <p id="warning-banner-stt">
+    </p>
   </div>
     <div 
       id="close-top2" 
@@ -7730,7 +7746,8 @@ loadExternalModule().then(() => {
         },
       },
     },
-  };
+  };  
+  displayBrowserWarning();
 
   function excludeSpecialCharacters(inputString) {
     return inputString.replace(/[*#]+/g, "");
@@ -9494,6 +9511,7 @@ loadExternalModule().then(() => {
               isvalidAccessCode
             ) {
               AccessCodeStt = latestMessage;
+              increaseSessionForFirstTestStt = true;
               console.log("Access Code Matched", snnipetConfigSTT.isDemo);
               updateClientInfoSTT(sttWidgetClientId, user_email2, user_email2);
               askAccessBotCodeSTT = false;
@@ -9503,10 +9521,6 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
                 });
-                // increaseSessionForAccesscodeStt(
-                //   userId2,
-                //   AccessCodeStt
-                // );
               } else {
                 signals.onResponse({
                   html: `<b>Do you have interaction code for your simulation?</b><br/><br/>

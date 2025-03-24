@@ -28,6 +28,9 @@ if(!['playground', 'platform', 'localhost'].includes(subdomain)){
         }
     }
 }
+function isChrome() {
+  return /Chrome/.test(window.navigator.userAgent) && /Google Inc/.test(window.navigator.vendor);
+}
 
 console.log('baseURl', baseURL)
 
@@ -145,6 +148,7 @@ let PreviousSessionInfo = {
   "skills": null
 }
 let userScenarioRecommendation;
+let increaseSessionForFirstTest = false;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -1481,13 +1485,12 @@ async function submitEmailAndName() {
       }
 
 
-      if (snnipetConfig["psychometric"] === "true" ||
-        Object.keys(snnipetConfig).length > 0){
+      if (increaseSessionForFirstTest){
         increaseSessionForAccesscode(
           userId,
           accessCode
         );
-
+        increaseSessionForFirstTest = false;
       } 
     // })
     // .catch((err) => {
@@ -3193,6 +3196,17 @@ const snippetOrigin2 = () => {
   }
 }
 
+function displayBrowserWarning2() {
+  if (!isChrome()){
+    const warningBannerContainer = document.getElementById("warning-banner");
+    warningBannerContainer.innerHTML = `<b style="color: red;text-align: center;font-size: 14px;font-size: ${
+        window.innerWidth < 768 ? "10px" : "12px"
+      };" >
+      Warning: we detected that you are on a non-supported browser. Please switch to Chrome to avoid interruptions.
+      </b>`
+  }
+}
+
 //* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
@@ -3322,7 +3336,8 @@ loadExternalModule().then(() => {
   <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
   <p id="header-text2" style="font-size: ${
     window.innerWidth < 768 ? "10px" : "12px"
-  };">Accessibility features may not work inside the bot.</p>
+  };text-align:center;">Accessibility features may not work inside the bot.</p>
+  <p id="warning-banner"></p>
 </div>
     <div 
       id="close-top" 
@@ -3723,7 +3738,7 @@ loadExternalModule().then(() => {
     };
   }
 
-  
+  displayBrowserWarning2()
 
   // set email and name
   //   const setNameEmail = async (inputEmail, inputName) => {
@@ -5111,6 +5126,7 @@ loadExternalModule().then(() => {
               console.log("Access Code Matched")
               updateClientInfo(widgetClientId,user_email, user_email)
               accessCode = latestMessage
+              increaseSessionForFirstTest = true;
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
                 LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
@@ -5119,10 +5135,6 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
                 })
-                // increaseSessionForAccesscode(
-                //   userId,
-                //   accessCode
-                // );
 
               } 
               else{
