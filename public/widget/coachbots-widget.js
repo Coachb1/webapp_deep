@@ -3222,6 +3222,8 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
+  snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
+
   deepChatPocElement = document.getElementsByClassName("coachbots-coachtalk")?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
@@ -3237,14 +3239,17 @@ loadExternalModule().then(() => {
       z-index: 998;
       "
     ></div>
+    
+    
+    
     <button
       type="button"
       onclick="openChatContainer()"
       class="chat-icon-container"
       id="chat-icon"
       style="
-        height: 4.5rem;
-        width: 4.5rem;
+        height: ${snippetOrigin2() === 'external' ?"6rem": "4.5rem"};
+        width: ${snippetOrigin2() === 'external' ?"6rem": "4.5rem"};
         background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
         border-radius: 40%;
@@ -3262,7 +3267,10 @@ loadExternalModule().then(() => {
         z-index: 999;
       "
     >
-      <img
+    <div style="position: fixed; left: 1rem; bottom: 8.5rem; z-index: 1000; color: #333; font-size: 1rem; font-weight: bold; display: ${snippetOrigin2() === 'external'? "block": "none"}">
+      Simulation Agent
+    </div>
+    <img
         class="chat-icon"
         style="height: 100%; width: 100%; border-radius:40%;"
         src="https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
