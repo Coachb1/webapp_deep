@@ -7062,6 +7062,8 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module2
 loadExternalModule().then(() => {
+  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+
   deepChatPocElement2 = document.getElementsByClassName(
     "coachbots-coachscribe"
   )?.[0];
@@ -7079,14 +7081,19 @@ loadExternalModule().then(() => {
       z-index: 998;
       "
     ></div>
+    
+    <div style="position: fixed; right: 1rem; bottom: 8.5rem; z-index: 1000; color: #333; font-size: 1rem; font-weight: bold; display: ${snippetOrigin() === 'external' ? "block": "none"}">
+      ${snnipetConfigSTT.botId ?'Coaching Agent': 'Simulation Agent' }
+    </div>
+
     <button
       type="button"
       onclick="openChatContainer2()"
       class="chat-icon-container2"
       id="chat-icon2"
       style="
-        height: 4.5rem;
-        width: 4.5rem;
+        height: ${snippetOrigin() === 'external'?"6rem": "4.5rem"};
+        width: ${snippetOrigin() === 'external'?"6rem": "4.5rem"};
         background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
         border-radius: 40%;
@@ -12488,7 +12495,7 @@ const openChatContainer2 = () => {
     botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
     // botId = 'stress-management-0032'
 
-    if (!botId) {
+    // if (!botId) {
       const chatContainer = document.getElementById("chat-container");
       if (chatContainer) {
         chatContainer.style.scale = 0;
@@ -12500,7 +12507,7 @@ const openChatContainer2 = () => {
         const backdrop2 = document.getElementById("backdrop2");
         backdrop2.style.display = "none";
       }
-    }
+    // }
   }
 
   console.log("CHAT ICON", chatIcon2.src);
