@@ -8747,7 +8747,7 @@ loadExternalModule().then(() => {
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
-    const response = await fetch("/api/gemini-stream", {
+    const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
       method: "POST",
       body: JSON.stringify({
