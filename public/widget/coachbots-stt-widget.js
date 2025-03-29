@@ -1681,7 +1681,7 @@ const getBotDetails2 = async (botId) => {
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
         (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
-          ? "Welcome to the world of AI coaching agents. As your personal coaching agent, I can make you 10x smarter. Let's start!"
+          ? `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
           : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
       console.log(shadowRoot.getElementById("text-input"));
@@ -2096,6 +2096,18 @@ const getBotDetails2 = async (botId) => {
       appendMessage2(addStickerToMessage("System", `${botWelcomeMessage}`));
     } else {
       appendMessage2(`${botWelcomeMessage}`);
+    }
+
+    if (!window.user){
+      isEmailFormstt = true;
+        formFieldsstt = ["email", "name"];
+        console.log(
+          "### formFieldsstt : ",
+          formFieldsstt,
+          "other data: ",
+          `Please enter your ${formFieldsstt[0]}`
+        );
+      appendMessage2('Please enter your email to get started.')
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
@@ -2680,6 +2692,9 @@ async function handlePreviousConversation(choice) {
 }
 
 async function handleFaqButtonClick(question) {
+  if (!window.user){
+    return;
+  }
   optedBeginSession = false;
   console.log("option selected ==> ", question);
   if (question == "fitness_analysis") {
@@ -3433,13 +3448,7 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-      if (!window.user){
-        appendMessage2("<b>Your session has completed. Please enter your name and email to get your session report.</b>")
-      }else{
-        appendMessage2(
-          "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
-        );
-      }
+        appendMessage2(`<b>Your session has completed. You will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`)
     }
   }
 
@@ -9591,21 +9600,25 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
+                await createUserSTT(
+                  emailNameformJsonstt["name"],
+                  emailNameformJsonstt["email"]
+                );
                 if (botType === "feedback_bot"){
                   const thumbsupdiv = await feedbackBotInitialFlow("save_email");
                   signals.onResponse({
                     html: thumbsupdiv,
                   });
                 } else{
-                  // its shifting at the top.
-                  await createUserSTT(
-                    emailNameformJsonstt["name"],
-                    emailNameformJsonstt["email"]
-                  );
-                  sendBotTranscript2();
-
+                  console.log(window.userIdFromWebApp, "window.userIdFromWebApp", userId2)
+                  // if (
+                  //   !isBotConversationPopulated &&
+                  //   !["feedback_bot", "deep_dive", "user_bot"].includes(botType)
+                  // ) {
+                  //   populateBotConversation(window.userIdFromWebApp);
+                  // }
                   signals.onResponse({
-                    html: `<b>Thank you, you will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`
+                    html: `<b>Great! Now, you can start new session by clicking "Begin session".</b>`
                   })
                 }
               } else if (
