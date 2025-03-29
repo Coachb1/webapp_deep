@@ -9645,7 +9645,6 @@ loadExternalModule().then(() => {
                 }
 
                 console.log("isAnonymous", isAnonymous);
-                // sendBotTranscript2();
                 if (botType === "deep_dive") {
                   askInitialQuestionDeepDive = true;
                   deepDiveInitialQueIndex = 1;
@@ -9660,7 +9659,7 @@ loadExternalModule().then(() => {
                 } else {
                   signals.onResponse({ html: faqHtmlData });
                 }
-              } else if (botId != undefined && botType === "feedback_bot") {
+              } else if (botId != undefined ) {
                 console.log(
                   "before thumbs up ==>",
                   FeedbackUserEmail,
@@ -9679,10 +9678,23 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
-                const thumbsupdiv = await feedbackBotInitialFlow("save_email");
-                signals.onResponse({
-                  html: thumbsupdiv,
-                });
+                if (botType === "feedback_bot"){
+                  const thumbsupdiv = await feedbackBotInitialFlow("save_email");
+                  signals.onResponse({
+                    html: thumbsupdiv,
+                  });
+                } else{
+                  // its shifting at the top.
+                  await createUserSTT(
+                    emailNameformJsonstt["name"],
+                    emailNameformJsonstt["email"]
+                  );
+                  sendBotTranscript2();
+
+                  signals.onResponse({
+                    html: "Thank you! Please refresh the page to restart again anytime"
+                  })
+                }
               } else if (
                 snnipetConfigSTT["psychometric"] === "true" ||
                 Object.keys(snnipetConfigSTT).length > 0
@@ -10336,9 +10348,14 @@ loadExternalModule().then(() => {
                   });
               
                   if (response.ok) {
-                    const data = await response.json();
-                    similarityValue = Number(data.similarity);
-                    console.log("#similarity Data:", data);
+                    try{
+
+                      const data = await response.json();
+                      similarityValue = Number(data.similarity);
+                      console.log("#similarity Data:", data);
+                    } catch(error){
+                      console.error('failed to use api/string-similarity')
+                    }
                   }
                 }
               
