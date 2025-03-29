@@ -3433,9 +3433,13 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-      appendMessage2(
-        "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
-      );
+      if (!window.user){
+        appendMessage2("<b>Your session has completed. Please enter your name and email to get your session report.</b>")
+      }else{
+        appendMessage2(
+          "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
+        );
+      }
     }
   }
 
@@ -3509,97 +3513,6 @@ function handleEndConversation(isInActive) {
     endSessionButton.style.cursor = "not-allowed";
     endSessionButton.disabled = true;
   }
-
-  let emailForm;
-  if (window.innerWidth > 768) {
-    emailForm = `<div id="bot-transcript-email" style="min-width: 730px;">
-    <b>Please Enter your email</b>
-    <div
-      id="input-form2"
-      style="
-      display: flex;
-      flex-direction: row;
-      min-width: 100%;
-      gap: 1rem;
-      align-items: center;
-    "
-    >
-      <div style="display: flex; flex-direction: column; width: 45%;">
-        <label for="email" style="margin: 12px 0 4px 0">Email</label>
-        <input
-          id="input-email2"
-          type="email"
-          style="
-            padding: 8px;
-            margin-bottom: 4px;
-            border-radius: 4px;
-            border: 1px solid rgb(188, 188, 188);
-          "
-        />
-      </div>
-      <button
-        style="
-          height: fit-content;
-          width: fit-content;
-          padding: 8px;
-          margin-bottom: -1.3rem;
-          border: 1px solid rgb(188, 188, 188);
-          border-radius: 20px;
-          color: white;
-          background-color: #1984ff;
-        "
-        id="submit-btn2"
-        onclick="sendBotTranscript2()"
-      >
-        Submit
-      </button>
-    </div>
-  </div>`;
-  } else {
-    emailForm = `<div id="bot-transcript-email" style="min-width: 200px;">
-  <b>Please Enter your email</b>
-  <div
-    id="input-form2"
-    style="
-    display: flex;
-    flex-direction: column;
-    min-width: 100%;
-    gap: 8px;
-    align-items: flex-start;
-    justify-content: flex-start;
-  "
-  >
-    <div style="display: flex; flex-direction: column; width: 100%;">
-      <label for="email" style="margin: 12px 0 4px 0">Email</label>
-      <input
-        id="input-email2"
-        type="email"
-        style="
-          padding: 8px;
-          margin-bottom: 4px;
-          border-radius: 4px;
-          border: 1px solid rgb(188, 188, 188);
-        "
-      />
-    </div>
-    <button
-      style="
-        height: fit-content;
-        width: fit-content;
-        padding: 8px;
-        border: 1px solid rgb(188, 188, 188);
-        border-radius: 20px;
-        color: white;
-        background-color: #1984ff;
-      "
-      id="submit-btn2"
-      onclick="sendBotTranscript2()"
-    >
-      Submit
-    </button>
-  </div>
-</div>`;
-  }
   if (!window.user) {
     // appendMessage2(emailForm);
     if (botType === "deep_dive") {
@@ -3632,7 +3545,7 @@ function handleEndConversation(isInActive) {
     } else {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+      appendMessage2(`Please enter your ${formFieldsstt[0]}.`);
     }
   } else {
     // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
@@ -9692,7 +9605,7 @@ loadExternalModule().then(() => {
                   sendBotTranscript2();
 
                   signals.onResponse({
-                    html: "Thank you! Please refresh the page to restart again anytime"
+                    html: `<b>Thank you, you will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`
                   })
                 }
               } else if (
