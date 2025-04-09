@@ -1208,7 +1208,7 @@ async function setMcqVariables() {
       resetAllVariables(); //reseting variables
 
       appendMessage(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
       );
       return;
     }
@@ -3423,7 +3423,7 @@ loadExternalModule().then(() => {
       displayLoadingBubble="true"
       errorMessages='{
         "overrides": {
-          "default": "System Error: This issue may be browser-specific but please continue and/or retry. For a better experience, please use Google Chrome. 🌐"
+          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
         }
       }'
       attachmentContainerStyle='{"backgroundColor": "transparent", "width" : "fit-content", "position": "absolute", "right": "10%"}'
@@ -4221,7 +4221,7 @@ loadExternalModule().then(() => {
 
           if (questionIndex <= questionLength) {
             appendMessage(
-              "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+              "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
             );
           }
           maxUploadFailed = true;
@@ -4395,7 +4395,7 @@ loadExternalModule().then(() => {
       if (questionIndex <= questionLength && testType != "coaching") {
         setTimeout(() => {
           appendMessage(
-            "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+            "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
           );
         }, 200);
       }
@@ -4777,7 +4777,7 @@ loadExternalModule().then(() => {
                 testResponseHandlerFailed = false;
                 resetAllVariables();
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
                 });
                 return;
               }
@@ -4856,7 +4856,7 @@ loadExternalModule().then(() => {
                   resetAllVariables(); //reseting variables
 
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
                   });
                   return;
                 }
@@ -6715,7 +6715,7 @@ loadExternalModule().then(() => {
                     resetAllVariables(); //reseting variables
 
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
                     });
                     return;
                   }
@@ -6895,9 +6895,9 @@ loadExternalModule().then(() => {
 
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 // signals.onResponse({
-                //   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                //   html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
                 // });
-                appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
+                appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>")
                 signals.onResponse({
                   html: "Please Enter a Interaction Code to Start Your Session..",
                 })
@@ -6930,7 +6930,7 @@ loadExternalModule().then(() => {
         resetAllVariables(); //reseting variables
 
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
         });
       }
     },
