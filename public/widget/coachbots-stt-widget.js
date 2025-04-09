@@ -7223,7 +7223,7 @@ loadExternalModule().then(() => {
       }}'
       errorMessages='{
         "overrides": {
-          "default": "Due to system issues, your session is termined. Please check your internet connection and try again."
+          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
         }
       }'
       auxiliaryStyle="
