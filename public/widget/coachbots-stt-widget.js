@@ -5700,7 +5700,7 @@ async function setMcqVariablesStt() {
       resetAllVariablesStt();
 
       appendMessage2(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
       );
       enableEndSessionButton();
 
@@ -7223,7 +7223,7 @@ loadExternalModule().then(() => {
       }}'
       errorMessages='{
         "overrides": {
-          "default": "System Error: This issue may be browser-specific but please continue and/or retry. For a better experience, please use Google Chrome. 🌐"
+          "default": "Due to system issues, your session is termined. Please check your internet connection and try again."
         }
       }'
       auxiliaryStyle="
@@ -9028,7 +9028,7 @@ loadExternalModule().then(() => {
       } else {
         enableEndSessionButton();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b></p>",
         });
         allMessages.forEach((indvMessage) => {
           if (
@@ -11766,7 +11766,7 @@ loadExternalModule().then(() => {
                       if (response.error) {
                         resetAllVariablesStt();
                         signals.onResponse({
-                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
+                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b></p>",
                         });
                         //@disable the input
                         const tChatElementRef = document.getElementById("chat-element2")
@@ -12108,7 +12108,7 @@ loadExternalModule().then(() => {
                     }
                     resetAllVariablesStt();
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
                     });
                     //@disable the input
                     const tChatElementRef =
@@ -12242,7 +12242,7 @@ loadExternalModule().then(() => {
                   // console.log(resp)
                   // if (!resp.ok){
                   //   signals.onResponse({
-                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
                   //   })
                   // }
                   if (window.user) {
@@ -12322,13 +12322,13 @@ loadExternalModule().then(() => {
               console.log(body.messages[0].text.toUpperCase() != 'STOP')
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                   if(botId === undefined){
-                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
+                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>")
                     signals.onResponse({
                       html: "Please Enter a Interaction Code to Start Your Session..",
                     })
                   } else {
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
                       
                     });
 
@@ -12374,7 +12374,7 @@ loadExternalModule().then(() => {
 
         resetAllVariablesStt();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
         });
         enableEndSessionButton();
         //@disable the input
