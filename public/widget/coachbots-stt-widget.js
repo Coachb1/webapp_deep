@@ -1681,7 +1681,7 @@ const getBotDetails2 = async (botId) => {
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
         (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
-          ? "Welcome to the world of AI coaching agents. As your personal coaching agent, I can make you 10x smarter. Let's start!"
+          ? `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
           : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
       console.log(shadowRoot.getElementById("text-input"));
@@ -2096,6 +2096,18 @@ const getBotDetails2 = async (botId) => {
       appendMessage2(addStickerToMessage("System", `${botWelcomeMessage}`));
     } else {
       appendMessage2(`${botWelcomeMessage}`);
+    }
+
+    if (!window.user){
+      isEmailFormstt = true;
+        formFieldsstt = ["email", "name"];
+        console.log(
+          "### formFieldsstt : ",
+          formFieldsstt,
+          "other data: ",
+          `Please enter your ${formFieldsstt[0]}`
+        );
+      appendMessage2('Please enter your email to get started.')
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
@@ -2680,6 +2692,9 @@ async function handlePreviousConversation(choice) {
 }
 
 async function handleFaqButtonClick(question) {
+  if (!window.user){
+    return;
+  }
   optedBeginSession = false;
   console.log("option selected ==> ", question);
   if (question == "fitness_analysis") {
@@ -3433,9 +3448,7 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-      appendMessage2(
-        "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
-      );
+        appendMessage2(`<b>Your session has completed. You will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`)
     }
   }
 
@@ -3509,97 +3522,6 @@ function handleEndConversation(isInActive) {
     endSessionButton.style.cursor = "not-allowed";
     endSessionButton.disabled = true;
   }
-
-  let emailForm;
-  if (window.innerWidth > 768) {
-    emailForm = `<div id="bot-transcript-email" style="min-width: 730px;">
-    <b>Please Enter your email</b>
-    <div
-      id="input-form2"
-      style="
-      display: flex;
-      flex-direction: row;
-      min-width: 100%;
-      gap: 1rem;
-      align-items: center;
-    "
-    >
-      <div style="display: flex; flex-direction: column; width: 45%;">
-        <label for="email" style="margin: 12px 0 4px 0">Email</label>
-        <input
-          id="input-email2"
-          type="email"
-          style="
-            padding: 8px;
-            margin-bottom: 4px;
-            border-radius: 4px;
-            border: 1px solid rgb(188, 188, 188);
-          "
-        />
-      </div>
-      <button
-        style="
-          height: fit-content;
-          width: fit-content;
-          padding: 8px;
-          margin-bottom: -1.3rem;
-          border: 1px solid rgb(188, 188, 188);
-          border-radius: 20px;
-          color: white;
-          background-color: #1984ff;
-        "
-        id="submit-btn2"
-        onclick="sendBotTranscript2()"
-      >
-        Submit
-      </button>
-    </div>
-  </div>`;
-  } else {
-    emailForm = `<div id="bot-transcript-email" style="min-width: 200px;">
-  <b>Please Enter your email</b>
-  <div
-    id="input-form2"
-    style="
-    display: flex;
-    flex-direction: column;
-    min-width: 100%;
-    gap: 8px;
-    align-items: flex-start;
-    justify-content: flex-start;
-  "
-  >
-    <div style="display: flex; flex-direction: column; width: 100%;">
-      <label for="email" style="margin: 12px 0 4px 0">Email</label>
-      <input
-        id="input-email2"
-        type="email"
-        style="
-          padding: 8px;
-          margin-bottom: 4px;
-          border-radius: 4px;
-          border: 1px solid rgb(188, 188, 188);
-        "
-      />
-    </div>
-    <button
-      style="
-        height: fit-content;
-        width: fit-content;
-        padding: 8px;
-        border: 1px solid rgb(188, 188, 188);
-        border-radius: 20px;
-        color: white;
-        background-color: #1984ff;
-      "
-      id="submit-btn2"
-      onclick="sendBotTranscript2()"
-    >
-      Submit
-    </button>
-  </div>
-</div>`;
-  }
   if (!window.user) {
     // appendMessage2(emailForm);
     if (botType === "deep_dive") {
@@ -3632,7 +3554,7 @@ function handleEndConversation(isInActive) {
     } else {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+      appendMessage2(`Please enter your ${formFieldsstt[0]}.`);
     }
   } else {
     // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
@@ -5778,7 +5700,7 @@ async function setMcqVariablesStt() {
       resetAllVariablesStt();
 
       appendMessage2(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
       );
       enableEndSessionButton();
 
@@ -7301,7 +7223,7 @@ loadExternalModule().then(() => {
       }}'
       errorMessages='{
         "overrides": {
-          "default": "System Error: This issue may be browser-specific but please continue and/or retry. For a better experience, please use Google Chrome. 🌐"
+          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
         }
       }'
       auxiliaryStyle="
@@ -9106,7 +9028,7 @@ loadExternalModule().then(() => {
       } else {
         enableEndSessionButton();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b></p>",
         });
         allMessages.forEach((indvMessage) => {
           if (
@@ -9645,7 +9567,6 @@ loadExternalModule().then(() => {
                 }
 
                 console.log("isAnonymous", isAnonymous);
-                // sendBotTranscript2();
                 if (botType === "deep_dive") {
                   askInitialQuestionDeepDive = true;
                   deepDiveInitialQueIndex = 1;
@@ -9660,7 +9581,7 @@ loadExternalModule().then(() => {
                 } else {
                   signals.onResponse({ html: faqHtmlData });
                 }
-              } else if (botId != undefined && botType === "feedback_bot") {
+              } else if (botId != undefined ) {
                 console.log(
                   "before thumbs up ==>",
                   FeedbackUserEmail,
@@ -9679,10 +9600,27 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
-                const thumbsupdiv = await feedbackBotInitialFlow("save_email");
-                signals.onResponse({
-                  html: thumbsupdiv,
-                });
+                await createUserSTT(
+                  emailNameformJsonstt["name"],
+                  emailNameformJsonstt["email"]
+                );
+                if (botType === "feedback_bot"){
+                  const thumbsupdiv = await feedbackBotInitialFlow("save_email");
+                  signals.onResponse({
+                    html: thumbsupdiv,
+                  });
+                } else{
+                  console.log(window.userIdFromWebApp, "window.userIdFromWebApp", userId2)
+                  // if (
+                  //   !isBotConversationPopulated &&
+                  //   !["feedback_bot", "deep_dive", "user_bot"].includes(botType)
+                  // ) {
+                  //   populateBotConversation(window.userIdFromWebApp);
+                  // }
+                  signals.onResponse({
+                    html: `<b>Great! Now, you can start new session by clicking "Begin session".</b>`
+                  })
+                }
               } else if (
                 snnipetConfigSTT["psychometric"] === "true" ||
                 Object.keys(snnipetConfigSTT).length > 0
@@ -10336,9 +10274,14 @@ loadExternalModule().then(() => {
                   });
               
                   if (response.ok) {
-                    const data = await response.json();
-                    similarityValue = Number(data.similarity);
-                    console.log("#similarity Data:", data);
+                    try{
+
+                      const data = await response.json();
+                      similarityValue = Number(data.similarity);
+                      console.log("#similarity Data:", data);
+                    } catch(error){
+                      console.error('failed to use api/string-similarity')
+                    }
                   }
                 }
               
@@ -11823,7 +11766,7 @@ loadExternalModule().then(() => {
                       if (response.error) {
                         resetAllVariablesStt();
                         signals.onResponse({
-                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b></p>",
+                          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b></p>",
                         });
                         //@disable the input
                         const tChatElementRef = document.getElementById("chat-element2")
@@ -12165,7 +12108,7 @@ loadExternalModule().then(() => {
                     }
                     resetAllVariablesStt();
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
                     });
                     //@disable the input
                     const tChatElementRef =
@@ -12299,7 +12242,7 @@ loadExternalModule().then(() => {
                   // console.log(resp)
                   // if (!resp.ok){
                   //   signals.onResponse({
-                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
                   //   })
                   // }
                   if (window.user) {
@@ -12379,13 +12322,13 @@ loadExternalModule().then(() => {
               console.log(body.messages[0].text.toUpperCase() != 'STOP')
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                   if(botId === undefined){
-                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>")
+                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>")
                     signals.onResponse({
                       html: "Please Enter a Interaction Code to Start Your Session..",
                     })
                   } else {
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>"
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
                       
                     });
 
@@ -12431,7 +12374,7 @@ loadExternalModule().then(() => {
 
         resetAllVariablesStt();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Most likely due to abnormal or rapid use. Please start a new session.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>",
         });
         enableEndSessionButton();
         //@disable the input

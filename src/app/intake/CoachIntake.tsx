@@ -2497,7 +2497,7 @@ const CoachIntake = ({ user }: any) => {
     } else if (formVersion === "2") {
       console.log("here");
       coachFields = [
-        { UseEmoji: provideAnswersUsingEmojis },
+        // { UseEmoji: provideAnswersUsingEmojis },
         { UserDepartment: department },
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
@@ -2510,7 +2510,7 @@ const CoachIntake = ({ user }: any) => {
         { SupportOutcome: outcomeSupported },
         { coachSameDepartment: coachMentInSameDep },
         { ParticipantLevel: participantLevel },
-        { UseEmoji: provideAnswersUsingEmojis },
+        // { UseEmoji: provideAnswersUsingEmojis },
         { MentoringFramework: mentoringPreferencess },
         // { UserMentoringPre: mentoringPreferences },
         { UserDepartment: department },
@@ -3327,7 +3327,7 @@ const CoachIntake = ({ user }: any) => {
                             )}
                           </div>
 
-                          <div className="my-3">
+                          {/* <div className="my-3">
                             <p className="text-sm my-1">
                               Would you like your bot to provide expressive
                               answers using emojis?{" "}
@@ -3369,7 +3369,7 @@ const CoachIntake = ({ user }: any) => {
                                 </p>
                               )}
                             </div>
-                          </div>
+                          </div> */}
 
                           <>
                             <div className="my-3">
@@ -4719,7 +4719,7 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         </div>
 
-                        {formVersion !== "1" && formVersion !== "2" && (
+                        {/* {formVersion !== "1" && formVersion !== "2" && (
                           <div className="my-3">
                             <p className="text-sm my-1">
                               Would you like your AI Avatar to provide
@@ -4763,7 +4763,7 @@ const CoachIntake = ({ user }: any) => {
                               )}
                             </div>
                           </div>
-                        )}
+                        )} */}
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
