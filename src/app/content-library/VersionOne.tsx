@@ -23,6 +23,15 @@ import {
   DataScience,
   InteractiveVisualSimulation,
   Assessment,
+  gamePlay,
+  psychAssessment,
+  LeadershipPsychometric,
+  NewManager,
+  TechManager,
+  SalesAndService,
+  Diversity,
+  PresentationTest,
+  TopTenRoles,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -107,18 +116,18 @@ const VersionOne = ({ user, helpModeText }: any) => {
       <HelpMode steps={HelpModeSteps} forPage="demo" />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-6xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
-          Learning Simulations Playground
+        Coaching Simulations Sandbox
         </h1>
-        <p className="my-2 text-2xl max-w-prose text-gray-700 max-sm:text-sm max-sm:px-8">
+        {/* <p className="my-2 text-2xl max-w-prose text-gray-700 max-sm:text-sm max-sm:px-8">
           {" "}
           Toolkits and conversational coaching-learning for any scenario. The{" "}
           <b>User Demo</b> are the user-created avatars and bots, while the{" "}
           <b>System Demo</b> are the role plays and simulations supported by the
           platform algorithm.
-        </p>
+        </p> */}
 
-        <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-indigo-500 hover:bg-indigo-500 ">
-          User Demo
+        <Badge className="mt-3 -mb-6 px-4 z-10 rounded-md bg-indigo-500 hover:bg-indigo-500 ">
+        User Demo Bots
         </Badge>
         <div
           id="user-demos"
@@ -128,14 +137,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              AI-Frame <ExternalLink className="ml-2 h-4 w-4 inline" />
+              Coach Avatar <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
           <Link href="/feedback" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Feedback Page
+              Kudos Wall
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
@@ -161,18 +170,18 @@ const VersionOne = ({ user, helpModeText }: any) => {
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
-          <Link href="https://www.coachbots.com/demo" target="_blank">
+          {/* <Link href="https://www.coachbots.com/demo" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Psychometric
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
-          </Link>
+          </Link> */}
         </div>
 
         <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
-          System Demo
+        Coaching - Simulations Demo
         </Badge>
 
         <div className="bg-transparent h-4" />
@@ -182,7 +191,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
             className="text-lg max-sm:text-xs bg-white w-[full]  pt-4 max-sm:pt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
           >
             <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("managerplus")}
@@ -220,33 +229,33 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 onClick={() => scrollToView("qp")}
               >
                 Questions Pro
-              </Button>
+              </Button> */}
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("pms")}
               >
                 PMS Enabled
-              </Button>
+              </Button> */}
 
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("interactive-visual")}
               >
-                Interactive visual simulation
+                Interactive/Video Coaching
               </Button>
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("pitch")}
               >
                 Pitch+
-              </Button>
+              </Button> */}
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("one-to-one")}
@@ -314,7 +323,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 onClick={() => scrollToView("presentation")}
               >
                 Presentation
-              </Button>
+              </Button> */}
 
               {/* <Button
                 variant={"secondary"}
@@ -324,7 +333,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 Onboarding
               </Button> */}
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("meetings")}
@@ -338,22 +347,92 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 onClick={() => scrollToView("english-support")}
               >
                 English Support
-              </Button>
+              </Button> */}
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("assessment")}
               >
                 Assessment
+              </Button> */}
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("game-play")}
+              >
+                Game Play
               </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("psych-assessment")}
+              >
+                Psych Assessment
+              </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("leadership-psychometric")}
+              >
+                Leadership Plus
+              </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("new-manager")}
+              >
+                New Manager
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("tech-manager")}
+              >
+                Tech Manager
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("sales-service")}
+              >
+                Sales & Service
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("diversity")}
+              >
+                Diversity
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("presentation-2")}
+              >
+                Presentation
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("top-10-roles")}
+              >
+                Top 10 Roles
+              </Button>
+
             </div>
           </Div>
         </div>
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-lg:w-[75%] max-sm:w-full mx-auto">
         <div className="w-full">
-          <div id="managerplus">
+          {/* <div id="managerplus">
             <HeroAccordion
               id="manager-plus"
               badgeText="Manager+"
@@ -388,22 +467,22 @@ const VersionOne = ({ user, helpModeText }: any) => {
               user={user ? true : false}
               tests={questionPro}
             />
-          </div>
-          <div id="pms">
+          </div> */}
+          {/* <div id="pms">
             <HeroAccordion
               badgeText="PMS Enabled"
               user={user ? true : false}
               tests={pms}
             />
-          </div>
+          </div> */}
           <div id="interactive-visual">
             <HeroAccordion
-              badgeText="Interactive visual simulation"
+              badgeText="Interactive/Video Coaching"
               user={user ? true : false}
               tests={InteractiveVisualSimulation}
             />
           </div>
-          <div id="pitch">
+          {/* <div id="pitch">
             <HeroAccordion
               badgeText="Pitch+"
               user={user ? true : false}
@@ -473,7 +552,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
               user={user ? true : false}
               tests={presentation}
             />
-          </div>
+          </div> */}
           {/* <div id="onboarding">
             <HeroAccordion
               badgeText="Onboarding"
@@ -481,7 +560,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
               tests={onBoarding}
             />
           </div> */}
-          <div id="meetings">
+          {/* <div id="meetings">
             <HeroAccordion
               badgeText=" Meetings | Group Discussion"
               user={user ? true : false}
@@ -494,14 +573,84 @@ const VersionOne = ({ user, helpModeText }: any) => {
               user={user ? true : false}
               tests={englishSupport}
             />
-          </div>
-          <div id="assessment">
+          </div> */}
+          {/* <div id="assessment">
             <HeroAccordion
               badgeText="Assessment"
               user={user ? true : false}
               tests={Assessment}
             />
+          </div> */}
+          <div id="game-play">
+            <HeroAccordion
+              badgeText="Game Play"
+              user={user ? true : false}
+              tests={gamePlay}
+            />
           </div>
+
+          <div id="psych-assessment">
+            <HeroAccordion
+              badgeText="Psych Assessment"
+              user={user ? true : false}
+              tests={psychAssessment}
+            />
+          </div>
+          <div id="leadership-psychometric">
+            <HeroAccordion
+              badgeText="Leadership Plus"
+              user={user ? true : false}
+              tests={LeadershipPsychometric}
+            />
+          </div>
+          <div id="new-manager">
+            <HeroAccordion
+              badgeText="New Manager"
+              user={user ? true : false}
+              tests={NewManager}
+            />
+          </div>
+
+          <div id="tech-manager">
+            <HeroAccordion
+              badgeText="Tech Manager"
+              user={user ? true : false}
+              tests={TechManager}
+            />
+          </div>
+
+          <div id="sales-service">
+            <HeroAccordion
+              badgeText="Sales & Service"
+              user={user ? true : false}
+              tests={SalesAndService}
+            />
+          </div>
+
+          <div id="diversity">
+            <HeroAccordion
+              badgeText="Diversity"
+              user={user ? true : false}
+              tests={Diversity}
+            />
+          </div>
+
+          <div id="presentation-2">
+            <HeroAccordion
+              badgeText="Presentation"
+              user={user ? true : false}
+              tests={PresentationTest}
+            />
+          </div>
+
+          <div id="top-10-roles">
+            <HeroAccordion
+              badgeText="Top 10 Roles"
+              user={user ? true : false}
+              tests={TopTenRoles}
+            />
+          </div>
+
         </div>
       </div>
     </>

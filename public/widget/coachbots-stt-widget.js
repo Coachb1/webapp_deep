@@ -462,7 +462,7 @@ const createUserSTT = async (user_name, user_email) => {
   user_email2 = user_email;
   console.log("newuser_name2", user_name2);
   console.log("newuser_email2", user_email2);
-  fetch(`${baseURL2}/accounts/`, {
+  const response = await fetch(`${baseURL2}/accounts/`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${basicAuthToken2}`,
@@ -488,7 +488,7 @@ const createUserSTT = async (user_name, user_email) => {
     }),
   })
     .then((response) => response.json())
-    .then((data) => {
+    .then(async(data) => {
       console.log("START -> ", data);
       if (!window.user) {
         window.user = {
@@ -505,7 +505,7 @@ const createUserSTT = async (user_name, user_email) => {
       prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
       selectedResponseType = data.preferences?.response_style;
 
-      fetch(
+      const clientResp = await fetch(
         `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
         {
           method: "GET",
@@ -9442,7 +9442,7 @@ loadExternalModule().then(() => {
               AccessCodeStt = latestMessage;
               increaseSessionForFirstTestStt = true;
               console.log("Access Code Matched", snnipetConfigSTT.isDemo);
-              updateClientInfoSTT(sttWidgetClientId, user_email2, user_email2);
+              updateClientInfoSTT(sttWidgetClientId, user_email2, null);
               askAccessBotCodeSTT = false;
               if (snnipetConfigSTT.isDemo === "true") {
                 handleOptionButtonClick2("", signals);
@@ -9628,15 +9628,47 @@ loadExternalModule().then(() => {
                 //  creating user after getting name, email "CreateUser"
                 console.log(emailNameformJsonstt);
                 try {
+                  // await new Promise(resolve => setTimeout(resolve, 5000));
+                  console.log('before', clientuserInformationSTT)
+
                   await createUserSTT(
                     emailNameformJsonstt["name"],
                     emailNameformJsonstt["email"]
                   );
-                  // await new Promise(resolve => setTimeout(resolve, 5000));
-                  signals.onResponse({
-                    html: "<p>Fantastic. Please enter your access code provided by your admin.</p>",
-                  });
-                  askAccessBotCodeSTT = true;
+                  if (!clientuserInformationSTT){
+                    clientuserInformationSTT = await getClientInformationStt(
+                        "only_client_data",
+                        null,
+                        sttWidgetClientId
+                      );
+                  }
+                  console.log('after', clientuserInformationSTT)
+                  if (clientuserInformationSTT?.ask_access_code === true){
+                    signals.onResponse({
+                      html: "<p>Fantastic. Please enter your access code provided by your admin.</p>",
+                    });
+                    askAccessBotCodeSTT = true;
+                  } else {
+                    AccessCodeStt = clientuserInformationSTT.widget_access_code;
+                    increaseSessionForFirstTestStt = true;
+                    console.log("Access Code Matched", snnipetConfigSTT.isDemo);
+                    updateClientInfoSTT(sttWidgetClientId, user_email2, null);
+                    if (snnipetConfigSTT.isDemo === "true") {
+                      handleOptionButtonClick2("", signals);
+                    } else if (snnipetConfigSTT["psychometric"] === "true") {
+                      signals.onResponse({
+                        html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
+                      });
+                    } else {
+                      signals.onResponse({
+                        html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
+                        <div class="deep-chat-temporary-message">
+                        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                        `,
+                      });
+                    }
+                  }
                 } catch (error) {
                   console.error("Error creating user:", error);
                   signals.onResponse({
