@@ -296,7 +296,7 @@ const CreateUser = async(username,useremail)=>{
   console.log("newuser_name", user_name)
   console.log("newuser_email", user_email)
 
-  fetch(`${baseURL}/accounts/`, {
+  const resp = await fetch(`${baseURL}/accounts/`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${basicAuthToken}`,
@@ -322,7 +322,7 @@ const CreateUser = async(username,useremail)=>{
     }),
   })
     .then((response) => response.json())
-    .then((data) => {
+    .then(async(data) => {
       if (!window.user){
         window.user = {
           "given_name": user_name,
@@ -338,7 +338,7 @@ const CreateUser = async(username,useremail)=>{
       userRole = data.role;
 
 
-      fetch(
+      const clientResp = await fetch(
         `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
         {
           method: "GET",
@@ -5132,7 +5132,7 @@ loadExternalModule().then(() => {
               isvalidAccessCode
             ) {
               console.log("Access Code Matched")
-              updateClientInfo(widgetClientId,user_email, user_email)
+              updateClientInfo(widgetClientId,user_email, null)
               accessCode = latestMessage
               increaseSessionForFirstTest = true;
               askAccessBotCode = false
@@ -5192,12 +5192,54 @@ loadExternalModule().then(() => {
                 //  creating user after getting name, email "CreateUser"
                 console.log(emailNameformJson)
                 try {
+                  console.log('before', ClientUserInformation)
                   await CreateUser(emailNameformJson['name'], emailNameformJson['email']);
+                  console.log('after', ClientUserInformation)
+
+                  if (!ClientUserInformation){
+                    ClientUserInformation = await getClientInformation(
+                        "only_client_data",
+                        null,
+                        widgetClientId
+                      );
+                      console.log('after', ClientUserInformation)
+                  }
+
                   // await new Promise(resolve => setTimeout(resolve, 5000)); 
-                  signals.onResponse({
-                    html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
-                  });
-                  askAccessBotCode = true;
+
+                  if (ClientUserInformation?.ask_access_code === true){
+                    signals.onResponse({
+                      html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
+                    });
+                    askAccessBotCode = true;
+                  } else {
+                    updateClientInfo(widgetClientId,user_email, null)
+                    accessCode = ClientUserInformation.widget_access_code;
+                    increaseSessionForFirstTest = true;
+                    askAccessBotCode = false
+                    if (snnipetConfig.isDemo === 'true'){
+                      LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
+                      handleOptionButtonClick("",signals)
+                    } else if (snnipetConfig['psychometric'] === 'true'){
+                      signals.onResponse({
+                        html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
+                      })
+
+                    } 
+                    else{
+                      signals.onResponse(
+                        {
+                          html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
+                        <div class="deep-chat-temporary-message">
+                        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                        `
+
+                        }
+                      )
+                      
+                    }
+                  }
                 } catch (error) {
                   console.error("Error creating user:", error);
                   signals.onResponse({
