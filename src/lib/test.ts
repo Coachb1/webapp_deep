@@ -872,6 +872,13 @@ export const presentation: Test[] = [
       "Rahul, the project manager, is delivering a comprehensive presentation on a recently completed project. This presentation will focus on the critical phase of project closure, providing an in-depth analysis of the project's performance, achievements, challenges, and lessons learned. His goal is to ensure that all stakeholders have a clear understanding of the project's outcomes and can conclude it successfully.",
     interaction_mode: "Audio",
   },
+  {
+    domain: "Presentation",
+    title: "Project Ending Presentation : Presenting a project closing report",
+    description: `Rahul, the project manager, is delivering a comprehensive presentation on a recently completed project. This presentation will focus on the critical phase of project closure, providing an in-depth analysis of the project's performance, achievements, challenges, and lessons learned. His goal is to ensure that all stakeholders have a clear understanding of the project's outcomes and can conclude it successfully.`,
+    test_code: "Q48S46Y",
+    interaction_mode: "any",
+  }
 ];
 
 export const caseStudy: Test[] = [
@@ -1010,18 +1017,25 @@ export const frontLineStaff: Test[] = [
 
 export const InteractiveVisualSimulation: Test[] = [
   {
-    domain: "Empathetic Leadership in Times of Crisis",
+    domain: "Management Development",
     title: "Navigating Team Dynamics After a Major Deal Loss ",
     description: `A large consulting firm has recently lost a significant deal to a competitor, causing concern within the organization. Maya, the pursuit lead for this deal, must now discuss the outcome with her manager, Ravi. The loss of this deal has potential implications for team morale, client relationships, and the firm's competitive position in the market. The situation is particularly delicate as it may reflect on Maya's leadership and the team's performance. Ravi, aware of the sensitivity of the situation, has initiated the conversation by asking a question, setting the stage for a crucial discussion about the lost deal, its impact, and the path forward. You are Maya, the pursuit lead, interacting with Ravi, your manager. Ravi will ask you questions related to the lost consulting deal. Your intent is to provide a comprehensive overview of the situation, address any concerns, and discuss strategies for future improvements.`,
     test_code: "Q42IQVJ",
     interaction_mode: "",
   },
   {
-    domain: "Choosing the Right Team",
-    title: "Integrating Women into Construction Marketing Leadership",
-    description: `A large construction has asked its top marketing executive to answer some critical questions on their next campaign plan. The company has an "old boys club" mentality. You are that marketing executive who must answer the questions of Mahesh to convince him so that women are included a part of this campaign leadership. This situation reflects the company's need to adapt to changing industry standards while addressing internal resistance to diversity in leadership roles. You are the top marketing executive, interacting with Mahesh, a senior leader in the company. Mahesh will ask you questions related to including women in the campaign leadership team. Your intent is to convince Mahesh of the benefits and necessity of including women in the campaign leadership.`,
-    test_code: "Q7R47EZ",
-    interaction_mode: "",
+    domain: "Management Development",
+    title: "Strategic Decisions: Marketing Optimism vs. Fiscal Prudence Clash",
+    description: `As a technology firm aiming to launch a groundbreaking product, the leadership team grapples with divergent perspectives on the viability of their market strategy. The Chief Marketing Officer, relying on optimistic customer feedback, champions an aggressive approach. Simultaneously, the Chief Financial Officer, scrutinizing financial projections, advocates for a more conservative stance. The team faces a critical decision point: whether to invest heavily in marketing and innovation or adopt a restrained fiscal strategy. The challenge arises from the team's predisposition to favor information confirming their preconceptions, leading to potential conflict and suboptimal decisions. Reflect on the situation and answer the questions as the Chief Marketing Officer based on the article you just read.`,
+    test_code: "QWGW7N3",
+    interaction_mode: "any",
+  },
+  {
+    domain: "Management Development",
+    title: "Leadership initiatives : Balancing Creativity and Accountability in Office Dynamics",
+    description: `In a dynamic marketing agency, the team is facing a productivity challenge. Traditional management practices, emphasizing strict office hours, clash with the team's diverse work styles and the nature of creative tasks. Despite having a highly skilled and motivated team, morale is plummeting due to rigid adherence to a 9 to 5 schedule. The disconnect between management expectations and the team's need for flexibility is hindering creativity and collaboration. The manager, caught in the tension between traditional management practices and the team's desire for autonomy, must find a way to foster a more conducive work environment without compromising productivity and accountability. Reflect on the situation and answer the questions as the manager based on the Ted talk you just watched.`,
+    test_code: "QWGW7N3",
+    interaction_mode: "any",
   },
 ];
 
@@ -1042,3 +1056,247 @@ export const Assessment: Test[] = [
     interaction_mode: "Marketing Project Management",
   },
 ];
+
+
+export const gamePlay: Test[] = [
+  {
+    domain: "Management Games",
+    test_code: "Q0W76DW",
+    title: "New Manager Navigator: Corporate Odyssey",
+    description:
+      "New Manager Navigator positions you as a new manager within a vast multinational conglomerate. Your mission is to conquer each of the five levels, using advanced management theories and strategic decision-making to optimize outcomes and influence organizational success.Engage across the levels by leveraging strategic resource optimization, stakeholder negotiation, and problem-solving. Your ultimate aim is to utilize advanced management concepts to maximize your performance score and make a lasting impact on the organization.",
+    interaction_mode: "",
+  },
+  {
+    domain: "Management Games",
+    test_code: "QQPR0QM",
+    title: "Cultivating Leadership: Delegation Pro",
+    description:
+      `Step into the shoes of a seasoned leader in this immersive role-playing game, where you master the art of delegation by guiding a rising star to become an effective leader. Through carefully crafted scenarios, you will foster team trust and competence while demonstrating strategic coaching techniques. Transform knowledge into practice, emulating the mentor-mentee relationship as senior members aid junior colleagues to achieve success within organizational settings.`,
+    interaction_mode: "",
+  },
+]
+
+export const psychAssessment: Test[] = [
+  {
+    domain: "Critical Hire",
+    test_code: "QWDHWI1",
+    title: "The Global Project Impasse",
+    description:
+      "You are leading a global project team with members based in both the US and India. The project, focused on developing a new sustainable energy solution, has reached a critical juncture. A major disagreement has arisen between the US and Indian teams regarding the project's core technology. The US team favors a more expensive but potentially more efficient technology, while the Indian team advocates for a cheaper, though less efficient, alternative due to local resource availability and cost constraints. This disagreement has stalled the project significantly, with both teams becoming increasingly entrenched in their positions. The project's sponsor, based in Switzerland, is growing increasingly impatient and demands a resolution within the next week. They are requesting a clear and well-justified proposal outlining the chosen technology, and a plan to move the project forward expeditiously.",
+    interaction_mode: "text",
+  },
+  {
+    domain: "Critical Hire",
+    test_code: "QQEJFZG",
+    title: "Corporate Leadership Crisis",
+    description:
+      `A serious security incident has put sensitive customer and employee data at risk, triggering urgent demands from clients and stakeholders. The leadership team faces intense pressure to contain the breach swiftly, ensure transparency, support team morale, and maintain company stability. The leader’s key challenges are to halt further data exposure, communicate strategically with stakeholders to manage concerns, and balance limited resources to address both immediate and long-term needs. With teams working around the clock, the leader must also manage rising stress levels and prevent burnout, ensuring productivity is sustained. Critical decisions need to be made quickly and thoughtfully, balancing speed with strategic foresight. This assessment evaluates your ability to navigate these complexities—making risk-aware choices, communicating effectively, and prioritizing team support to secure the company’s future.`,
+    interaction_mode: "text",
+  },
+  
+]
+
+export const LeadershipPsychometric: Test[] = [
+  {
+    domain: "Leadership Psychometrics",
+    test_code: "QXI23E5",
+    title: "Strategic Leadership Approaches (Belbin) for Navigating the Complex Project Phoenix Implementation Crisis",
+    description:
+      `A Fortune 500 company launched "Project Phoenix," an ambitious $75 million organizational transformation initiative aimed at restructuring operations across 12 regional offices. Six months into implementation, critical failures emerged simultaneously. Leadership communication breakdowns created significant confusion about project goals and implementation timelines, with 65% of middle managers reporting they lacked clear direction. Employee satisfaction scores plummeted from 78% to 43%, triggering a 32% turnover rate, primarily affecting high-performing talent. Productivity metrics declined by 24% across departments, and customer satisfaction scores fell by 18 points. The disruption coincided with an unexpected market downturn, creating additional financial pressures as quarterly revenues missed projections by $14 million. Media outlets began publishing critical analyses of the company's strategy, while industry analysts downgraded performance forecasts. The board of directors expressed mounting concerns about executive leadership's ability to stabilize operations and restore stakeholder confidence. As a crisis response manager answer the following questions which your leadership has asked you to come prepared with.`,
+    interaction_mode: "any",
+  },
+  {
+    domain: "Leadership Psychometrics",
+    test_code: "QXI23E5",
+    title: "Strategic Leadership Approaches (Big 5) for Navigating the Complex Project Phoenix Implementation Crisis",
+    description:
+      `A Fortune 500 company launched "Project Phoenix," an ambitious $75 million organizational transformation initiative aimed at restructuring operations across 12 regional offices. Six months into implementation, critical failures emerged simultaneously. Leadership communication breakdowns created significant confusion about project goals and implementation timelines, with 65% of middle managers reporting they lacked clear direction. Employee satisfaction scores plummeted from 78% to 43%, triggering a 32% turnover rate, primarily affecting high-performing talent. Productivity metrics declined by 24% across departments, and customer satisfaction scores fell by 18 points. The disruption coincided with an unexpected market downturn, creating additional financial pressures as quarterly revenues missed projections by $14 million. Media outlets began publishing critical analyses of the company's strategy, while industry analysts downgraded performance forecasts. The board of directors expressed mounting concerns about executive leadership's ability to stabilize operations and restore stakeholder confidence. As a crisis response manager answer the following questions which your leadership has asked you to come prepared with.`,
+    interaction_mode: "any",
+  },{
+    domain: "Leadership Psychometrics",
+    test_code: "QXI23E5",
+    title: "Strategic Leadership Approaches (Blanchard) for Navigating the Complex Project Phoenix Implementation Crisis",
+    description:
+      `A Fortune 500 company launched "Project Phoenix," an ambitious $75 million organizational transformation initiative aimed at restructuring operations across 12 regional offices. Six months into implementation, critical failures emerged simultaneously. Leadership communication breakdowns created significant confusion about project goals and implementation timelines, with 65% of middle managers reporting they lacked clear direction. Employee satisfaction scores plummeted from 78% to 43%, triggering a 32% turnover rate, primarily affecting high-performing talent. Productivity metrics declined by 24% across departments, and customer satisfaction scores fell by 18 points. The disruption coincided with an unexpected market downturn, creating additional financial pressures as quarterly revenues missed projections by $14 million. Media outlets began publishing critical analyses of the company's strategy, while industry analysts downgraded performance forecasts. The board of directors expressed mounting concerns about executive leadership's ability to stabilize operations and restore stakeholder confidence. As a crisis response manager answer the following questions which your leadership has asked you to come prepared with.`,
+    interaction_mode: "any",
+  },{
+    domain: "Leadership Psychometrics",
+    test_code: "QXI23E5",
+    title: "Strategic Leadership Approaches (DISC) for Navigating the Complex Project Phoenix Implementation Crisis",
+    description:
+      `A Fortune 500 company launched "Project Phoenix," an ambitious $75 million organizational transformation initiative aimed at restructuring operations across 12 regional offices. Six months into implementation, critical failures emerged simultaneously. Leadership communication breakdowns created significant confusion about project goals and implementation timelines, with 65% of middle managers reporting they lacked clear direction. Employee satisfaction scores plummeted from 78% to 43%, triggering a 32% turnover rate, primarily affecting high-performing talent. Productivity metrics declined by 24% across departments, and customer satisfaction scores fell by 18 points. The disruption coincided with an unexpected market downturn, creating additional financial pressures as quarterly revenues missed projections by $14 million. Media outlets began publishing critical analyses of the company's strategy, while industry analysts downgraded performance forecasts. The board of directors expressed mounting concerns about executive leadership's ability to stabilize operations and restore stakeholder confidence. As a crisis response manager answer the following questions which your leadership has asked you to come prepared with.`,
+    interaction_mode: "any",
+  },{
+    domain: "Leadership Psychometrics",
+    test_code: "QXI23E5",
+    title: "Strategic Leadership Approaches (16PF) for Navigating the Complex Project Phoenix Implementation Crisis",
+    description:
+      `A Fortune 500 company launched "Project Phoenix," an ambitious $75 million organizational transformation initiative aimed at restructuring operations across 12 regional offices. Six months into implementation, critical failures emerged simultaneously. Leadership communication breakdowns created significant confusion about project goals and implementation timelines, with 65% of middle managers reporting they lacked clear direction. Employee satisfaction scores plummeted from 78% to 43%, triggering a 32% turnover rate, primarily affecting high-performing talent. Productivity metrics declined by 24% across departments, and customer satisfaction scores fell by 18 points. The disruption coincided with an unexpected market downturn, creating additional financial pressures as quarterly revenues missed projections by $14 million. Media outlets began publishing critical analyses of the company's strategy, while industry analysts downgraded performance forecasts. The board of directors expressed mounting concerns about executive leadership's ability to stabilize operations and restore stakeholder confidence. As a crisis response manager answer the following questions which your leadership has asked you to come prepared with.`,
+    interaction_mode: "any",
+  },
+  
+]
+
+
+export const TopTenRoles: Test[] = [
+    {
+      domain: "Software Engineer",
+      title: "Optimizing Warehouse Inventory Management for a Thriving E-commerce Business",
+      description: `Isha, the head of operations at a rapidly growing e-commerce company, is tasked with designing an efficient inventory management system for the company's warehouse. The warehouse currently stores thousands of unique products, each with its own SKU (Stock Keeping Unit). As the business expands, the warehouse receives new shipments daily and fulfills a high volume of orders continuously. Isha recognizes the need for a robust system that can handle the increasing complexity of inventory operations, including adding new products, removing products, updating quantities, and quickly identifying the product with the highest quantity in the warehouse. You are Isha, the head of operations, interacting with Raj, the lead software engineer. Raj will ask you questions related to designing an efficient inventory management system for the company's warehouse. Your intent is to provide Raj with a comprehensive solution that addresses the key requirements and challenges.`,
+      test_code: "Q2V8XPN",
+      interaction_mode: "any",
+    },
+    {
+      domain: "Data science Manager",
+      title: "Predicting Customer Churn for a Telecom Company: A Data Science Challenge",
+      description: `The telecom industry is highly competitive, and customer retention is a critical factor for success. A leading telecom company is facing a significant challenge with customer churn, where a substantial number of customers are leaving the service. The company's management has tasked the data science team to develop a predictive model that can identify customers who are likely to churn in the next month. The team has access to historical data, including customer demographics, service usage patterns, billing information, and customer support interactions. The goal is to leverage this data to build an accurate predictive model and provide actionable insights to help the company reduce customer churn. You are Isha, a data scientist, interacting with Raj, the head of the customer retention department. Raj will ask you questions related to the data science challenge of predicting customer churn for the telecom company. Your intent is to demonstrate your expertise in data science and analytics to help the company address this critical business problem.`,
+      test_code: "QDN6W9V",
+      interaction_mode: "any",
+    },
+      {
+        domain: "Finance Manager",
+        title: "Addressing Revenue Forecasting Discrepancies Following Recent Budget Cuts in Conglomerate",
+        description: `Arun Sharma, the Finance Manager at a large Indian conglomerate, faces a challenging situation. The company recently announced a 15% budget cut across all departments, impacting the Finance team's resources significantly. Following the announcement, the team has observed inconsistencies in revenue forecasting. Specifically, the sales department's projections for the next quarter are significantly higher (22% increase) than what the finance department's statistical models (based on historical data and market trends) are projecting (7% increase). This discrepancy poses a significant risk, potentially leading to over-optimistic resource allocation and investment decisions. The team is now tasked to analyze and address this disparity in forecasting to ensure accurate financial planning amidst the budget constraints. Arun needs to discuss with a team member to understand how to address this issue. You are Arun Sharma, interacting with a Team Member. The Team Member will ask you questions related to the discrepancy in revenue forecasting. Your intent is to achieve accurate financial planning.`,
+        test_code: "Q4CJ9ZM",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Operations Manager",
+        title: "Addressing Increased Defect Rates in Injection Molding Process",
+        description: `Rajan, the Operations Manager at Bharat Plastics, is facing a critical situation. Recent quality control reports indicate a significant spike in defect rates in the injection molding line, specifically concerning the production of automotive components. The data reveals a 15% increase in defects related to dimensional inaccuracies and surface imperfections over the past month. Preliminary investigations point towards inconsistencies in temperature control during the molding process and potential issues with the raw material batch received last week from a new supplier, "ChemCo India". The production schedule is tight, and these defects are causing delays in fulfilling orders for Maruti Suzuki. This is the second time in the last quarter that such a significant quality issue has surfaced. The last time it was related to a malfunctioning cooling system, which was quickly rectified. However, this current situation seems more complex, requiring a deeper dive into the process parameters and material properties. Rajan needs to address this urgently to avoid further disruptions and maintain customer satisfaction. You are Rajan, interacting with the Process Improvement Analyst. The Process Improvement Analyst will ask you questions related to the defect rates in injection molding. Your intent is to achieve improved process control and reduced defect rates.`,
+        test_code: "Q2ZPY77",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Business Development",
+        title: "Analyzing FMCG Client's Discount Request Impact on XYZ Holdings' Profitability",
+        description: `Anil Sharma, the Business Development Manager at XYZ Holdings, calls a meeting with a pricing analyst to discuss a critical issue. A major FMCG client, responsible for 18% of XYZ's annual revenue, is demanding a 15% volume-based discount on all orders exceeding ₹50 lakhs per month, citing internal budget cuts and increased competition. The current standard discount offered by XYZ for similar volumes is 8%. This client has historically been a reliable partner with consistent payment history. Anil needs to assess the financial implications of acceding to this request, considering XYZ's current cost structure, production capacity, and the potential impact on overall profitability. He wants a detailed analysis of various discount scenarios and their effect on the company's bottom line. A quick decision is needed as the client expects an answer within 48 hours. The meeting has been scheduled to dissect the numbers and explore possible solutions. You are Anil, interacting with the pricing analyst. The pricing analyst will ask you questions related to the FMCG client's discount request and its impact on XYZ Holdings' profitability. Your intent is to achieve a clear understanding of the financial implications and identify a mutually acceptable solution.`,
+        test_code: "QHRIRAQ",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Project Manager",
+        title: "Addressing Bottlenecks Through Task Decomposition in a Telecom Project",
+        description: `Priya, the project lead at a prominent Indian telecommunications firm, is facing a critical delay in the rollout of a new 5G infrastructure project. The delay stems from a bottleneck in the network configuration phase. The team member responsible for configuring the core network elements is struggling to complete the task within the allocated timeframe. Initial estimates assumed a straightforward configuration process, but unforeseen complexities related to integrating legacy systems have significantly increased the workload. Priya observes that the team member, while technically proficient, may be struggling with breaking down the complex configuration task into smaller, manageable sub-tasks. The configuration is on the critical path, and any further delay will impact the project's launch date and budget. Priya needs to discuss task decomposition and potential process improvements with the team member. You are the team member, interacting with Priya. Priya will ask you questions related to the current network configuration task. Your intent is to achieve an optimal scheduling solution.`,
+        test_code: "Q5BNX46",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Marketing Manager",
+        title: "Assessing the Impact of Campaign Delay on Digital Marketing Performance Metrics",
+        description: `Vikas, the Marketing Manager at a leading Indian automotive conglomerate, is facing the aftermath of a delayed electric vehicle launch campaign. The campaign's digital component, crucial for generating initial buzz and pre-orders, has suffered a setback. The original plan involved a targeted social media blitz, influencer collaborations, and interactive website content, all scheduled to coincide with the festive season. Data analysis reveals a projected 30% decrease in website traffic and a 40% drop in social media engagement compared to pre-delay forecasts. Key performance indicators (KPIs) related to lead generation and conversion rates are also trending downwards. The delay necessitates a revised digital marketing strategy that can effectively recapture lost momentum and meet revised sales targets. The challenge lies in optimizing the remaining timeframe to maximize impact and ensure a successful campaign rollout. You are Vikas, interacting with a team member. The team member will ask you questions related to the delayed launch campaign of the new vehicle. Your intent is to achieve clarity on the revised strategy and ensure timely execution.`,
+        test_code: "Q8IW7Z1",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Supply Chain Manager",
+        title: "Addressing Critical Raw Material Shortage Impacting Production Targets and Customer Orders",
+        description: `Priya Sharma, the Supply Chain Manager at Bharat Auto Components, faces a critical situation. A major supplier of specialized steel, crucial for manufacturing high-precision engine parts, has declared bankruptcy due to unforeseen market fluctuations and labor disputes. This has resulted in an immediate and significant shortage of the raw material, jeopardizing Bharat Auto Components' ability to meet its production targets for the next quarter. The situation is further complicated by existing contracts with automotive manufacturers that include stringent delivery schedules and penalty clauses for delays. Initial attempts to find alternative suppliers have been unsuccessful due to the specific grade and quality of steel required. This shortage is now directly impacting the customer service team, as they are dealing with increasing inquiries and complaints regarding delayed orders. Priya needs to discuss this with a customer service team member to strategize on managing customer expectations and minimizing potential damage to the company's reputation. You are Priya, interacting with a team member. The team member will ask you questions related to the raw material shortage and its impact. Your intent is to minimize customer dissatisfaction and find the best way to deliver the news to the customers.`,
+        test_code: "QC4T4WP",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Business Analyst",
+        title: "Modernizing Customer Service: A Roadmap for Enhanced Efficiency and Performance",
+        description: `Infosys BPO, Pune, is facing increasing customer churn due to prolonged query resolution times. Recent data indicates a 30% increase in average handling time (AHT) over the last quarter. This is largely attributed to outdated systems, lack of real-time data access for customer service representatives (CSRs), and inefficient workflow processes. The current CRM system is slow and lacks integration with other key platforms, leading to CSRs spending considerable time manually searching for information. Mr. Sharma, the Head of Customer Service, has tasked his Business Analyst to develop a modernization roadmap. He wants to understand how the project will specifically improve the CSRs' ability to handle customer interactions and reduce AHT. He is concerned about the cost implications of the project and wants a clear justification for the investment. You are the Business Analyst, interacting with Mr. Sharma. Mr. Sharma will ask you questions related to the roadmap. Your intent is to achieve alignment and approval for the proposed modernization project.`,
+        test_code: "Q7PRF1Y",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Strategy & Culture Manager",
+        title: "Evaluating Resource Allocation Efficiency and Project Prioritization in IT Department",
+        description: `Rahul Verma, the Strategy & Culture Manager at a mid-sized IT firm in Bangalore, notices a growing tension within the project teams. Recent data indicates a dip in project completion rates, and employee satisfaction surveys reveal increasing frustration with resource allocation. Several team members have voiced concerns about the prioritization of projects, feeling that strategically important initiatives are being sidelined in favor of less impactful, client-driven tasks. A recent internal audit highlighted inconsistencies in the application of the company's resource allocation policy. This has led to some teams feeling overburdened while others have idle capacity. A key project, the implementation of a new CRM system, is significantly behind schedule, impacting the sales team's performance. Rahul is concerned about the long-term effects of these issues on the company's overall performance and culture. The situation came to a head when the lead developer of the CRM project threatened to resign due to constant shifting of priorities and lack of necessary resources. You are Rahul Verma, interacting with the lead developer. The lead developer will ask you questions. Your intent is to achieve a better understanding of the issues and find a way to align project priorities with company strategy.`,
+        test_code: "QZJVZVX",
+        interaction_mode: "any",
+      },
+      {
+        domain: "Human Resource Professional",
+        title: "Discrepancies in Payroll Processing and Reconciliation Following System Migration",
+        description: `Following a recent migration to a new cloud-based payroll processing system, significant discrepancies have emerged in employee paychecks. Initial audits reveal inconsistencies in calculating overtime pay, tax withholdings, and benefit deductions for approximately 30% of the workforce. Specifically, the new system is incorrectly applying state tax laws for employees working remotely across state lines, leading to over or under withholdings. Furthermore, the system is failing to accurately calculate overtime for employees with tiered pay rates, resulting in substantial payroll errors. Data validation processes implemented during the migration phase appear to have overlooked these critical calculation errors, impacting employee morale and creating potential legal liabilities for the company. The payroll department is now facing a backlog of employee inquiries and requires immediate corrective action to rectify these errors and ensure accurate payroll processing moving forward. You are a Human Resource Professional, interacting with a candidate who has just joined the company. The candidate will ask you questions related to discrepancies in payroll processing and reconciliation following system migration. Your intent is to achieve accurate and compliant payroll processing.`,
+        test_code: "QZOOKZA",
+        interaction_mode: "any",
+      }
+
+]
+
+export const PresentationTest: Test[] = [
+  {
+    domain: "Presentation",
+    title: "Project Ending Presentation : Presenting a project closing report",
+    description: `Rahul, the project manager, is delivering a comprehensive presentation on a recently completed project. This presentation will focus on the critical phase of project closure, providing an in-depth analysis of the project's performance, achievements, challenges, and lessons learned. His goal is to ensure that all stakeholders have a clear understanding of the project's outcomes and can conclude it successfully.`,
+    test_code: "Q48S46Y",
+    interaction_mode: "any",
+  }
+]
+
+export const Diversity: Test[] = [
+  {
+    domain: "Diversity",
+    title: "Addressing Gender Disparities in Project Leadership: A Mentoring Opportunity",
+    description: `Priya Mehra, a seasoned HR Manager at CB Consultancy Services (CBCS), is mentoring a high-potential woman employee who is poised to take on a leadership role in a critical new project involving the implementation of AI-driven solutions for a major banking client. Recent internal data revealed a significant disparity in project leadership roles, with women being underrepresented, particularly in technically demanding projects. Furthermore, the woman employee expressed concerns about potential biases she might face from senior male colleagues who have historically dominated such roles. The situation is further complicated by the aggressive timelines set by the client and the need to quickly build a cohesive and high-performing team. The lack of female representation in leadership roles at CBCS has also led to low morale among junior female employees. Priya aims to equip the employee with the necessary skills and confidence to navigate these challenges effectively and establish herself as a successful project leader. You are Priya Mehra, interacting with the woman employee. The woman employee will ask you questions related to the challenges she faces in taking on a project leadership role, particularly concerning gender biases and team dynamics within CBCS. Your intent is to achieve empowering the woman employee to confidently assume her leadership role and address potential gender-related challenges effectively.`,
+    test_code: "QWWP7P1",
+    interaction_mode: "any",
+  },
+  {
+    domain: "Diversity",
+    title: "Navigating Promotion Gridlock Amidst Shifting Organizational Priorities in a Conglomerate",
+    description: `A seasoned manager within a conglomerate's Human Resources department finds herself at a career crossroads. She consistently exceeds performance expectations, demonstrated strong leadership, and successfully spearheaded several critical projects. An informal conversation revealed the potential for upward mobility within the department. However, a recent restructuring initiative, driven by evolving market dynamics and a strategic shift towards technological innovation, has led to a reassessment of roles and responsibilities. The department head, while acknowledging the manager's capabilities, expresses concerns about the timing of the promotion request. The restructuring has placed a temporary freeze on promotions, prioritizing roles aligned with the new strategic direction. Compounding the situation is the perception that the manager's current role, while vital, does not directly contribute to the technological advancement goals. The manager is now seeking clarity on her career path and exploring potential avenues for advancement despite these organizational changes. You are a seasoned HR Manager, interacting with your department head. Your department head will ask you questions. Your intent is to understand the path to promotion and align your skills with the new strategic direction.`,
+    test_code: "QKRL2J1",
+    interaction_mode: "any",
+  }
+]
+
+
+export const SalesAndService: Test[] = [
+  {
+    domain: "Sales & Service",
+    title: "Addressing Customer Dissatisfaction: Escalated Property Purchase Progress Inquiry",
+    description: `Priya Sharma, the Customer Service Manager at "Shanti Properties," is facing a challenging situation. A customer, Mr. Rajesh Kumar, who invested in a premium apartment in their new "Green Heights" project located in Gurgaon, is extremely dissatisfied. Mr. Kumar claims that since making the booking amount three months ago, he has received minimal updates on the construction progress. He also alleges that his calls to the sales representative are often unanswered or met with vague responses. He expressed his frustration, citing delays in obtaining loan approvals due to the lack of concrete documentation from Shanti Properties. He threatens to escalate the issue on social media and consumer forums if his concerns aren't addressed immediately. The "Green Heights" project is crucial for Shanti Properties' reputation in the competitive Gurgaon market, and negative publicity could significantly impact future sales. You are Priya Sharma, interacting with Rajesh Kumar. Rajesh Kumar will ask you questions related to the lack of property updates and delays in documentation. Your intent is to achieve customer satisfaction and prevent escalation.`,
+    test_code: "QALTOMN",
+    interaction_mode: "any",
+  },
+  {
+    domain: "Sales & Service",
+    title: "Navigating Term Insurance Hesitancy Amidst Economic Uncertainty and Evolving Client Needs",
+    description: `Global Assurance Inc. faces a challenge in converting initial interest in term insurance into concrete sales. Economic instability, coupled with the rise of personalized digital insurance platforms, has increased client hesitancy. Salaried individuals are more cautious about long-term financial commitments and frequently compare options across multiple providers online, seeking the most competitive rates and flexible terms. Data indicates that while initial inquiries about term insurance have risen by 15% in the last quarter, the conversion rate to actual policies has dropped by 8%. This decline is attributed to a perceived lack of personalized advice and a reluctance to engage in traditional sales processes. The company’s sales team needs to adapt their approach to address these modern client concerns, emphasizing value and building trust in a rapidly changing market. You are a Sales Manager, interacting with a Potential Client. The Potential Client will ask you questions related to the insurance options provided by the company. Your intent is to educate and persuade the Potential Client regarding the benefits of term insurance.`,
+    test_code: "QVSFB4Q",
+    interaction_mode: "any",
+  }
+]
+
+export const TechManager: Test[] = [
+  {
+    domain: "Tech Manager",
+    title: "Addressing API Integration Failures in the Supply Chain Management System",
+    description: `Rajesh Khanna, the Technology Manager at a large Indian conglomerate, is facing a critical issue. The integration of their new Supply Chain Management (SCM) system with existing Enterprise Resource Planning (ERP) and Customer Relationship Management (CRM) systems is riddled with API failures. These failures are causing significant disruptions in order processing, inventory management, and logistics. Specifically, the API connecting the SCM's demand forecasting module to the ERP's inventory database is intermittently failing, leading to inaccurate stock levels and delayed order fulfillment. The team recently migrated to a microservices architecture, and the API gateway seems to be a bottleneck. A recent code deployment, intended to improve the API's performance during peak hours (Diwali season), appears to have exacerbated the problem. Initial monitoring suggests intermittent connectivity issues and inconsistent data formats between the systems. Rajesh is now interacting with one of the senior developers to diagnose the root cause. You are Rajesh Khanna, interacting with one of your senior developer. Your developer will ask you questions related to the integration failures. Your intent is to resolve API failure issues.`,
+    test_code: "QGIQLMC",
+    interaction_mode: "any",
+  },
+  {
+    domain: "Tech Manager",
+    title: "Integration System Failure Post-Merger Disrupts Order Fulfillment Process",
+    description: `Following a major merger between two large retail corporations, the integration of their individual order management systems has resulted in a critical failure. The legacy system of the acquired company, responsible for processing a significant portion of online orders, encountered a major incompatibility when interfaced with the parent company’s more modern ERP system. The integration was planned to be seamless, but a previously undetected difference in data structures – specifically, how customer addresses are stored and validated – caused a cascade of errors. Orders are being misrouted, duplicated, or simply disappearing from the system. The support team is receiving a deluge of complaints from customers about delayed or incorrect deliveries. This has caused a severe backlog, impacting fulfillment centers and eroding customer trust. The CIO has called an emergency meeting to address the escalating situation and restore order processing capabilities as soon as possible. The failure is costing the company significant revenue and damaging its reputation. You are the Lead Integration Engineer, interacting with the CIO. The CIO will ask you questions related to the system failure. Your intent is to provide a clear and actionable plan to resolve the issues.`,
+    test_code: "QJZGCC4",
+    interaction_mode: "any",
+  }
+]
+
+export const NewManager: Test[] = [
+  {
+    domain: "New Manager",
+    title: "Addressing Project Delays and Unrealistic Deadlines in the Operations Department",
+    description: `Rohan Verma, the newly appointed Operations Manager at "Bharat Industries," faces a challenging situation. A critical infrastructure project, aimed at streamlining supply chain logistics, is running significantly behind schedule. Initial timelines, set by the Senior Executive Leader (SEL) before Rohan's arrival, proved overly optimistic. The SEL is now pressuring for immediate results and expressing dissatisfaction with the project's progress. Data indicates that the primary bottlenecks are due to unforeseen regulatory hurdles in land acquisition and delayed equipment delivery from international vendors. Rohan has identified potential mitigation strategies, including renegotiating timelines with the SEL and exploring alternative sourcing options. The SEL's communication style is often perceived as demanding and leaves little room for detailed explanations. A recent meeting ended with the SEL reiterating the original deadline, despite Rohan's presentation outlining the challenges. You are Rohan, interacting with the SEL. The SEL will ask you questions related to project delays and unrealistic deadlines. Your intent is to achieve a realistic timeline and secure the necessary resources to complete the project successfully.`,
+    test_code: "QSVEXN1",
+    interaction_mode: "any"
+  },
+  {
+    domain: "New Manager",
+    title: "Addressing Declining User Engagement in a Mobile Health Application Post-Update",
+    description: `A leading digital health company launched a major update to its flagship mobile application, designed to enhance user experience and incorporate new personalized health tracking features. Pre-launch, internal testing indicated a positive user reception. However, post-launch, the application experienced a 25% drop in daily active users (DAU) within the first two weeks. User reviews and social media sentiment analysis reveal that users are finding the new interface confusing and the personalized tracking features intrusive rather than helpful. The development team is under pressure to identify the root causes of this decline and implement corrective measures swiftly to prevent further user attrition. This situation is compounded by the fact that the company invested heavily in marketing the update, and the negative feedback is impacting brand reputation. The executive team views this as a critical issue that needs immediate attention and a data-driven solution. You are a Senior Product Manager, interacting with a Junior Data Analyst. The Data Analyst will ask you questions related to declining user engagement in a mobile health application post-update. Your intent is to restore user engagement and improve the application's user experience.`,
+    test_code: "QRVZWON",
+    interaction_mode: "any"
+  }
+]
+
+

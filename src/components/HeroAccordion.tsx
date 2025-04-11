@@ -27,7 +27,7 @@ const HeroAccordion = ({ tests, badgeText, user, id }: testTypes) => {
             variant={"secondary"}
             className="bg-gray-300 h-6 w-fit text-gray-600 py-3 text-center mb-8 mt-12 max-sm:mt-8 text-sm"
           >
-            System Demo : {badgeText}
+            Coaching - Simulations Demo : {badgeText}
           </Badge>
         </div>
         <div>
