@@ -3911,8 +3911,8 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getIsRepeatStatus = async (participantId) => {
-    const url = `${baseURL}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
+  const getIsRepeatStatus = async (participantId,testCode) => {
+    const url = `${baseURL}/accounts/get_is_repeat_status/?participant_id=${participantId}&test_code=${testCode}`;
 
     try {
       const response = await fetch(url, {
@@ -5704,7 +5704,7 @@ loadExternalModule().then(() => {
 
                 // restriction check like monthly test allowed start
                 // await getAttemptedTestList(participantId);
-                await getIsRepeatStatus(participantId);
+                await getIsRepeatStatus(participantId,testCode);
                 await getTestPrevilage(participantId);
 
                 if (isRepeatStatus["monthly_remaining_tests"] < 1) {
