@@ -9343,11 +9343,12 @@ loadExternalModule().then(() => {
             if (latestMessage === 'Yes'){
               LoadingMessageWithText("Fetching your AI curated simulation...");
               console.log('userScenarioRecommendation', userScenarioRecommendationStt)
-              const test_case = userScenarioRecommendationStt.results.length > 0 
-                  ? userScenarioRecommendationStt.results[0].test_case === 'soft_skills' 
-                      ? "hard_skills" 
-                      : "soft_skills"
-                  : "hard_skills";  
+              // const test_case = userScenarioRecommendationStt.results.length > 0 
+              //     ? userScenarioRecommendationStt.results[0].test_case === 'soft_skills' 
+              //         ? "hard_skills" 
+              //         : "soft_skills"
+              //     : "hard_skills";  
+              const test_case = 'previous_normal_test'
               console.log('test_case', test_case);
 
               try {
