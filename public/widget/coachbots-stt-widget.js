@@ -7804,8 +7804,8 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getIsRepeatStatus2 = async (participantId) => {
-    const url = `${baseURL2}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
+  const getIsRepeatStatus2 = async (participantId,testCode) => {
+    const url = `${baseURL2}/accounts/get_is_repeat_status/?participant_id=${participantId}&test_code=${testCode}`;
 
     try {
       const response = await fetch(url, {
@@ -9343,11 +9343,12 @@ loadExternalModule().then(() => {
             if (latestMessage === 'Yes'){
               LoadingMessageWithText("Fetching your AI curated simulation...");
               console.log('userScenarioRecommendation', userScenarioRecommendationStt)
-              const test_case = userScenarioRecommendationStt.results.length > 0 
-                  ? userScenarioRecommendationStt.results[0].test_case === 'soft_skills' 
-                      ? "hard_skills" 
-                      : "soft_skills"
-                  : "hard_skills";  
+              // const test_case = userScenarioRecommendationStt.results.length > 0 
+              //     ? userScenarioRecommendationStt.results[0].test_case === 'soft_skills' 
+              //         ? "hard_skills" 
+              //         : "soft_skills"
+              //     : "hard_skills";  
+              const test_case = 'previous_normal_test'
               console.log('test_case', test_case);
 
               try {
@@ -10926,7 +10927,7 @@ loadExternalModule().then(() => {
                 }
                 // restriction check like monthly test allowed start
                 // await getAttemptedTestList2(participantId2);
-                await getIsRepeatStatus2(participantId2);
+                await getIsRepeatStatus2(participantId2,testCode2);
                 await getTestPrevilage2(participantId2);
                 if (isRepeatStatus2["monthly_remaining_tests"] < 1) {
                   signals.onResponse({
@@ -10946,7 +10947,7 @@ loadExternalModule().then(() => {
                   return;
                 }
                 // User cannot attempt the test more than once if it is active
-                console.log(userRole2);
+                console.log(userRole2, isRepeatStatus2);
                 if (userRole2 && userRole2 !== "admin") {
                   if (!isRepeatStatus2.is_repeat) {
                     await getAttemptedTestList2(participantId2);
