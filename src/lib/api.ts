@@ -115,6 +115,7 @@ export const getDirectoryProfiles = async (
   userEmail: string | null | undefined,
   recommendationProfileIDs: string[] | null
 ) => {
+  try{
   const response = await fetch(
     `${baseURL}/accounts/get-directory-informations/?email=${userEmail}`,
     {
@@ -165,23 +166,33 @@ export const getDirectoryProfiles = async (
     console.log("Error fetching Directory info : ", response.statusText);
     return [];
   }
+} catch (error) {
+  console.error("Error fetching directory profiles:", error);
+  return [];
+}
 };
 
 export const getUserJoiningPreviledges = async (
   userEmail: string | null | undefined
 ) => {
   if (userEmail) {
-    const response = await fetch(
-      `${baseURL}/accounts/user-can-join-as/?email=${userEmail}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    );
+    try{
 
-    return response.json();
+      const response = await fetch(
+        `${baseURL}/accounts/user-can-join-as/?email=${userEmail}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+      return response.json();
+    } catch (error) {
+      console.error("Error fetching user joining privileges:", error);
+      return null;
+    }
+
   }
 };
 
@@ -292,7 +303,7 @@ export const getConnections = async (coachId: string, coacheeId: string) => {
 };
 
 export const getAttemptedTestsList = async (userId: string) => {
-  const response = await fetch(
+  try {const response = await fetch(
     `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
     {
       method: "GET",
@@ -306,6 +317,10 @@ export const getAttemptedTestsList = async (userId: string) => {
   console.log("API TS", responseData);
 
   return responseData.data.codes;
+} catch (error) {
+  console.error("Error fetching attempted tests list:", error);
+  return [];
+}
 };
 
 export const getTestsByCompetencies = async (userId: string) => {
@@ -420,13 +435,19 @@ export const getKnowledgeBots = async (clientName: string, userId: string) => {
   getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
     const botJson = item.signature_bot;
     let description: string = "";
-    if (typeof botJson.faqs === "string") {
-      description = JSON.parse(
-        //@ts-ignore
-        botJson.faqs["What is the primary purpose of the bot?"]
-      );
-    } else {
-      description = botJson.faqs["What is the primary purpose of the bot?"];
+    try{
+
+      if (typeof botJson.faqs === "string") {
+        description = JSON.parse(
+          //@ts-ignore
+          botJson.faqs["What is the primary purpose of the bot?"]
+        );
+      } else {
+        description = botJson.faqs["What is the primary purpose of the bot?"];
+      }
+    } catch (error){
+      console.error("Error parsing FAQs:", error, botJson);
+      description = "";
     }
     if (item.signature_bot.is_approved) {
       if (!item.signature_bot.is_private) {
@@ -545,6 +566,7 @@ export const getCandidateReport = async (userId: string) => {
 
   if (response.ok) {
     const responseData = await response.json();
+    console.log('getCandidateReport', responseData)
     return responseData.url;
   } else {
     return "";

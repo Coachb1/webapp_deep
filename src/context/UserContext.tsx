@@ -298,11 +298,15 @@ export const UserProvider = ({
         }
 
         if (!userInfo.restrictedPages?.includes("Creator Studio")) {
-          const knowledgeBots = await getKnowledgeBots(
-            userInfo.clientName,
-            data.uid
-          );
-          setknowledgeBots(knowledgeBots);
+          try{
+            const knowledgeBots = await getKnowledgeBots(
+              userInfo.clientName,
+              data.uid
+            );
+            setknowledgeBots(knowledgeBots);
+          } catch (error) {
+            console.error("Error fetching knowledge bots:", error);
+          }
 
           const clientUsers = await getClientUsers(userInfo.clientName);
           setClientUsers(clientUsers);

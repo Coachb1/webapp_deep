@@ -164,17 +164,23 @@ const getUserJoiningPreviledges = async (
   userEmail: string | null | undefined
 ) => {
   if (userEmail) {
-    const response = await fetch(
-      `${baseURL}/accounts/user-can-join-as/?email=${userEmail}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    );
+    try{
 
-    return response.json();
+      const response = await fetch(
+        `${baseURL}/accounts/user-can-join-as/?email=${userEmail}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+  
+      return response.json();
+    } catch (error) {
+      console.error("Error fetching user joining previledges: ", error);
+      return [];
+    }
   }
 };
 
