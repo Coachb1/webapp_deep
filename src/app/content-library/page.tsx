@@ -10,7 +10,7 @@ import Widgets from "@/components/Widgets";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 export const metadata = constructMetadata({
-  title: "Explore - Coachbots",
+  title: "Explore - Coachbot",
 });
 
 const getClientUserInfo = async (

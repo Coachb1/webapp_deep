@@ -9,7 +9,7 @@ import Profile from "./Profile";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 export const metadata = constructMetadata({
-  title: "My Account - Coachbots",
+  title: "My Account - Coachbot",
 });
 
 const getClientUserInfo = async (

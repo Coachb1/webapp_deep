@@ -34,7 +34,7 @@ const PageFooter = () => {
           </div>
         </div>
         <div className="text-center mt-2 max-sm:text-xs">
-          <p>&copy; 2023 Coachbots™. All Rights Reserved.</p>
+          <p>&copy; 2023 Coachbot™. All Rights Reserved.</p>
         </div>
       </div>
     </>

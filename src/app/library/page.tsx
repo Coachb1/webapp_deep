@@ -11,7 +11,7 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { useUser } from "@/context/UserContext";
 
 export const metadata = constructMetadata({
-  title: "Library - Coachbots",
+  title: "Library - Coachbot",
 });
 
 const getClientUserInfo = async (

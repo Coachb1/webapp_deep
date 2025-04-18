@@ -25,7 +25,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function constructMetadata({
-  title = "Coachbots - Playground",
+  title = "Coachbot - Playground",
   description = "",
   image = "/thumbnail.png",
   icons = "/favicon.ico",

@@ -205,7 +205,7 @@ const DeepDive = ({ user, renderType }: any) => {
               <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
                 COACH
               </span>
-              BOTS
+              BOT
             </h1>
             <div>
               <h1 className="mt-0 text-2xl font-bold text-gray-600 max-sm:text-xl  ">

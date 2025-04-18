@@ -42,7 +42,7 @@ export const GoogleGeminiEffect = ({
                 <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
                   COACH
                 </span>
-                BOTS
+                BOT
               </h1>
             </div>
           )}

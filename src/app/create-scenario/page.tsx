@@ -13,7 +13,7 @@ import { knowledgeBotJson } from "@/lib/types";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 export const metadata = constructMetadata({
-  title: "Studio - Coachbots",
+  title: "Studio - Coachbot",
 });
 
 const getUserAccountsData = async (user: KindeUser | null) => {

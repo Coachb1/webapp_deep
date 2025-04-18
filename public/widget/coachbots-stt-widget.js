@@ -106,7 +106,7 @@ const createLink = (url, text) => {
 };
 
 // attatch the link to the body of the page
-document.head.appendChild(createLink("https://www.coachbots.com", "CoachBots"));
+document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
 
 let deepChatPocElement2;
 let sessionId2 = "";
@@ -7101,7 +7101,7 @@ loadExternalModule().then(() => {
       ">
         COACH
       </span>
-      BOTS
+      BOT
     </h1>
     </div>
     <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -7630,7 +7630,7 @@ loadExternalModule().then(() => {
     } else {
       chatElementRef2.initialMessages = [
         {
-          html: `<p>Welcome to Coachbots. Do you have interaction code for your simulation?</p>`,
+          html: `<p>Welcome to Coachbot. Do you have interaction code for your simulation?</p>`,
           role: "ai",
         },
       ];

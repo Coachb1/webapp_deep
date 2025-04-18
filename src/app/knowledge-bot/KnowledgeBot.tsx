@@ -242,7 +242,7 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
               <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
                 COACH
               </span>
-              BOTS
+              BOT
             </h1>
             <div>
               <div className="w-full flex flex-row justify-center items-center">
