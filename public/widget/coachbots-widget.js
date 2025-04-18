@@ -3338,7 +3338,7 @@ loadExternalModule().then(() => {
     ">
       COACH
     </span>
-    BOTS
+    BOT
   </h1>
   </div>
   <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -3717,7 +3717,7 @@ loadExternalModule().then(() => {
 
     chatElementRef.initialMessages = [
       {
-        html: `<p>Welcome to Coachbots. Do you have interaction code for your simulation?
+        html: `<p>Welcome to Coachbot. Do you have interaction code for your simulation?
         </p>`,
         role: "ai",
       },

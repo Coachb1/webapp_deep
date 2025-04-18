@@ -2774,7 +2774,7 @@ const CoachIntake = ({ user }: any) => {
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
             COACH
           </span>
-          BOTS
+          BOT
         </h1>
         <Badge variant={"outline"}>Private. For system use only</Badge>
         {formType === "knowledge-bot" && (

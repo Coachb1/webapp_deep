@@ -199,7 +199,7 @@ const SubjectExpert = ({ user, renderType }: any) => {
               <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
                 COACH
               </span>
-              BOTS
+              BOT
             </h1>
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 mb-4 ">

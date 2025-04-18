@@ -26,12 +26,12 @@ export default function GlobalError({
               <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
                 COACH
               </span>
-              BOTS
+              BOT
             </h1>
             <div className="my-2 mt-4 max-w-prose flex flex-col justify-center items-center gap-4">
               {" "}
               <p className="text-2xl text-gray-700 font-bold">
-                Welcome to the world of CoachBots!
+                Welcome to the world of CoachBot!
               </p>
               <div className="relative group cursor-pointer w-fit">
                 <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>

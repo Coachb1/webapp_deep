@@ -11,7 +11,7 @@ Cypress.Commands.add("loginAndNavigate", () => {
     cy.origin("https://coachbotsdev.kinde.com", () => {
       // cy.get('[data-testid="login-account-link"]').click();
       cy.title()
-        .should("eq", "Sign in | Coachbots Dev")
+        .should("eq", "Sign in | Coachbot Dev")
         .then(() => {
           cy.get("#sign_up_sign_in_credentials_p_email").type(
             "mevibok234@vasomly.com"
@@ -23,7 +23,7 @@ Cypress.Commands.add("loginAndNavigate", () => {
     });
 
     cy.title()
-      .should("eq", "Network - Coachbots")
+      .should("eq", "Network - Coachbot")
       .visit(`http://localhost:3000/content-library`);
   });
 });
