@@ -195,8 +195,6 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                 <div
                     className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 p-3 rounded-md"
                 >
-                    {/* <div className="pb-1 h-20 max-sm:pb-0 flex flex-row justify-center items-center text-center"></div> */}
-                    <div className="flex justify-center flex-col gap-2 max-sm:gap-1 text-sm">
                         {!userInfo.restrictedFeatures?.includes("Requested-scenarios") ||
                             (!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
                                 <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
@@ -215,7 +213,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                                                 behavior: "smooth",
                                             });
                                     }}
-                                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                                    className={`h-6 max-xs:text-xm bg-blue-400 text-white hover:bg-blue-300`}
                                 >
                                     Assigned Simulations{" "}
                                     <History className="h-4 w-4 ml-2" />
@@ -230,7 +228,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                                                 behavior: "smooth",
                                             });
                                     }}
-                                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                                    className={`h-6 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                                 >
                                     Requested Simulations{" "}
                                     <History className="h-4 w-4 ml-2" />
@@ -238,7 +236,6 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                             )}
                         </div>
                     </div>
-                </div>
             </MaxWidthWrapper>
 
 
