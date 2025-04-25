@@ -8,9 +8,10 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import VersionOne from "./VersionOne";
 import Widgets from "@/components/Widgets";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import VersionTwo from "./VersionTwo";
 
 export const metadata = constructMetadata({
-  title: "Explore - Coachbot",
+  title: "Simulations - Coachbot",
 });
 
 const getClientUserInfo = async (
@@ -90,7 +91,7 @@ const Page = async () => {
 
   return (
     <div>
-      <VersionOne user={user} />
+      <VersionTwo user={user} />
       <Widgets from="content-library" />
     </div>
   );
