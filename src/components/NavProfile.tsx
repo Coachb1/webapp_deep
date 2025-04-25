@@ -55,7 +55,7 @@ const NavProfile = ({ user }: any) => {
               </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               className={`max-sm:text-xs ${
                 pathname === "/content-library" ? "bg-gray-200" : null
               }`}
@@ -64,7 +64,7 @@ const NavProfile = ({ user }: any) => {
               <Link href={"/content-library"}>
                 <Globe className="h-4 w-4 mr-2 " /> Explore
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
 
             <DropdownMenuItem asChild className="max-sm:text-xs ">
               <Link

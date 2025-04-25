@@ -4,7 +4,18 @@ export interface Test {
   title: string;
   description: string;
   interaction_mode: string;
+  test_type?: string;
+  is_recommended?: boolean;
+  is_assigned?: boolean;
+  assigned_by?: string;
+  assigned_to?: string;
+  creator_user_id?: string;
+  is_micro?: boolean;
 }
+
+export type CategoryMap = {
+  [category: string]: Test[];
+  };
 
 import { CategoryData } from "./types";
 
@@ -1105,6 +1116,9 @@ export const LeadershipPsychometric: Test[] = [
     description:
       `A Fortune 500 company launched "Project Phoenix," an ambitious $75 million organizational transformation initiative aimed at restructuring operations across 12 regional offices. Six months into implementation, critical failures emerged simultaneously. Leadership communication breakdowns created significant confusion about project goals and implementation timelines, with 65% of middle managers reporting they lacked clear direction. Employee satisfaction scores plummeted from 78% to 43%, triggering a 32% turnover rate, primarily affecting high-performing talent. Productivity metrics declined by 24% across departments, and customer satisfaction scores fell by 18 points. The disruption coincided with an unexpected market downturn, creating additional financial pressures as quarterly revenues missed projections by $14 million. Media outlets began publishing critical analyses of the company's strategy, while industry analysts downgraded performance forecasts. The board of directors expressed mounting concerns about executive leadership's ability to stabilize operations and restore stakeholder confidence. As a crisis response manager answer the following questions which your leadership has asked you to come prepared with.`,
     interaction_mode: "any",
+    test_type: "",
+    is_recommended: false,
+    is_micro: false
   },
   {
     domain: "Leadership Psychometrics",
