@@ -345,7 +345,7 @@ const Coach = ({ user, renderType }: any) => {
               <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
                 COACH
               </span>
-              BOTS
+              BOT
             </h1>
             <div>
               {botType === "subject_specific_bot" ? (

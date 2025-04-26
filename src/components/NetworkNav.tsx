@@ -79,7 +79,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg max-sm:text-[12px] font-bold text-white">
               COACH
             </span>
-            BOTS
+            BOT
           </h1>
         </div>
       </Link>
@@ -100,13 +100,13 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             <Button
               variant={"outline"}
               className={` h-8 ${
-                pathname.includes("/library")
+                pathname.includes("/content-library")
                   ? "border border-gray-500 shadow-md"
                   : ""
               } `}
               asChild
             >
-              <Link href={"/library"}>Simulations</Link>
+              <Link href={"/content-library"}>Simulations</Link>
             </Button>
           )}
           {!restrictedPages?.includes("Creator Studio") && (
@@ -153,11 +153,11 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                   {!restrictedPages?.includes("Library") && (
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
-                        pathname.includes("/library") ? "bg-gray-200" : null
+                        pathname.includes("/content-library") ? "bg-gray-200" : null
                       }`}
                       asChild
                     >
-                      <Link href={"/library"}>Simulations</Link>
+                      <Link href={"/content-library"}>Simulations</Link>
                     </DropdownMenuItem>
                   )}
 

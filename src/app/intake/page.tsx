@@ -3,7 +3,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import CoachIntake from "./CoachIntake";
 
 export const metadata = constructMetadata({
-  title: "Intake - Coachbots",
+  title: "Intake - Coachbot",
 });
 
 const Page = async () => {

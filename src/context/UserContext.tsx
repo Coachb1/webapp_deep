@@ -231,10 +231,11 @@ export const UserProvider = ({
 
       if (!userInfo.isDemoUser && !userInfo.isRestricted) {
         if (userInfo.restrictedPages?.includes("Network Directory")) {
-          if (!userInfo.restrictedPages?.includes("Explore")) {
+          // if (!userInfo.restrictedPages?.includes("Explore")) {
+          //   router.push("content-library");
+          // } 
+          if (!userInfo.restrictedPages?.includes("Library")) {
             router.push("content-library");
-          } else if (!userInfo.restrictedPages?.includes("Library")) {
-            router.push("library");
           } else if (!userInfo.restrictedPages?.includes("Creator Studio")) {
             router.push("create-scenario");
           }

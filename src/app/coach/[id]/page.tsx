@@ -5,9 +5,9 @@ import Script from "next/script";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function generateMetadata({ params }: any) {
-  let title = "AI Copilot - Coachbots";
+  let title = "AI Copilot - Coachbot";
   if (params.id.includes("subject")) {
-    title = "Co-pilot Level 1- Coachbots";
+    title = "Co-pilot Level 1- Coachbot";
   }
   return constructMetadata({
     title,

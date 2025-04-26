@@ -89,7 +89,7 @@ const LibraryTestsAccordian = ({
                   variant={"outline"}
                   className="text-sm my-2 px-4 self-center"
                 >
-                  Short
+                  Interaction Scenarios
                 </Badge>
                 {paginatedShortTests.map((test: any, i: number) => (
                   <AccordionItem
@@ -160,7 +160,7 @@ const LibraryTestsAccordian = ({
             {paginatedStandardTests.length > 0 && (
               <>
                 <Badge variant={"outline"} className="text-sm my-2 px-4">
-                  Standard
+                  Interaction Scenarios
                 </Badge>
                 {paginatedStandardTests.map((test: any, i: number) => (
                   <AccordionItem

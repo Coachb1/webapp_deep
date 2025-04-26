@@ -4,7 +4,7 @@ import Widgets from "@/components/Widgets";
 import SkillBot from "./SkillBot";
 
 export const metadata = constructMetadata({
-  title: "Skill bots - Coachbots",
+  title: "Skill bots - Coachbot",
 });
 
 const Page = async () => {
