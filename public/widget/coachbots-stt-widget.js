@@ -8,28 +8,28 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 let baseURL2 = ["platform"].includes(subdomainStt) ? prodUrlStt : devUrlStt;
 
-if(!['playground', 'platform', 'localhost'].includes(subdomainStt)){
+if (!['playground', 'platform', 'localhost'].includes(subdomainStt)) {
   const scripts = document.getElementsByTagName('script');
-    for (let script of scripts) {
-        if (script.src.includes('/widget/coachbots-stt-widget.js')) {
-          try {
-            const url = new URL(script.src).origin;
-            console.log("url2", url);
-            if (url.includes("platform.coachbots.com") ){
-              baseURL2 = prodUrlStt;
-            } else if (url.includes("playground.coachbots.com")){
-              baseURL2 = devUrlStt;
-            }
-            console.log("baseURl2", baseURL2);
-          } catch (error) {
-              console.log("Invalid URL2:", script.src, error);
-          }
+  for (let script of scripts) {
+    if (script.src.includes('/widget/coachbots-stt-widget.js')) {
+      try {
+        const url = new URL(script.src).origin;
+        console.log("url2", url);
+        if (url.includes("platform.coachbots.com")) {
+          baseURL2 = prodUrlStt;
+        } else if (url.includes("playground.coachbots.com")) {
+          baseURL2 = devUrlStt;
         }
+        console.log("baseURl2", baseURL2);
+      } catch (error) {
+        console.log("Invalid URL2:", script.src, error);
+      }
     }
+  }
 }
 
 console.log('baseURl2', baseURL2)
-  
+
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {
   console.log("swipeHeader", swipeHeader);
@@ -282,7 +282,7 @@ let responderDisplayNameStt;
 let IsSingleSelectSTT;
 let AccessCodeStt;
 
-let startScenarioRecommendationsStt=false;
+let startScenarioRecommendationsStt = false;
 let PreviousSessionInfoSTT = {
   "sessionId": null,
   "skills": null
@@ -298,10 +298,9 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
   return token2;
 }
 function displayBrowserWarning() {
-  if (!isChromeSTT()){
+  if (!isChromeSTT()) {
     const warningBannerContainer = document.getElementById("warning-banner-stt");
-    warningBannerContainer.innerHTML = `<b style="color: red;text-align: center;font-size: 14px;font-size: ${
-        window.innerWidth < 768 ? "10px" : "12px"
+    warningBannerContainer.innerHTML = `<b style="color: red;text-align: center;font-size: 14px;font-size: ${window.innerWidth < 768 ? "10px" : "12px"
       };" >
       Warning: we detected that you are on a non-supported browser. Please switch to Chrome to avoid interruptions.
       </b>`
@@ -317,9 +316,8 @@ let user_name2;
 let user_email2;
 
 if (window.user) {
-  user_name2 = `${window.user.given_name} ${
-    window.user.family_name ? window.user.family_name : ""
-  }`;
+  user_name2 = `${window.user.given_name} ${window.user.family_name ? window.user.family_name : ""
+    }`;
   user_email2 = window.user.email;
 } else {
   user_name2 = "coachbots_anonyoususer";
@@ -444,7 +442,7 @@ const initialiseUserSTT = async () => {
         })
         .catch((err) => {
           console.log(err);
-          throw new Error( `Error fetching client Info ${err}`);
+          throw new Error(`Error fetching client Info ${err}`);
         });
     })
     .catch((err) => {
@@ -488,7 +486,7 @@ const createUserSTT = async (user_name, user_email) => {
     }),
   })
     .then((response) => response.json())
-    .then(async(data) => {
+    .then(async (data) => {
       console.log("START -> ", data);
       if (!window.user) {
         window.user = {
@@ -2098,15 +2096,15 @@ const getBotDetails2 = async (botId) => {
       appendMessage2(`${botWelcomeMessage}`);
     }
 
-    if (!window.user){
+    if (!window.user) {
       isEmailFormstt = true;
-        formFieldsstt = ["email", "name"];
-        console.log(
-          "### formFieldsstt : ",
-          formFieldsstt,
-          "other data: ",
-          `Please enter your ${formFieldsstt[0]}`
-        );
+      formFieldsstt = ["email", "name"];
+      console.log(
+        "### formFieldsstt : ",
+        formFieldsstt,
+        "other data: ",
+        `Please enter your ${formFieldsstt[0]}`
+      );
       appendMessage2('Please enter your email to get started.')
     }
     // const
@@ -2692,7 +2690,7 @@ async function handlePreviousConversation(choice) {
 }
 
 async function handleFaqButtonClick(question) {
-  if (!window.user){
+  if (!window.user) {
     return;
   }
   optedBeginSession = false;
@@ -2832,11 +2830,10 @@ async function handleFaqButtonClick(question) {
                     <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
                       ${optioncont}
                     </div>
-                    ${
-                      i === Object.keys(fitmentAnalysisQuestions).length
-                        ? '<button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>'
-                        : ""
-                    }
+                    ${i === Object.keys(fitmentAnalysisQuestions).length
+          ? '<button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>'
+          : ""
+        }
                   </div>`;
     }
 
@@ -3311,11 +3308,9 @@ async function handleFaqButtonClick(question) {
 
         if (Object.keys(respjson).length > 0) {
           respjson.forEach((element) => {
-            buttons += `<button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:100%; padding:6px 4px;  border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${
-              element.test_code
-            }','${element.title.replaceAll("'", "")}')">${
-              element.title
-            }</button>`;
+            buttons += `<button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:100%; padding:6px 4px;  border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${element.test_code
+              }','${element.title.replaceAll("'", "")}')">${element.title
+              }</button>`;
           });
           appendMessage2(
             `<b >Here are some recommendations for you : </b> <br> ${buttons}`
@@ -3448,7 +3443,7 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-        appendMessage2(`<b>Your session has completed. You will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`)
+      appendMessage2(`<b>Your session has completed. You will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`)
     }
   }
 
@@ -3767,20 +3762,20 @@ const handleEndCoachingClick2 = async (randomId) => {
 
     //* send message to start new session
     userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-    console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-    if (['psychometric', 'game'].includes(senarioCase2) 
-      || !clientuserInformationSTT.show_recommendations 
-      || userScenarioRecommendationStt.total_recommendation >= 2){
-        appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
+    console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
+    if (['psychometric', 'game'].includes(senarioCase2)
+      || !clientuserInformationSTT.show_recommendations
+      || userScenarioRecommendationStt.total_recommendation >= 2) {
+      appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
     } else {
 
-          appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
+      appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
               <div class="deep-chat-temporary-message" id='related-recommendation2'>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
               <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
         `)
       startScenarioRecommendationsStt = true
-      PreviousSessionInfoSTT['sessionId'] =  sessionId2
+      PreviousSessionInfoSTT['sessionId'] = sessionId2
       PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
     }
 
@@ -3833,7 +3828,7 @@ function appendMessageForUser2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
-function createMessageNode2(message,isMarkdown=false) {
+function createMessageNode2(message, isMarkdown = false) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
 
@@ -3857,7 +3852,7 @@ function createMessageNode2(message,isMarkdown=false) {
   messageBubble.style.color = "#000000";
 
   const messageText = document.createElement("p");
-  if( isMarkdown){
+  if (isMarkdown) {
     messageText.innerHTML = parseMarkdown(message);
   }
   else if (message?.includes("<")) {
@@ -3918,11 +3913,9 @@ function LoadingMessageWithText(message) {
   loadingElement.style.flexDirection = "row";
   loadingElement.style.alignItems = "center";
   const messageElement = document.createElement("span");
-  messageElement.innerHTML = `<b style="color : black; font-size: ${
-    window.innerWidth < 768 ? "12px" : "14px"
-  }; min-width: 4rem; margin-left: 2rem; position : relative; top : -2px;">${
-    message || "Coachbot is thinking..."
-  }</b>`; //message
+  messageElement.innerHTML = `<b style="color : black; font-size: ${window.innerWidth < 768 ? "12px" : "14px"
+    }; min-width: 4rem; margin-left: 2rem; position : relative; top : -2px;">${message || "Coachbot is thinking..."
+    }</b>`; //message
   messageElement.setAttribute("id", "loading-message");
 
   loadingElement.style.width = "fit-content";
@@ -3959,19 +3952,17 @@ function disableOrEnableButtons(id, is_disable = true) {
 
 function addStickerToMessage(sticker, msg, color = "#3b82f6") {
   const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-  <div style="font-size : 12px; font-weight: bold; color: ${
-    sticker === "Begin Session" ? "white" : "black"
-  }; padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 1px solid lightgray; background-color : ${
-    sticker === "Begin Session" ? "#21C55D" : "transparent"
-  }">${sticker}</div>
+  <div style="font-size : 12px; font-weight: bold; color: ${sticker === "Begin Session" ? "white" : "black"
+    }; padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 1px solid lightgray; background-color : ${sticker === "Begin Session" ? "#21C55D" : "transparent"
+    }">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
   </div>`;
   return divWithLabel;
 }
 
-function appendMessage2(message2, isMarkdown=false) {
+function appendMessage2(message2, isMarkdown = false) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const messageNode = createMessageNode2(message2,isMarkdown);
+  const messageNode = createMessageNode2(message2, isMarkdown);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
@@ -3981,8 +3972,7 @@ function snippetDivSTT(url) {
     return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
-      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${
-        window.innerWidth < 768 ? "100%" : "45vw"
+      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
       }; scrollbar-width: none;"
       src=${url}
       frameborder="0"
@@ -3997,8 +3987,7 @@ function snippetDivSTT(url) {
     return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
-      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${
-        window.innerWidth < 768 ? "100%" : "45vw"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
       }; scrollbar-width: none;"
       src=${url}
       frameborder="0"
@@ -4187,7 +4176,7 @@ const resetAllVariablesStt = async () => {
   isTranscriptOnlyStt = false;
   allowRecommendationTestCode = false;
   recommendationClicked = false;
-  responderDisplayNameStt=null;
+  responderDisplayNameStt = null;
 
   console.log("resetting variables completed");
 };
@@ -4405,17 +4394,17 @@ const handleGameTypeConversation = async () => {
     let next_question_text = responseData.question_text || null;
 
     // Check if it is the last question using specific conditions
-    const is_last_question = responseData.is_last_question !== undefined 
-        ? responseData.is_last_question 
-        : (next_question_text === null || /end of quiz|achieved a score of/i.test(next_question_text));
-   
+    const is_last_question = responseData.is_last_question !== undefined
+      ? responseData.is_last_question
+      : (next_question_text === null || /end of quiz|achieved a score of/i.test(next_question_text));
 
-        console.log(
+
+    console.log(
       is_last_question,
       next_question_text
     )
 
-    if (is_last_question){
+    if (is_last_question) {
       next_question_text = JSON.parse(next_question_text)
       next_question_text = `<div>
       <b>${next_question_text.end_message}</b>
@@ -4426,11 +4415,11 @@ const handleGameTypeConversation = async () => {
     </div>`
     }
 
-    return { is_last_question, next_question_text}
-    
+    return { is_last_question, next_question_text }
+
   } catch (error) {
     console.error("Error handling game type conversation:", error.message);
-    
+
     return {
       error: `${error}`
     }
@@ -4453,7 +4442,7 @@ const handleGameQuestion = async (
   chatInputBox.contentEditable = false
   chatInputBox.placeholder = "Please wait for the next question..."
   //@disable the input
-  
+
 
   // const inputText = questionText;
   // const headingRegex = /^##\s+(.*)$/m;
@@ -4490,15 +4479,15 @@ const handleGameQuestion = async (
 
   questionText = JSON.parse(questionText)
   console.log(questionText)
-  
+
   const heading = questionText?.context
-  ? Object.entries(questionText?.context).map(([key, value]) => `${value}`)
-  .join('\n')
-  : "";
+    ? Object.entries(questionText?.context).map(([key, value]) => `${value}`)
+      .join('\n')
+    : "";
 
 
   const details = questionText?.details
-  ? Object.entries(questionText.details)
+    ? Object.entries(questionText.details)
       .map(([key, value]) => {
         // If the value is an object, recursively convert its properties to a readable string
         if (typeof value === 'object') {
@@ -4509,11 +4498,11 @@ const handleGameQuestion = async (
         return `<p><b>${key.charAt(0).toUpperCase() + key.slice(1)}:</b> ${value}</p>`;
       })
       .join("\n")
-  : "";
+    : "";
 
 
   const contentString = questionText?.content
-  ? Object.entries(questionText.content)
+    ? Object.entries(questionText.content)
       .map(([key, value]) => {
         let result = "";
         console.log(key, value);
@@ -4522,8 +4511,8 @@ const handleGameQuestion = async (
           const instructionHTML = value
             ? `<b>${value}:</b><br>`
             : isSingleSelect
-            ? "<b>Please choose option A, B, C, or D:</b><br>"
-            : "<b>Select one or more options from A, B, C, or D:</b><br>";
+              ? "<b>Please choose option A, B, C, or D:</b><br>"
+              : "<b>Select one or more options from A, B, C, or D:</b><br>";
           result += instructionHTML;
         } else if (key === "options") {
           const optionsHTML = Object.entries(value || {})
@@ -4538,11 +4527,11 @@ const handleGameQuestion = async (
         } else {
           result += `<b>${key.charAt(0).toUpperCase() + key.slice(1)}</b>: ${value}<br>`;
         }
-        console.log('result: ',result)
+        console.log('result: ', result)
         return result;
       })
       .join("") // Join the mapped array into a single string
-  : "";
+    : "";
 
 
 
@@ -4564,10 +4553,10 @@ const handleGameQuestion = async (
       ? Object.entries(questionText.options).map(([option, description]) => ({ option, description }))
       : null,
     feedback: questionText?.feedback ?? null,
-    instruction: questionText?.instruction ?? null 
+    instruction: questionText?.instruction ?? null
   };
-  
-  
+
+
   // Output the extracted data
   console.log(extractedData);
 
@@ -4787,7 +4776,7 @@ const handleProceedClickStt = async (choice) => {
                 element.split("edit?")[0] +
                 "embed?start=true&loop=true&delayms=3000";
               console.log(url);
-          console.log('Ahere10')
+              console.log('Ahere10')
 
               appendMessage2(`<iframe src=${url}
                                 frameborder="0" 
@@ -4798,13 +4787,12 @@ const handleProceedClickStt = async (choice) => {
                                 ></iframe>`);
             } else {
               console.log(element);
-          console.log('Ahere8')
+              console.log('Ahere8')
 
-              appendMessage2(`<div ><audio style="${
-                window.innerWidth < 600
+              appendMessage2(`<div ><audio style="${window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
-              }" controls autoplay>
+                }" controls autoplay>
                 <source src=${element} type="audio/mpeg" />
                 Your browser does not support the audio element.
                 </audio></div>`);
@@ -4816,7 +4804,7 @@ const handleProceedClickStt = async (choice) => {
               questionMediaLinkStt.split("edit?")[0] +
               "embed?start=true&loop=true&delayms=3000";
             console.log(url);
-          console.log('Ahere7')
+            console.log('Ahere7')
 
             appendMessage2(`<iframe src=${url}
                               frameborder="0" 
@@ -4827,7 +4815,7 @@ const handleProceedClickStt = async (choice) => {
                               ></iframe>`);
           } else if (questionMediaLinkStt.includes("guidejar.com")) {
             const guidejarId = questionMediaLinkStt.split("/").pop();
-          console.log('Ahere6')
+            console.log('Ahere6')
 
             appendMessage2(`
               <div style="width:640px">
@@ -4876,10 +4864,9 @@ const handleProceedClickStt = async (choice) => {
             const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             initialQuestionTextStt =
               queDiv +
-              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
-                window.innerWidth < 600
-                  ? "width: 200px; max-width: 200px !important;"
-                  : " min-width: 50vw !important;"
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
               }" autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
@@ -4934,7 +4921,7 @@ const handleProceedClickStt = async (choice) => {
         let responderName;
 
         if (testType2 === "dynamic_discussion_thread") {
-          if (!['game'].includes(senarioCase2)){
+          if (!['game'].includes(senarioCase2)) {
 
             if (initialQuestionTextStt.includes(":")) {
               initialQuestionTextStt = initialQuestionTextStt.replace(
@@ -4981,10 +4968,9 @@ const handleProceedClickStt = async (choice) => {
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
-            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
-              window.innerWidth < 600
-                ? "width: 200px; max-width: 200px !important;"
-                : " min-width: 50vw !important;"
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600
+              ? "width: 200px; max-width: 200px !important;"
+              : " min-width: 50vw !important;"
             }" autoplay>
             <source src=${objectUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
@@ -5020,19 +5006,19 @@ const handleProceedClickStt = async (choice) => {
         if (responderName) {
           initialQuestionTextStt = responderName + initialQuestionTextStt;
         }
-        console.log('here1',initialQuestionTextStt)
+        console.log('here1', initialQuestionTextStt)
         const randomIdForAudioElement = generateRandomAlphanumeric(10);
-      
-        if (['game'].includes(senarioCase2) ){
-          if (IsSingleSelectSTT !== null){
 
-            if(IsSingleSelectSTT){
+        if (['game'].includes(senarioCase2)) {
+          if (IsSingleSelectSTT !== null) {
+
+            if (IsSingleSelectSTT) {
               console.log("HERE 2")
               // add logic to add single box
               // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
               // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
               handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
-            } else{
+            } else {
               // add logic to add multiselect
               handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
             }
@@ -5040,8 +5026,8 @@ const handleProceedClickStt = async (choice) => {
             appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
 
           }
-          
-        } else{
+
+        } else {
           appendMessage2(initialQuestionTextStt)
         }
       } else if (testType2 === "orchestrated_conversation") {
@@ -5066,23 +5052,23 @@ const handleProceedClickStt = async (choice) => {
             let queText = entry[1];
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`;
-        
+
             const response = await fetch(url, {
               method: "GET",
               headers: {
                 Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
               },
             });
-        
+
             const blob = await response.blob();
             console.log("response", blob);
-        
+
             const objectUrl = URL.createObjectURL(blob);
             const shadowRoot = document.getElementById("chat-element2").shadowRoot;
-        
+
             const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             console.log(objectUrl, "url");
-        
+
             let audioCont = queDiv + `
               <div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;">
                 <audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : "min-width: 50vw !important;"}">
@@ -5092,49 +5078,49 @@ const handleProceedClickStt = async (choice) => {
                 <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
               </div>
             `;
-        
+
             if (responderName) {
               audioCont = responderName + audioCont;
             }
-        
+
             return {
               audioCont,
               randomIdForAudioElement
             };
           });
-        
+
           console.log(audioPromises, "audioPromises");
-        
+
           const audioContents = await Promise.all(audioPromises);
           console.log('Ahere1');
 
 
           audioContents.forEach((audioCont) => {
-            console.log('audiocont ahere1',audioCont);
+            console.log('audiocont ahere1', audioCont);
             appendMessage2(audioCont.audioCont);
           });
-        
+
           // Function to play audios one by one
           async function playAudioSequentially(index = 0) {
             if (index >= audioContents.length) return;
-        
+
             const { audioCont, randomIdForAudioElement } = audioContents[index];
-        
+
             const shadowRoot = document.getElementById("chat-element2").shadowRoot;
             const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`);
             const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`);
             const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`);
             const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`);
-        
+
             audioCanvasUiForQuestions(audioElement, canvasElement);
-        
+
             // Ensure the audio starts playing immediately
             audioElement.play().then(() => {
               console.log('Audio playing:', audioElement);
             }).catch(error => {
               console.error('Error playing audio:', error);
             });
-        
+
             // Wait for the audio to finish before moving to the next
             await new Promise(resolve => {
               audioElement.addEventListener("ended", () => {
@@ -5144,15 +5130,15 @@ const handleProceedClickStt = async (choice) => {
                 resolve();
               });
             });
-        
+
             // After the current audio ends, play the next one
             playAudioSequentially(index + 1);
           }
-        
+
           // Start playing the first audio
           playAudioSequentially(0);
-        }        
-         else {
+        }
+        else {
           console.log('Ahere2')
 
           separatedText.forEach((entry) => {
@@ -5203,11 +5189,10 @@ const handleProceedClickStt = async (choice) => {
         const objectUrl = URL.createObjectURL(blob);
 
         console.log(objectUrl, "url");
-        const ttsNarration = `<div ><audio style="${
-          window.innerWidth < 600
+        const ttsNarration = `<div ><audio style="${window.innerWidth < 600
             ? "width: 200px; max-width: 200px !important;"
             : " min-width: 50vw !important;"
-        }"" controls autoplay>
+          }"" controls autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
           </audio></div>`;
@@ -5217,9 +5202,8 @@ const handleProceedClickStt = async (choice) => {
         console.log('Ahere3')
 
         appendMessage2(`▪  ${ttsNarration}<br><br>
-                          ▪ <img src=${imageUrlStt} ${
-          window.innerWidth < 768 ? "width='200'" : "width='400'"
-        } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          ▪ <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'"
+          } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                           ▪ Question : <br> ${initialQuestionTextStt}`);
         setHoverPointsStt(
           coordsStt,
@@ -5248,13 +5232,13 @@ const handleProceedClickStt = async (choice) => {
   } else {
     resetAllVariablesStt();
 
-     //@disable the input
-     const tChatElementRef = document.getElementById("chat-element2")
-     const tShadowRoot = tChatElementRef.shadowRoot;
-   
-     const chatInputBox = tShadowRoot.getElementById("text-input")
-     chatInputBox.classList.remove("text-input-disabled")
-     chatInputBox.contentEditable = true
+    //@disable the input
+    const tChatElementRef = document.getElementById("chat-element2")
+    const tShadowRoot = tChatElementRef.shadowRoot;
+
+    const chatInputBox = tShadowRoot.getElementById("text-input")
+    chatInputBox.classList.remove("text-input-disabled")
+    chatInputBox.contentEditable = true
 
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -5320,7 +5304,7 @@ async function setMcqVariablesStt() {
         situation:
           mcqQustionIndexStt == 1
             ? globalQuestionDataStt.results[0].questions[mcqQustionIndexStt - 1]
-                .question
+              .question
             : questionText2,
         option_a: optionsNameStt[0].defaultValue,
         option_b: optionsNameStt[0].defaultValue,
@@ -5444,10 +5428,9 @@ async function setMcqVariablesStt() {
                 questionText2 =
                   questionText2 +
                   "\n" +
-                  `<div ><audio style="${
-                    window.innerWidth < 600
-                      ? "width: 200px; max-width: 200px !important;"
-                      : " min-width: 50vw !important;"
+                  `<div ><audio style="${window.innerWidth < 600
+                    ? "width: 200px; max-width: 200px !important;"
+                    : " min-width: 50vw !important;"
                   }" controls autoplay>
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
@@ -5481,11 +5464,10 @@ async function setMcqVariablesStt() {
                 const objectUrl = URL.createObjectURL(blob);
 
                 console.log(objectUrl, "url");
-                questionText2 = `<div ><audio style="${
-                  window.innerWidth < 600
+                questionText2 = `<div ><audio style="${window.innerWidth < 600
                     ? "width: 200px; max-width: 200px !important;"
                     : " min-width: 50vw !important;"
-                }" controls autoplay>
+                  }" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`;
@@ -5523,11 +5505,10 @@ async function setMcqVariablesStt() {
         const objectUrl = URL.createObjectURL(blob);
 
         console.log(objectUrl, "url");
-        questionText2 = `<div ><audio style="${
-          window.innerWidth < 600
+        questionText2 = `<div ><audio style="${window.innerWidth < 600
             ? "width: 200px; max-width: 200px !important;"
             : " min-width: 50vw !important;"
-        }" controls autoplay>
+          }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
         </audio></div>`;
@@ -5707,7 +5688,7 @@ async function setMcqVariablesStt() {
       //@disable the input
       const tChatElementRef = document.getElementById("chat-element2")
       const tShadowRoot = tChatElementRef.shadowRoot;
-    
+
       const chatInputBox = tShadowRoot.getElementById("text-input")
       chatInputBox.classList.remove("text-input-disabled")
       chatInputBox.contentEditable = true
@@ -5757,22 +5738,22 @@ async function setMcqVariablesStt() {
 
           //* send message to start new session
           userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-          console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-          if (['psychometric', 'game'].includes(senarioCase2) 
-            || !clientuserInformationSTT.show_recommendations 
-            || userScenarioRecommendationStt.total_recommendation >= 2){
+          console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
+          if (['psychometric', 'game'].includes(senarioCase2)
+            || !clientuserInformationSTT.show_recommendations
+            || userScenarioRecommendationStt.total_recommendation >= 2) {
             appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
           } else {
-    
-              appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
+
+            appendMessage2(`<b>Our skills discovery engine has suggested a new simulation based on observed gaps. Do you want to explore it now? </b><br/><br/>
                   <div class="deep-chat-temporary-message" id='related-recommendation2'>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
             `)
-          startScenarioRecommendationsStt = true
-          PreviousSessionInfoSTT['sessionId'] =  sessionId2
-          PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
-        }
+            startScenarioRecommendationsStt = true
+            PreviousSessionInfoSTT['sessionId'] = sessionId2
+            PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
+          }
           submitEmailAndName2();
         }
       });
@@ -5793,7 +5774,7 @@ async function setMcqVariablesStt() {
 
 let queryParams2;
 
-async function proceedFormFlowStt(msg, isWorkingEmail=false) {
+async function proceedFormFlowStt(msg, isWorkingEmail = false) {
   if (formFieldsstt.length === 0) {
     return [true, "None"];
   }
@@ -5801,12 +5782,12 @@ async function proceedFormFlowStt(msg, isWorkingEmail=false) {
   isEmailFormstt = true;
   const fieldName = formFieldsstt[0];
   if (fieldName === "email") {
-    if (!isEmailSTT(msg)){
+    if (!isEmailSTT(msg)) {
       return [
         false,
         `<p style='font-size: 14px;color: #991b1b;'>Please enter valid <b>${fieldName}!</b></p>`,
       ];
-    } else if(isWorkingEmail && !isBusinessEmailStt(msg)){
+    } else if (isWorkingEmail && !isBusinessEmailStt(msg)) {
       return [
         false,
         `<p style='font-size: 14px;color: #991b1b;'>Please use your organization email only!</b></p>`,
@@ -6144,42 +6125,42 @@ function generateOptionButtons2() {
 
 async function getTestRecommendationsStt(origin_test_id, test_case, session_id, user_id) {
   const params = new URLSearchParams({
-      origin_test_id: origin_test_id || "",
-      test_case: test_case || "",
-      session_id: session_id || "",
-      user_id: user_id || ""
+    origin_test_id: origin_test_id || "",
+    test_case: test_case || "",
+    session_id: session_id || "",
+    user_id: user_id || ""
   });
 
   const url = `${baseURL2}/tests/test-recommendations/?${params.toString()}`;
 
   try {
-      const response = await fetch(url, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
-          }
-      });
-
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status}, ${response}`);
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
       }
+    });
 
-      const data = await response.json();
-      console.log("Test Recommendations:", data);
-      return data;
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}, ${response}`);
+    }
+
+    const data = await response.json();
+    console.log("Test Recommendations:", data);
+    return data;
   } catch (error) {
-      console.error("Failed to fetch test recommendations:", error);
-      throw new Error(`Error: ${error}`);
+    console.error("Failed to fetch test recommendations:", error);
+    throw new Error(`Error: ${error}`);
 
   }
 }
 
-async function testRecommendationExceededStt(origin_test_id, test_case, session_id, user_id){
+async function testRecommendationExceededStt(origin_test_id, test_case, session_id, user_id) {
   const data = await getTestRecommendationsStt(origin_test_id, test_case, session_id, user_id)
   if (data.total_recommendation > 2) {
     return true
-  } else{
+  } else {
     return false
   }
 }
@@ -6188,31 +6169,31 @@ async function createTestRecommendationStt(recommended_test_id, session_id, test
   const url = `${baseURL2}/tests/test-recommendations/`;
 
   const payload = {
-      recommended_test_id: recommended_test_id,
-      session_id: session_id,
-      test_case: test_case
+    recommended_test_id: recommended_test_id,
+    session_id: session_id,
+    test_case: test_case
   };
 
   try {
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
-          },
-          body: JSON.stringify(payload)
-      });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${createBasicAuthToken2(key2, secret2)}`
+      },
+      body: JSON.stringify(payload)
+    });
 
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
 
-      const data = await response.json();
-      console.log("Test Recommendation Created:", data);
-      return data;
+    const data = await response.json();
+    console.log("Test Recommendation Created:", data);
+    return data;
   } catch (error) {
-      console.error("Failed to create test recommendation:", error);
-      throw new Error(`Error: ${error}`);
+    console.error("Failed to create test recommendation:", error);
+    throw new Error(`Error: ${error}`);
 
   }
 }
@@ -6221,59 +6202,59 @@ async function createTestRecommendationStt(recommended_test_id, session_id, test
 async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro }) {
   const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
   const params = {
-      mode: "A",
-      information: JSON.stringify({
-          data: {
-              information: `Targeted Skills: ${skills}`,
-          },
-          title: "",
-      }),
-      access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-      creator_user_id: userId,
-      flavour: flavour,
-      is_micro: isMicro,
-      previous_session_id: sessionId,
+    mode: "A",
+    information: JSON.stringify({
+      data: {
+        information: `Targeted Skills: ${skills}`,
+      },
+      title: "",
+    }),
+    access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+    creator_user_id: userId,
+    flavour: flavour,
+    is_micro: isMicro,
+    previous_session_id: sessionId,
   };
 
   try {
-      const response = await fetch(url, {
-          method: "POST",
-          headers: {
-              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify(params),
-      });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
 
-      const data = await response.json();
-      console.log("Created Test Result:", data);
+    const data = await response.json();
+    console.log("Created Test Result:", data);
 
-      if (data[0]?.message || data[0]?.error) {
-          console.error("Error generating the scenarios.");
-          throw new Error("Failed to generate scenario");
-      }
-
-      return data[0]; // Ensure we return the resolved data
-  } catch (err) {
-      console.error("Fetch Error:", err);
+    if (data[0]?.message || data[0]?.error) {
+      console.error("Error generating the scenarios.");
       throw new Error("Failed to generate scenario");
+    }
+
+    return data[0]; // Ensure we return the resolved data
+  } catch (err) {
+    console.error("Fetch Error:", err);
+    throw new Error("Failed to generate scenario");
   }
 }
 
 
 function copyClipboard(block_id_to_copy) {
-    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-    const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
-    
-    if (testCodeBlock) {
-        navigator.clipboard.writeText(testCodeBlock.innerText)
-            .then(() => {
-                console.log("Text copied successfully!");
-            })
-            .catch(err => console.error("Failed to copy text:", err));
-    } else {
-        console.error("Element not found:", block_id_to_copy);
-    }
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const testCodeBlock = gShadowRoot2.getElementById(block_id_to_copy);
+
+  if (testCodeBlock) {
+    navigator.clipboard.writeText(testCodeBlock.innerText)
+      .then(() => {
+        console.log("Text copied successfully!");
+      })
+      .catch(err => console.error("Failed to copy text:", err));
+  } else {
+    console.error("Element not found:", block_id_to_copy);
+  }
 }
 
 const handleAttemptScenaiosSTT = async (title, test_code) => {
@@ -6400,11 +6381,11 @@ async function handleScenarioRegeneration(signals) {
     url: currentURL,
     access_token: `Basic ${createBasicAuthToken2(key2, secret2)}`,
     regeneration: true,
-    is_micro: `${snnipetConfigSTT.isMicro === 'true'? true : false}`
-  };  
-  
+    is_micro: `${snnipetConfigSTT.isMicro === 'true' ? true : false}`
+  };
+
   console.log("is_micro", snnipetConfigSTT.isMicro, data_params);
-  
+
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
     method: "POST",
@@ -6529,18 +6510,14 @@ async function handleScenarioRegeneration(signals) {
       let divCont = "";
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${
-          i === 1 && "margin-top : 10px"
-        }">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${
-          element.test_type === "test" ? "Simulation" : "Roleplay"
-        }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${
-          element.title
-        }</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${
-          element.description
-        }</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"
+          }">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === "test" ? "Simulation" : "Roleplay"
+          }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title
+          }</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description
+          }</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -6674,7 +6651,7 @@ async function handleOptionButtonClick2(
     is_micro: `${snnipetConfigSTT.isMicro === "true" ? true : false}`,
     flavour: snnipetConfigSTT.flavour
   };
-  
+
 
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
@@ -6780,18 +6757,14 @@ async function handleOptionButtonClick2(
       let divCont = "";
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${
-          i === 1 && "margin-top : 10px"
-        }">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${
-          element.test_type === "test" ? "Simulation" : "Roleplay"
-        }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${
-          element.title
-        }</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${
-          element.description
-        }</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"
+          }">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === "test" ? "Simulation" : "Roleplay"
+          }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title
+          }</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description
+          }</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
             style="
@@ -6889,8 +6862,8 @@ const snippetOrigin = () => {
   }
 };
 
-const getDefaultInstractionsStt = (type='system', condition ="normal") => {
-  if (type === 'system'){
+const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
+  if (type === 'system') {
     if (condition === "normal") {
       return `
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
@@ -6900,7 +6873,7 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>6. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
             `
-    }else if (condition === "bot") {
+    } else if (condition === "bot") {
       return `
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
               <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
@@ -6908,7 +6881,7 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
               <li><strong>4. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
             `
-    } else if (condition === "simulations") {                                             
+    } else if (condition === "simulations") {
       return `
               <li><strong>1. Psychometric Assessments and Simulations:</strong> These may take several forms depending on the subject and context. The short version contains 3 questions, and the standard version may have 8 or more. At the end of any session, a detailed feedback report will be generated. The premium version will contain speech & voice analytics.</li>
               <li><strong>2. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
@@ -6925,7 +6898,7 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
               </ul>
       </div>`
     }
-  } else if (type === 'bot'){
+  } else if (type === 'bot') {
     return `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
         <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
@@ -6966,7 +6939,7 @@ const getDefaultInstractionsStt = (type='system', condition ="normal") => {
           <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
         </ol>
       </div>`
- 
+
   }
 }
 
@@ -7004,8 +6977,8 @@ loadExternalModule().then(() => {
       "
     ></div>
     
-    <div style="position: fixed; right: 1rem; bottom: 8.5rem; z-index: 1000; color: #333; font-size: 1rem; font-weight: bold; display: ${snippetOrigin() === 'external' ? "block": "none"}">
-      ${snnipetConfigSTT.botId ?'Coaching Agent': 'Simulation Agent' }
+    <div style="position: fixed; right: 1rem; bottom: 8.5rem; z-index: 1000; color: #333; font-size: 1rem; font-weight: bold; display: ${snippetOrigin() === 'external' ? "block" : "none"}">
+      ${snnipetConfigSTT.botId ? 'Coaching Agent' : 'Simulation Agent'}
     </div>
 
     <button
@@ -7014,8 +6987,8 @@ loadExternalModule().then(() => {
       class="chat-icon-container2"
       id="chat-icon2"
       style="
-        height: ${snippetOrigin() === 'external'?"6rem": "4.5rem"};
-        width: ${snippetOrigin() === 'external'?"6rem": "4.5rem"};
+        height: ${snippetOrigin() === 'external' ? "6rem" : "4.5rem"};
+        width: ${snippetOrigin() === 'external' ? "6rem" : "4.5rem"};
         background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
         border-radius: 40%;
@@ -7105,13 +7078,11 @@ loadExternalModule().then(() => {
     </h1>
     </div>
     <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
-    <p id="header-text" style="font-size: ${
-      window.innerWidth < 768 ? "10px" : "12px"
-    }; text-align:center;"> ${
-    window.location.href.includes("knowledge-bot")
+    <p id="header-text" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
+    }; text-align:center;"> ${window.location.href.includes("knowledge-bot")
       ? "Simple AI Knowledge Agent. Check 'Instructions' for more"
       : "Accessibility features may not work inside the bot."
-  } </p>
+    } </p>
     <p id="warning-banner-stt">
     </p>
   </div>
@@ -7133,14 +7104,13 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${
-        snippetOrigin() === "internal" ? "68vh" : "64vh"
-      }; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "64vh"
+    }; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": ${JSON.stringify(
-            messageBubbleMaxWidth
-          )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+      messageBubbleMaxWidth
+    )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
@@ -7154,8 +7124,8 @@ loadExternalModule().then(() => {
       textInput='{
         "styles": {
           "text": {"color": "black", "fontSize" : ${JSON.stringify(
-            chatInputFontSize
-          )}},
+      chatInputFontSize
+    )}},
           "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
           "focus": {"border": "1px solid #9ca3af"}
         },
@@ -7198,8 +7168,8 @@ loadExternalModule().then(() => {
                 }
               },
                 "content" : ${JSON.stringify(
-                  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
-                )}
+      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
+    )}
           }
           },
           "active": {
@@ -7216,8 +7186,8 @@ loadExternalModule().then(() => {
                 }
               },
                "content" : ${JSON.stringify(
-                 '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
-               )}
+      '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
+    )}
           }
         }
       }}'
@@ -7258,19 +7228,16 @@ loadExternalModule().then(() => {
         display: none;
       ">
     </div>
-    <p id="bot-footer" style="font-size: ${
-      window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${
-    snippetOrigin() == "internal" ? "100%" : "80%"
-  }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>
+    <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
+    }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"
+    }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Instructions
         </button>
       </span> 
-      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${
-        window.innerWidth < 768 ? "5px" : "25px"
-      }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
+      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px"
+    }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
           <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
           <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
@@ -7372,7 +7339,7 @@ loadExternalModule().then(() => {
   //   const list = getDefaultInstractionsStt("system", 'simulations')
   //   instructionsPaneList.innerHTML = list;  
   // } else {
-  if (botId){
+  if (botId) {
     const list = getDefaultInstractionsStt("bot")
     console.log('botinstruction: ', list)
     instructionsPane.innerHTML = list;
@@ -7380,7 +7347,7 @@ loadExternalModule().then(() => {
     footerText.innerHTML = `Available only on Google Chrome 🌐. Follow the instructions for optimum performance.`
   } else {
     const list = getDefaultInstractionsStt("system", 'simulations')
-    instructionsPaneList.innerHTML = list; 
+    instructionsPaneList.innerHTML = list;
   }
   // }
 
@@ -7675,7 +7642,7 @@ loadExternalModule().then(() => {
         },
       },
     },
-  };  
+  };
   displayBrowserWarning();
 
   function excludeSpecialCharacters(inputString) {
@@ -7804,7 +7771,7 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getIsRepeatStatus2 = async (participantId,testCode) => {
+  const getIsRepeatStatus2 = async (participantId, testCode) => {
     const url = `${baseURL2}/accounts/get_is_repeat_status/?participant_id=${participantId}&test_code=${testCode}`;
 
     try {
@@ -7894,9 +7861,9 @@ loadExternalModule().then(() => {
         console.log("Response Data:", data);
         console.log("Successfully updated client details.");
         const clientData = await getClientInformationStt(
-            "user_info",
-            emails
-          );
+          "user_info",
+          emails
+        );
         clientuserInformationSTT = clientData[0];
       } else {
         const errorData = await response.json();
@@ -7951,7 +7918,7 @@ loadExternalModule().then(() => {
       user_id: userId,
       client_name: clientId
     };
-  
+
     try {
       const response = await fetch(`${baseURL2}/accounts/validate-snippet-access-code/`, {
         method: 'POST',
@@ -7964,21 +7931,21 @@ loadExternalModule().then(() => {
       console.log(response.ok)
       if (response.ok) {
         const data = await response.json();
-        console.log('success',data)
-        return {isvalidAccessCode:true, error_msg: null}
+        console.log('success', data)
+        return { isvalidAccessCode: true, error_msg: null }
       } else {
         const data = await response.json();
-        console.log('error',data)
-        if (data.error.includes('expired')){
-          return {isvalidAccessCode:false, error_msg:'Your access code has expired. Please contact your admin or our helpdesk.'}
+        console.log('error', data)
+        if (data.error.includes('expired')) {
+          return { isvalidAccessCode: false, error_msg: 'Your access code has expired. Please contact your admin or our helpdesk.' }
         }
-        return {isvalidAccessCode:false, error_msg: null}
+        return { isvalidAccessCode: false, error_msg: null }
       }
     } catch (error) {
       console.error('Error during API call:', error);
     }
     console.log('failed')
-    return {isvalidAccessCode:false, error_msg: null}
+    return { isvalidAccessCode: false, error_msg: null }
   };
 
   const SessionCheckStt = async (session_id) => {
@@ -8022,10 +7989,9 @@ loadExternalModule().then(() => {
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
-        window.innerWidth < 600
-          ? "width: 200px; max-width: 200px !important;"
-          : " min-width: 50vw !important;"
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${window.innerWidth < 600
+        ? "width: 200px; max-width: 200px !important;"
+        : " min-width: 50vw !important;"
       }" autoplay>
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
@@ -8766,7 +8732,7 @@ loadExternalModule().then(() => {
 
           if (streamWithAudio) {
             const encodedText = encodeURIComponent(text);
-            
+
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
             const response = await fetch(url, {
               method: "GET",
@@ -8774,19 +8740,19 @@ loadExternalModule().then(() => {
                 Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
               },
             });
-        
+
             const blob = await response.blob();
             console.log("respnse", blob);
-        
+
             const objectUrl = URL.createObjectURL(blob);
-        
+
             console.log(objectUrl, "url");
-        
+
             audioDiv = document.createElement("div");
             audioDiv.id = `audioDiv-${randomIdForAudioElement}`;
             audioDiv.style.cssText =
               "border: 1px solid lightgray; border-radius: 4px; width: 100%; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;";
-        
+
             const audioPlayer = document.createElement("audio");
             audioPlayer.id = `audio-player-${randomIdForAudioElement}`;
             audioPlayer.autoplay = true;
@@ -8794,27 +8760,27 @@ loadExternalModule().then(() => {
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : "min-width: 50vw !important;";
-        
+
             const audioSource = document.createElement("source");
             audioSource.src = objectUrl;
-        
+
             const fallbackMessage = document.createTextNode(
               "Your browser does not support the audio element."
             );
-        
+
             audioPlayer.appendChild(audioSource);
             audioPlayer.appendChild(fallbackMessage);
-        
+
             const audioCanvas = document.createElement("canvas");
             audioCanvas.id = `canvas-audio-${randomIdForAudioElement}`;
             audioCanvas.width = 800;
             audioCanvas.height = 40;
-        
+
             audioDiv.appendChild(audioPlayer);
             audioDiv.appendChild(audioCanvas);
-        
+
             messageBubble.appendChild(audioDiv);
-        
+
             setTimeout(() => {
               const audioElement = shadowRoot.getElementById(
                 `audio-player-${randomIdForAudioElement}`
@@ -8825,28 +8791,28 @@ loadExternalModule().then(() => {
               const audioDiv = shadowRoot.getElementById(
                 `audioDiv-${randomIdForAudioElement}`
               );
-             
+
               console.log(audioElement, canvasElement);
               audioCanvasUiForQuestions(audioElement, canvasElement);
-        
+
               audioElement.addEventListener("ended", () => {
                 canvasElement.remove();
                 audioDiv.remove();
                 signals.onResponse({
                   html: "",
                 });
-               setTimeout(() => {
-                allMessages.forEach((indvMessage) => {
-                  if (
-                    indvMessage.innerText === "." ||
-                    indvMessage.innerText === "..." ||
-                    indvMessage.innerText === " " ||
-                    indvMessage.innerText === ""
-                  ) {
-                    indvMessage.remove();
-                  }
-                });
-               }, 20);
+                setTimeout(() => {
+                  allMessages.forEach((indvMessage) => {
+                    if (
+                      indvMessage.innerText === "." ||
+                      indvMessage.innerText === "..." ||
+                      indvMessage.innerText === " " ||
+                      indvMessage.innerText === ""
+                    ) {
+                      indvMessage.remove();
+                    }
+                  });
+                }, 20);
               });
             }, 100);
           }
@@ -9037,7 +9003,7 @@ loadExternalModule().then(() => {
             indvMessage.innerText === " " ||
             indvMessage.innerText === "" ||
             indvMessage.innerHTML ==
-              `<div class="message-bubble ai-message-text" style="max-width: 60%; margin-top: 4px; border-radius: 4px; background-color: rgb(243, 244, 246); color: rgb(55, 65, 81);"><p></p></div>`
+            `<div class="message-bubble ai-message-text" style="max-width: 60%; margin-top: 4px; border-radius: 4px; background-color: rgb(243, 244, 246); color: rgb(55, 65, 81);"><p></p></div>`
           ) {
             indvMessage.remove();
           }
@@ -9331,16 +9297,16 @@ loadExternalModule().then(() => {
           // get latest message
           let latestMessage = body.messages[body.messages.length - 1].text;
 
-          if (startScenarioRecommendationsStt){
+          if (startScenarioRecommendationsStt) {
             var chatElement = document.getElementById("chat-element2");
             const shdwroot = chatElement.shadowRoot;
             const buttons = shdwroot.querySelectorAll("#related-recommendation2 button");
             buttons.forEach(button => {
-                button.disabled = true;
-                button.style.opacity = "0.5"; // Grey out
-                button.style.cursor = "not-allowed";
+              button.disabled = true;
+              button.style.opacity = "0.5"; // Grey out
+              button.style.cursor = "not-allowed";
             });
-            if (latestMessage === 'Yes'){
+            if (latestMessage === 'Yes') {
               LoadingMessageWithText("Fetching your AI curated simulation...");
               console.log('userScenarioRecommendation', userScenarioRecommendationStt)
               // const test_case = userScenarioRecommendationStt.results.length > 0 
@@ -9352,15 +9318,15 @@ loadExternalModule().then(() => {
               console.log('test_case', test_case);
 
               try {
-                const data = await generateTestScenarioStt({ 
-                    userId: userId2, 
-                    sessionId: PreviousSessionInfoSTT['sessionId'], 
-                    skills: PreviousSessionInfoSTT['skills'],
-                    flavour: test_case,
-                    isMicro: true
+                const data = await generateTestScenarioStt({
+                  userId: userId2,
+                  sessionId: PreviousSessionInfoSTT['sessionId'],
+                  skills: PreviousSessionInfoSTT['skills'],
+                  flavour: test_case,
+                  isMicro: true
                 });
                 console.log(data);
-        
+
                 const testCodeMessage = `
                   <div id='create-scenario-section'>
                           <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; "margin-top : 10px"">
@@ -9369,31 +9335,31 @@ loadExternalModule().then(() => {
                           </div>
                   </div>
                   `;
-        
-              signals.onResponse({
-                    html: testCodeMessage,
-              });
-              handleAttemptScenaiosSTT(data.title,data.test_code)
+
+                signals.onResponse({
+                  html: testCodeMessage,
+                });
+                handleAttemptScenaiosSTT(data.title, data.test_code)
 
                 createTestRecommendationStt(
                   data.test_id,
                   PreviousSessionInfoSTT['sessionId'],
                   test_case
                 )
-        
-            } catch (error) {
+
+              } catch (error) {
                 console.log(error);
-            }
-        
-            console.log('hi..........');
+              }
+
+              console.log('hi..........');
             } else {
               signals.onResponse(
                 {
                   html: "Thank you! If you wish to try another interaction code you can try now."
-                }        
+                }
               )
             }
-            startScenarioRecommendationsStt= false;
+            startScenarioRecommendationsStt = false;
             return;
           }
 
@@ -9420,16 +9386,16 @@ loadExternalModule().then(() => {
               userId2,
               sttWidgetClientId
             );
-          
+
             result = result || { isvalidAccessCode: null, error_msg: null };
-          
+
             const { isvalidAccessCode, error_msg } = result;
             console.log(
               'isvalidaccesscode', isvalidAccessCode,
               'error_msg', error_msg
             );
 
-            if (!isvalidAccessCode && error_msg){
+            if (!isvalidAccessCode && error_msg) {
               signals.onResponse({
                 html: `<b style='font-size: 14px;color: #991b1b;'>${error_msg}</b>`,
 
@@ -9574,15 +9540,14 @@ loadExternalModule().then(() => {
 
                   signals.onResponse({
                     // html: "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
-                    html: `${
-                      botInitialQuestions[`${deepDiveInitialQueIndex}`]
-                    }`,
+                    html: `${botInitialQuestions[`${deepDiveInitialQueIndex}`]
+                      }`,
                   });
                   return;
                 } else {
                   signals.onResponse({ html: faqHtmlData });
                 }
-              } else if (botId != undefined ) {
+              } else if (botId != undefined) {
                 console.log(
                   "before thumbs up ==>",
                   FeedbackUserEmail,
@@ -9605,12 +9570,12 @@ loadExternalModule().then(() => {
                   emailNameformJsonstt["name"],
                   emailNameformJsonstt["email"]
                 );
-                if (botType === "feedback_bot"){
+                if (botType === "feedback_bot") {
                   const thumbsupdiv = await feedbackBotInitialFlow("save_email");
                   signals.onResponse({
                     html: thumbsupdiv,
                   });
-                } else{
+                } else {
                   console.log(window.userIdFromWebApp, "window.userIdFromWebApp", userId2)
                   // if (
                   //   !isBotConversationPopulated &&
@@ -9636,15 +9601,15 @@ loadExternalModule().then(() => {
                     emailNameformJsonstt["name"],
                     emailNameformJsonstt["email"]
                   );
-                  if (!clientuserInformationSTT){
+                  if (!clientuserInformationSTT) {
                     clientuserInformationSTT = await getClientInformationStt(
-                        "only_client_data",
-                        null,
-                        sttWidgetClientId
-                      );
+                      "only_client_data",
+                      null,
+                      sttWidgetClientId
+                    );
                   }
                   console.log('after', clientuserInformationSTT)
-                  if (clientuserInformationSTT?.ask_access_code === true){
+                  if (clientuserInformationSTT?.ask_access_code === true) {
                     signals.onResponse({
                       html: "<p>Fantastic. Please enter your access code provided by your admin.</p>",
                     });
@@ -9685,10 +9650,10 @@ loadExternalModule().then(() => {
                 appendMessage2(message);
                 // //* send message to start new session
                 userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-                console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-                if (['psychometric', 'game'].includes(senarioCase2) 
-                  || !clientuserInformationSTT.show_recommendations 
-                  || userScenarioRecommendationStt.total_recommendation >= 2){
+                console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
+                if (['psychometric', 'game'].includes(senarioCase2)
+                  || !clientuserInformationSTT.show_recommendations
+                  || userScenarioRecommendationStt.total_recommendation >= 2) {
                   signals.onResponse({
                     html: "<b>Please enter another interaction code to start a new interaction.</b>",
                   });
@@ -9701,7 +9666,7 @@ loadExternalModule().then(() => {
                     `
                   })
                   startScenarioRecommendationsStt = true
-                  PreviousSessionInfoSTT['sessionId'] =  sessionId2
+                  PreviousSessionInfoSTT['sessionId'] = sessionId2
                   PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
                 }
                 submitEmailAndName2();
@@ -10296,47 +10261,47 @@ loadExternalModule().then(() => {
                 );
               } else {
                 console.log("#similarity LAST QUESTION:", userQuestionsHistory.at(-1));
-              
+
                 let similarityValue = 0;
                 const lastQuestion = userQuestionsHistory.at(-1)?.toLowerCase();
-              
+
                 if (lastQuestion) {
                   const response = await fetch("/api/string-similarity", {
                     method: "POST",
                     body: JSON.stringify({ sentence1: lastQuestion, sentence2: latestMessage.toLowerCase() }),
                   });
-              
+
                   if (response.ok) {
-                    try{
+                    try {
 
                       const data = await response.json();
                       similarityValue = Number(data.similarity);
                       console.log("#similarity Data:", data);
-                    } catch(error){
+                    } catch (error) {
                       console.error('failed to use api/string-similarity')
                     }
                   }
                 }
-              
+
                 console.log("#similarity SIMILARITY VALUE:", similarityValue);
                 console.log("#similarity LLM Queue:", conversationLlmQueue);
-              
+
                 const botSelectedLLM = ["gemini-2.0-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
                 const messageFrequency = userQuestionsHistory.filter(
                   (msg) => msg?.toLowerCase() === latestMessage.toLowerCase()
                 ).length;
-              
-                let selectedModel = botSelectedLLM[0]; 
+
+                let selectedModel = botSelectedLLM[0];
                 let fallbackModel = botSelectedLLM[1];
-              
+
                 if (messageFrequency === 1 || (similarityValue > 90)) {
-                  selectedModel = botSelectedLLM[1]; 
+                  selectedModel = botSelectedLLM[1];
                   fallbackModel = botSelectedLLM[2];
                 } else if (messageFrequency === 2) {
                   selectedModel = botSelectedLLM[2];
                   fallbackModel = botSelectedLLM[0];
                 }
-              
+
                 GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
@@ -10348,7 +10313,7 @@ loadExternalModule().then(() => {
                 );
                 conversationLlmQueue.push(selectedModel);
               }
-              
+
 
               userQuestionsHistory.push(latestMessage);
 
@@ -10445,7 +10410,7 @@ loadExternalModule().then(() => {
             //@disable the input
             const tChatElementRef = document.getElementById("chat-element2")
             const tShadowRoot = tChatElementRef.shadowRoot;
-          
+
             const chatInputBox = tShadowRoot.getElementById("text-input")
             chatInputBox.classList.remove("text-input-disabled")
             chatInputBox.contentEditable = true
@@ -10652,7 +10617,7 @@ loadExternalModule().then(() => {
                 //@disable the input
                 const tChatElementRef = document.getElementById("chat-element2")
                 const tShadowRoot = tChatElementRef.shadowRoot;
-              
+
                 const chatInputBox = tShadowRoot.getElementById("text-input")
                 chatInputBox.classList.remove("text-input-disabled")
                 chatInputBox.contentEditable = true
@@ -10676,7 +10641,7 @@ loadExternalModule().then(() => {
                   //@disable the input
                   const tChatElementRef = document.getElementById("chat-element2")
                   const tShadowRoot = tChatElementRef.shadowRoot;
-                
+
                   const chatInputBox = tShadowRoot.getElementById("text-input")
                   chatInputBox.classList.remove("text-input-disabled")
                   chatInputBox.contentEditable = true
@@ -10798,7 +10763,7 @@ loadExternalModule().then(() => {
                 senarioSnippetURLStt = questionData2.results[0].snippet_url;
                 console.log(senarioSnippetURLStt, "senarioSnippetURLStt");
                 IsSingleSelectSTT = questionData2.results[0].is_single_select;
-                console.log( "IsSingleSelectSTT", IsSingleSelectSTT);
+                console.log("IsSingleSelectSTT", IsSingleSelectSTT);
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -10927,7 +10892,7 @@ loadExternalModule().then(() => {
                 }
                 // restriction check like monthly test allowed start
                 // await getAttemptedTestList2(participantId2);
-                await getIsRepeatStatus2(participantId2,testCode2);
+                await getIsRepeatStatus2(participantId2, testCode2);
                 await getTestPrevilage2(participantId2);
                 if (isRepeatStatus2["monthly_remaining_tests"] < 1) {
                   signals.onResponse({
@@ -10984,13 +10949,13 @@ loadExternalModule().then(() => {
                   isSessionActiveStt = true;
                   console.log("Session Created => ", sessionId2);
 
-                  if (senarioCase2 === 'game'){
+                  if (senarioCase2 === 'game') {
                     questionLength2 = 1;
                     questionIndex2 = 0;
-                      // getting question for the game scenario:
-                      questionText2 = `${data.next_question_text}`
+                    // getting question for the game scenario:
+                    questionText2 = `${data.next_question_text}`
 
-                    
+
                   }
 
                   // initialize coaching conversation if test is coaching type
@@ -11056,15 +11021,15 @@ loadExternalModule().then(() => {
                             "Start the discussion by commenting your thoughts on this.";
                         }
                       } else {
-                        if (senarioCase2 != 'game'){
+                        if (senarioCase2 != 'game') {
                           let resultString2 = "";
-                            for (let i = 0; i < initial_msg2.length; i++) {
-                              resultString2 += "<p>" + initial_msg2[i] + "</p>";
-                              if (i < initial_msg2.length - 1) {
-                                resultString2 += "<br>";
-                              }
+                          for (let i = 0; i < initial_msg2.length; i++) {
+                            resultString2 += "<p>" + initial_msg2[i] + "</p>";
+                            if (i < initial_msg2.length - 1) {
+                              resultString2 += "<br>";
                             }
-                            questionText2 = resultString2;
+                          }
+                          questionText2 = resultString2;
                         }
                       }
                     }
@@ -11143,10 +11108,9 @@ loadExternalModule().then(() => {
                                 questionText2 =
                                   questionText2 +
                                   "\n" +
-                                  `<div ><audio style="${
-                                    window.innerWidth < 600
-                                      ? "width: 200px; max-width: 200px !important;"
-                                      : " min-width: 50vw !important;"
+                                  `<div ><audio style="${window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
                                   }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
@@ -11178,11 +11142,10 @@ loadExternalModule().then(() => {
                                 console.log("respnse", blob);
                                 const objectUrl = URL.createObjectURL(blob);
                                 console.log(objectUrl, "url");
-                                questionText2 = `<div ><audio style="${
-                                  window.innerWidth < 600
+                                questionText2 = `<div ><audio style="${window.innerWidth < 600
                                     ? "width: 200px; max-width: 200px !important;"
                                     : " min-width: 50vw !important;"
-                                }" controls autoplay>
+                                  }" controls autoplay>
                                 <source src=${objectUrl} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
@@ -11227,11 +11190,10 @@ loadExternalModule().then(() => {
                         console.log("respnse", blob);
                         const objectUrl = URL.createObjectURL(blob);
                         console.log(objectUrl, "url");
-                        questionText2 = `<div ><audio style="${
-                          window.innerWidth < 600
+                        questionText2 = `<div ><audio style="${window.innerWidth < 600
                             ? "width: 200px; max-width: 200px !important;"
                             : " min-width: 50vw !important;"
-                        }" controls autoplay>
+                          }" controls autoplay>
                           <source src=${objectUrl} type="audio/mpeg" />
                           Your browser does not support the audio element.
                           </audio></div>`;
@@ -11336,7 +11298,7 @@ loadExternalModule().then(() => {
                           // console.log(tweetId);
                           embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
                           console.log('desc section 3')
-                          
+
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
@@ -11354,7 +11316,7 @@ loadExternalModule().then(() => {
                           const urlList = senarioMediaDescription2.split(",");
                           console.log("list", urlList);
                           if (urlList.length > 1) {
-                          console.log('desc section 4')
+                            console.log('desc section 4')
 
                             appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
                                 ▪ Description : ${senarioDescription2} <br><br>
@@ -11376,10 +11338,9 @@ loadExternalModule().then(() => {
                               } else {
                                 console.log(element);
                                 appendMessage2(
-                                  `<div ><audio style="${
-                                    window.innerWidth < 600
-                                      ? "width: 200px; max-width: 200px !important;"
-                                      : " min-width: 50vw !important;"
+                                  `<div ><audio style="${window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
                                   }" controls autoplay>
                                   <source src=${element} type="audio/mpeg" />
                                   Your browser does not support the audio element.
@@ -11419,8 +11380,8 @@ loadExternalModule().then(() => {
                                 .split("/")
                                 .pop();
 
-                          console.log('desc section 6')
-                              
+                              console.log('desc section 6')
+
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                               ▪ Description : ${senarioDescription2} <br><br>
@@ -11434,7 +11395,7 @@ loadExternalModule().then(() => {
                               ></div></div>
                               `);
                             } else {
-                          console.log('desc section 7')
+                              console.log('desc section 7')
 
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
@@ -11540,10 +11501,9 @@ loadExternalModule().then(() => {
                         `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                             ▪ <img src=${imageUrlStt} ${
-                          window.innerWidth < 768
-                            ? "width='200'"
-                            : "width='400'"
+                             ▪ <img src=${imageUrlStt} ${window.innerWidth < 768
+                          ? "width='200'"
+                          : "width='400'"
                         } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                              ▪ ${ttsNarration}`
                       );
@@ -11567,7 +11527,7 @@ loadExternalModule().then(() => {
                       if (!AttemptTestDirectSTT) {
                         const temp_que_text = questionText2;
                         let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
-                        if (!['game'].includes(senarioCase2)){
+                        if (!['game'].includes(senarioCase2)) {
                           instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
                         }
                         console.log('desc section 11')
@@ -11661,11 +11621,10 @@ loadExternalModule().then(() => {
                                                 ></iframe>`);
                               } else {
                                 console.log(element);
-                                appendMessage2(`<div ><audio style="${
-                                  window.innerWidth < 600
+                                appendMessage2(`<div ><audio style="${window.innerWidth < 600
                                     ? "width: 200px; max-width: 200px !important;"
                                     : " min-width: 50vw !important;"
-                                }" controls autoplay>
+                                  }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`);
@@ -11718,9 +11677,8 @@ loadExternalModule().then(() => {
                             `que_image ${questionIndex2 + 1}`
                           )
                         ) {
-                          const questionpropName = `que_image ${
-                            questionIndex2 + 1
-                          }`;
+                          const questionpropName = `que_image ${questionIndex2 + 1
+                            }`;
                           const url = Object.keys(
                             mediaPropsStt[questionpropName]
                           )[0];
@@ -11751,11 +11709,10 @@ loadExternalModule().then(() => {
                           const imageMapNameStt = `image-mapStt${questionIndex2}`;
                           const imageTooltipIdStt = `tooltip-stt${questionIndex2}`;
                           questionText2 = `▪ ${ttsNarration}<br><br>
-                                           <br> <img src=${imageUrlStt} ${
-                            window.innerWidth < 768
+                                           <br> <img src=${imageUrlStt} ${window.innerWidth < 768
                               ? "width='200'"
                               : "width='400'"
-                          } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                            } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                                             ▪ Question : <br> ${questionText2}
                                           `;
 
@@ -11785,7 +11742,7 @@ loadExternalModule().then(() => {
                     }
                   }
                 }
-                
+
                 // above we have creeate session and send proceed button
                 //now we will proceed for game type or similiar to game type
 
@@ -11794,7 +11751,7 @@ loadExternalModule().then(() => {
                     try {
                       // Fetch the next game question
                       const response = await handleGameTypeConversation();
-                
+
                       // Handle API errors
                       if (response.error) {
                         resetAllVariablesStt();
@@ -11804,50 +11761,50 @@ loadExternalModule().then(() => {
                         //@disable the input
                         const tChatElementRef = document.getElementById("chat-element2")
                         const tShadowRoot = tChatElementRef.shadowRoot;
-                      
+
                         const chatInputBox = tShadowRoot.getElementById("text-input")
                         chatInputBox.classList.remove("text-input-disabled")
                         chatInputBox.contentEditable = true
                         return;
                       }
 
-                      
+
                       // Extract the next question text
                       let next_question_text = response.next_question_text;
                       console.log("Game question text:", next_question_text);
-                      
-                      if (response.is_last_question){
-                          appendMessage2( `<b>That's it! Thank you for participating!</b>`)
 
-                          //@disable the input
-                          const tChatElementRef = document.getElementById("chat-element2")
-                          const tShadowRoot = tChatElementRef.shadowRoot;
-                        
-                          const chatInputBox = tShadowRoot.getElementById("text-input")
-                          chatInputBox.classList.remove("text-input-disabled")
-                          chatInputBox.contentEditable = true
+                      if (response.is_last_question) {
+                        appendMessage2(`<b>That's it! Thank you for participating!</b>`)
 
-                          resetAllVariablesStt()
+                        //@disable the input
+                        const tChatElementRef = document.getElementById("chat-element2")
+                        const tShadowRoot = tChatElementRef.shadowRoot;
+
+                        const chatInputBox = tShadowRoot.getElementById("text-input")
+                        chatInputBox.classList.remove("text-input-disabled")
+                        chatInputBox.contentEditable = true
+
+                        resetAllVariablesStt()
                       }
-                
+
                       // If immersive mode is enabled, process with TTS (Text-to-Speech)
                       // if (isImmersiveStt) {
                       //   next_question_text = await TTSContainerStt(next_question_text);
                       // }
-                
-                      // Send the formatted question text for display
-                      if (response.is_last_question){
 
-                      signals.onResponse({
-                        html: next_question_text
-                      }).then(()=>{
+                      // Send the formatted question text for display
+                      if (response.is_last_question) {
+
+                        signals.onResponse({
+                          html: next_question_text
+                        }).then(() => {
                           appendMessage2(`<b>Please enter another interaction code to start a new interaction.</b>`)
                         })
-                      } else{
+                      } else {
                         // Preserve spaces for better formatting
                         const randomIdForAudioElement = generateRandomAlphanumeric(10);
-                        if (IsSingleSelectSTT !== null){
-                          if(IsSingleSelectSTT){
+                        if (IsSingleSelectSTT !== null) {
+                          if (IsSingleSelectSTT) {
                             // signals.onResponse({
                             //   html: `
                             //       <div>
@@ -11863,19 +11820,19 @@ loadExternalModule().then(() => {
                             //         </div>`
                             //         })
                             handleGameQuestion(next_question_text, randomIdForAudioElement, true, signals)
-                          } else{
+                          } else {
                             // add logic to add multiselect 
                             // signals.onResponse({
                             //   html: parseMarkdown(next_question_text)
                             // })'gemini-2.0-flash-exp',
                             handleGameQuestion(next_question_text, randomIdForAudioElement, false, signals)
                           }
-                        } else{
+                        } else {
                           signals.onResponse({
                             html: parseMarkdown(next_question_text)
                           })
                         }
-                        
+
                       }
                     } catch (error) {
                       console.error("Error handling game conversation:", error);
@@ -11885,14 +11842,14 @@ loadExternalModule().then(() => {
                     }
                     return;
                   }
-                
+
                   // Initialize the game (First question case)
                   if (questionIndex2 === 0) {
                     questionIndex2++;
                   }
                   return;
                 }
-                
+
 
 
                 // handling last question showing report
@@ -11923,8 +11880,7 @@ loadExternalModule().then(() => {
                   //   user2 ? "" : "<b> Hang tight for next steps</b>"
                   // }`;
                   appendMessage2(
-                    `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${
-                      user2 ? "" : "<b> Hang tight for next steps</b>"
+                    `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${user2 ? "" : "<b> Hang tight for next steps</b>"
                     }`
                   );
                   // messageBubble.appendChild(messageText);
@@ -12012,7 +11968,7 @@ loadExternalModule().then(() => {
                         }),
                       }
                     );
-                    console.log('Question number',questionIndex2,resQuestionNumber2, userResponse2)
+                    console.log('Question number', questionIndex2, resQuestionNumber2, userResponse2)
                     if (!response.ok) {
                       throw new Error(`API call failed with status ${response.status}`);
                     }
@@ -12242,10 +12198,10 @@ loadExternalModule().then(() => {
                       appendMessage2(message);
                       // //* send message to start new session
                       userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-                      console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-                      if (['psychometric', 'game'].includes(senarioCase2) 
-                        || !clientuserInformationSTT.show_recommendations 
-                        || userScenarioRecommendationStt.total_recommendation >= 2){
+                      console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
+                      if (['psychometric', 'game'].includes(senarioCase2)
+                        || !clientuserInformationSTT.show_recommendations
+                        || userScenarioRecommendationStt.total_recommendation >= 2) {
                         signals.onResponse({
                           html: "<b>Please enter another interaction code to start a new interaction.</b>",
                         });
@@ -12258,7 +12214,7 @@ loadExternalModule().then(() => {
                           `
                         })
                         startScenarioRecommendationsStt = true
-                        PreviousSessionInfoSTT['sessionId'] =  sessionId2
+                        PreviousSessionInfoSTT['sessionId'] = sessionId2
                         PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
                       }
                       submitEmailAndName2();
@@ -12289,10 +12245,10 @@ loadExternalModule().then(() => {
                     // //* send message to start new session
 
                     userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
-                    console.log(senarioCase2, clientuserInformationSTT.show_recommendations )
-                    if (['psychometric', 'game'].includes(senarioCase2) 
-                      || !clientuserInformationSTT.show_recommendations 
-                      || userScenarioRecommendationStt.total_recommendation >= 2){
+                    console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
+                    if (['psychometric', 'game'].includes(senarioCase2)
+                      || !clientuserInformationSTT.show_recommendations
+                      || userScenarioRecommendationStt.total_recommendation >= 2) {
 
                       signals.onResponse({
                         html: "<b>Please enter another interaction code to start a new interaction.</b>",
@@ -12306,11 +12262,11 @@ loadExternalModule().then(() => {
                         `
                       })
                       startScenarioRecommendationsStt = true
-                      PreviousSessionInfoSTT['sessionId'] =  sessionId2
+                      PreviousSessionInfoSTT['sessionId'] = sessionId2
                       PreviousSessionInfoSTT['skills'] = questionData2.results[0].skills_to_evaluate
                     }
-                    
-                    
+
+
                     submitEmailAndName2();
 
 
@@ -12354,18 +12310,18 @@ loadExternalModule().then(() => {
               resetAllVariablesStt();
               console.log(body.messages[0].text.toUpperCase() != 'STOP')
               if (body.messages[0].text.toUpperCase() !== "STOP") {
-                  if(botId === undefined){
-                    appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>")
-                    signals.onResponse({
-                      html: "Please Enter a Interaction Code to Start Your Session..",
-                    })
-                  } else {
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
-                      
-                    });
+                if (botId === undefined) {
+                  appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>")
+                  signals.onResponse({
+                    html: "Please Enter a Interaction Code to Start Your Session..",
+                  })
+                } else {
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again</b>.</p>"
 
-                  }
+                  });
+
+                }
                 enableEndSessionButton();
               }
               //@disable the input
@@ -12413,7 +12369,7 @@ loadExternalModule().then(() => {
         //@disable the input
         const tChatElementRef = document.getElementById("chat-element2")
         const tShadowRoot = tChatElementRef.shadowRoot;
-      
+
         const chatInputBox = tShadowRoot.getElementById("text-input")
         chatInputBox.classList.remove("text-input-disabled")
         chatInputBox.contentEditable = true
@@ -12472,17 +12428,17 @@ const openChatContainer2 = () => {
     // botId = 'stress-management-0032'
 
     // if (!botId) {
-      const chatContainer = document.getElementById("chat-container");
-      if (chatContainer) {
-        chatContainer.style.scale = 0;
-        chatContainer.style["transform-origin"] = "100% 100%";
-        const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-        chatIcon.src =
-          "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+    const chatContainer = document.getElementById("chat-container");
+    if (chatContainer) {
+      chatContainer.style.scale = 0;
+      chatContainer.style["transform-origin"] = "100% 100%";
+      const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+      chatIcon.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
 
-        const backdrop2 = document.getElementById("backdrop2");
-        backdrop2.style.display = "none";
-      }
+      const backdrop2 = document.getElementById("backdrop2");
+      backdrop2.style.display = "none";
+    }
     // }
   }
 
@@ -12500,7 +12456,7 @@ const openChatContainer2 = () => {
 
     //   localStorage.setItem("visitedPaths", JSON.stringify([]));
     // }
-    if (localStorage.getItem('coachscribe_user_refresh')){
+    if (localStorage.getItem('coachscribe_user_refresh')) {
       console.log("refreshing api")
       initialiseUserSTT()
       localStorage.removeItem("coachscribe_user_refresh");
