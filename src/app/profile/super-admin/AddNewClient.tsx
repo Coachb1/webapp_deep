@@ -82,7 +82,8 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   const restrictedPageOptions: OptionType[] = [
     { value: "Network Directory", label: "Network Directory" },
     { value: "Demo", label: "Demo" },
-    { value: "Library", label: "Library" },
+    { value: "Leadership Library", label: "Leadership Library" },
+    { value: "Domain Skills Library", label: "Domain Skills Library" },
     { value: "Creator Studio", label: "Creator Studio" },
     { value: "Profile", label: "Profile" },
   ];

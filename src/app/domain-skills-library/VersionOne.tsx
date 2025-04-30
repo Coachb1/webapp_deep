@@ -28,7 +28,7 @@ import { ExternalLink, History, Info, Loader } from "lucide-react";
 import LibraryTestsAccordian from "../library/LibraryTestsAccordian";
 
 
-const VersionTwo = ({ user, helpModeText }: any) => {
+const VersionOne = ({ user, helpModeText }: any) => {
     let shouldRenderDiv;
     if (user) {
         const userEmail = user?.email;
@@ -80,14 +80,14 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                 target: "#nav2",
                 content: dynamicHelpText?.nav_two
                     ? dynamicHelpText.nav_two
-                    : `The "Assigned Scenarios" contains the simulations that have been asigned other users from "Simulation Creator" under "Creator studio" tab. `,
+                    : `The "Assigned Scenarios" contains the simulations that have been asigned other users from "Simulation Creator" under "Creator studio" tab.`,
             },
             // {
             //     target: "#system-demos",
             //     content: dynamicHelpText?.system_demos
             //         ? dynamicHelpText.system_demos
             //         : "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
-            // },The "Requested Scenarios" contains user which have created using "Simulation Creator" under "Creator studio" tab.
+            // },
             {
                 target: ".chat-icon",
                 content: dynamicHelpText?.coachTalk
@@ -111,7 +111,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
 
         const fetchTestMappings = async () => {
             try {
-                const res = await fetch(`${baseURL}/tests/test-mappings/?client_name=${userInfo.clientName}&page_name=leadership_library`);
+                const res = await fetch(`${baseURL}/tests/test-mappings/?client_name=${userInfo.clientName}&page_name=domain_skills_library`);
 
                 if (!res.ok) {
                     console.error(`HTTP error! Status: ${res.status}`);
@@ -159,7 +159,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
 
                 <h1 className="text-6xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
-                    Coaching Simulations & Roleplays
+                    Domain Skill Simulations
                 </h1>
 
                 {/* Category buttons */}
@@ -393,4 +393,4 @@ const VersionTwo = ({ user, helpModeText }: any) => {
     );
 };
 
-export default VersionTwo;
+export default VersionOne;
