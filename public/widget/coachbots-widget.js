@@ -640,18 +640,17 @@ function createMessageNode(message) {
   messageNode.classList.add("inner-message-container");
 
   const avatarNode = document.createElement("div")
-  avatarNode.classList.add(["avatar-container", "left-item-position"]);
+  avatarNode.classList.add("avatar-container", "left-item-position");
 
   const avatarImage = document.createElement("img")
   avatarImage.setAttribute("src", botAvatarImageURL)
   avatarImage.setAttribute("class", "avatar")
-  avatarImage.style.marginRight = "8px";
 
   avatarNode.appendChild(avatarImage)
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
-  messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
+  messageBubble.style.maxWidth = "100%";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
@@ -680,10 +679,37 @@ function isDuplicateResponse(text) {
 const capitalizeFirstLetter = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+
+function formatMessage(message) {
+  if (Array.isArray(message)) {
+    return message.map((item, index) => {
+      if (typeof item === 'string') {
+        return `<span>${item}</span>`
+      } else if (item.title && item.description) {
+        return `<div><strong>${item.title}:</strong> <span>${item.description}</span></div>`
+      }
+      return item;
+    }).join("<hr />")
+  } else if (typeof message === 'object') {
+    const keyToTitleMappings = {
+      title: "Title",
+      description: "Description",
+      instructions: "Instructions",
+      oem: "Optional Enrichment Media"
+    }
+    return Object.keys(keyToTitleMappings).map(key => (
+      message[key] ? `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${message[key]}</span></div>` : null
+    )).filter(item => !!item).join("<hr />")
+  }
+  return message
+}
+
 //* add a custom message to chat
 function appendMessage(message) {
+  const formattedMessage = formatMessage(message)
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  const messageNode = createMessageNode(message);
+  const messageNode = createMessageNode(formattedMessage);
   gShadowRoot.getElementById("messages").appendChild(messageNode);
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
 }
@@ -1000,8 +1026,8 @@ async function setMcqVariables() {
 
                 console.log(objectUrl, "url");
                 questionText = `<div ><audio style="${window.innerWidth < 600
-                    ? "width: 200px; max-width: 200px !important;"
-                    : " min-width: 50vw !important;"
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
                   }" controls autoplay>
                 <source src=${objectUrl} type="audio/mpeg" />
                 Your browser does not support the audio element.
@@ -1040,8 +1066,8 @@ async function setMcqVariables() {
 
         console.log(objectUrl, "url");
         questionText = `<div ><audio style="${window.innerWidth < 600
-            ? "width: 200px; max-width: 200px !important;"
-            : " min-width: 50vw !important;"
+          ? "width: 200px; max-width: 200px !important;"
+          : " min-width: 50vw !important;"
           }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
@@ -2208,8 +2234,8 @@ const handleProceedClick = async (choice) => {
             } else {
               console.log(element);
               appendMessage(`<audio style="${window.innerWidth < 600
-                  ? "width: 200px; max-width: 200px !important;"
-                  : " min-width: 50vw !important;"
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
                 }" controls autoplay>
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
@@ -2551,8 +2577,8 @@ const handleProceedClick = async (choice) => {
 
         console.log(objectUrl, "url");
         const ttsNarration = `<div ><audio style="${window.innerWidth < 600
-            ? "width: 200px; max-width: 200px !important;"
-            : " min-width: 50vw !important;"
+          ? "width: 200px; max-width: 200px !important;"
+          : " min-width: 50vw !important;"
           }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
@@ -3174,10 +3200,9 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate = false
 }
 
 let chatInputFontSize2 = "14px";
-let messageBubbleMaxWidth2 = "60%";
+let messageBubbleMaxWidth2 = "100%";
 if (window.innerWidth < 768) {
   chatInputFontSize2 = "12px"
-  messageBubbleMaxWidth2 = "80%"
 }
 
 const snippetOrigin2 = () => {
@@ -4627,8 +4652,8 @@ loadExternalModule().then(() => {
                       } else {
                         console.log(element);
                         appendMessage(`<div ><audio style="${window.innerWidth < 600
-                            ? "width: 200px; max-width: 200px !important;"
-                            : " min-width: 50vw !important;"
+                          ? "width: 200px; max-width: 200px !important;"
+                          : " min-width: 50vw !important;"
                           }" controls autoplay>
                           <source src=${element} type="audio/mpeg" />
                           Your browser does not support the audio element.
@@ -5948,8 +5973,8 @@ loadExternalModule().then(() => {
 
                                 console.log(objectUrl, "url");
                                 questionText = `<div ><audio style="${window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
                                   }" controls autoplay>
                                 <source src=${objectUrl} type="audio/mpeg" />
                                 Your browser does not support the audio element.
@@ -5995,8 +6020,8 @@ loadExternalModule().then(() => {
 
                         console.log(objectUrl, "url");
                         questionText = `<div ><audio style="${window.innerWidth < 600
-                            ? "width: 200px; max-width: 200px !important;"
-                            : " min-width: 50vw !important;"
+                          ? "width: 200px; max-width: 200px !important;"
+                          : " min-width: 50vw !important;"
                           }" controls autoplay>
                           <source src=${objectUrl} type="audio/mpeg" />
                           Your browser does not support the audio element.
@@ -6074,17 +6099,17 @@ loadExternalModule().then(() => {
                           embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 
                           appendMessage(
-                            `▪ Title : ${senarioTitle} <br><br>
-                               ▪ Description : ${senarioDescription} <br><br>
-                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                               ▪ <b>Optional Enrichment Media</b><br>  <iframe
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            {
+                              title: senarioTitle,
+                              description: senarioDescription,
+                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                              oem: `<iframe
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
                                                 allowfullscreen
-                                              >
-                              
-                              `
+                                              >`
+                            }
                           );
                         } else if (
                           senarioMediaDescription.includes("vimeo.com")
@@ -6095,17 +6120,17 @@ loadExternalModule().then(() => {
                           embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
 
                           appendMessage(
-                            `▪ Title : ${senarioTitle} <br><br>
-                               ▪ Description : ${senarioDescription} <br><br>
-                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                               ▪ <b>Optional Enrichment Media</b><br>  <iframe
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            {
+                              title: senarioTitle,
+                              description: senarioDescription,
+                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                              oem: `<iframe
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
                                                 allowfullscreen
-                                              >
-                              
-                              `
+                                              >`
+                            }
                           );
                         } else if (
                           senarioMediaDescription.includes("twitter.com")
@@ -6113,25 +6138,29 @@ loadExternalModule().then(() => {
                           embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
 
                           appendMessage(
-                            `▪ Title : ${senarioTitle} <br><br>
-                                 ▪ Description : ${senarioDescription} <br><br>
-                                 ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
-                                 ▪ <b>Optional Enrichment Media</b><br> <iframe
-                                            allow="autoplay; encrypted-media; fullscreen;
-                                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                            src=${embeddingUrl}
-                                            frameborder="0"
-                                            allowfullscreen
-                                          >
-                                `
+                            {
+                              title: senarioTitle,
+                              description: senarioDescription,
+                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                              oem: `<iframe
+                                                allow="autoplay; encrypted-media; fullscreen;
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
+                                                src=${embeddingUrl}
+                                                frameborder="0"
+                                                allowfullscreen
+                                              >`
+                            }
                           );
                         } else {
                           const urlList = senarioMediaDescription.split(",");
                           console.log(urlList);
                           if (urlList.length > 1) {
-                            appendMessage(`▪ Title : ${senarioTitle} <br><br>
-                                ▪ Description : ${senarioDescription} <br><br>
-                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>`);
+                            appendMessage(
+                              {
+                                title: senarioTitle,
+                                description: senarioDescription,
+                                instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                              });
                             urlList.forEach((element) => {
                               element = element.trim();
                               if (element.includes("docs.google.com")) {
@@ -6170,9 +6199,11 @@ loadExternalModule().then(() => {
                                 "embed?start=true&loop=true&delayms=3000";
                               console.log(url);
                               appendMessage(
-                                `▪ Title : ${senarioTitle} <br><br>
-                              ▪ Description : ${senarioDescription} <br><br>
-                              ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>`
+                                {
+                                  title: senarioTitle,
+                                  description: senarioDescription,
+                                  instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                }
                               );
                               appendMessage(`<iframe src=${url}
                                               frameborder="0" 
@@ -6188,9 +6219,11 @@ loadExternalModule().then(() => {
                                 .split("/")
                                 .pop();
                               appendMessage(
-                                `▪ Title : ${senarioTitle} <br><br>
-                              ▪ Description : ${senarioDescription} <br><br>
-                              ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>`
+                                {
+                                  title: senarioTitle,
+                                  description: senarioDescription,
+                                  instructions: "Audio/Video Messages should be atleast 15 secs long."
+                                }
                               );
 
                               appendMessage(`
@@ -6201,11 +6234,12 @@ loadExternalModule().then(() => {
                               `);
                             } else {
                               appendMessage(
-                                `▪ Title : ${senarioTitle} <br><br>
-                                    ▪ Description : ${senarioDescription} <br><br>
-                                    ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
-                                    ▪ <b>Optional Enrichment Media</b>: <a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>
-                                    `
+                                {
+                                  title: senarioTitle,
+                                  description: senarioDescription,
+                                  instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                  oem: `<a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>`
+                                }
                               );
                             }
                           }
@@ -6227,9 +6261,11 @@ loadExternalModule().then(() => {
                         // }
                       } else {
                         appendMessage(
-                          `▪ Title : ${senarioTitle} <br><br>
-                             ▪ Description : ${senarioDescription} <br><br>
-                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                          {
+                            title: senarioTitle,
+                            description: senarioDescription,
+                            instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                          }
                         );
                       }
                       //   if (testType != "coaching") {
@@ -6300,7 +6336,11 @@ loadExternalModule().then(() => {
                       if (!AttemptTestDirect) {
                         const temp_que_text = questionText
                         signals.onResponse({
-                          text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                          html: formatMessage({
+                            title: senarioTitle,
+                            description: senarioDescription,
+                            instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                          })
                         }).then(() => {
                           if (senarioSnippetURL) {
                             if (senarioSnippetURL.length > 0) {
@@ -6391,8 +6431,8 @@ loadExternalModule().then(() => {
                               } else {
                                 console.log(element);
                                 appendMessage(`<div ><audio style="${window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
                                   }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
