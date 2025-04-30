@@ -3793,12 +3793,11 @@ function createMessageNodeUser2(message) {
   messageNode.classList.add("inner-message-container");
 
   const avatarNode = document.createElement("div");
-  avatarNode.classList.add(["avatar-container", "right-item-position"]);
+  avatarNode.classList.add("avatar-container", "right-item-position");
 
   const avatarImage = document.createElement("img");
   avatarImage.setAttribute("src", UserAvatarImageURL);
   avatarImage.setAttribute("class", "avatar");
-  avatarImage.style.marginLeft = "8px";
 
   avatarNode.appendChild(avatarImage);
 
@@ -3828,23 +3827,47 @@ function appendMessageForUser2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
+function formatMessage(message) {
+  if (Array.isArray(message)) {
+    return message.map((item, index) => {
+      if (typeof item === 'string') {
+        return `<span>${item}</span>`
+      } else if (item.title && item.description) {
+        return `<div><strong>${item.title}:</strong> <span>${item.description}</span></div>`
+      }
+      return item;
+    }).join("<hr />")
+  } else if (typeof message === 'object') {
+    const keyToTitleMappings = {
+      title: "Title",
+      description: "Description",
+      instructions: "Instructions",
+      oem: "Optional Enrichment Media"
+    }
+    return Object.keys(keyToTitleMappings).map(key => (
+      message[key] ? `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${message[key]}</span></div>` : null
+    )).filter(item => !!item).join("<hr />")
+  }
+  return message
+}
+
+
 function createMessageNode2(message, isMarkdown = false) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
 
   const avatarNode = document.createElement("div");
-  avatarNode.classList.add(["avatar-container", "left-item-position"]);
+  avatarNode.classList.add("avatar-container", "left-item-position");
 
   const avatarImage = document.createElement("img");
   avatarImage.setAttribute("src", botAvatarImageURL);
   avatarImage.setAttribute("class", "avatar");
-  avatarImage.style.marginRight = "8px";
 
   avatarNode.appendChild(avatarImage);
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
-  messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
+  messageBubble.style.maxWidth = "100%";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
@@ -3962,7 +3985,8 @@ function addStickerToMessage(sticker, msg, color = "#3b82f6") {
 
 function appendMessage2(message2, isMarkdown = false) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const messageNode = createMessageNode2(message2, isMarkdown);
+  const formmattedMessage = formatMessage(message2)
+  const messageNode = createMessageNode2(formmattedMessage, isMarkdown);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
@@ -4790,8 +4814,8 @@ const handleProceedClickStt = async (choice) => {
               console.log('Ahere8')
 
               appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                  ? "width: 200px; max-width: 200px !important;"
-                  : " min-width: 50vw !important;"
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
                 }" controls autoplay>
                 <source src=${element} type="audio/mpeg" />
                 Your browser does not support the audio element.
@@ -5190,8 +5214,8 @@ const handleProceedClickStt = async (choice) => {
 
         console.log(objectUrl, "url");
         const ttsNarration = `<div ><audio style="${window.innerWidth < 600
-            ? "width: 200px; max-width: 200px !important;"
-            : " min-width: 50vw !important;"
+          ? "width: 200px; max-width: 200px !important;"
+          : " min-width: 50vw !important;"
           }"" controls autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
@@ -5465,8 +5489,8 @@ async function setMcqVariablesStt() {
 
                 console.log(objectUrl, "url");
                 questionText2 = `<div ><audio style="${window.innerWidth < 600
-                    ? "width: 200px; max-width: 200px !important;"
-                    : " min-width: 50vw !important;"
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
                   }" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
@@ -5506,8 +5530,8 @@ async function setMcqVariablesStt() {
 
         console.log(objectUrl, "url");
         questionText2 = `<div ><audio style="${window.innerWidth < 600
-            ? "width: 200px; max-width: 200px !important;"
-            : " min-width: 50vw !important;"
+          ? "width: 200px; max-width: 200px !important;"
+          : " min-width: 50vw !important;"
           }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
@@ -6844,10 +6868,9 @@ async function handleOptionButtonClick2(
 }
 
 let chatInputFontSize = "14px";
-let messageBubbleMaxWidth = "60%";
+let messageBubbleMaxWidth = "100%";
 if (window.innerWidth < 768) {
   chatInputFontSize = "12px";
-  messageBubbleMaxWidth = "80%";
 }
 
 const snippetOrigin = () => {
@@ -8039,7 +8062,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
+    messageBubble.style.maxWidth = "100%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -8575,7 +8598,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
+    messageBubble.style.maxWidth = "100%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -8583,12 +8606,11 @@ loadExternalModule().then(() => {
     messageBubble.style.color = "#374151";
 
     const avatarNode = document.createElement("div");
-    avatarNode.classList.add(["avatar-container", "left-item-position"]);
+    avatarNode.classList.add("avatar-container", "left-item-position");
 
     const avatarImage = document.createElement("img");
     avatarImage.setAttribute("src", botAvatarImageURL);
     avatarImage.setAttribute("class", "avatar");
-    avatarImage.style.marginRight = "8px";
 
     avatarNode.appendChild(avatarImage);
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
@@ -9003,7 +9025,7 @@ loadExternalModule().then(() => {
             indvMessage.innerText === " " ||
             indvMessage.innerText === "" ||
             indvMessage.innerHTML ==
-            `<div class="message-bubble ai-message-text" style="max-width: 60%; margin-top: 4px; border-radius: 4px; background-color: rgb(243, 244, 246); color: rgb(55, 65, 81);"><p></p></div>`
+            `<div class="message-bubble ai-message-text" style="max-width: 100%; margin-top: 4px; border-radius: 4px; background-color: rgb(243, 244, 246); color: rgb(55, 65, 81);"><p></p></div>`
           ) {
             indvMessage.remove();
           }
@@ -9045,7 +9067,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
+    messageBubble.style.maxWidth = "100%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -11143,8 +11165,8 @@ loadExternalModule().then(() => {
                                 const objectUrl = URL.createObjectURL(blob);
                                 console.log(objectUrl, "url");
                                 questionText2 = `<div ><audio style="${window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
                                   }" controls autoplay>
                                 <source src=${objectUrl} type="audio/mpeg" />
                                 Your browser does not support the audio element.
@@ -11191,8 +11213,8 @@ loadExternalModule().then(() => {
                         const objectUrl = URL.createObjectURL(blob);
                         console.log(objectUrl, "url");
                         questionText2 = `<div ><audio style="${window.innerWidth < 600
-                            ? "width: 200px; max-width: 200px !important;"
-                            : " min-width: 50vw !important;"
+                          ? "width: 200px; max-width: 200px !important;"
+                          : " min-width: 50vw !important;"
                           }" controls autoplay>
                           <source src=${objectUrl} type="audio/mpeg" />
                           Your browser does not support the audio element.
@@ -11260,16 +11282,17 @@ loadExternalModule().then(() => {
                           embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
                           console.log('desc section 1')
                           appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                               ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ <b>Optional Enrichment Media</b> <iframe
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                            {
+                              title: senarioTitle2,
+                              description: senarioDescription2,
+                              instructions: "Response should be at least 15 words.",
+                              oem: `<iframe
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                           src=${embeddingUrl2}
                                           frameborder="0"
                                           allowfullscreen
-                                        >
-                              `
+                                        >`
+                            }
                           );
                         } else if (
                           senarioMediaDescription2.includes("vimeo.com")
@@ -11281,16 +11304,17 @@ loadExternalModule().then(() => {
                           console.log('desc section 2')
 
                           appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                               ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ <b>Optional Enrichment Media</b> <iframe
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                                          src=${embeddingUrl2}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                              `
+                            {
+                              title: senarioTitle2,
+                              description: senarioDescription2,
+                              instructions: "Response should be at least 15 words.",
+                              oem: `<iframe
+                                        style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
+                                        src=${embeddingUrl2}
+                                        frameborder="0"
+                                        allowfullscreen
+                                      >`
+                            }
                           );
                         } else if (
                           senarioMediaDescription2.includes("twitter.com")
@@ -11300,17 +11324,18 @@ loadExternalModule().then(() => {
                           console.log('desc section 3')
 
                           appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                                 ▪ Description : ${senarioDescription2} <br><br>
-                                 ▪ Instructions : Response should be at least 15 words. <br><br>
-                                 ▪ <b>Optional Enrichment Media</b> <iframe
+                            {
+                              title: senarioTitle2,
+                              description: senarioDescription2,
+                              instructions: "Response should be at least 15 words.",
+                              oem: `<iframe
                                             allow="autoplay; encrypted-media; fullscreen;
-                                            style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                            style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                             src=${embeddingUrl2}
                                             frameborder="0"
                                             allowfullscreen
-                                          >
-                                `
+                                           >`
+                            }
                           );
                         } else {
                           const urlList = senarioMediaDescription2.split(",");
@@ -11318,9 +11343,13 @@ loadExternalModule().then(() => {
                           if (urlList.length > 1) {
                             console.log('desc section 4')
 
-                            appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
-                                ▪ Description : ${senarioDescription2} <br><br>
-                                ▪ Instructions : Response should be at least 15 words. <br><br>`);
+                            appendMessage2(
+                              {
+                                title: senarioTitle2,
+                                description: senarioDescription2,
+                                instructions: "Response should be at least 15 words.",
+                              }
+                            );
                             urlList.forEach((element) => {
                               element = element.trim();
                               if (element.includes("docs.google.com")) {
@@ -11361,10 +11390,11 @@ loadExternalModule().then(() => {
                               console.log('desc section 5')
 
                               appendMessage2(
-                                `▪ Title : ${senarioTitle2} <br><br>
-                              ▪ Description : ${senarioDescription2} <br><br>
-                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                              `
+                                {
+                                  title: senarioTitle2,
+                                  description: senarioDescription2,
+                                  instructions: "Response should be at least 15 words.",
+                                }
                               );
                               appendMessage2(`<iframe src=${url}
                                               frameborder="0"
@@ -11383,10 +11413,11 @@ loadExternalModule().then(() => {
                               console.log('desc section 6')
 
                               appendMessage2(
-                                `▪ Title : ${senarioTitle2} <br><br>
-                              ▪ Description : ${senarioDescription2} <br><br>
-                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                              `
+                                {
+                                  title: senarioTitle2,
+                                  description: senarioDescription2,
+                                  instructions: "Response should be at least 15 words.",
+                                }
                               );
                               appendMessage2(`
                               <div style="width:640px">
@@ -11398,11 +11429,12 @@ loadExternalModule().then(() => {
                               console.log('desc section 7')
 
                               appendMessage2(
-                                `▪ Title : ${senarioTitle2} <br><br>
-                                    ▪ Description : ${senarioDescription2} <br><br>
-                                    ▪ Instructions : Response should be at least 15 words. <br><br>
-                                    ▪ <b>Optional Enrichment Media</b>: <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
-                                    `
+                                {
+                                  title: senarioTitle2,
+                                  description: senarioDescription2,
+                                  instructions: "Response should be at least 15 words.",
+                                  oem: `<a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>`
+                                }
                               );
                             }
                           }
@@ -11416,25 +11448,27 @@ loadExternalModule().then(() => {
                           }
                         }
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
-                        //    appendMessage2(
-                        //      `▪ Title : ${senarioTitle2} <br><br>
-                        //        ▪ Description : ${senarioDescription2} <br><br>
-                        //        ▪ Instructions : Response should be at least 15 words. <br><br>
-                        //        ▪ <b>Optional Enrichment Media</b> <iframe
-                        //                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                        //   appendMessage2(
+                        //     {
+                        //       title: senarioTitle2,
+                        //       description: senarioDescription2,
+                        //       instructions: "Response should be at least 15 words.",
+                        //       oem: `<iframe
+                        //                   style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                         //                   src=${embeddingUrl2}
                         //                   frameborder="0"
                         //                   allowfullscreen
-                        //                 >
-                        //       `
-                        //    );
+                        //                  >`}
+                        //   );
                         // }
                       } else {
                         console.log('desc section 8')
                         appendMessage2(
-                          `▪ Title : ${senarioTitle2} <br><br>
-                             ▪ Description : ${senarioDescription2} <br><br>
-                             ▪ Instructions : Response should be at least 15 words.`
+                          {
+                            title: senarioTitle2,
+                            description: senarioDescription2,
+                            instructions: "Response should be at least 15 words.",
+                          }
                         );
                         if (senarioSnippetURLStt) {
                           if (senarioSnippetURLStt.length > 0) {
@@ -11526,15 +11560,29 @@ loadExternalModule().then(() => {
 
                       if (!AttemptTestDirectSTT) {
                         const temp_que_text = questionText2;
+                        const messages = [
+                          {
+                            title: "Title",
+                            description: senarioTitle2
+                          },
+                          {
+                            title: "Description",
+                            description: senarioDescription2
+                          }
+                        ]
                         let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
                         if (!['game'].includes(senarioCase2)) {
                           instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
+                          messages.push({
+                            title: "Instructions",
+                            description: `Response should be at least ${wordLimit} words.`
+                          })
                         }
                         console.log('desc section 11')
 
                         signals
                           .onResponse({
-                            text: instruction,
+                            html: formatMessage(messages),
                           })
                           .then(() => {
                             if (senarioSnippetURLStt) {
@@ -11622,8 +11670,8 @@ loadExternalModule().then(() => {
                               } else {
                                 console.log(element);
                                 appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
                                   }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
