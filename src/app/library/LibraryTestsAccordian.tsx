@@ -38,9 +38,14 @@ const LibraryTestsAccordian = ({
     return data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   };
 
-  const shortTests = tests.filter((test: any) => test.is_micro === true);
-  const standardTests = tests.filter((test: any) => test.is_micro === false);
+  // const shortTests = tests.filter((test: any) => test.is_micro === true); // to show only one type of heading
+  // const standardTests = tests.filter((test: any) => test.is_micro === false);
 
+  const shortTests = tests.filter((test: any) => test); // to show only one type of heading
+  const standardTests = tests.filter((test: any) => test.is_micro === 'fale'); // empty array
+
+  console.log("shortTests", shortTests);
+  console.log("standardTests", standardTests);
   const paginatedShortTests = getPaginatedData(shortTests, shortCurrentPage);
   const paginatedStandardTests = getPaginatedData(
     standardTests,
@@ -110,9 +115,14 @@ const LibraryTestsAccordian = ({
                             <Mic className="h-5 w-5 mr-2 inline text-blue-500" />
                           </Tooltip>
                         )}
-                        {test.title?.includes(":") ? (
+                        {/* {test.title?.includes(":") ? (
                           <> {test.title.split(":")[1]}</>
                         ) : (
+                          <>{test.title}</>
+                        )} */}
+                        {test.domain ? (
+                            <><strong>{test.domain}</strong>  -  {test.title}</>
+                        ): (
                           <>{test.title}</>
                         )}
                         {type === "requested" && test.assigned_to && (

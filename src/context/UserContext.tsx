@@ -231,10 +231,9 @@ export const UserProvider = ({
 
       if (!userInfo.isDemoUser && !userInfo.isRestricted) {
         if (userInfo.restrictedPages?.includes("Network Directory")) {
-          // if (!userInfo.restrictedPages?.includes("Explore")) {
-          //   router.push("content-library");
-          // } 
-          if (!userInfo.restrictedPages?.includes("Library")) {
+          if (!userInfo.restrictedPages?.includes("Domain Skills Library")) {
+            router.push("domain-skills-library");
+          } else if (!userInfo.restrictedPages?.includes("Leadership Library")) {
             router.push("content-library");
           } else if (!userInfo.restrictedPages?.includes("Creator Studio")) {
             router.push("create-scenario");
@@ -277,7 +276,7 @@ export const UserProvider = ({
           setLoadingState(false);
         }
 
-        if (!userInfo.restrictedPages?.includes("Library")) {
+        if (!userInfo.restrictedPages?.includes("Leadership Library") || !userInfo.restrictedPages?.includes("Domain Skills Library")) {
           const attemptedTests = await getAttemptedTestsList(data.uid);
           console.log(attemptedTests);
           setAttemptedTests(attemptedTests);

@@ -5,13 +5,12 @@ import {
   getUserAccount,
 } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import VersionOne from "./VersionOne";
 import Widgets from "@/components/Widgets";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import VersionTwo from "./VersionTwo";
+import VersionOne from "./VersionOne";
 
 export const metadata = constructMetadata({
-  title: "Leadership Library - Coachbot",
+  title: "Domain Skill Simulations - Coachbot",
 });
 
 const getClientUserInfo = async (
@@ -91,7 +90,7 @@ const Page = async () => {
 
   return (
     <div>
-      <VersionTwo user={user} />
+      <VersionOne user={user} />
       <Widgets from="content-library" />
     </div>
   );

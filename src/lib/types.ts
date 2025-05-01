@@ -62,6 +62,7 @@ export interface TestsType {
   assigned_by?: string;
   assigned_to?: string;
   creator_user_id?: string;
+  domain?: string;
 }
 
 export interface competencySkillsTestType {
