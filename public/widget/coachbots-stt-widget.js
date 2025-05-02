@@ -289,6 +289,7 @@ let PreviousSessionInfoSTT = {
 }
 let userScenarioRecommendationStt;
 let increaseSessionForFirstTestStt = false;
+let FeedbackVideoLinkStt;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -3755,6 +3756,12 @@ const handleEndCoachingClick2 = async (randomId) => {
         `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
       );
     }
+
+    if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+      appendMessage2({
+        "Here is your Feedback Video from coach": snippetDivSTT(FeedbackVideoLinkStt)
+      })
+    }
     //   gShadowRoot.getElementById(
     //     `mcq-option-${mcqFormId}`
     //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -3827,7 +3834,7 @@ function appendMessageForUser2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
-function formatMessage(message) {
+function formatMessage2(message) {
   if (Array.isArray(message)) {
     return message.map((item, index) => {
       if (typeof item === 'string') {
@@ -3842,7 +3849,8 @@ function formatMessage(message) {
       title: "Title",
       description: "Description",
       instructions: "Instructions",
-      oem: "Optional Enrichment Media"
+      oem: "Optional Enrichment Media",
+      "Here is your Feedback Video from coach": "Here is your Feedback Video from coach"
     }
     return Object.keys(keyToTitleMappings).map(key => (
       message[key] ? `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${message[key]}</span></div>` : null
@@ -3985,7 +3993,7 @@ function addStickerToMessage(sticker, msg, color = "#3b82f6") {
 
 function appendMessage2(message2, isMarkdown = false) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const formmattedMessage = formatMessage(message2)
+  const formmattedMessage = formatMessage2(message2)
   const messageNode = createMessageNode2(formmattedMessage, isMarkdown);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
@@ -4007,7 +4015,25 @@ function snippetDivSTT(url) {
       scrolling="no"
     >
     `;
-  } else {
+  } else if (url.includes("youtube")) {
+    const videoId = url.split("v=")[1];
+    url = `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    return  `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
+      }; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `;
+  }
+  else {
     return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
@@ -4201,6 +4227,7 @@ const resetAllVariablesStt = async () => {
   allowRecommendationTestCode = false;
   recommendationClicked = false;
   responderDisplayNameStt = null;
+  FeedbackVideoLinkStt = "";
 
   console.log("resetting variables completed");
 };
@@ -5759,6 +5786,12 @@ async function setMcqVariablesStt() {
               "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
           }
           appendMessage2(message2);
+
+          if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+            appendMessage2({
+              "Here is your Feedback Video from coach": snippetDivSTT(FeedbackVideoLinkStt)
+            })
+          }
 
           //* send message to start new session
           userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
@@ -9670,6 +9703,12 @@ loadExternalModule().then(() => {
                     "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                 }
                 appendMessage2(message);
+
+                if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+                  appendMessage2({
+                    "Here is your Feedback Video from coach": snippetDivSTT(FeedbackVideoLinkStt)
+                  })
+                }
                 // //* send message to start new session
                 userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
                 console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
@@ -10760,6 +10799,7 @@ loadExternalModule().then(() => {
                 senarioTitle2 = questionData2.results[0].title;
                 senarioCase2 = questionData2.results[0].scenario_case;
                 emailCandidate2 = questionData2.results[0].email_candidate;
+                FeedbackVideoLinkStt = questionData2.results[0].feedback_script_video_link;
 
                 if (
                   clientuserInformationSTT?.report_on &&
@@ -11337,7 +11377,24 @@ loadExternalModule().then(() => {
                                            >`
                             }
                           );
-                        } else {
+                        } else if (senarioMediaDescription2.includes("player.cloudinary.com") || senarioMediaDescription2.includes('storage.googleapis.com')){
+                          
+                          appendMessage2(
+                            {
+                              title: senarioTitle2,
+                              description: senarioDescription2,
+                              instructions: "Response should be at least 15 words.",
+                              oem: `<iframe
+                                            allow="autoplay; encrypted-media; fullscreen;
+                                            style="width: 100%; height:auto; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
+                                            src=${senarioMediaDescription2}
+                                            frameborder="0"
+                                            allowfullscreen
+                                           >`
+                            }
+                          );
+                        }
+                        else {
                           const urlList = senarioMediaDescription2.split(",");
                           console.log("list", urlList);
                           if (urlList.length > 1) {
@@ -11582,7 +11639,7 @@ loadExternalModule().then(() => {
 
                         signals
                           .onResponse({
-                            html: formatMessage(messages),
+                            html: formatMessage2(messages),
                           })
                           .then(() => {
                             if (senarioSnippetURLStt) {
@@ -12243,7 +12300,14 @@ loadExternalModule().then(() => {
                         message =
                           "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                       }
+
                       appendMessage2(message);
+
+                      if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+                        appendMessage2({
+                          "Here is your Feedback Video from coach": snippetDivSTT(FeedbackVideoLinkStt)
+                        })
+                      }
                       // //* send message to start new session
                       userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);
                       console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
@@ -12290,6 +12354,11 @@ loadExternalModule().then(() => {
                         "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                     }
                     appendMessage2(message);
+                    if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+                      appendMessage2({
+                        "Here is your Feedback Video from coach": snippetDivSTT(FeedbackVideoLinkStt)
+                      })
+                    }
                     // //* send message to start new session
 
                     userScenarioRecommendationStt = await getTestRecommendationsStt(questionData2.results[0].uid, null, null, userId2);

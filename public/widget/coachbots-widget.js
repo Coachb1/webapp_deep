@@ -149,6 +149,7 @@ let PreviousSessionInfo = {
 }
 let userScenarioRecommendation;
 let increaseSessionForFirstTest = false;
+let FeedbackVideoLink;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -696,7 +697,8 @@ function formatMessage(message) {
       title: "Title",
       description: "Description",
       instructions: "Instructions",
-      oem: "Optional Enrichment Media"
+      oem: "Optional Enrichment Media",
+      'Here is your Feedback Video from coach': "Here is your Feedback Video from coach"
     }
     return Object.keys(keyToTitleMappings).map(key => (
       message[key] ? `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${message[key]}</span></div>` : null
@@ -729,7 +731,26 @@ function snippetDiv(url) {
       scrolling="no"
     >
     `
-  } else {
+  } else if (url.includes("youtube")) {
+    const videoId = url.split("v=")[1];
+    url = `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    return  `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
+      }; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `;
+  }
+  
+  else {
     return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
@@ -1278,6 +1299,11 @@ async function setMcqVariables() {
             appendMessage(
               `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
             );
+          }
+          if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
+            appendMessage({
+              "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+            })
           }
           //   gShadowRoot.getElementById(
           //     `mcq-option-${mcqFormId}`
@@ -1950,6 +1976,7 @@ const resetAllVariables = async () => {
   isTranscriptOnly = false;
   senarioSnippetURL;
   questionSnippetLink = null;
+  FeedbackVideoLink = '';
   console.log("resetting variables completed");
 };
 
@@ -2042,6 +2069,11 @@ const handleEndCoachingClick = async (randomId) => {
       appendMessage(
         `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
       );
+    }
+    if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
+      appendMessage({
+        "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+      })
     }
 
     //   gShadowRoot.getElementById(
@@ -4980,6 +5012,11 @@ loadExternalModule().then(() => {
                         message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                       }
                       appendMessage(message);
+                      if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
+                        appendMessage({
+                          "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+                        })
+                      }
                       // //* send message to start new session
                       userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
                       console.log(senarioCase, ClientUserInformation.show_recommendations)
@@ -5263,6 +5300,12 @@ loadExternalModule().then(() => {
                   message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                 }
                 appendMessage(message);
+
+                if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
+                  appendMessage({
+                    "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+                  })
+                }
                 // //* send message to start new session
 
                 userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
@@ -5617,6 +5660,7 @@ loadExternalModule().then(() => {
                 senarioSnippetURL =
                   questionData.results[0].snippet_url;
                 console.log(senarioSnippetURL, 'senarioSnippetURL');
+                FeedbackVideoLink = questionData.results[0].feedback_script_video_link;
 
                 responseWordLimit = senarioCase === 'psychometric' ? 20 : 15
                 console.log('responseWordLimit: ', responseWordLimit)
@@ -6151,7 +6195,24 @@ loadExternalModule().then(() => {
                                               >`
                             }
                           );
-                        } else {
+                        } else if (senarioMediaDescription.includes("player.cloudinary.com")){
+                          
+                          appendMessage(
+                            {
+                              title: senarioTitle,
+                              description: senarioDescription,
+                              instructions: "Response should be at least 15 words.",
+                              oem: `<iframe
+                                    allow="autoplay; encrypted-media; fullscreen;
+                                    style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
+                                    src=${senarioMediaDescription}
+                                    frameborder="0"
+                                    allowfullscreen
+                                    >`
+                            }
+                          );
+                        }
+                        else {
                           const urlList = senarioMediaDescription.split(",");
                           console.log(urlList);
                           if (urlList.length > 1) {
@@ -6890,6 +6951,12 @@ loadExternalModule().then(() => {
                       message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                     }
                     appendMessage(message);
+
+                    if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
+                      appendMessage({
+                        "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+                      })
+                    }
                     // //* send message to start new session
 
                     userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
