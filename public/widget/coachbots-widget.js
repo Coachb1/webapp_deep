@@ -6187,7 +6187,7 @@ loadExternalModule().then(() => {
                               description: senarioDescription,
                               instructions: "Audio/Video Messages should be atleast 15 secs long.",
                               oem: `<iframe
-                                                allow="autoplay; encrypted-media; fullscreen;
+                                                allow="autoplay; encrypted-media; fullscreen;"
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
@@ -6203,7 +6203,7 @@ loadExternalModule().then(() => {
                               description: senarioDescription,
                               instructions: "Response should be at least 15 words.",
                               oem: `<iframe
-                                    allow="autoplay; encrypted-media; fullscreen;
+                                    allow="autoplay; encrypted-media; fullscreen;"
                                     style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                     src=${senarioMediaDescription}
                                     frameborder="0"

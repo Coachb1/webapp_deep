@@ -11369,7 +11369,7 @@ loadExternalModule().then(() => {
                               description: senarioDescription2,
                               instructions: "Response should be at least 15 words.",
                               oem: `<iframe
-                                            allow="autoplay; encrypted-media; fullscreen;
+                                            allow="autoplay; encrypted-media; fullscreen;"
                                             style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                             src=${embeddingUrl2}
                                             frameborder="0"
@@ -11385,7 +11385,7 @@ loadExternalModule().then(() => {
                               description: senarioDescription2,
                               instructions: "Response should be at least 15 words.",
                               oem: `<iframe
-                                            allow="autoplay; encrypted-media; fullscreen;
+                                            allow="autoplay; encrypted-media; fullscreen;"
                                             style="width: 100%; height:auto; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                             src=${senarioMediaDescription2}
                                             frameborder="0"
