@@ -7653,7 +7653,7 @@ loadExternalModule().then(() => {
     } else {
       chatElementRef2.initialMessages = [
         {
-          html: `<p>Welcome to Coachbot. Do you have interaction code for your simulation?</p>`,
+          html: `<p>Welcome to Coachbot. Do you have a code for your micro-lesson and simulation?</p>`,
           role: "ai",
         },
       ];
@@ -11299,7 +11299,7 @@ loadExternalModule().then(() => {
                     isProceedStt = "false";
                     questionText2 = `
                     <div id="proceed-option2" >
-                    <b>Proceed ?</b>
+                    <b>Scroll up to review Micro-lesson and simulation objectives. Proceed?</b>
                         <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
