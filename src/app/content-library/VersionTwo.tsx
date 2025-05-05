@@ -158,15 +158,15 @@ const VersionTwo = ({ user, helpModeText }: any) => {
             <HelpMode steps={HelpModeSteps} forPage="demo" />
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
 
-                <h1 className="text-6xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
-                    Coaching Simulations & Roleplays
+                <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
+                Micro-Lessons, Simulations & Roleplays
                 </h1>
 
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
                     <>
                         <Badge className="mt-6 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
-                            Coaching - Simulations
+                        MicroLessons - Simulations
                         </Badge>
                         <div className="bg-transparent h-4" />
                         <div className="w-full max-w-4xl">
@@ -247,7 +247,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                             variant={"secondary"}
                             className="bg-gray-300 h-6 w-fit text-gray-600 py-3 text-center mb-3 mt-12 max-sm:mt-8 text-sm"
                         >
-                            {`Coaching - Simulations : ${category}`}
+                            {`MicroLessons - Simulations : ${category}`}
                         </Badge>
                         <div id={getUniqueId(category)} className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                             <div className="w-full">
