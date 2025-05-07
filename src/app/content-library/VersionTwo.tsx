@@ -159,14 +159,14 @@ const VersionTwo = ({ user, helpModeText }: any) => {
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
 
                 <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
-                Micro-Lessons, Simulations & Roleplays
+                    Micro-Lessons, Simulations & Roleplays
                 </h1>
 
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
                     <>
                         <Badge className="mt-6 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
-                        MicroLessons - Simulations
+                            MicroLessons - Simulations
                         </Badge>
                         <div className="bg-transparent h-4" />
                         <div className="w-full max-w-4xl">
@@ -195,31 +195,31 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                 <div
                     className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 p-3 rounded-md"
                 >
-                        {!userInfo.restrictedFeatures?.includes("Requested-scenarios") ||
-                            (!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
-                                <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
-                            ))}
+                    {!userInfo.restrictedFeatures?.includes("Requested-scenarios") ||
+                        (!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
+                            <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
+                        ))}
 
-                        <div
-                            id="nav2"
-                            className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
-                        >
-                            {!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
-                                <Button
-                                    onClick={() => {
-                                        document
-                                            .getElementById("assigned-tests")
-                                            ?.scrollIntoView({
-                                                behavior: "smooth",
-                                            });
-                                    }}
-                                    className={`h-6 max-xs:text-xm bg-blue-400 text-white hover:bg-blue-300`}
-                                >
-                                    Assigned Simulations{" "}
-                                    <History className="h-4 w-4 ml-2" />
-                                </Button>
-                            )}
-                            {/* {!userInfo.restrictedFeatures?.includes("Requested-scenarios") && (
+                    <div
+                        id="nav2"
+                        className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
+                    >
+                        {!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
+                            <Button
+                                onClick={() => {
+                                    document
+                                        .getElementById("assigned-tests")
+                                        ?.scrollIntoView({
+                                            behavior: "smooth",
+                                        });
+                                }}
+                                className={`h-6 max-xs:text-xm bg-blue-400 text-white hover:bg-blue-300`}
+                            >
+                                Assigned Simulations{" "}
+                                <History className="h-4 w-4 ml-2" />
+                            </Button>
+                        )}
+                        {/* {!userInfo.restrictedFeatures?.includes("Requested-scenarios") && (
                                 <Button
                                     onClick={() => {
                                         document
@@ -234,14 +234,14 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                                     <History className="h-4 w-4 ml-2" />
                                 </Button>
                             )} */}
-                        </div>
                     </div>
+                </div>
             </MaxWidthWrapper>
 
 
             <div className="flex pt-2 flex-col items-center justify-center text-center">
                 {Object.entries(data).map(([category, simulations]) => (
-                    <>
+                    <div className="w-full scroll-mt-[3rem]" id={getUniqueId(category)} key={category}>
                         <Badge
 
                             variant={"secondary"}
@@ -249,7 +249,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                         >
                             {`MicroLessons - Simulations : ${category}`}
                         </Badge>
-                        <div id={getUniqueId(category)} className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
+                        <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                             <div className="w-full">
                                 <div className="relative isolate mx-auto">
                                     <div>
@@ -265,7 +265,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                                 </div>
                             </div>
                         </div>
-                    </>
+                    </div>
                 ))}
 
 
