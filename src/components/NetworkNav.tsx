@@ -126,7 +126,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/domain-skills-library"}>Domain Skills</Link>
+              <Link href={"/domain-skills-library"}>Domain Area</Link>
             </Button>
           )}
           {userRole === 'super_admin' && (
@@ -191,7 +191,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       } `}
                       asChild
                     >
-                      <Link href={"/domain-skills-library"}>Domain Skills</Link>
+                      <Link href={"/domain-skills-library"}>Domain Area</Link>
                     </Button>
                   )}
 

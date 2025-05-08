@@ -10,7 +10,7 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import VersionOne from "./VersionOne";
 
 export const metadata = constructMetadata({
-  title: "Domain Skill Simulations - Coachbot",
+  title: "Domain Area Simulations - Coachbot",
 });
 
 const getClientUserInfo = async (

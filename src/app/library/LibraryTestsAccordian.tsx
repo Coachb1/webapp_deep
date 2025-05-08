@@ -94,7 +94,7 @@ const LibraryTestsAccordian = ({
                   variant={"outline"}
                   className="text-sm my-2 px-4 self-center"
                 >
-                  Interaction Scenarios
+                  Difficuly Level : Intermediate 
                 </Badge>
                 {paginatedShortTests.map((test: any, i: number) => (
                   <AccordionItem
@@ -126,8 +126,22 @@ const LibraryTestsAccordian = ({
                           <>{test.title}</>
                         )}
                         {type === "requested" && test.assigned_to && (
+                          <>
                           <AtSign className="h-3 w-3 ml-1 inline font-bold text-blue-500" />
+                          
+                          </>
                         )}
+
+
+                        {attemptedTests.includes(test.test_code) && (
+                          <Badge
+                              variant={"secondary"}
+                              className="ml-2 rounded-sm bg-gray-200 text-xs text-gray-700 hover:bg-gray-300"
+                            >
+                            ✅
+                            </Badge>
+                        )}
+                        
                         {test.is_recommended && (
                           <Badge
                             variant={"secondary"}
@@ -170,7 +184,7 @@ const LibraryTestsAccordian = ({
             {paginatedStandardTests.length > 0 && (
               <>
                 <Badge variant={"outline"} className="text-sm my-2 px-4">
-                  Interaction Scenarios
+                Difficuly Level : Intermediate
                 </Badge>
                 {paginatedStandardTests.map((test: any, i: number) => (
                   <AccordionItem
