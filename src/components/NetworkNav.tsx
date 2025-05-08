@@ -126,7 +126,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/domain-skills-library"}>Domain Skills</Link>
+              <Link href={"/domain-skills-library"}>Domain Area</Link>
             </Button>
           )}
           {userRole === 'super_admin' && (
@@ -182,17 +182,14 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                     </DropdownMenuItem>
                   )}
                   {!restrictedPages?.includes("Domain Skills Library") && (
-                    <Button
-                      variant={"outline"}
-                      className={` h-8 ${
-                        pathname.includes("/domain-skills-library")
-                          ? "border border-gray-500 shadow-md"
-                          : ""
-                      } `}
+                    <DropdownMenuItem
+                      className={`max-sm:text-xs ${
+                        pathname.includes("/domain-skills-library") ? "bg-gray-200" : null
+                      }`}
                       asChild
                     >
-                      <Link href={"/domain-skills-library"}>Domain Skills</Link>
-                    </Button>
+                      <Link href={"/domain-skills-library"}>Domain Area</Link>
+                    </DropdownMenuItem>
                   )}
 
                   {userRole === 'super_admin' &&(
