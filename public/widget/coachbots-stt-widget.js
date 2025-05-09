@@ -11320,7 +11320,7 @@ loadExternalModule().then(() => {
                     isProceedStt = "false";
                     questionText2 = `
                     <div id="proceed-option2" >
-                    <b>Scroll up to review Micro-lesson and simulation objectives. Proceed?</b>
+                    <b>Proceed?</b>
                         <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
