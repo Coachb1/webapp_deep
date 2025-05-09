@@ -159,7 +159,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
 
                 <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
-                    Micro-Lessons, Simulations & Roleplays
+                    Leadership Micro-lessons and Simulations
                 </h1>
 
                 {/* Category buttons */}
