@@ -50,6 +50,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
     } else if (
       (pathname === "/profile" ||
         pathname === "/content-library" ||
+        pathname === "/domain-skills-library" ||
         pathname.includes("intake")) &&
       scrolledUp > 0
     ) {
