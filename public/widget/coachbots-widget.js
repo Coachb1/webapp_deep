@@ -683,28 +683,48 @@ const capitalizeFirstLetter = (str) => {
 
 
 function formatMessage(message) {
+  const getMediaPreviewHTML = (iframe) => `
+    <details>
+      <summary style="cursor: pointer; font-weight: bold; margin-top: 1em;">▶️ AI Coach Lesson or Additional Context</summary>
+      <div style="margin-top: 0.5em;">
+        ${iframe}
+      </div>
+    </details>
+  `;
   if (Array.isArray(message)) {
     return message.map((item, index) => {
       if (typeof item === 'string') {
-        return `<span>${item}</span>`
+        return `<span>${item}</span>`;
       } else if (item.title && item.description) {
-        return `<div><strong>${item.title}:</strong> <span>${item.description}</span></div>`
+        return `<div><strong>${item.title}:</strong> <span>${item.description}</span></div>`;
       }
       return item;
-    }).join("<hr />")
+    }).join("<hr />");
   } else if (typeof message === 'object') {
     const keyToTitleMappings = {
       title: "Title",
       description: "Description",
       instructions: "Instructions",
-      oem: "Optional Enrichment Media",
-      'Here is your Feedback Video from coach': "Here is your Feedback Video from coach"
-    }
-    return Object.keys(keyToTitleMappings).map(key => (
-      message[key] ? `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${message[key]}</span></div>` : null
-    )).filter(item => !!item).join("<hr />")
+      oem: "AI Coach Lesson or Additional Context",
+      "Here is your Feedback Video from coach": "Here is your Feedback Video from coach"
+    };
+
+    return Object.keys(keyToTitleMappings).map(key => {
+      const value = message[key];
+      if (!value) return null;
+
+      if (key === 'oem' && value.includes('iframe')) {
+        return `
+          <div>
+              ${getMediaPreviewHTML(value)}
+          </div>`;
+      }
+
+      return `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${value}</span></div>`;
+    }).filter(Boolean).join("<hr />");
   }
-  return message
+
+  return message;
 }
 
 //* add a custom message to chat
@@ -7082,9 +7102,11 @@ const openChatContainer = () => {
 
   const container = shadowR.getElementById("container")
   container.oncopy = () => {
-    alert("Copying is not allowed")
-    return false
-  }
+    if (!subdomain.includes("localhost") && !subdomain.includes('playground')) {
+      alert("Copying is not allowed");
+      return false;
+    }
+  };
 
   const inputField = shadowR.getElementById("text-input")
   if (allowPastingAtClientLevel) {

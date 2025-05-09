@@ -109,6 +109,7 @@ export interface TestData {
   is_recommended: boolean;
   is_micro?: boolean;
   interaction_mode?: string;
+  descriptoin_media?: string;
 }
 
 export interface DomainData {
