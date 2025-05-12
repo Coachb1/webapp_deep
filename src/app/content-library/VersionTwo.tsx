@@ -26,6 +26,7 @@ import { useUser } from "@/context/UserContext";
 import { Div } from "@/components/ui/moving-border";
 import { ExternalLink, History, Info, Loader } from "lucide-react";
 import LibraryTestsAccordian from "../library/LibraryTestsAccordian";
+import CountdownBanner from "@/components/ui/CountdownBanner";
 
 
 const VersionTwo = ({ user, helpModeText }: any) => {
@@ -157,10 +158,11 @@ const VersionTwo = ({ user, helpModeText }: any) => {
         <>
             <HelpMode steps={HelpModeSteps} forPage="demo" />
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-
-                <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
+                <CountdownBanner/>
+                <h1 className="text-4xl mt-6 font-bold max-sm:text-2xl text-gray-600 ">
                     Leadership Micro-lessons and Simulations
                 </h1>
+                <p className="mt-4">Thousands of Microlearning embedded roleplay simulations!</p>
 
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
