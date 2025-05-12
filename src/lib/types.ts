@@ -110,6 +110,7 @@ export interface TestData {
   is_micro?: boolean;
   interaction_mode?: string;
   descriptoin_media?: string;
+  tab_sticker?: string;
 }
 
 export interface DomainData {
