@@ -12,6 +12,7 @@ export interface Test {
   creator_user_id?: string;
   is_micro?: boolean;
   descriptoin_media?: string;
+  tab_sticker?: string;
 }
 
 export type CategoryMap = {

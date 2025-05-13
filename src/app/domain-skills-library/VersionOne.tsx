@@ -26,6 +26,7 @@ import { useUser } from "@/context/UserContext";
 import { Div } from "@/components/ui/moving-border";
 import { ExternalLink, History, Info, Loader } from "lucide-react";
 import LibraryTestsAccordian from "../library/LibraryTestsAccordian";
+import CountdownBanner from "@/components/ui/CountdownBanner";
 
 
 const VersionOne = ({ user, helpModeText }: any) => {
@@ -157,11 +158,11 @@ const VersionOne = ({ user, helpModeText }: any) => {
         <>
             <HelpMode steps={HelpModeSteps} forPage="demo" />
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-
-                <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
+                <CountdownBanner />
+                <h1 className="text-4xl mt-6 font-bold max-sm:text-2xl text-gray-600 ">
                     Domain Area Micro-Lessons & Simulations
                 </h1>
-
+                <p className="mt-4">Thousands of Microlearning embedded roleplay simulations!</p>
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
                     <>
@@ -179,10 +180,24 @@ const VersionOne = ({ user, helpModeText }: any) => {
                                         <Button
                                             key={category}
                                             variant="secondary"
-                                            className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                                            className="relative border border-gray-200 h-8 px-4 rounded-md text-sm font-medium hover:bg-gray-100 transition-all duration-200 max-sm:text-xs"
                                             onClick={() => scrollToView(getUniqueId(category))}
                                         >
-                                            {category}
+                                            <span className="flex items-center gap-2">
+                                                {category}
+
+                                                {(data[category] as any)[0]?.tab_sticker && (
+                                                    <Badge
+                                                        variant="secondary"
+                                                        className="absolute -top-4 -right-1 px-2 py-0.5 rounded-full text-white text-[10px] shadow-md transition-all duration-200"
+                                                        style={{
+                                                            background: 'linear-gradient(to right,rgb(219, 88, 49),rgb(247, 48, 34))',
+                                                        }}
+                                                    >
+                                                        {(data[category] as any)[0]?.tab_sticker}
+                                                    </Badge>
+                                                )}
+                                            </span>
                                         </Button>
                                     ))}
                                 </div>
