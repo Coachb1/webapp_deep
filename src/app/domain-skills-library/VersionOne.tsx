@@ -175,7 +175,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
                                 id="user-demos"
                                 className="bg-white border border-gray-300 rounded-md p-4 shadow-sm"
                             >
-                                <div className="flex flex-wrap justify-center gap-3">
+                                <div className="flex flex-wrap justify-center gap-3 mt-2">
                                     {Object.keys(data).map((category) => (
                                         <Button
                                             key={category}
@@ -187,15 +187,10 @@ const VersionOne = ({ user, helpModeText }: any) => {
                                                 {category}
 
                                                 {(data[category] as any)[0]?.tab_sticker && (
-                                                    <Badge
-                                                        variant="secondary"
-                                                        className="absolute -top-4 -right-1 px-2 py-0.5 rounded-full text-white text-[10px] shadow-md transition-all duration-200"
-                                                        style={{
-                                                            background: 'linear-gradient(to right,rgb(219, 88, 49),rgb(247, 48, 34))',
-                                                        }}
-                                                    >
-                                                        {(data[category] as any)[0]?.tab_sticker}
-                                                    </Badge>
+                                                    <p
+                                                    className="absolute -top-4 -right-1 px-1 py-0.5 text-green-800 text-[10px]"
+                                                    > {(data[category] as any)[0]?.tab_sticker}
+                                                    </p>
                                                 )}
                                             </span>
                                         </Button>
