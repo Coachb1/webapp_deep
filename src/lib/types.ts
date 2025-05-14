@@ -111,6 +111,8 @@ export interface TestData {
   interaction_mode?: string;
   descriptoin_media?: string;
   tab_sticker?: string;
+  scenario_case?: string;
+
 }
 
 export interface DomainData {

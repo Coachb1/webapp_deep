@@ -13,6 +13,7 @@ export interface Test {
   is_micro?: boolean;
   descriptoin_media?: string;
   tab_sticker?: string;
+  scenario_case?: string;
 }
 
 export type CategoryMap = {

@@ -683,9 +683,9 @@ const capitalizeFirstLetter = (str) => {
 
 
 function formatMessage(message) {
-  const getMediaPreviewHTML = (iframe) => `
+  const getMediaPreviewHTML = (iframe, heading) => `
     <details>
-      <summary style="cursor: pointer; font-weight: bold; margin-top: 1em;">▶️ AI Coach Lesson or Additional Context</summary>
+      <summary style="cursor: pointer; font-weight: bold; margin-top: 1em;">${heading}</summary>
       <div style="margin-top: 0.5em;">
         ${iframe}
       </div>
@@ -705,18 +705,18 @@ function formatMessage(message) {
       title: "Title",
       description: "Description",
       instructions: "Instructions",
-      oem: "AI Coach Lesson or Additional Context",
-      "Here is your Feedback Video from coach": "Here is your Feedback Video from coach"
+      oem: "▶️ AI Coach Lesson or Additional Context (Expand to view or pause)",
+      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view or pause)"
     };
 
     return Object.keys(keyToTitleMappings).map(key => {
       const value = message[key];
       if (!value) return null;
 
-      if (key === 'oem' && value.includes('iframe')) {
+      if (['oem', 'feedback_media'].includes(key) && value.includes('iframe')) {
         return `
           <div>
-              ${getMediaPreviewHTML(value)}
+              ${getMediaPreviewHTML(value, keyToTitleMappings[key])}
           </div>`;
       }
 
@@ -1322,7 +1322,7 @@ async function setMcqVariables() {
           }
           if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
             appendMessage({
-              "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+              "feedback_media": snippetDiv(FeedbackVideoLink)
             })
           }
           //   gShadowRoot.getElementById(
@@ -2092,7 +2092,7 @@ const handleEndCoachingClick = async (randomId) => {
     }
     if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
       appendMessage({
-        "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+        "feedback_media": snippetDiv(FeedbackVideoLink)
       })
     }
 
@@ -5034,7 +5034,7 @@ loadExternalModule().then(() => {
                       appendMessage(message);
                       if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
                         appendMessage({
-                          "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+                          "feedback_media": snippetDiv(FeedbackVideoLink)
                         })
                       }
                       // //* send message to start new session
@@ -5323,7 +5323,7 @@ loadExternalModule().then(() => {
 
                 if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
                   appendMessage({
-                    "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+                    "feedback_media": snippetDiv(FeedbackVideoLink)
                   })
                 }
                 // //* send message to start new session
@@ -6974,7 +6974,7 @@ loadExternalModule().then(() => {
 
                     if (FeedbackVideoLink && FeedbackVideoLink.length > 0){
                       appendMessage({
-                        "Here is your Feedback Video from coach": snippetDiv(FeedbackVideoLink)
+                        "feedback_media": snippetDiv(FeedbackVideoLink)
                       })
                     }
                     // //* send message to start new session

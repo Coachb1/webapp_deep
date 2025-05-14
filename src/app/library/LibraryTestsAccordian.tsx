@@ -57,7 +57,7 @@ const LibraryTestsAccordian = ({
 
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  function snippetDiv(url:string) {
+  function snippetDiv(url: string) {
     let mediaURl;
     if (url.includes("pulse")) {
       return `
@@ -77,7 +77,7 @@ const LibraryTestsAccordian = ({
     } else if (url.includes("youtube")) {
       const videoId = url.split("v=")[1];
       url = `https://www.youtube.com/embed/${videoId}?autoplay=1`
-      return  `
+      return `
       <iframe
         allow="autoplay; encrypted-media; fullscreen;"
         style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
@@ -91,9 +91,9 @@ const LibraryTestsAccordian = ({
         scrolling="no"
       >
       `;
-    } 
+    }
     else {
-      if (url.includes("player.cloudinary.com") || url.includes('storage.googleapis.com')){
+      if (url.includes("player.cloudinary.com") || url.includes('storage.googleapis.com')) {
         mediaURl = url;
 
       } else if (url.includes("vimeo")) {
@@ -106,7 +106,7 @@ const LibraryTestsAccordian = ({
         mediaURl = `https://twitframe.com/show?url=${url}`;
       }
 
-      if (mediaURl && mediaURl.length > 0){
+      if (mediaURl && mediaURl.length > 0) {
         return `<iframe
                 src=${mediaURl}
                 width="100%"
@@ -114,7 +114,7 @@ const LibraryTestsAccordian = ({
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                 allowFullScreen
                 className="mb-2"
-              />` 
+              />`
       } else {
         return `<a href="${url}" target="_blank">Click here to read the article.</a>`
       }
@@ -216,18 +216,35 @@ const LibraryTestsAccordian = ({
                         <Accordion type="single" collapsible>
                           <AccordionItem value="media">
                             <AccordionTrigger className="text-left max-sm:text-xs cursor-pointer">
-                              ▶️ AI Coach Lesson or Additional Context
+                              ▶️ AI Coach Lesson or Additional Context (Expand to play)
                             </AccordionTrigger>
                             <AccordionContent className="max-sm:text-xs">
-                              <iframe
-                                src={test.description_media}
-                                width="100%"
-                                height="400px"
-                                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                                allowFullScreen
-                                className="mb-2"
-                              />
+                              {test.scenario_case === "observation" ? (
+                                <>
+                                  {test.description_media
+                                    .split(',')
+                                    .map((url: string, i: number) => (
+                                      <video
+                                        key={i}
+                                        src={url.trim()}
+                                        controls
+                                        onEnded={() => console.log("Playback ended")}
+                                        poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747215799/tyqblnkyrh0eyrlbmjgt.jpg"
+                                        className="rounded-lg w-full mb-2"
+                                      />
+                                    ))}
+                                </>
+                              ) : (
+                                <video
+                                  src={test.description_media}
+                                  controls
+                                  onEnded={() => console.log("Playback ended")}
+                                  poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747215799/tyqblnkyrh0eyrlbmjgt.jpg"
+                                  className="rounded-lg w-full"
+                                />
+                              )}
                             </AccordionContent>
+
                           </AccordionItem>
                         </Accordion>
                       )}
@@ -240,12 +257,17 @@ const LibraryTestsAccordian = ({
                           </span>
                         </p>
                       )}
-                      <div className="flex justify-end mt-2">
-                        <CopyToClipboard
-                          textToCopy={test.test_code}
-                          copyType="code"
-                        />
-                      </div>
+                      {test.scenario_case != 'observation' && (
+                        <div className="flex justify-end mt-2">
+                          <CopyToClipboard
+                            textToCopy={test.test_code}
+                            copyType="code"
+                          />
+                        </div>
+                      )
+
+                      }
+
                     </AccordionContent>
                   </AccordionItem>
                 ))}
