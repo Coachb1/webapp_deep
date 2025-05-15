@@ -75,13 +75,19 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 target: "#user-demos",
                 content: dynamicHelpText?.user_demos
                     ? dynamicHelpText.user_demos
-                    : "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
+                    : "The platform curated microlessons, simulations and roleplays around various use cases. Click on each tab to navigate to the right section.",
             },
             {
                 target: "#nav2",
                 content: dynamicHelpText?.nav_two
                     ? dynamicHelpText.nav_two
-                    : `The "Assigned Scenarios" contains the simulations that have been asigned other users from "Simulation Creator" under "Creator studio" tab.`,
+                    : `The "Assigned Scenarios" contains the simulations that have been asigned by Managers, Administrator and External coaches.`,
+            },
+            {
+                target: "#nav3",
+                content: dynamicHelpText?.nav_three
+                    ? dynamicHelpText.nav_three
+                    : `Each micro-lesson topic has a short video and associated Simulation exercise. Copy the interaction code from the panel and use the same in the widget.`,
             },
             // {
             //     target: "#system-demos",
@@ -250,21 +256,21 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
 
             <div className="flex pt-2 flex-col items-center justify-center text-center">
-                {Object.entries(data).map(([category, simulations]) => (
+                {Object.entries(data).map(([category, simulations],index) => (
                     <div className="w-full scroll-mt-[3rem]" id={getUniqueId(category)} key={category}>
                         <Badge
 
                             variant={"secondary"}
                             className="bg-gray-300 h-6 w-fit text-gray-600 py-3 text-center mb-3 mt-12 max-sm:mt-8 text-sm"
                         >
-                            {`MicroLessons - Simulations : ${category}`}
+                        {`${category}`}
                         </Badge>
                         <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                             <div className="w-full">
                                 <div className="relative isolate mx-auto">
                                     <div>
                                         <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
-                                            <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                            <div id={index==0? 'nav3': String(index)} className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                                 <LibraryTestsAccordian
                                                     tests={simulations}
                                                     attemptedTests={attemptedTests}

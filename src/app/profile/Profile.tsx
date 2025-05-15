@@ -179,13 +179,13 @@ const Profile = ({ user }: any) => {
                 icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Email-signature") && (
+            {/* {!restrictedFeatures?.includes("Email-signature") && (
               <NavItem
                 id="esign"
                 itemName={"Email Signature"}
                 icon={<MailCheck className="text-gray-500 h-5 w-5" />}
               />
-            )}
+            )} */}
             {!restrictedFeatures?.includes("Super-admin") && (
               <>
                 {userRole === "super_admin" ? (
@@ -232,7 +232,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "Admin" && (
             <AdminProfile userId={userId} user={user} clientName={clientName} />
           )}
-          {selectedItem === "Email Signature" && <EmailSign user={user} />}
+          {/* {selectedItem === "Email Signature" && <EmailSign user={user} />} */}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
           {selectedItem === "Admin Reports" && (
             <AdminReports user={user} clientName={clientName} />

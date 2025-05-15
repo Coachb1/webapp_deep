@@ -30,7 +30,7 @@ const CountdownBanner = () => {
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    setTimeLeft(`${days}d ${hours}h`);
     setDayName(now.toLocaleDateString('en-US', { weekday: 'long' }));
   };
 

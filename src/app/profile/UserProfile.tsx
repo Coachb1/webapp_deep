@@ -69,7 +69,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
         target: "#directory-profile",
         content: dynamicHelpText?.directory_profile
           ? dynamicHelpText.directory_profile
-          : "Ability to view and update directory profile, AI Copilots and feedback network profiles. ",
+          : "Ability to view and update directory profile and feedback network profiles. ",
       },
       {
         target: "#mcon",
@@ -87,7 +87,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
         target: "#bcon",
         content: dynamicHelpText?.bot_conversations
           ? dynamicHelpText.bot_conversations
-          : "Conversations with the user's AI avatar (AI-frame) or user's interaction with other bots. The feedback page bot interactions are also requested here.",
+          : "Conversations with the user's AI avatar or user's interaction with other bots. The feedback page bot interactions are also requested here.",
       },
       {
         target: "#mrew",
@@ -165,18 +165,18 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
     HelpModeSteps.push({
       target: "#admin",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "General Administrative Functions.",
     });
     HelpModeSteps.push({
       target: "#arep",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "General Client Administrative Functions.",
     });
   } else if (userRole === "client_admin") {
     HelpModeSteps.push({
       target: "#admin",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+      "General Client Administrative Functions.",
     });
   }
 
