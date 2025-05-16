@@ -59,6 +59,9 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
     const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
     const [data, setData] = useState<CategoryMap>({});
+    const [tabTypeInformation, setTabTypeInformation] = useState<any>({});
+    const [tabCategoryInfo, setTabCategoryInfo] = useState<any>({});
+
     const [requestedScenariosLoading, setRequestedScenariosLoading] =
         useState(false);
     const {
@@ -137,6 +140,20 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
 
                 setData(json.results);
+
+                const separatedByTabType: { [key: string]: any[] } = {};
+
+                Object.values(json.category_info).forEach((item: any) => {
+                    const type = item.tab_type || 'undefined';
+
+                    if (!separatedByTabType[type]) {
+                        separatedByTabType[type] = [];
+                    }
+
+                    separatedByTabType[type].push(item);
+                });
+                setTabTypeInformation(separatedByTabType);
+                setTabCategoryInfo(json.category_info);
                 console.log("testmapping2", json.results);
             } catch (error: any) {
                 console.error("Failed to load test mappings:", error);
@@ -160,6 +177,12 @@ const VersionOne = ({ user, helpModeText }: any) => {
             .replace(/[^a-z0-9]+/g, '-')   // Replace spaces & symbols with hyphens
             .replace(/^-+|-+$/g, '');      // Remove leading/trailing hyphens
     };
+    const tabTypeColors: { [key: string]: string } = {
+        simulation: "bg-blue-300",
+        'roleplay observation': "bg-gray-300",
+        undefined: "bg-gray-200",
+        'psychometric assessment': "bg-green-300",
+    };
     return (
         <>
             <HelpMode steps={HelpModeSteps} forPage="demo" />
@@ -172,38 +195,44 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
                     <>
-                        <Badge className="mt-6 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
-                            MicroLessons - Simulations
-                        </Badge>
-                        <div className="bg-transparent h-4" />
-                        <div className="w-full max-w-4xl">
-                            <Div
-                                id="user-demos"
-                                className="bg-white border border-gray-300 rounded-md p-4 shadow-sm"
-                            >
-                                <div className="flex flex-wrap justify-center gap-3 mt-2">
-                                    {Object.keys(data).map((category) => (
-                                        <Button
-                                            key={category}
-                                            variant="secondary"
-                                            className="relative border border-gray-200 h-8 px-4 rounded-md text-sm font-medium hover:bg-gray-100 transition-all duration-200 max-sm:text-xs"
-                                            onClick={() => scrollToView(getUniqueId(category))}
-                                        >
-                                            <span className="flex items-center gap-2">
-                                                {category}
+                        {Object.entries(tabTypeInformation).map(([tabType, categories], index) => (
+                            <>
+                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType]}`}>
+                                    {tabType === 'undefined' ? 'Roleplay Observation' : `MicroLessons - ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
+                                </Badge>
 
-                                                {(data[category] as any)[0]?.tab_sticker && (
-                                                    <p
-                                                    className="absolute -top-4 -right-1 px-1 py-0.5 text-green-800 text-[10px]"
-                                                    > {(data[category] as any)[0]?.tab_sticker}
-                                                    </p>
-                                                )}
-                                            </span>
-                                        </Button>
-                                    ))}
+                                <div className="bg-transparent h-4" />
+
+
+                                <div className="w-full max-w-4xl">
+                                    <Div
+                                        id={`user-demos`}
+                                        className="bg-white border border-gray-300 rounded-md p-4 shadow-sm"
+                                    >
+                                        <div className="flex flex-wrap justify-center gap-3 mt-2">
+                                            {(categories as any[]).map((categoryObj) => (
+                                                <Button
+                                                    key={categoryObj.category}
+                                                    variant="secondary"
+                                                    className="relative border border-gray-200 h-8 px-4 rounded-md text-sm font-medium hover:bg-gray-100 transition-all duration-200 max-sm:text-xs"
+                                                    onClick={() => scrollToView(getUniqueId(categoryObj.category))}
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        {categoryObj.category}
+
+                                                        {categoryObj.tab_sticker && (
+                                                            <p className="absolute -top-4 -right-1 px-1 py-0.5 text-green-800 text-[10px]">
+                                                                {categoryObj.tab_sticker}
+                                                            </p>
+                                                        )}
+                                                    </span>
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </Div>
                                 </div>
-                            </Div>
-                        </div>
+                            </>
+                        ))}
                     </>
                 )}
 
@@ -256,24 +285,25 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
 
             <div className="flex pt-2 flex-col items-center justify-center text-center">
-                {Object.entries(data).map(([category, simulations],index) => (
+                {Object.entries(data).map(([category, simulations], index) => (
                     <div className="w-full scroll-mt-[3rem]" id={getUniqueId(category)} key={category}>
                         <Badge
 
                             variant={"secondary"}
                             className="bg-gray-300 h-6 w-fit text-gray-600 py-3 text-center mb-3 mt-12 max-sm:mt-8 text-sm"
                         >
-                        {`${category}`}
+                            {`${category}`}
                         </Badge>
                         <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                             <div className="w-full">
                                 <div className="relative isolate mx-auto">
                                     <div>
                                         <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
-                                            <div id={index==0? 'nav3': String(index)} className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                            <div id={index == 0 ? 'nav3' : String(index)} className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                                 <LibraryTestsAccordian
                                                     tests={simulations}
                                                     attemptedTests={attemptedTests}
+                                                    tabInformation={tabCategoryInfo[category]}
                                                 />
                                             </div>
                                         </div>
