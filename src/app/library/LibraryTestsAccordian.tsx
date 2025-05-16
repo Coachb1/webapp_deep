@@ -15,11 +15,13 @@ import { Tooltip } from "antd";
 import { Div } from "@/components/ui/moving-border";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@/components/ui/card-hover-effect";
+import { BulletList } from "@/components/MarkdownHandler";
 
 interface LibraryTestsAccordianType {
   tests: any;
   attemptedTests: any;
   type?: any;
+  tabInformation?: any;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -28,11 +30,12 @@ const LibraryTestsAccordian = ({
   tests,
   attemptedTests,
   type,
+  tabInformation
 }: LibraryTestsAccordianType) => {
   // State for pagination
   const [shortCurrentPage, setShortCurrentPage] = useState(1);
   const [standardCurrentPage, setStandardCurrentPage] = useState(1);
-
+  console.log('tab', tabInformation)
   const getPaginatedData = (data: any[], currentPage: number) => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -159,7 +162,7 @@ const LibraryTestsAccordian = ({
                   variant={"outline"}
                   className="text-sm my-2 px-4 self-center"
                 >
-                  Difficuly Level : Intermediate
+                  {tabInformation?.tab_difficulty || "Difficuly Level : Intermediate"}
                 </Badge>
                 {paginatedShortTests.map((test: any, i: number) => (
                   <AccordionItem
@@ -229,7 +232,7 @@ const LibraryTestsAccordian = ({
                                         src={url.trim()}
                                         controls
                                         onEnded={() => console.log("Playback ended")}
-                                        poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747215799/tyqblnkyrh0eyrlbmjgt.jpg"
+                                        poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"
                                         className="rounded-lg w-full mb-2"
                                       />
                                     ))}
@@ -239,7 +242,7 @@ const LibraryTestsAccordian = ({
                                   src={test.description_media}
                                   controls
                                   onEnded={() => console.log("Playback ended")}
-                                  poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747215799/tyqblnkyrh0eyrlbmjgt.jpg"
+                                  poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"
                                   className="rounded-lg w-full"
                                 />
                               )}
@@ -248,7 +251,18 @@ const LibraryTestsAccordian = ({
                           </AccordionItem>
                         </Accordion>
                       )}
-                      <p className="text-left">{test.description}</p>
+                      <p className="text-left">
+                        {test.scenario_case === 'observation' ? (
+                          <>
+                            <b>Here are the key takeaways based on the roleplay:</b>
+                            <br />
+                            {BulletList(test.description)}
+                          </>
+                        ) : (
+                          test.description
+                        )}
+                      </p>
+
                       {type === "assigned" && (
                         <p className="my-2 text-sm max-sm:text-xs text-left bg-gray-200 w-fit rounded-sm py-1 px-2">
                           Assigned by{" "}

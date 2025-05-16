@@ -462,7 +462,7 @@ const Coaches = ({
           target: "#participant-listing",
           content: dynamicHelpTextt?.participant_listing
             ? dynamicHelpTextt.participant_listing
-            : `All participants are listed. Coach, coachees, and mentees. Coach  can have dual role profiles as well. "AI Coaching Agent" are external coaches  whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
+            : `All participants are listed. Coach, coachees, and mentees. "AI Coaching Agent" are knowledge based assistant coaches. The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
         },
       ]);
 
@@ -1644,7 +1644,7 @@ const Coaches = ({
                                   coach.id_for_target_selection ===
                                     "first_coach_profile" &&
                                   coach.feedback_wall !== null
-                                    ? "reviews"
+                                    ? "review"
                                     : undefined
                                 }
                                 stars={coach.rating}

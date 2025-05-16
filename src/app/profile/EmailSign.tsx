@@ -41,15 +41,16 @@ const EmailSign = ({ user }: any) => {
       console.log(bot_ids);
 
       if (bot_ids?.split(", ").length > 0) {
+        console.log('avatar bot', bot_ids);
         const avatarBot = bot_ids
           .split(", ")
-          .filter((id: string) => id.includes("avatar-bot"))
+          .filter((id: string) => (id.includes("avatar_bot") || id.includes("avatar-bot")))
           .join("");
         setAvatarBotId(avatarBot);
 
         const feedbackBot = bot_ids
           .split(", ")
-          .filter((id: string) => id.includes("feedback-bot"))
+          .filter((id: string) => (id.includes("feedback-bot") || id.includes("feedback_bot")))
           .join("");
 
         setFeedbackBotId(feedbackBot);
