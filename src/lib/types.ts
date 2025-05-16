@@ -1,3 +1,5 @@
+import { CategoryMap } from "./test";
+
 interface Recommendation {
   title: string;
   test_code: string;
@@ -50,6 +52,10 @@ export interface UserIDPsType {
   recommended_ted_talk: string;
   recommended_scenarios: RecommendedScenarios;
   report: string;
+}
+export interface LibraryPaageScenariosType {
+  page_scenarios: any;
+  tab_type_info: any;
 }
 
 export interface TestsType {

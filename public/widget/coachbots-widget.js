@@ -6215,22 +6215,35 @@ loadExternalModule().then(() => {
                                               >`
                             }
                           );
-                        } else if (senarioMediaDescription.includes("player.cloudinary.com")){
+                        } else if (senarioMediaDescription.includes("player.cloudinary.com") || senarioMediaDescription.includes('storage.googleapis.com')){
                           
-                          appendMessage(
-                            {
-                              title: senarioTitle,
-                              description: senarioDescription,
-                              instructions: "Response should be at least 15 words.",
-                              oem: `<iframe
+                          appendMessage({
+                            title: senarioTitle,
+                            description: senarioDescription,
+                            instructions: "Response should be at least 15 words.",
+                            oem: `
+                                <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
+                                  <div id="poster-overlay" style="
+                                    position: absolute;
+                                    top: 0; left: 0;
+                                    width: 100%; height: 100%;
+                                    background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
+                                    z-index: 2;
+                                    transition: opacity 0.5s ease;
+                                    border-radius: 8px;
+                                  "></div>
+
+                                  <iframe
+                                    onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
                                     allow="autoplay; encrypted-media; fullscreen;"
-                                    style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
-                                    src=${senarioMediaDescription}
+                                    style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
+                                    src="${senarioMediaDescription}"
                                     frameborder="0"
                                     allowfullscreen
-                                    >`
-                            }
-                          );
+                                  ></iframe>
+                                </div>
+                                `
+                          });
                         }
                         else {
                           const urlList = senarioMediaDescription.split(",");

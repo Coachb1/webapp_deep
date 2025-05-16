@@ -68,7 +68,8 @@ const VersionTwo = ({ user, helpModeText }: any) => {
     const {
         userInfo,
         requestedTestsData,
-        attemptedTests
+        attemptedTests,
+        leadershipLibrary
 
     } = useUser();
     useEffect(() => {
@@ -122,43 +123,14 @@ const VersionTwo = ({ user, helpModeText }: any) => {
 
         const fetchTestMappings = async () => {
             try {
-                const res = await fetch(`${baseURL}/tests/test-mappings/?client_name=${userInfo.clientName}&page_name=leadership_library`);
+                console.log("Fetching test mappings...", leadershipLibrary);
+                setTabTypeInformation(leadershipLibrary?.tab_type_info);
+                setTabCategoryInfo(leadershipLibrary?.page_scenarios.category_info);
+                setData(leadershipLibrary?.page_scenarios.results);
 
-                if (!res.ok) {
-                    console.error(`HTTP error! Status: ${res.status}`);
-                    setData({});
-                    return;
-                }
-
-                if (res.status !== 200) {
-                    console.error("Failed a to fetch test mappings", res.status);
-                    setData({});
-                    return;
-                }
-                const json = await res.json();
-
-                console.log("testmappingv2", json, json.results);
-
-
-                setData(json.results);
-
-                const separatedByTabType: { [key: string]: any[] } = {};
-
-                Object.values(json.category_info).forEach((item: any) => {
-                    const type = item.tab_type || 'undefined';
-
-                    if (!separatedByTabType[type]) {
-                        separatedByTabType[type] = [];
-                    }
-
-                    separatedByTabType[type].push(item);
-                });
-                setTabTypeInformation(separatedByTabType);
-                setTabCategoryInfo(json.category_info);
-                console.log("testmapping2", json.results);
             } catch (error: any) {
                 console.error("Failed to load test mappings:", error);
-                // setData({});
+                setData({});
 
             }
         };
@@ -182,7 +154,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
     const colorList = ['bg-gray-300', 'bg-blue-300', 'bg-green-300', 'bg-gray-300', 'bg-gray-300'];
     const tabTypeColors: { [key: string]: string } = {
         simulation: "bg-blue-300",
-        'roleplay observation': "bg-gray-300",
+        'roleplay observation': "bg-green-300",
         undefined: "bg-gray-200",
         'psychometric assessment': "bg-green-300",
       };
