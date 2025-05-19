@@ -152,7 +152,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
     };
     const tabTypeColors: { [key: string]: string } = {
         simulation: "bg-blue-300",
-        'roleplay observation': "bg-green-300",
+        'roleplay observation (difficult conversations)': "bg-green-300",
         undefined: "bg-gray-200",
         'psychometric assessment': "bg-green-300",
     };
@@ -170,7 +170,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
                     <>
                         {Object.entries(tabTypeInformation).map(([tabType, categories], index) => (
                             <>
-                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType]}`}>
+                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()]}`}>
                                     {tabType === 'undefined' ? 'Roleplay Observation' : `MicroLessons - ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
                                 </Badge>
 

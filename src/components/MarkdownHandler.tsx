@@ -33,12 +33,22 @@ export default MarkdownRenderer;
 
 
 const cleanAndSplitText = (text: string): string[] => {
+  const markdownBulletRegex = /^\s*\*/m;
+
+  if (markdownBulletRegex.test(text)) {
     return text
-      .replace(/[*\-`]/g, '') // Remove *, -, `
-      .split(/(?<=[.?!])\s+(?=[A-Z])/g) // Split on sentence boundaries before capital letter
+      .split(/\n?\s*\*\s+/) // split on lines or spaces with bullet `* `
+      .map(s => s.replace(/[*\-]/g, '').trim()) // clean extra * and hyphens
+      .filter(Boolean);
+  } else {
+    return text
+      .replace(/[`\-]/g, '') // remove ` and -
+      .split(/(?<=[.?!])\s+(?=[A-Z])/g) // split on sentence boundaries
       .map(s => s.trim())
       .filter(Boolean);
-  };
+  }
+};
+
   
 
 const BulletList = (rawText:string) => {
