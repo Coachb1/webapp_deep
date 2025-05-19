@@ -232,7 +232,7 @@ const LibraryTestsAccordian = ({
                                         src={url.trim()}
                                         controls
                                         onEnded={() => console.log("Playback ended")}
-                                        poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"
+                                        poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" :"https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
                                         className="rounded-lg w-full mb-2"
                                       />
                                     ))}
@@ -242,7 +242,7 @@ const LibraryTestsAccordian = ({
                                   src={test.description_media}
                                   controls
                                   onEnded={() => console.log("Playback ended")}
-                                  poster="https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"
+                                  poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" :"https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
                                   className="rounded-lg w-full"
                                 />
                               )}
