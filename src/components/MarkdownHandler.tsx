@@ -38,14 +38,15 @@ const cleanAndSplitText = (text: string): string[] => {
   if (markdownBulletRegex.test(text)) {
     return text
       .split(/\n?\s*\*\s+/) // split on lines or spaces with bullet `* `
-      .map(s => s.replace(/[*\-]/g, '').trim()) // clean extra * and hyphens
+      .map(s => s.replace(/[*]/g, '').trim()) // clean extra *
+      .map(s => s.replace(/^-\s*/, '').trim()) // remove leading hyphen only
       .filter(Boolean);
   } else {
     return text
-      .replace(/[`\-]/g, '') // remove ` and -
-      .split(/(?<=[.?!])\s+(?=[A-Z])/g) // split on sentence boundaries
-      .map(s => s.trim())
-      .filter(Boolean);
+    .replace(/`/g, '') // remove backticks only
+    .split(/(?<=[.?!])\s+(?=[A-Z])/g) // split on sentence boundaries
+    .map(s => s.replace(/^-\s*/, '').trim()) // remove leading hyphen only
+    .filter(Boolean);
   }
 };
 
