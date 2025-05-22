@@ -53,11 +53,14 @@ const LayoutComponent = ({
       });
 
       window.user = user;
+      const ENVIRONMENT = process.env.KINDE_POST_LOGIN_REDIRECT_URL?.includes("localhost") ? "local" : "production";
 
-      Sentry.init({
-        dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
-        tracesSampleRate: 1.0, // Adjust this value in production
-      });
+      if (ENVIRONMENT != "local") {
+        Sentry.init({
+          dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
+          tracesSampleRate: 1.0, // Adjust this value in production
+        });
+      }
 
       //sentry
       Sentry.setUser({
@@ -254,11 +257,11 @@ const LayoutComponent = ({
                     <div className="coachbots-coachscribe"></div>
                   )}
                   {!pathname.includes("/feedback") &&
-                  !pathname.includes("/coach") &&
-                  !pathname.includes("/subject-expert") &&
-                  !pathname.includes("/knowledge-bot") &&
-                  !pathname.includes("/engagement-survey") &&
-                  !pathname.includes("/intake") ? (
+                    !pathname.includes("/coach") &&
+                    !pathname.includes("/subject-expert") &&
+                    !pathname.includes("/knowledge-bot") &&
+                    !pathname.includes("/engagement-survey") &&
+                    !pathname.includes("/intake") ? (
                     <>
                       <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
                         {/* <Boxes className="z-0" /> */}
