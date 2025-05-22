@@ -4,14 +4,18 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+const ENVIRONMENT = process.env.KINDE_POST_LOGIN_REDIRECT_URL?.includes("localhost") ? "local" : "production";
+console.log(`ENVIRONMENT: ${ENVIRONMENT}`);
 
-Sentry.init({
-  dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
+if (ENVIRONMENT != "local") {
+  Sentry.init({
+    dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+    // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+    tracesSampleRate: 1,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
-  denyUrls: [/localhost/, /127\.0\.0\.1/]
-});
+    // Setting this option to true will print useful information to the console while you're setting up Sentry.
+    debug: false,
+    denyUrls: [/localhost/, /127\.0\.0\.1/]
+  });
+}
