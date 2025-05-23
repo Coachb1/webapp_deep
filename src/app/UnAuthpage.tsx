@@ -4,15 +4,15 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 import {
-  BarChartIcon,
-  ClipboardListIcon,
-  LightbulbIcon,
+  AwardIcon,
+  FileSearchIcon,
+  HeartHandshakeIcon,
+  LineChartIcon,
   Loader,
   LogIn,
   LogOut,
-  SearchIcon,
+  MonitorPlayIcon,
   UserCircle2,
-  UserIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -238,43 +238,46 @@ export const LoginWall = () => {
     }
   }, []);
 
+  
+  
   const items = [
     {
-      title: "Join The Network",
+      title: "Roleplay Observation and Micro-Learning",
       description:
-        "Join the network as a coach or coachee. The coaches create their avatars for interim sessions or initial matches. Users can request their subject matter bots.",
+        "Observe and study the roleplay interactions with built-in key takeaways. Dive into case-based microlearning.",
       header: <h3 className="text-xl font-bold text-gray-500">01</h3>,
-      icon: <UserIcon className=" text-3xl mb-4" />,
+      icon: <MonitorPlayIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Exchange Notes & Exercises",
+      title: "Simulations with Feedback Reports",
       description:
-        "Exchange notes based on your live sessions or just communicate. The notes are augmented with simulations for the users to practice in context to the notes.",
+        "Explore simulations for any use case for your team. Use the curated path, request your own, or use simulations based on existing learning resources.",
       header: <h3 className="text-xl font-bold text-gray-500">02</h3>,
-      icon: <ClipboardListIcon className=" text-3xl mb-4" />,
+      icon: <FileSearchIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Develop Learning Plan",
+      title: "Coaching & Mentoring",
       description:
-        "Just want to get some feedback? Create your feedback page and collect valuable feedback from your extended network. Use the same to create your own development plan with recommendations.",
+        "Leverage built-in coaching and mentoring network with automated session notes, exercises, and agentic AI session support to maintain continuity without the physical presence of the coach/mentor.",
       header: <h3 className="text-xl font-bold text-gray-500">03</h3>,
-      icon: <LightbulbIcon className=" text-3xl mb-4" />,
+      icon: <HeartHandshakeIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Explore & Practice Simulations",
+      title: "Leadership or Subject Matter Development",
       description:
-        "Explore simulations for any use case for your team, Use the library, create your own or use simulations based on existing learning resources.",
+        "Whether for new manager development or technical fluency, leverage conversational AI to demonstrate competence.",
       header: <h3 className="text-xl font-bold text-gray-500">04</h3>,
-      icon: <SearchIcon className=" text-3xl mb-4" />,
+      icon: <AwardIcon className=" text-3xl mb-4" />,
     },
     {
       title: "Track Your Progress",
       description:
-        "Track your skill scores based on simulations or interactions with coaches. Display your feedback wall and also improve based on critical feedback.",
+        "Track your skill scores based on simulations. Deep dive with historical reports to view patterns in your learning journey.",
       header: <h3 className="text-xl  font-bold text-gray-500">05</h3>,
-      icon: <BarChartIcon className=" text-3xl mb-4" />,
+      icon: <LineChartIcon className=" text-3xl mb-4" />,
     },
   ];
+  
 
   const LoginUI = () => {
     return (
@@ -287,7 +290,7 @@ export const LoginWall = () => {
             BOT
           </h1>
           <p className="mt-4 text-3xl">
-            AI First Coaching Based Engagement Platform
+            Micro-Learning, Simulations and Coaching-mentoring Network
           </p>
           <div className="p-4 max-sm:px-6">
             <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
