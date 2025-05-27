@@ -1340,7 +1340,7 @@ async function setMcqVariables() {
 
           userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
           console.log(senarioCase, ClientUserInformation.show_recommendations)
-          if (['psychometric', 'game'].includes(senarioCase)
+          if (['psychometric', 'game', 'interview'].includes(senarioCase)
             || !ClientUserInformation.show_recommendations
             || userScenarioRecommendation.total_recommendation >= 2) {
             appendMessage("<b>Please enter another interaction code to start a new interaction.</b>")
@@ -2114,7 +2114,7 @@ const handleEndCoachingClick = async (randomId) => {
 
     userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
     console.log(senarioCase, ClientUserInformation.show_recommendations)
-    if (['psychometric', 'game'].includes(senarioCase)
+    if (['psychometric', 'game', 'interview'].includes(senarioCase)
       || !ClientUserInformation.show_recommendations
       || userScenarioRecommendation.total_recommendation >= 2) {
       appendMessage("<b>Please enter another interaction code to start a new interaction.</b>")
@@ -5040,7 +5040,7 @@ loadExternalModule().then(() => {
                       // //* send message to start new session
                       userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
                       console.log(senarioCase, ClientUserInformation.show_recommendations)
-                      if (['psychometric', 'game'].includes(senarioCase)
+                      if (['psychometric', 'game', 'interview'].includes(senarioCase)
                         || !ClientUserInformation.show_recommendations
                         || userScenarioRecommendation.total_recommendation >= 2) {
                         signals.onResponse({
@@ -5330,7 +5330,7 @@ loadExternalModule().then(() => {
 
                 userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
                 console.log(senarioCase, ClientUserInformation.show_recommendations)
-                if (['psychometric', 'game'].includes(senarioCase)
+                if (['psychometric', 'game', 'interview'].includes(senarioCase)
                   || !ClientUserInformation.show_recommendations
                   || userScenarioRecommendation.total_recommendation >= 2) {
                   signals.onResponse({
@@ -6994,7 +6994,7 @@ loadExternalModule().then(() => {
 
                     userScenarioRecommendation = await getTestRecommendations(questionData.results[0].uid, null, null, userId);
                     console.log(senarioCase, ClientUserInformation.show_recommendations)
-                    if (['psychometric', 'game'].includes(senarioCase)
+                    if (['psychometric', 'game', 'interview'].includes(senarioCase)
                       || !ClientUserInformation.show_recommendations
                       || userScenarioRecommendation.total_recommendation >= 2) {
                       signals.onResponse({
