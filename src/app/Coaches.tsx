@@ -1278,12 +1278,12 @@ const Coaches = ({
         title={
           headings?.heading
             ? headings?.heading
-            : "Coaching & Mentoring Network"
+            : "Coaching & Mentoring Network."
         }
         description={
           headings?.subHeading
             ? headings?.subHeading
-            : "Peer-to-Peer Network of Leaders for Growth"
+            : "Peer-to-Peer Network of Leaders for Growth."
         }
         className="-pt-96"
         cta={
