@@ -1278,7 +1278,7 @@ const Coaches = ({
         title={
           headings?.heading
             ? headings?.heading
-            : "Coaching & Mentoring Network"
+            : "Coaching & Mentoring Network."
         }
         description={
           headings?.subHeading
