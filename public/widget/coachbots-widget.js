@@ -5690,6 +5690,9 @@ loadExternalModule().then(() => {
                   if (ClientUserInformation && 'client_name' in ClientUserInformation) {
                     widgetClientId = ClientUserInformation.client_name
                   }
+                  if(snnipetConfig.assessment && snnipetConfig.assessment === 'true'){
+                    EmailCandidate = false;
+                  }
                 } else {
                   console.log("clientAllowAudioInteraction", clientAllowAudioInteraction)
                   console.log("userAllowAudioInteraction", userAllowAudioInteraction)
@@ -5702,7 +5705,7 @@ loadExternalModule().then(() => {
                   }
 
                 }
-                console.log('isImmersive', isImmersive)
+                console.log('isImmersive', isImmersive, EmailCandidate)
 
 
                 if (TestUIInfo) {
