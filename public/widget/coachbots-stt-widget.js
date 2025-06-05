@@ -9664,7 +9664,6 @@ loadExternalModule().then(() => {
                   })
                 }
               } else if (
-                snnipetConfigSTT["psychometric"] === "true" ||
                 Object.keys(snnipetConfigSTT).length > 0
               ) {
                 //  creating user after getting name, email "CreateUser"
@@ -10875,6 +10874,9 @@ loadExternalModule().then(() => {
                     "client_name" in clientuserInformationSTT
                   ) {
                     sttWidgetClientId = clientuserInformationSTT.client_name;
+                  }
+                  if(snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true'){
+                    emailCandidate2 = false;
                   }
                 } else {
                   console.log(
