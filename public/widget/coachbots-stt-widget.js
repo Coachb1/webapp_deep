@@ -290,6 +290,7 @@ let PreviousSessionInfoSTT = {
 let userScenarioRecommendationStt;
 let increaseSessionForFirstTestStt = false;
 let FeedbackVideoLinkStt;
+let FetchTestCodeReportStt = false;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -6243,6 +6244,111 @@ async function testRecommendationExceededStt(origin_test_id, test_case, session_
   }
 }
 
+const getLeaderboardPosition = async (
+  userEmail,
+  profileType,
+  userId
+) => {
+  const response = await fetch(
+    `${baseURL2}/accounts/participant-leader-board-report/?email=${userEmail}&by_category=true`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    }
+  );
+
+  if (response.ok) {
+    let responseData = await response.json();
+
+    console.log("Leaderboard Data : ", responseData);
+
+    if (profileType === "coach" || profileType === "mentor") {
+      responseData = responseData.coach_mentor;
+    } else if (profileType === "coachee" || profileType === "mentee") {
+      responseData = responseData.coachee_mentee;
+    } else {
+      responseData = responseData.full_data;
+    }
+
+    console.log(
+      `Leaderboard API\n Email : ${userEmail} \n Profile : ${profileType} \n User ID : ${userId}`
+    );
+
+    const userDetails = responseData.map(
+      (data, i) => {
+        return {
+          name: data.name,
+          user_id: data.user_id,
+          total_count: responseData.length,
+          rating: data.total_score === 0 ? responseData.length : data.rating,
+        };
+      }
+    );
+
+    const positionedUser = userDetails.filter(
+      (userr) => userr.user_id === userId
+    );
+
+    console.log("Data : ", positionedUser);
+    return positionedUser;
+  } else {
+    return [];
+  }
+};
+
+const getCandidateReportStt = async (userId) => {
+  const response = await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      report_type: "participantReport",
+      candidate_id: userId,
+    }),
+  });
+
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log('getCandidateReport', responseData)
+    return responseData.url;
+  } else {
+    return "";
+  }
+};
+
+const getAllReportsTestcode = async (test_code) => {
+  try {
+    const response = await fetch(`${baseURL2}/frontend-auth/get-all-reports-by-testcode/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ test_code }),
+    });
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      console.log('getAllReportsTestcode', responseData);
+      return [responseData.report_urls, true];
+    } else {
+      console.error('Error:', responseData.error);
+      return [responseData.error, false];
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return [error.message || 'Unknown error', false];
+  }
+};
+
+
+
 async function createTestRecommendationStt(recommended_test_id, session_id, test_case) {
   const url = `${baseURL2}/tests/test-recommendations/`;
 
@@ -6921,6 +7027,150 @@ async function handleOptionButtonClick2(
     .catch((err) => console.log(err));
 }
 
+async function handleReportButtonClickStt(choice) {
+  const reportWrapper = document.getElementById("report-buttons-stt");
+  if (reportWrapper) {
+    reportWrapper.querySelectorAll("button").forEach((btn) => (btn.disabled = true));
+  }
+  FetchTestCodeReportStt = false;
+
+  try {
+    if (choice === 'report-history') {
+      const url = await getCandidateReportStt(userId2);
+      appendMessage2(`
+        <div id="report-history" style="
+          padding: 16px;
+          max-width: 500px;
+          background-color: #f9fafb;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          font-family: 'Segoe UI', sans-serif;
+          color: #1f2937;
+        ">
+          <p style="margin: 0 0 12px; font-size: 16px; font-weight: 500;">
+            Here is your history report:
+          </p>
+          <a href="${url}" target="_blank" rel="noopener noreferrer" style="
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background-color: #3b82f6;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+          " onmouseover="this.style.backgroundColor='#2563eb'"
+             onmouseleave="this.style.backgroundColor='#3b82f6'">
+            View History Report
+          </a>
+        </div>
+      `);
+    } else if (choice === 'report-leaderboard') {
+      const userPositionDetails = await getLeaderboardPosition(
+        window.user.email,
+        clientuserInformationSTT?.profile_type || "",
+        userId2
+      );
+      appendMessage2(`Position: Top ${userPositionDetails[0].rating} out of ${userPositionDetails[0].total_count}`);
+    } else if (choice == 'report-test'){
+      appendMessage2(`Enter Test code to fetch its latest report.`)
+      FetchTestCodeReportStt = true;
+    } 
+  } catch (err) {
+    console.error("Error generating report:", err);
+    appendMessage2("An error occurred while generating the report.");
+  } finally {
+    enableReportButtons(); // Re-enable after operation
+  }
+}
+
+function enableReportButtons() {
+  const wrapper = document.getElementById("report-buttons-stt");
+  if (wrapper) {
+    wrapper.querySelectorAll("button").forEach((btn) => {
+      btn.disabled = false;
+      btn.style.cursor = "pointer";
+    });
+  }
+}
+function waitForMessagesElement(maxAttempts = 20, delay = 100) {
+  let attempts = 0;
+  const interval = setInterval(() => {
+    const hostEl = document.getElementById("chat-element2");
+
+    if (hostEl?.shadowRoot) {
+      const messages = hostEl.shadowRoot.getElementById("messages");
+      if (messages) {
+        clearInterval(interval); // Stop checking
+        messages.style.paddingBottom = "2rem";
+        console.log("#messages found and style applied.");
+        return;
+      }
+    }
+
+    attempts++;
+    if (attempts >= maxAttempts) {
+      clearInterval(interval);
+      console.warn("Unable to find #messages inside shadow root.");
+    }
+  }, delay);
+}
+
+
+
+const addReportButtons = async () => {
+  const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+
+  const buttonsWrapper = document.createElement("div");
+  buttonsWrapper.id = "report-buttons-stt";
+  buttonsWrapper.style.cssText = `
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    width: fit-content;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  `;
+
+  const faqButtonsGenerator = (actionName, buttonText) => {
+    const button = document.createElement("button");
+    button.innerText = buttonText;
+    button.onclick = () => handleReportButtonClickStt(actionName);
+
+    button.style.cssText = `
+      padding: 4px 8px;
+      font-size: 12px;
+      border: 1px solid lightgray;
+      border-radius: 4px;
+      background-color: transparent;
+      cursor: ${window.user ? 'pointer' : 'not-allowed'};
+      opacity: ${window.user ? '1' : '0.6'};
+    `;
+
+    button.onmouseover = () => (button.style.backgroundColor = '#e5e7eb');
+    button.onmouseleave = () => (button.style.backgroundColor = 'transparent');
+
+    if (!window.user) button.disabled = true;
+
+    buttonsWrapper.appendChild(button);
+  };
+
+  faqButtonsGenerator('report-history', "History Report");
+  faqButtonsGenerator('report-test', "Test Report");
+  faqButtonsGenerator('report-leaderboard', "Leaderboard Report");
+
+  faqButtonsWrapper.style.display = "flex";
+  faqButtonsWrapper.appendChild(buttonsWrapper);
+
+  waitForMessagesElement();
+
+  console.log('BotId', faqButtonsWrapper, buttonsWrapper)
+}
+
+
 let chatInputFontSize = "14px";
 let messageBubbleMaxWidth = "100%";
 if (window.innerWidth < 768) {
@@ -7408,6 +7658,9 @@ loadExternalModule().then(() => {
 
   if (botId) {
     const _ = getBotDetails2(botId);
+  } else{
+    console.log('botId')
+    const _ = addReportButtons();
   }
 
   // if (
@@ -9373,6 +9626,95 @@ loadExternalModule().then(() => {
           // get latest message
           let latestMessage = body.messages[body.messages.length - 1].text;
 
+          // fetch report for a test code
+          if (FetchTestCodeReportStt) {
+            const code = latestMessage?.trim();
+              if (isTestCode2(code) && code.length == 7) {
+
+                  LoadingMessageWithText(
+                    "Please wait, we are fetching your report!!"
+                  );
+                  try{
+                    const [reportUrl, success] = await getAllReportsTestcode(code);
+                    if (!success){
+                      signals.onResponse({
+                        html: `
+                          <div style="
+                            color: #b91c1c;
+                            font-weight: 600;
+                          ">
+                            ${reportUrl} Retry again!
+                          </div>
+                        `
+                      });
+                      FetchTestCodeReportStt = false;
+                      return;
+                    } else{
+
+                    signals.onResponse({
+                      html: `
+                        <div style="
+                          padding: 16px;
+                          max-width: 500px;
+                          background-color: #f0fdf4;
+                          border: 1px solid #bbf7d0;
+                          border-radius: 8px;
+                          font-family: 'Segoe UI', sans-serif;
+                          color: #065f46;
+                        ">
+                          <p style="margin: 0 0 12px; font-size: 16px; font-weight: 500;">
+                            Your test report is ready:
+                          </p>
+                          <a href="${reportUrl[0].report_url}" target="_blank" rel="noopener noreferrer" style="
+                            display: inline-block;
+                            padding: 4px 8px;
+                            font-size: 14px;
+                            font-weight: 600;
+                            color: white;
+                            background-color: #10b981;
+                            border-radius: 6px;
+                            text-decoration: none;
+                            transition: background-color 0.2s ease;
+                          " onmouseover="this.style.backgroundColor='#059669'"
+                            onmouseleave="this.style.backgroundColor='#10b981'">
+                            View Test Report
+                          </a>
+                        </div>
+                      `
+                    });
+                    }
+
+                  } catch (error) {
+                    console.error("Report fetch error:", error);               
+                    signals.onResponse({
+                      html: `
+                        <div style="
+                          color: #b91c1c;
+                            font-weight: 600;
+                        ">
+                          Unable to fetch report. Please check your test code or try again later.
+                        </div>
+                      `
+                    });
+
+                  }
+                  FetchTestCodeReportStt = false;
+              } else {
+                signals.onResponse({
+                  html: `
+                    <div style="
+                      color: #b91c1c;
+                            font-weight: 600;
+                    ">
+                      Invalid test code format. It must be 7 characters long and start with 'Q'.
+                    </div>
+                  `
+                });
+              }
+              return;
+            }
+
+
           if (startScenarioRecommendationsStt) {
             var chatElement = document.getElementById("chat-element2");
             const shdwroot = chatElement.shadowRoot;
@@ -9671,6 +10013,7 @@ loadExternalModule().then(() => {
                 try {
                   // await new Promise(resolve => setTimeout(resolve, 5000));
                   console.log('before', clientuserInformationSTT)
+                  enableReportButtons();
 
                   await createUserSTT(
                     emailNameformJsonstt["name"],
