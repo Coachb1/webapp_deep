@@ -326,6 +326,35 @@ if (window.user) {
   user_email2 = getAnonymousEmail();
 }
 
+// Load PapaParse dynamically, then call function
+function loadPapaParse() {
+  return new Promise((resolve, reject) => {
+    if (window.Papa) {
+      resolve(window.Papa);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js';
+    script.onload = () => resolve(window.Papa);
+    script.onerror = () => reject(new Error('Failed to load PapaParse'));
+    document.head.appendChild(script);
+  });
+}
+
+async function fetchGoogleSheetAsJson(csvUrl) {
+  const Papa = await loadPapaParse();
+
+  const response = await fetch(csvUrl);
+  const csvText = await response.text();
+
+  const parsed = Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true,
+  });
+
+  return parsed.data;
+}
+
 function initLogRocketAndIdentifyUser() {
   if (window.LogRocket) {
     window.LogRocket.init("irkulq/coachbots");
@@ -1638,9 +1667,125 @@ const getIdps = async (user_id) => {
     return false;
   }
 };
+function showLoader(message = "Loading...") {
+  const loader = document.createElement("div");
+  loader.id = "bot-loader";
+
+  loader.innerHTML = `
+    <style>
+      .wave-loader-container {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Segoe UI', Arial, sans-serif;
+      }
+
+      .wave-text {
+        margin-bottom: 20px;
+        font-size: 1.25rem;
+        font-weight: 500;
+        text-align: center;
+        color: #1f2937;
+        padding: 0 20px;
+        line-height: 1.5;
+        max-width: 400px;
+      }
+
+      .wave {
+        display: flex;
+        gap: 6px;
+      }
+
+      .wave span {
+        display: block;
+        width: 10px;
+        height: 30px;
+        background-color:rgb(87, 223, 160);
+        animation: waveAnim 1.2s infinite ease-in-out;
+        border-radius: 4px;
+      }
+
+      .wave span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .wave span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      .wave span:nth-child(4) {
+        animation-delay: 0.6s;
+      }
+
+      .wave span:nth-child(5) {
+        animation-delay: 0.8s;
+      }
+
+      @keyframes waveAnim {
+        0%, 100% {
+          transform: scaleY(1);
+        }
+        50% {
+          transform: scaleY(2.2);
+        }
+      }
+    </style>
+    <div class="wave-loader-container">
+      <div class="wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  `;
+
+  const chatElement = document.getElementById("chat-element2");
+  if (chatElement?.shadowRoot) {
+    chatElement.shadowRoot.append(loader);
+  } else {
+    console.warn("chat-element2 or its shadowRoot not found");
+  }
+}
+
+
+function hideLoader() {
+  const chatElement = document.getElementById("chat-element2");
+  if (chatElement?.shadowRoot) {
+    const loader = chatElement.shadowRoot.getElementById("bot-loader");
+    if (loader) loader.remove();
+  } else {
+    console.warn("chat-element2 or its shadowRoot not found");
+  }
+}
+
+
+async function setupBotAndProceed() {
+  if (snnipetConfigSTT?.createBotSheetUrl) {
+    console.log('botId not found, creating bot sheet');
+    showLoader("Creating Bot ....")
+    const createBotSheetUrl = snnipetConfigSTT.createBotSheetUrl;
+
+    const createdBotData = await CreateBotbyCSV(createBotSheetUrl);
+    console.log('bot', createdBotData, createdBotData[0]?.bot_id);
+
+    if (createdBotData.length > 0 && createdBotData[0]?.bot_id) {
+      botId = createdBotData[0].bot_id;
+    }
+    hideLoader();
+  }
+  
+  return botId;
+}
 
 const getBotDetails2 = async (botId) => {
   try {
+    if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
+      botId = await setupBotAndProceed();
+    }
     const response = await fetch(
       `${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`,
       {
@@ -2092,6 +2237,9 @@ const getBotDetails2 = async (botId) => {
                       ${buttons}
                       </div>`;
     // sending welcome msg
+    if (snnipetConfigSTT?.welcomeMessage !== undefined){
+      botWelcomeMessage = snnipetConfigSTT.welcomeMessage
+    }
     if (botType === "user_bot") {
       appendMessage2(addStickerToMessage("System", `${botWelcomeMessage}`));
     } else {
@@ -6347,6 +6495,36 @@ const getAllReportsTestcode = async (test_code) => {
   }
 };
 
+const CreateBotbyCSV = async (sheet_url) => {
+  try {
+    // Await the CSV to JSON conversion
+    const data = await fetchGoogleSheetAsJson(sheet_url);
+
+    // Now POST the JSON data
+    const response = await fetch(`${baseURL2}/coaching-conversations/create-user-profile-and-bot/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data }),  // Send the data here
+    });
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      console.log('CreateBotbyCSV', responseData);
+      return responseData.data
+    } else {
+      console.error('Error:', responseData);
+      return responseData.data
+    }
+
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return []
+  }
+};
 
 
 async function createTestRecommendationStt(recommended_test_id, session_id, test_case) {
@@ -7655,21 +7833,15 @@ loadExternalModule().then(() => {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
   }
-
-  if (botId) {
+  console.log(botId)
+  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
-  } else{
-    console.log('botId')
+  } else {
+    console.log('botId not created, showing report buttons');
     const _ = addReportButtons();
   }
 
-  // if (
-  //   snippetOrigin() === "external"
-  // ) {
-  //   const list = getDefaultInstractionsStt("system", 'simulations')
-  //   instructionsPaneList.innerHTML = list;  
-  // } else {
-  if (botId) {
+  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const list = getDefaultInstractionsStt("bot")
     console.log('botinstruction: ', list)
     instructionsPane.innerHTML = list;
@@ -7679,7 +7851,6 @@ loadExternalModule().then(() => {
     const list = getDefaultInstractionsStt("system", 'simulations')
     instructionsPaneList.innerHTML = list;
   }
-  // }
 
   if (!user2) {
     if (window.location.href.includes("engagement-survey")) {
@@ -7873,8 +8044,8 @@ loadExternalModule().then(() => {
     </div>`;
   }
   // if botid is null or notdefined show other message
-
-  if (botId == undefined) {
+  console.log(botId == undefined,snnipetConfigSTT?.createBotSheetUrl == undefined)
+  if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT["psychometric"] === "true") {
         let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
