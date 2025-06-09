@@ -6469,6 +6469,24 @@ const getCandidateReportStt = async (userId) => {
   }
 };
 
+const getParticipantReportDataStt = async (userId) => {
+  const response = await fetch(`${baseURL2}/accounts/${userId}/participant-report-data/`, {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      "Content-Type": "application/json",
+    }
+  });
+
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log('getParticipantReportDataStt', responseData)
+    return responseData.data;
+  } else {
+    return {};
+  }
+};
+
 const getAllReportsTestcode = async (test_code) => {
   try {
     const response = await fetch(`${baseURL2}/frontend-auth/get-all-reports-by-testcode/`, {
@@ -6477,7 +6495,7 @@ const getAllReportsTestcode = async (test_code) => {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ test_code }),
+      body: JSON.stringify({ test_code: test_code, participant_id: userId2  }),
     });
 
     const responseData = await response.json();
@@ -7212,38 +7230,41 @@ async function handleReportButtonClickStt(choice) {
   }
   FetchTestCodeReportStt = false;
 
+  const participantData = await getParticipantReportDataStt(userId2);
+  if (participantData?.participant_info.total_questions_attempted === 0){
+    let msg = "NO attempt history found!"
+    if (choice === 'report-test'){
+      msg = "No test attempts found. Please attempt a test to fetch a report."
+    } else if (choice === 'report-history'){
+      msg = "No history report available. Please attempt a test to generate a report."
+    } else if (choice === 'report-leaderboard'){
+      msg = "Your leaderboard rank is yet to be generated."
+    }
+    appendMessage2(
+      msg
+    )
+    enableReportButtons();
+    return;
+  }
+
   try {
     if (choice === 'report-history') {
       const url = await getCandidateReportStt(userId2);
       appendMessage2(`
-        <div id="report-history" style="
-          padding: 16px;
-          max-width: 500px;
-          background-color: #f9fafb;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-          font-family: 'Segoe UI', sans-serif;
-          color: #1f2937;
-        ">
-          <p style="margin: 0 0 12px; font-size: 16px; font-weight: 500;">
-            Here is your history report:
-          </p>
           <a href="${url}" target="_blank" rel="noopener noreferrer" style="
             display: inline-block;
             padding: 4px 8px;
             font-size: 14px;
             font-weight: 600;
             color: white;
-            background-color: #3b82f6;
+            background-color: #10b981;
             border-radius: 6px;
             text-decoration: none;
             transition: background-color 0.2s ease;
-          " onmouseover="this.style.backgroundColor='#2563eb'"
-             onmouseleave="this.style.backgroundColor='#3b82f6'">
+          " onmouseover="this.style.backgroundColor='#059669'"
+            onmouseleave="this.style.backgroundColor='#10b981'">
             View History Report
           </a>
-        </div>
       `);
     } else if (choice === 'report-leaderboard') {
       const userPositionDetails = await getLeaderboardPosition(
@@ -7265,11 +7286,17 @@ async function handleReportButtonClickStt(choice) {
 }
 
 function enableReportButtons() {
+  const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+  if (faqButtonsWrapper) {
+    faqButtonsWrapper.style.display = window.user ?"flex": "none" ;
+  }
   const wrapper = document.getElementById("report-buttons-stt");
   if (wrapper) {
     wrapper.querySelectorAll("button").forEach((btn) => {
       btn.disabled = false;
       btn.style.cursor = "pointer";
+      btn.style.opacity = "1";
+      btn.style.display = "inline-block";
     });
   }
 }
@@ -7325,7 +7352,8 @@ const addReportButtons = async () => {
       border-radius: 4px;
       background-color: transparent;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
-      opacity: ${window.user ? '1' : '0.6'};
+      opacity: '1';
+      display: ${window.user ? 'inline-block' : 'none'};
     `;
 
     button.onmouseover = () => (button.style.backgroundColor = '#e5e7eb');
@@ -7338,9 +7366,9 @@ const addReportButtons = async () => {
 
   faqButtonsGenerator('report-history', "History Report");
   faqButtonsGenerator('report-test', "Test Report");
-  faqButtonsGenerator('report-leaderboard', "Leaderboard Report");
+  faqButtonsGenerator('report-leaderboard', "Leaderboard Rank");
 
-  faqButtonsWrapper.style.display = "flex";
+  faqButtonsWrapper.style.display = window.user ?"flex": "none" ;
   faqButtonsWrapper.appendChild(buttonsWrapper);
 
   waitForMessagesElement();
@@ -7837,8 +7865,14 @@ loadExternalModule().then(() => {
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
   } else {
-    console.log('botId not created, showing report buttons');
-    const _ = addReportButtons();
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+      if (snnipetConfigSTT?.isReportButtons === 'true') {
+        console.log('showing report buttons');
+        const _ = addReportButtons();
+      }
+    } else {
+      const _ = addReportButtons();
+    }
   }
 
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
@@ -9809,14 +9843,7 @@ loadExternalModule().then(() => {
                     const [reportUrl, success] = await getAllReportsTestcode(code);
                     if (!success){
                       signals.onResponse({
-                        html: `
-                          <div style="
-                            color: #b91c1c;
-                            font-weight: 600;
-                          ">
-                            ${reportUrl} Retry again!
-                          </div>
-                        `
+                        html: `<b style='font-size: 14px;color: #991b1b;'>${reportUrl}. Retry again!</b>`
                       });
                       FetchTestCodeReportStt = false;
                       return;
@@ -9824,18 +9851,6 @@ loadExternalModule().then(() => {
 
                     signals.onResponse({
                       html: `
-                        <div style="
-                          padding: 16px;
-                          max-width: 500px;
-                          background-color: #f0fdf4;
-                          border: 1px solid #bbf7d0;
-                          border-radius: 8px;
-                          font-family: 'Segoe UI', sans-serif;
-                          color: #065f46;
-                        ">
-                          <p style="margin: 0 0 12px; font-size: 16px; font-weight: 500;">
-                            Your test report is ready:
-                          </p>
                           <a href="${reportUrl[0].report_url}" target="_blank" rel="noopener noreferrer" style="
                             display: inline-block;
                             padding: 4px 8px;
@@ -9850,7 +9865,6 @@ loadExternalModule().then(() => {
                             onmouseleave="this.style.backgroundColor='#10b981'">
                             View Test Report
                           </a>
-                        </div>
                       `
                     });
                     }
@@ -9859,12 +9873,9 @@ loadExternalModule().then(() => {
                     console.error("Report fetch error:", error);               
                     signals.onResponse({
                       html: `
-                        <div style="
-                          color: #b91c1c;
-                            font-weight: 600;
-                        ">
+                        <b style='font-size: 14px;color: #991b1b;'>
                           Unable to fetch report. Please check your test code or try again later.
-                        </div>
+                        </b>
                       `
                     });
 
@@ -9873,12 +9884,9 @@ loadExternalModule().then(() => {
               } else {
                 signals.onResponse({
                   html: `
-                    <div style="
-                      color: #b91c1c;
-                            font-weight: 600;
-                    ">
+                    <b style='font-size: 14px;color: #991b1b;'>
                       Invalid test code format. It must be 7 characters long and start with 'Q'.
-                    </div>
+                    </b>
                   `
                 });
               }
@@ -10184,7 +10192,6 @@ loadExternalModule().then(() => {
                 try {
                   // await new Promise(resolve => setTimeout(resolve, 5000));
                   console.log('before', clientuserInformationSTT)
-                  enableReportButtons();
 
                   await createUserSTT(
                     emailNameformJsonstt["name"],
@@ -10224,6 +10231,8 @@ loadExternalModule().then(() => {
                       });
                     }
                   }
+                  if (snnipetConfigSTT?.isReportButtons === 'true') enableReportButtons();
+                  
                 } catch (error) {
                   console.error("Error creating user:", error);
                   signals.onResponse({
