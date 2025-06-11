@@ -4095,15 +4095,15 @@ loadExternalModule().then(() => {
 
     chatElementRef.initialMessages = [
       {
-        html: `<p>Welcome to Coachbot. Do you have a code for your micro-lesson and simulation?
+        html: `<p>Welcome to Coachbot. Please enter a interaction code for your micro-lesson and simulation.
         </p>`,
         role: "ai",
       },
-      {
-        html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
-          <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-        role: "user",
-      },
+      // {
+      //   html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+      //     <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
+      //   role: "user",
+      // },
     ];
     chatElementRef.htmlClassUtilities = {
       ["deep-chat-temporary-message"]: {
