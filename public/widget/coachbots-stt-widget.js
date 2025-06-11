@@ -6071,6 +6071,10 @@ function sendEmail2(session_id, reportUrl) {
     is_whatsapp: false,
   });
 
+  if (!emailCandidate2){
+    queryParams22.append("send_report_to_candidate", false)
+  }
+
   fetch(
     `${baseURL2}/test-attempt-sessions/send-report-email/?${queryParams22}`,
     {
@@ -10005,22 +10009,22 @@ loadExternalModule().then(() => {
             ) {
               AccessCodeStt = latestMessage;
               increaseSessionForFirstTestStt = true;
-              console.log("Access Code Matched", snnipetConfigSTT.isDemo);
+              console.log("Access Code Matched", snnipetConfigSTT.flowType);
               updateClientInfoSTT(sttWidgetClientId, user_email2, null);
               askAccessBotCodeSTT = false;
-              if (snnipetConfigSTT.isDemo === "true") {
+              if (snnipetConfigSTT.flowType === "no") {
                 handleOptionButtonClick2("", signals);
-              } else if (snnipetConfigSTT["psychometric"] === "true") {
-                signals.onResponse({
-                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
-                });
-              } else {
+              }  else if (snnipetConfigSTT.flowType === 'both') {
                 signals.onResponse({
                   html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
                   <div class="deep-chat-temporary-message">
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
                   <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
                   `,
+                });
+              } else {
+                signals.onResponse({
+                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
                 });
               }
               return;
@@ -10213,15 +10217,11 @@ loadExternalModule().then(() => {
                   } else {
                     AccessCodeStt = clientuserInformationSTT.widget_access_code;
                     increaseSessionForFirstTestStt = true;
-                    console.log("Access Code Matched", snnipetConfigSTT.isDemo);
+                    console.log("Access Code Matched", snnipetConfigSTT.flowType);
                     updateClientInfoSTT(sttWidgetClientId, user_email2, null);
-                    if (snnipetConfigSTT.isDemo === "true") {
+                    if (snnipetConfigSTT.flowType === "no") {
                       handleOptionButtonClick2("", signals);
-                    } else if (snnipetConfigSTT["psychometric"] === "true") {
-                      signals.onResponse({
-                        html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
-                      });
-                    } else {
+                    } else if (snnipetConfigSTT.flowType === 'both') {
                       signals.onResponse({
                         html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
                         <div class="deep-chat-temporary-message">
@@ -10230,6 +10230,11 @@ loadExternalModule().then(() => {
                         `,
                       });
                     }
+                    else {
+                      signals.onResponse({
+                        html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
+                      });
+                    } 
                   }
                   if (snnipetConfigSTT?.isReportButtons === 'true') enableReportButtons();
                   
@@ -11280,7 +11285,7 @@ loadExternalModule().then(() => {
           if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
             if (
               Object.keys(snnipetConfigSTT).length > 0 &&
-              snnipetConfigSTT.isDemo === "true" &&
+              snnipetConfigSTT.flowType === "no" &&
               isTestCode2(latestMessage)
             ) {
               signals.onResponse({

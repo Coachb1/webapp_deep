@@ -1475,6 +1475,9 @@ function sendEmail(session_id, reportUrl) {
     report_url: reportUrl,
     is_whatsapp: false,
   });
+  if (!EmailCandidate){
+    queryParams2.append("send_report_to_candidate", false)
+  }
 
   fetch(`${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`, {
     method: "POST",
@@ -5581,16 +5584,10 @@ loadExternalModule().then(() => {
               accessCode = latestMessage
               increaseSessionForFirstTest = true;
               askAccessBotCode = false
-              if (snnipetConfig.isDemo === 'true') {
+              if (snnipetConfig.flowType === 'no') {
                 LoadingMessageWithText2("Please wait, we are generating your scenario!!", shadowRoot)
                 handleOptionButtonClick("", signals)
-              } else if (snnipetConfig['psychometric'] === 'true') {
-                signals.onResponse({
-                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
-                })
-
-              }
-              else {
+              } else if (snnipetConfig.flowType === 'both'){
                 signals.onResponse(
                   {
                     html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
@@ -5601,7 +5598,11 @@ loadExternalModule().then(() => {
 
                   }
                 )
-
+              }
+              else {
+                signals.onResponse({
+                  html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
+                })
 
               }
               return;
@@ -5662,16 +5663,10 @@ loadExternalModule().then(() => {
                     accessCode = ClientUserInformation.widget_access_code;
                     increaseSessionForFirstTest = true;
                     askAccessBotCode = false
-                    if (snnipetConfig.isDemo === 'true') {
+                    if (snnipetConfig.flowType === 'no') {
                       LoadingMessageWithText2("Please wait, we are generating your scenario!!", shadowRoot)
                       handleOptionButtonClick("", signals)
-                    } else if (snnipetConfig['psychometric'] === 'true') {
-                      signals.onResponse({
-                        html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
-                      })
-
-                    }
-                    else {
+                    } else if (snnipetConfig.flowType === 'both') {
                       signals.onResponse(
                         {
                           html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
@@ -5682,6 +5677,12 @@ loadExternalModule().then(() => {
 
                         }
                       )
+
+                    }
+                    else {
+                      signals.onResponse({
+                        html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`
+                      })
 
                     }
                   }
