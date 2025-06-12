@@ -5865,12 +5865,12 @@ loadExternalModule().then(() => {
 
           // to check session is active or not
           if (!isTestCode(latestMessage)) {
-            if (isHindi) {
-              signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Audio response allowed for this interaction.</b></p>",
-              });
-              return;
-            }
+            // if (isHindi) {
+            //   signals.onResponse({
+            //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Audio response allowed for this interaction.</b></p>",
+            //   });
+            //   return;
+            // }
             await getSessionStatus(sessionId);
 
             // getting text which is from option-button-container

@@ -11375,12 +11375,20 @@ loadExternalModule().then(() => {
                 IsSingleSelectSTT = questionData2.results[0].is_single_select;
                 console.log("IsSingleSelectSTT", IsSingleSelectSTT);
 
+                // if (testUIInfoStt) {
+                //   if (Object.keys(testUIInfoStt).length > 0) {
+                //     signals.onResponse({
+                //       html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+                //     });
+                //     return;
+                //   }
+                // }
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
-                    });
-                    return;
+                    console.log("ui", testUIInfoStt)
+                    senarioTitle2 = testUIInfoStt["title"];
+                    senarioDescription2 = testUIInfoStt["description"];
+                    isHindiStt = true;
                   }
                 }
 
@@ -11787,6 +11795,10 @@ loadExternalModule().then(() => {
                         }
                       }
                       if (isImmersiveStt && !questionMediaLinkStt) {
+                        if (isHindiStt) {
+                          questionText2 =
+                            testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                        }
                         questionText2 = questionText2.replaceAll(":", "");
                         console.log("first", questionText2);
                         const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
@@ -11831,6 +11843,10 @@ loadExternalModule().then(() => {
                       questionText2 = formRadio;
                     } else {
                       if (testType2 != "coaching" || questionIndex2 == 0) {
+                        if (isHindiStt) {
+                          questionText2 =
+                            testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                        }
                         questionText2 =
                           questionData2.results[0].questions[questionIndex2]
                             .question;
@@ -11845,6 +11861,10 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
+                    if (isHindiStt) {
+                      questionText2 =
+                        testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                    }
                     initialQuestionTextStt = questionText2;
                     initialIndexStt = questionIndex2 + 1;
                     isProceedStt = "false";
@@ -12225,6 +12245,9 @@ loadExternalModule().then(() => {
                       testType2 != "dynamic_discussion_thread" &&
                       testType2 != "coaching"
                     ) {
+                      if (isHindiStt) {
+                        questionText2 = testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                      }
                       let responderName;
                       let strList = questionText2
                         .replaceAll("*", "")
