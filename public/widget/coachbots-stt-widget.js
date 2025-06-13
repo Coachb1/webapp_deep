@@ -292,6 +292,137 @@ let increaseSessionForFirstTestStt = false;
 let FeedbackVideoLinkStt;
 let FetchTestCodeReportStt = false;
 
+let ws;
+let mediaRecorder2;
+let audioStreamStt;
+let micEnabled = false;
+USE_CUSTOM_STT = true;
+
+const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
+  <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
+</svg>
+`
+const redMicSvg = `<svg id="micToggleActive" class="mic-icon" viewBox="0 0 24 24" style="fill: red; width: 24px; height: 24px;">
+  <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
+</svg>
+`
+async function handleCustomStt() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.hostname}:3001`;
+    console.log('widget.js: starting ws ', wsUrl);
+
+    ws = new WebSocket(wsUrl);
+  }
+
+  ws.onopen = async () => {
+    console.log("widget.js: WebSocket connection established for STT");
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('widget.js: Microphone access granted.');
+
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 16000 // Ensure this matches backend expectations
+      });
+
+      const mediaStreamSource = audioContext.createMediaStreamSource(stream);
+      const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+
+      scriptProcessor.onaudioprocess = (event) => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          console.warn('widget.js: WebSocket closed during audio process.');
+          stopAudioCapture();
+          return;
+        }
+        const audioData = event.inputBuffer.getChannelData(0);
+        const int16Data = convertFloat32ToInt16(audioData);
+        ws.send(int16Data);
+      };
+
+      mediaStreamSource.connect(scriptProcessor);
+      scriptProcessor.connect(audioContext.destination);
+      micEnabled = true;
+
+      // Save references for cleanup
+      window._sttAudioState = { stream, audioContext, scriptProcessor, mediaStreamSource };
+
+    } catch (err) {
+      console.error("widget.js: Microphone access error:", err);
+    }
+  };
+
+  ws.onmessage = (event) => {
+    console.log('widget.js: onmessage', event.data);
+
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.error) {
+        console.error('widget.js: Server error received:', data.error);
+        ws.close();
+        return;
+      }
+
+      if (data.transcript) {
+        console.log(`widget.js: Received transcription: "${data.transcript}" (Final: ${data.isFinal})`);
+
+        const gShadowRoot2 = document.getElementById("chat-element2")?.shadowRoot;
+        gShadowRoot2?.getElementById("text-input").focus();
+        const input = gShadowRoot2?.getElementById("text-input");
+        console.log('widget.js: input', input)
+        if (data.isFinal){
+          input.textContent += data.transcript;
+        }
+      }
+    } catch (e) {
+      console.error('widget.js: Error parsing WebSocket message:', e, event.data);
+    }
+  };
+
+  ws.onerror = (err) => {
+    console.error("widget.js: WebSocket error:", err);
+  };
+
+  ws.onclose = () => {
+    console.log('widget.js: WebSocket closed');
+    stopAudioCapture();
+  };
+
+  // Stop if already running
+  if (window._sttAudioState) {
+    stopAudioCapture();
+    ws.close();
+    micEnabled = false;
+  }
+
+  // Helper: convert Float32 to Int16 PCM
+  function convertFloat32ToInt16(buffer) {
+    const l = buffer.length;
+    const int16Buffer = new Int16Array(l);
+    for (let i = 0; i < l; i++) {
+      const s = Math.max(-1, Math.min(1, buffer[i]));
+      int16Buffer[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    }
+    return int16Buffer.buffer;
+  }
+
+  // Helper: cleanup all streams and nodes
+  function stopAudioCapture() {
+    const state = window._sttAudioState;
+    if (!state) return;
+
+    state.scriptProcessor.disconnect();
+    state.mediaStreamSource.disconnect();
+    state.audioContext.close();
+    state.stream.getTracks().forEach(track => track.stop());
+
+    delete window._sttAudioState;
+    console.log('widget.js: Audio capture stopped.');
+  }
+}
+
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -7480,6 +7611,93 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
   }
 }
 
+function connectWebSocket() {
+  // --- Configuration ---
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  // Use window.location.host as Nginx will proxy /ws to your WebSocket server's internal port
+  const wsUrl = `${protocol}//${window.location.hostname}:3001`; // Reverted to /ws path for Nginx proxy
+
+  console.log('widget.js: connectWebSocket called.');
+  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+    console.log('widget.js: WebSocket already connected or connecting, skipping new connection.');
+    return;
+  }
+
+  ws = new WebSocket(wsUrl);
+
+  ws.onopen = () => {
+    console.log('widget.js: WebSocket connected. Sending STT config.');
+    ws.send(JSON.stringify(sttConfig));
+  };
+
+  ws.onmessage = event => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.error) {
+        console.error('widget.js: Server error received:', data.error);
+        stopAudioCapture(); // Stop audio if server reports error
+      } else if (data.transcript) {
+        console.log(`widget.js: Received transcription: "${data.transcript}" (Final: ${data.isFinal})`);
+                
+        // Get the input field inside Shadow DOM
+        const gShadowRoot2 = document.getElementById("chat-element2")?.shadowRoot;
+        const input = gShadowRoot2?.getElementById("text-input");
+
+        if (!input) {
+          console.warn("widget.js: Text input element not found.");
+          return;
+        }
+        const currentTextInputValue = textInput.value;
+        const newTranscription = data.transcript;
+
+        if (!data.isFinal) {
+            const lastSpaceIndex = currentTextInputValue.lastIndexOf(' ');
+            if (lastSpaceIndex !== -1 && currentTextInputValue.length > 0) {
+                textInput.value = currentTextInputValue.substring(0, lastSpaceIndex + 1) + newTranscription;
+            } else {
+                // If no space or first word, just set the value
+                textInput.value = newTranscription;
+            }
+        } else {
+            // For final results, append to what's already in the input (if anything)
+            // This means 'final' doesn't clear the input, but marks a complete segment.
+            // The silence timer will handle submission.
+            if (currentTextInputValue.length > 0 && !currentTextInputValue.endsWith(' ')) {
+                textInput.value += ' ' + newTranscription;
+            } else {
+                textInput.value += newTranscription;
+            }
+        }
+        
+        
+        
+        // Reset the silence timer whenever a transcription is received
+        if (isRecording) { // Only reset if mic is active
+          resetSilenceTimer(); 
+        }
+      } else if (data.type === 'text' && data.message) { // Handle incoming text messages from server
+         console.log(`widget.js: Received text message: "${data.message}"`);
+      }
+    } catch (e) {
+      console.error('widget.js: Error parsing WebSocket message:', e, event.data);
+    }
+  };
+
+  ws.onclose = (event) => {
+    console.log('widget.js: WebSocket disconnected. Code:', event.code, 'Reason:', event.reason);
+    stopAudioCapture(); // Always stop audio on disconnect
+    // Re-enable automatic reconnection logic for chat
+    // appendMessage('Disconnected. Retrying in 5s...', 'system'); 
+    // setTimeout(connectWebSocket, 5000); 
+  };
+
+  ws.onerror = error => {
+    console.error('widget.js: WebSocket error in widget.js:', error);
+    appendMessage('WebSocket error. Check browser console.', 'system');
+    ws.close();
+  };
+}
+
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
@@ -7686,7 +7904,7 @@ loadExternalModule().then(() => {
         "alwaysEnabled": true,
         "position": "inside-right"
       }'
-      speechToText='{"webSpeech": true,
+      speechToText='{"webSpeech": 'true'},
         "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
 
         "button": {
@@ -7745,6 +7963,8 @@ loadExternalModule().then(() => {
       >
 
     </deep-chat>
+    <button id="startMicBtn" class="mic-button">${micEnabled? redMicSvg : micSvg}</button>
+
     <div 
       id="starting-faq-buttons"
       style=" 
@@ -7798,6 +8018,11 @@ loadExternalModule().then(() => {
     </p> 
   </div>
   `;
+  const customMicButton = document.getElementById("startMicBtn");
+  console.log('custommic', customMicButton);
+  if (customMicButton){
+    customMicButton.addEventListener("click", handleCustomStt);
+  }
 
   const readMoreButton = document.getElementById("read-more-button");
   const instructionsPane = document.getElementById("instructions-pane");
