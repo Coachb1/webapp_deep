@@ -876,7 +876,10 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
         "other data: ",
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+      const msg = formFieldsstt[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      appendMessage2(msg);
     } else {
       // we are asking initial question
       askInitialQuestionDeepDive = true;
@@ -902,7 +905,11 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
          </div>`
       );
 
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+      const msg = formFieldsstt[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+
+      appendMessage2(msg);
     } else {
       askInitialQuestionDeepDive = true;
       deepDiveInitialQueIndex = 1;
@@ -1045,7 +1052,10 @@ const getUserOrAnonymousDetails = async (choice) => {
         "other data: ",
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+      const msg = formFieldsstt[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      appendMessage2(msg);
     } else {
       FeedbackUserEmail = user_email2;
       feedbackUserName = user_name2;
@@ -2255,7 +2265,7 @@ const getBotDetails2 = async (botId) => {
         "other data: ",
         `Please enter your ${formFieldsstt[0]}`
       );
-      appendMessage2('Please enter your email to get started.')
+      appendMessage2('Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).')
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
@@ -3699,7 +3709,10 @@ function handleEndConversation(isInActive) {
     } else {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
-      appendMessage2(`Please enter your ${formFieldsstt[0]}.`);
+      const msg = formFieldsstt[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      appendMessage2(msg);
     }
   } else {
     // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
@@ -3940,7 +3953,10 @@ const handleEndCoachingClick2 = async (randomId) => {
     // appendMessage2(getCredentialsForm2());
     isEmailFormstt = true;
     formFieldsstt = ["name", "email"];
-    appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+    const msg = formFieldsstt[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+    appendMessage2(msg);
   }
 };
 
@@ -5922,7 +5938,10 @@ async function setMcqVariablesStt() {
       //   credentialsForm2;
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+      const msg = formFieldsstt[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      appendMessage2(msg);
     }
 
     await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
@@ -7767,7 +7786,7 @@ loadExternalModule().then(() => {
     </div>
     <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
     }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"
-    }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>
+    }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Instructions
@@ -7884,7 +7903,7 @@ loadExternalModule().then(() => {
     console.log('botinstruction: ', list)
     instructionsPane.innerHTML = list;
     const footerText = document.getElementById("footer-text");
-    footerText.innerHTML = `Available only on Google Chrome 🌐. Follow the instructions for optimum performance.`
+    footerText.innerHTML = `Available only on Google Chrome 🌐.`
   } else {
     const list = getDefaultInstractionsStt("system", 'simulations')
     instructionsPaneList.innerHTML = list;
@@ -8105,7 +8124,7 @@ loadExternalModule().then(() => {
             role: "ai",
           },
           {
-            html: `Please enter your email to get started.`,
+            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
             role: "ai",
           },
         ];
@@ -8120,7 +8139,7 @@ loadExternalModule().then(() => {
             role: "ai",
           },
           {
-            html: `Please enter your email to get started.`,
+            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
             role: "ai",
           },
         ];
@@ -10117,8 +10136,11 @@ loadExternalModule().then(() => {
               return;
             }
             if (formFieldsstt.length > 0) {
+              const msg = formFieldsstt[0] === "email" ? 
+              `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+              : `<b>Please enter your ${formFieldsstt[0]}.</b>`;
               signals.onResponse({
-                html: `Please enter your ${formFieldsstt[0]}.`,
+                html: msg,
               });
             } else {
               isEmailFormstt = false;
@@ -12878,8 +12900,11 @@ loadExternalModule().then(() => {
                     ) {
                       formFieldsstt = ["name", "email"];
                       isEmailFormstt = true;
+                      const msg = formFieldsstt[0] === "email" ? 
+                      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+                      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
                       signals.onResponse({
-                        html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
+                        html: msg,
                       });
                     } else {
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;

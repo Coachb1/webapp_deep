@@ -1289,7 +1289,10 @@ async function setMcqVariables() {
       //   credentialsForm;
       isEmailForm = true;
       formFields = ["name", "email"];
-      appendMessage(`<b>Please enter your ${formFields[0]}</b>`);
+      const msg = formFields[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFields[0]}</b>`;
+      appendMessage(msg);
     }
 
     await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -2267,7 +2270,10 @@ const handleEndCoachingClick = async (randomId) => {
     // appendMessage(getCredentialsForm());
     isEmailForm = true;
     formFields = ["name", "email"];
-    appendMessage(`<b>Please enter your ${formFields[0]}</b>`);
+    const msg = formFields[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFields[0]}</b>`;
+      appendMessage(msg);
   }
 };
 
@@ -3801,7 +3807,7 @@ loadExternalModule().then(() => {
       ">
     </div>
     <p id="bot-footer2" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Available only on Google Chrome 🌐. Follow the instructions for optimum performance. Use "STOP" keyword to restart any time.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Instructions
         </button>
@@ -4064,7 +4070,7 @@ loadExternalModule().then(() => {
           role: "ai",
         },
         {
-          html: `Please enter your email to get started.`,
+          html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
           role: "ai",
         },
       ];
@@ -4081,7 +4087,7 @@ loadExternalModule().then(() => {
           role: "ai",
         },
         {
-          html: `Please enter your email to get started.`,
+          html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
           role: "ai",
         },
       ];
@@ -5243,8 +5249,11 @@ loadExternalModule().then(() => {
                   // });
                   isEmailForm = true;
                   formFields = ["name", "email"];
+                  const msg = formFields[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFields[0]}</b>`;
                   signals.onResponse({
-                    html: `<b>Please enter your ${formFields[0]}</b>`,
+                    html: msg,
                   });
                 }
               }
@@ -5628,8 +5637,11 @@ loadExternalModule().then(() => {
             }
 
             if (formFields.length > 0) {
+              const msg = formFields[0] === "email" ? 
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+      : `<b>Please enter your ${formFields[0]}</b>`;
               signals.onResponse({
-                html: `Please enter your ${formFields[0]}.`,
+                html: msg,
               });
             } else {
               isEmailForm = false;
@@ -7265,8 +7277,11 @@ loadExternalModule().then(() => {
                     // });
                     isEmailForm = true;
                     formFields = ["name", "email"];
+                    const msg = formFields[0] === "email" ? 
+                    `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+                    : `<b>Please enter your ${formFields[0]}</b>`;
                     signals.onResponse({
-                      html: `<b>Please enter your ${formFields[0]}</b>`,
+                      html: msg,
                     });
                   }
 
