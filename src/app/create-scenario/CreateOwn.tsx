@@ -265,15 +265,6 @@ const CreateOwn = ({
       setGenerateLoading(true);
       setGenerationError(false);
 
-      //GENERATE SIMULATION BASED ON video_descrtion, video_title
-      // const apiKey = "AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A";
-      // const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${video_id}&key=${apiKey}`;
-      // fetch(apiUrl)
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     const video = data.items[0];
-
-      //     console.log(video.snippet.description, video.snippet.title);
       const url: any = new URL(
         `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
       );
