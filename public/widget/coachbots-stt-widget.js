@@ -295,7 +295,8 @@ let FetchTestCodeReportStt = false;
 let ws;
 let mediaRecorder2;
 let audioStreamStt;
-USE_CUSTOM_STT = false;
+let USE_CUSTOM_STT = false;
+let finalTranscriptAccumulator = "";
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -317,6 +318,10 @@ async function handleCustomStt() {
 
   ws.onopen = async () => {
     console.log("widget.js: WebSocket connection established for STT");
+    const gShadowRoot2 = document.getElementById("chat-element2")?.shadowRoot;
+        gShadowRoot2?.getElementById("text-input").focus();
+    const textBox = gShadowRoot2?.getElementById("text-input");
+    finalTranscriptAccumulator = textBox.textContent || "";
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -362,17 +367,28 @@ async function handleCustomStt() {
         ws.close();
         return;
       }
-
-      if (data.transcript) {
+      const transcript = data.transcript || "";
+      if (transcript) {
         console.log(`widget.js: Received transcription: "${data.transcript}" (Final: ${data.isFinal})`);
 
         const gShadowRoot2 = document.getElementById("chat-element2")?.shadowRoot;
         gShadowRoot2?.getElementById("text-input").focus();
-        const input = gShadowRoot2?.getElementById("text-input");
-        console.log('widget.js: input', input)
-        if (data.isFinal){
-          input.textContent += data.transcript;
+        const textBox = gShadowRoot2?.getElementById("text-input");
+        console.log('widget.js: input', textBox)
+        if (data.isFinal) {
+            // If it's a final transcript, add it to our accumulator
+            // and ensure there's a space after it if it's not empty.
+            finalTranscriptAccumulator += (transcript.trim() + " ");
+            // Update the textbox with the accumulated final text
+            textBox.textContent = finalTranscriptAccumulator;
+        } else {
+            // If it's an interim transcript, we show it along with the final part.
+            // We trim the interim transcript to avoid extra spaces at the start if it's
+            // just a single word.
+            textBox.textContent = finalTranscriptAccumulator + transcript.trim();
         }
+        // Scroll to the bottom of the textbox if content overflows
+        textBox.scrollTop = textBox.scrollHeight;
       }
     } catch (e) {
       console.error('widget.js: Error parsing WebSocket message:', e, event.data);
