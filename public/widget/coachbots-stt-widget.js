@@ -292,6 +292,135 @@ let increaseSessionForFirstTestStt = false;
 let FeedbackVideoLinkStt;
 let FetchTestCodeReportStt = false;
 
+let ws;
+let mediaRecorder2;
+let audioStreamStt;
+USE_CUSTOM_STT = false;
+
+const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
+  <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
+</svg>
+`
+const redMicSvg = `<svg id="micToggleActive" class="mic-icon" viewBox="0 0 24 24" style="fill: red; width: 24px; height: 24px;">
+  <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
+</svg>
+`
+async function handleCustomStt() {
+  const customMicButton = document.getElementById("startMicBtn");
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `wss://coachbot-websocket.fly.dev/`;
+    console.log('widget.js: starting ws ', wsUrl);
+
+    ws = new WebSocket(wsUrl);
+  }
+
+  ws.onopen = async () => {
+    console.log("widget.js: WebSocket connection established for STT");
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('widget.js: Microphone access granted.');
+      customMicButton.style.background = '#ff0000'; // Change button color to indicate active state
+
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 16000 // Ensure this matches backend expectations
+      });
+
+      const mediaStreamSource = audioContext.createMediaStreamSource(stream);
+      const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+
+      scriptProcessor.onaudioprocess = (event) => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          console.warn('widget.js: WebSocket closed during audio process.');
+          stopAudioCapture();
+          return;
+        }
+        const audioData = event.inputBuffer.getChannelData(0);
+        const int16Data = convertFloat32ToInt16(audioData);
+        ws.send(int16Data);
+      };
+
+      mediaStreamSource.connect(scriptProcessor);
+      scriptProcessor.connect(audioContext.destination);
+      // Save references for cleanup
+      window._sttAudioState = { stream, audioContext, scriptProcessor, mediaStreamSource };
+
+    } catch (err) {
+      console.error("widget.js: Microphone access error:", err);
+    }
+  };
+
+  ws.onmessage = (event) => {
+    console.log('widget.js: onmessage', event.data);
+
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.error) {
+        console.error('widget.js: Server error received:', data.error);
+        ws.close();
+        return;
+      }
+
+      if (data.transcript) {
+        console.log(`widget.js: Received transcription: "${data.transcript}" (Final: ${data.isFinal})`);
+
+        const gShadowRoot2 = document.getElementById("chat-element2")?.shadowRoot;
+        gShadowRoot2?.getElementById("text-input").focus();
+        const input = gShadowRoot2?.getElementById("text-input");
+        console.log('widget.js: input', input)
+        if (data.isFinal){
+          input.textContent += data.transcript;
+        }
+      }
+    } catch (e) {
+      console.error('widget.js: Error parsing WebSocket message:', e, event.data);
+    }
+  };
+
+  ws.onerror = (err) => {
+    console.error("widget.js: WebSocket error:", err);
+  };
+
+  ws.onclose = () => {
+    console.log('widget.js: WebSocket closed');
+    stopAudioCapture();
+  };
+
+  // Stop if already running
+  if (window._sttAudioState) {
+    customMicButton.style.background = '#00c080';
+    stopAudioCapture();
+    ws.close();
+  }
+
+  // Helper: convert Float32 to Int16 PCM
+  function convertFloat32ToInt16(buffer) {
+    const l = buffer.length;
+    const int16Buffer = new Int16Array(l);
+    for (let i = 0; i < l; i++) {
+      const s = Math.max(-1, Math.min(1, buffer[i]));
+      int16Buffer[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    }
+    return int16Buffer.buffer;
+  }
+
+  // Helper: cleanup all streams and nodes
+  function stopAudioCapture() {
+    const state = window._sttAudioState;
+    if (!state) return;
+
+    state.scriptProcessor.disconnect();
+    state.mediaStreamSource.disconnect();
+    state.audioContext.close();
+    state.stream.getTracks().forEach(track => track.stop());
+
+    delete window._sttAudioState;
+    console.log('widget.js: Audio capture stopped.');
+  }
+}
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -7515,6 +7644,10 @@ async function loadExternalModule() {
 loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
 
+  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt){
+    USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
+  }
+
   deepChatPocElement2 = document.getElementsByClassName(
     "coachbots-coachscribe"
   )?.[0];
@@ -7705,14 +7838,17 @@ loadExternalModule().then(() => {
         "alwaysEnabled": true,
         "position": "inside-right"
       }'
-      speechToText='{"webSpeech": true,
+      speechToText='{"webSpeech": false,
         "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
 
         "button": {
           "position" : "outside-left",
           "default": {
             "container": {
-              "default" : {"padding" : "4px"},
+              "default": {
+                "padding": "4px",
+                "display": "${USE_CUSTOM_STT ? "none" : "block"}"
+              },
               "hover": {"backgroundColor": "#7fbded69", "padding" : "4px"},
               "click": {"backgroundColor": "#4babf669", "padding" : "4px"}
             },
@@ -7764,6 +7900,33 @@ loadExternalModule().then(() => {
       >
 
     </deep-chat>
+    ${USE_CUSTOM_STT ?
+    `<button id="startMicBtn" style="
+      position: absolute; 
+      /* These will be set dynamically by JavaScript */
+      left: 0; 
+      bottom: 0; 
+      height: 0;
+      width: 0;
+      
+      padding: 6px;
+      border: none;
+      border-radius: 50%;
+      background-color: #00c080;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    ">
+      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="white">
+        <path d="M12 14q-1.25 0-2.125-.875T9 11V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v6q0 1.25-.875 2.125T12 14Zm-1 7v-3.1q-2.875-.35-4.738-2.437Q4.4 13.375 4.4 10.4H6q0 2.275 1.613 3.938Q9.225 16 12 16q2.775 0 4.388-1.662Q18 12.675 18 10.4h1.6q0 2.975-1.862 5.062Q15.875 17.55 13 17.9V21Z"/>
+      </svg>
+    </button>`
+    : ""
+    }
+
     <div 
       id="starting-faq-buttons"
       style=" 
@@ -7817,6 +7980,59 @@ loadExternalModule().then(() => {
     </p> 
   </div>
   `;
+
+  const customMicButton = document.getElementById("startMicBtn");
+  function updateMicButtonPosition() {
+    const startMicBtn = document.getElementById('startMicBtn');
+    if (!startMicBtn) return; // Exit if button not found
+
+    const windowWidth = window.innerWidth;
+    const isMobile = windowWidth < 768; // Define your mobile breakpoint
+
+    // Calculate button size
+    let buttonSize = isMobile ? 40 : 36; // px
+    // You can also use a more fluid calculation:
+    // buttonSize = Math.max(36, Math.min(60, windowWidth * 0.05)); // Min 36px, Max 60px, fluid up to 5% of width
+
+    // Calculate left position
+    let leftPosition = isMobile ? '1rem' : '1.5rem'; // Use rem for positioning
+    // If you want more fluid, use vw:
+    // leftPosition = `${isMobile ? 1 : 1.5}vw`;
+
+
+    // Calculate bottom position
+    let bottomPosition;
+    if (isMobile) {
+      bottomPosition = '13vh';
+    } else {
+      bottomPosition = '3.15rem'; // Use rem for desktop
+      // Or use vh:
+      // bottomPosition = '3.15vh';
+    }
+
+    // Apply styles to the button
+    startMicBtn.style.left = leftPosition;
+    startMicBtn.style.bottom = bottomPosition;
+    startMicBtn.style.height = `${buttonSize}px`;
+    startMicBtn.style.width = `${buttonSize}px`;
+
+    // Adjust SVG size relative to button size
+    const svg = startMicBtn.querySelector('svg');
+    if (svg) {
+      // SVG size can be a percentage of the button's size
+      const svgSize = buttonSize * 0.5; // Example: SVG is 50% of button width/height
+      svg.style.height = `${svgSize}px`;
+      svg.style.width = `${svgSize}px`;
+    }
+  }
+
+  console.log('custommic', customMicButton);
+  if (customMicButton){
+    updateMicButtonPosition();
+    customMicButton.addEventListener("click", handleCustomStt);
+    customMicButton.addEventListener('resize', updateMicButtonPosition);
+
+  }
 
   const readMoreButton = document.getElementById("read-more-button");
   const instructionsPane = document.getElementById("instructions-pane");
