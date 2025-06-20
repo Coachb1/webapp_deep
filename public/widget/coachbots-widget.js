@@ -3395,7 +3395,7 @@ async function handleReportButtonClick(choice) {
   }
   FetchTestCodeReport = false;
   const participantData = await getParticipantReportData(userId);
-  if (participantData?.participant_info.total_questions_attempted === 0){
+  if (participantData?.participant_info.total_questions_attempted === 0 && choice !== 'report-leaderboard'){
     let msg = "NO attempt history found!"
     if (choice === 'report-test'){
       msg = "No test attempts found. Please attempt a test to fetch a report."
@@ -3408,6 +3408,17 @@ async function handleReportButtonClick(choice) {
       msg
     )
     EnableReportButtons();
+    return;
+  }
+
+  if (participantData?.participant_info.total_questions_attempted < 3 && choice === 'report-leaderboard'){
+    if (choice === 'report-leaderboard'){
+      msg = "Not enough data.";
+      appendMessage(
+        msg
+      )
+      EnableReportButtons();
+    }
     return;
   }
 
@@ -3438,7 +3449,7 @@ async function handleReportButtonClick(choice) {
       );
       appendMessage(`You are currently ranked #<b>${userPositionDetails[0].rating}</b>`);
     } else if (choice == 'report-test'){
-      appendMessage(`Enter Test code to fetch its latest report.`)
+      appendMessage(`Enter interaction code to fetch its latest report.`)
       FetchTestCodeReport = true;
     } 
   } catch (err) {
@@ -3529,7 +3540,7 @@ const AddReportButtons = async () => {
   };
 
   faqButtonsGenerator('report-history', "History Report");
-  faqButtonsGenerator('report-test', "Test Report");
+  faqButtonsGenerator('report-test', "Interaction Report");
   faqButtonsGenerator('report-leaderboard', "Leaderboard Rank");
 
   faqButtonsWrapper.style.display = window.user ?"flex": 'none';
@@ -3790,7 +3801,7 @@ loadExternalModule().then(() => {
       id="starting-faq-buttons-talk"
       style=" 
         position: absolute; 
-        left : ${window.innerWidth < 768 ? "1rem" : "6rem"}; 
+        left : ${window.innerWidth < 768 ? "1rem" : "7rem"}; 
         bottom : ${window.innerWidth < 768 ? "13vh" : "5.5rem"}; 
         width : auto; 
         overflow: scroll;
@@ -5456,7 +5467,7 @@ loadExternalModule().then(() => {
                             transition: background-color 0.2s ease;
                           " onmouseover="this.style.backgroundColor='#059669'"
                             onmouseleave="this.style.backgroundColor='#10b981'">
-                            View Test Report
+                            View Interaction Report
                           </a>
                       `
                     });
