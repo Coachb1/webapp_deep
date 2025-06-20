@@ -291,6 +291,7 @@ let userScenarioRecommendationStt;
 let increaseSessionForFirstTestStt = false;
 let FeedbackVideoLinkStt;
 let FetchTestCodeReportStt = false;
+let widegtStatus = 'closed';
 
 let ws;
 let mediaRecorder2;
@@ -7658,14 +7659,14 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module2
 loadExternalModule().then(() => {
-  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe-new").dataset;
 
   if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt){
     USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
   }
 
   deepChatPocElement2 = document.getElementsByClassName(
-    "coachbots-coachscribe"
+    "coachbots-coachscribe-new"
   )?.[0];
   deepChatPocElement2.innerHTML = `
   <div class="chat-wrapper2">
@@ -7682,9 +7683,7 @@ loadExternalModule().then(() => {
       "
     ></div>
     
-    <div style="position: fixed; right: 1rem; bottom: 8.5rem; z-index: 1000; color: #333; font-size: 1rem; font-weight: bold; display: ${snippetOrigin() === 'external' ? "block" : "none"}">
-      ${snnipetConfigSTT.botId ? 'Coaching Agent' : 'Simulation Agent'}
-    </div>
+
 
     <button
       type="button"
@@ -7692,17 +7691,15 @@ loadExternalModule().then(() => {
       class="chat-icon-container2"
       id="chat-icon2"
       style="
-        height: ${snippetOrigin() === 'external' ? "6rem" : "4.5rem"};
-        width: ${snippetOrigin() === 'external' ? "6rem" : "4.5rem"};
-        background-color: #06ddb8;
+        height: 100%;
+        background-color:rgb(246, 250, 249);
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
-        border-radius: 40%;
         display: flex;
         justify-content: center;
         align-items: center;
         position: fixed;
-        right: 2rem;
-        bottom: 2rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
         cursor: pointer;
         border-top-width: 0px;
         border-right-width: 0px;
@@ -7713,8 +7710,11 @@ loadExternalModule().then(() => {
     >
       <img
         class="chat-icon2"
-        style="height: 100%; width: 100%; border-radius:40%;"
-        src="https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+        style="height: 100%; 
+        width: 100%; 
+        // border-radius:40%;
+        "
+        src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1750396446/cati7qr6xnsrrjqx0jws.jpg"
         alt="chat-bot-image"
       />
     </button>
@@ -8095,13 +8095,13 @@ loadExternalModule().then(() => {
   const chatIconContainer2 = document.getElementById("chat-icon2");
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
-  botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
-  sttWidgetClientId = document.querySelector(".coachbots-coachscribe").dataset
+  botId = document.querySelector(".coachbots-coachscribe-new").dataset.botId;
+  sttWidgetClientId = document.querySelector(".coachbots-coachscribe-new").dataset
     .clientId;
-  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe-new").dataset;
   console.log(
     "widgetInfo: ",
-    document.querySelector(".coachbots-coachscribe").dataset
+    document.querySelector(".coachbots-coachscribe-new").dataset
   );
   console.log("stt widget ClientID :", sttWidgetClientId);
   console.log("stt widget botID :", botId);
@@ -10047,7 +10047,7 @@ loadExternalModule().then(() => {
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
-          //   const coachId = document.querySelector('.coachbots-coachscribe').dataset.botId;
+          //   const coachId = document.querySelector('.coachbots-coachscribe-new').dataset.botId;
           console.log("Bot ID: ", botId);
           if (botId) {
             LoadingMessageWithText("Coachbot is thinking...");
@@ -13340,9 +13340,11 @@ loadExternalModule().then(() => {
 });
 
 const openChatContainer2 = () => {
+  widegtStatus = 'open'
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
   const chatIconContainer2 = document.getElementById("chat-icon2");
+  
   let backdrop = document.getElementById("backdrop");
   backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
@@ -13385,7 +13387,7 @@ const openChatContainer2 = () => {
     chatContainer2.style["transform-origin"] = "100% 50%";
 
     //to close other bot
-    botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
+    botId = document.querySelector(".coachbots-coachscribe-new").dataset.botId;
     // botId = 'stress-management-0032'
 
     // if (!botId) {
@@ -13395,7 +13397,7 @@ const openChatContainer2 = () => {
       chatContainer.style["transform-origin"] = "100% 100%";
       const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
       chatIcon.src =
-        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750396446/cati7qr6xnsrrjqx0jws.jpg";
 
       const backdrop2 = document.getElementById("backdrop2");
       backdrop2.style.display = "none";
@@ -13407,7 +13409,7 @@ const openChatContainer2 = () => {
 
   if (
     chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+    "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750396446/cati7qr6xnsrrjqx0jws.jpg"
   ) {
 
     // const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
@@ -13424,24 +13426,34 @@ const openChatContainer2 = () => {
     }
 
     chatIconContainer2.style.backgroundColor = "white";
+    chatIconContainer2.style.height = snippetOrigin() === 'external' ? "6rem" : "6rem";
+    chatIconContainer2.style.width = snippetOrigin() === 'external' ? "6rem" : "4.5rem";
+    chatIconContainer2.style.borderRadius= "40%";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
-    chatIconContainer2.style.backgroundColor = "#06ddb8";
+    // chatIconContainer2.style.backgroundColor = "#06ddb8";
+    chatIconContainer2.style.height = "100%";
+    chatIconContainer2.style.width = 'auto';
+    chatIconContainer2.style.borderRadius= "0%";
     chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750396446/cati7qr6xnsrrjqx0jws.jpg";
   }
 };
 
 const closeFromTop2 = () => {
+  // widegtStatus = 'closed'
+  console.log('closing widget')
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
+  
   document.body.style.overflowY = "scroll";
   let backdrop = document.getElementById("backdrop");
   backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
   const chatIconContainer2 = document.getElementById("chat-icon2");
+  
 
   //end session due to inactivity :- row 708
   // setTimeout(() => {
@@ -13453,14 +13465,17 @@ const closeFromTop2 = () => {
 
   if (
     chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+    "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750396446/cati7qr6xnsrrjqx0jws.jpg"
   ) {
     chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
-    chatIconContainer2.style.backgroundColor = "#06ddb8";
+    // chatIconContainer2.style.backgroundColor = "#06ddb8";
+    chatIconContainer2.style.height = "100%";
+    chatIconContainer2.style.width = 'auto';
+    chatIconContainer2.style.borderRadius= "0%";
     chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750396446/cati7qr6xnsrrjqx0jws.jpg";
   }
 };
