@@ -3436,7 +3436,7 @@ async function handleReportButtonClick(choice) {
         ClientUserInformation?.profile_type || "",
         userId
       );
-      appendMessage(`Position: Top ${userPositionDetails[0].rating} out of ${userPositionDetails[0].total_count}`);
+      appendMessage(`You are currently ranked #<b>${userPositionDetails[0].rating}</b>`);
     } else if (choice == 'report-test'){
       appendMessage(`Enter Test code to fetch its latest report.`)
       FetchTestCodeReport = true;
@@ -3792,18 +3792,18 @@ loadExternalModule().then(() => {
         position: absolute; 
         left : ${window.innerWidth < 768 ? "1rem" : "6rem"}; 
         bottom : ${window.innerWidth < 768 ? "13vh" : "5.5rem"}; 
-        width : 80%; 
+        width : auto; 
         overflow: scroll;
         scrollbar-width : none;
         height : 36px; 
         display : flex;
         flex-direction : row;
         gap : 4px;
-        background-color : white; 
         padding : 2px;
         padding-top : ${window.innerWidth < 768 ? "4px" : "2px"}; 
         border-radius : 4px;
         display: none;
+        z-index: 0;
       ">
     </div>
     <p id="bot-footer2" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
