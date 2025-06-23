@@ -8,7 +8,7 @@ const CountdownBanner = () => {
   const getNextMonday = () => {
     const now = new Date();
     const day = now.getDay();
-    const diff = (8 - day) % 7 || 7;
+    const diff = (8 - day) % 7 || 7; // ensures Monday is always in the future
     const nextMonday = new Date(now);
     nextMonday.setDate(now.getDate() + diff);
     nextMonday.setHours(0, 0, 0, 0);
@@ -43,40 +43,21 @@ const CountdownBanner = () => {
   if (!visible) return null;
 
   return (
-    <div style={{
-      backgroundColor: '#d4fddf',
-      color: '#000',
-      padding: '10px 20px',
-      fontFamily: 'Segoe UI, sans-serif',
-      fontSize: '1rem',
-      fontWeight: 600,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: '10px',
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-    }} className='mt-4 mb-2'>
-      🎉 HAPPY {dayName.toUpperCase()}! YOU HAVE ONLY 
-      <span style={{ color: '#008000', marginLeft: '6px', marginRight: '6px' }}>
-        {timeLeft}
-      </span>
-      LEFT BEFORE THESE LESSONS AND SIMULATIONS LEAVE FOREVER!
-      {/* <span
-        onClick={() => setVisible(false)}
-        style={{
-          marginLeft: '15px',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#444',
-        }}
-        title="Dismiss"
-      >
-        ✖
-      </span> */}
+    <div
+      className="
+    mt-4 mb-4 px-4 py-3 bg-[#d4fddf] text-black font-semibold text-sm sm:text-base
+    flex justify-center items-center gap-2 relative
+    overflow-hidden shadow-md text-center
+    w-full max-w-[80%] mx-auto rounded-md border border-green-300
+  "
+      role="status"
+      aria-live="polite"
+    >
+      <div className="flex flex-wrap justify-center items-center text-center">
+        🎉 HAPPY {dayName.toUpperCase()}! YOU HAVE ONLY
+        <span className="text-green-700 mx-2">{timeLeft}</span>
+        LEFT BEFORE THESE LESSONS AND SIMULATIONS LEAVE FOREVER!
+      </div>
     </div>
   );
 };
