@@ -298,6 +298,10 @@ let mediaRecorder2;
 let audioStreamStt;
 let USE_CUSTOM_STT = false;
 let finalTranscriptAccumulator = "";
+let widgetHeight = `clamp(100px, 85vh, calc(100vh - 83px))`
+let widgetWidth = `auto`
+let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`
+
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -7672,6 +7676,19 @@ loadExternalModule().then(() => {
   if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt){
     USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
   }
+  if (Object.keys(snnipetConfigSTT).length > 0){
+    if (snnipetConfigSTT?.widgetHeight && snnipetConfigSTT?.widgetHeight.length > 0) {
+      widgetHeight = snnipetConfigSTT?.widgetHeight;
+    }
+    if (snnipetConfigSTT?.widgetWidth && snnipetConfigSTT?.widgetWidth.length > 0) {
+      widgetWidth = snnipetConfigSTT?.widgetWidth;
+    }
+    if (snnipetConfigSTT?.widgetImageLink && snnipetConfigSTT?.widgetImageLink.length > 0) {
+      widgetImageLink = snnipetConfigSTT?.widgetImageLink;
+    }
+  }
+
+
 
   deepChatPocElement2 = document.getElementsByClassName(
     "coachbots-coachscribe"
@@ -7699,7 +7716,8 @@ loadExternalModule().then(() => {
       class="chat-icon-container2"
       id="chat-icon2"
       style="
-        height: clamp(100px, 85vh, calc(100vh - 83px));
+        height: ${widgetHeight};
+        width: ${widgetWidth};
         max-height: calc(100vh - 83px);
         background-color:rgb(246, 250, 249);
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
@@ -7723,9 +7741,9 @@ loadExternalModule().then(() => {
         height: 100%; 
         width: 100%; 
         object-fit: cover;
-      display: block;
+        display: block;
         "
-        src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg"
+        src= ${widgetImageLink}
         alt="chat-bot-image"
       />
     </button>
@@ -13407,8 +13425,7 @@ const openChatContainer2 = () => {
       chatContainer.style.scale = 0;
       chatContainer.style["transform-origin"] = "100% 100%";
       const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-      chatIcon.src =
-        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg";
+      chatIcon.src = widgetImageLink;
 
       const backdrop2 = document.getElementById("backdrop2");
       backdrop2.style.display = "none";
@@ -13419,8 +13436,7 @@ const openChatContainer2 = () => {
   console.log("CHAT ICON", chatIcon2.src);
 
   if (
-    chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg"
+    chatIcon2.src === widgetImageLink
   ) {
 
     // const previousPathsStt = JSON.parse(localStorage.getItem("visitedPaths") || "[]");
@@ -13444,11 +13460,10 @@ const openChatContainer2 = () => {
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
     // chatIconContainer2.style.backgroundColor = "#06ddb8";
-    chatIconContainer2.style.height = "clamp(100px, 85vh, calc(100vh - 83px))";
-    chatIconContainer2.style.width = 'auto';
+    chatIconContainer2.style.height = widgetHeight;
+    chatIconContainer2.style.width = widgetWidth;
     chatIconContainer2.style.borderRadius= "0%";
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg";
+    chatIcon2.src = widgetImageLink;
   }
 };
 
@@ -13475,18 +13490,16 @@ const closeFromTop2 = () => {
   // }, 900000);
 
   if (
-    chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg"
+    chatIcon2.src ===widgetImageLink
   ) {
     chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
     // chatIconContainer2.style.backgroundColor = "#06ddb8";
-    chatIconContainer2.style.height = "clamp(100px, 85vh, calc(100vh - 83px))";
-    chatIconContainer2.style.width = 'auto';
+    chatIconContainer2.style.height = widgetHeight;
+    chatIconContainer2.style.width = widgetWidth;
     chatIconContainer2.style.borderRadius= "0%";
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg";
+    chatIcon2.src = widgetImageLink;
   }
 };
