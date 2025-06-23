@@ -7723,6 +7723,7 @@ loadExternalModule().then(() => {
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
         display: flex;
         justify-content: center;
+        padding:0;
         align-items: center;
         position: fixed;
         right: 0.4rem;
