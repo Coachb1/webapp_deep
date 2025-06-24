@@ -7527,14 +7527,14 @@ const addReportButtons = async () => {
       font-size: 12px;
       border: 1px solid lightgray;
       border-radius: 4px;
-      background-color: transparent;
+      background-color: white;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
       display: ${window.user ? 'inline-block' : 'none'};
     `;
 
     button.onmouseover = () => (button.style.backgroundColor = '#e5e7eb');
-    button.onmouseleave = () => (button.style.backgroundColor = 'transparent');
+    button.onmouseleave = () => (button.style.backgroundColor = 'white');
 
     if (!window.user) button.disabled = true;
 

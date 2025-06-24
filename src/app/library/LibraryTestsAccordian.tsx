@@ -16,6 +16,7 @@ import { Div } from "@/components/ui/moving-border";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@/components/ui/card-hover-effect";
 import { BulletList } from "@/components/MarkdownHandler";
+import { Button } from "@/components/ui/button";
 
 interface LibraryTestsAccordianType {
   tests: any;
@@ -232,7 +233,7 @@ const LibraryTestsAccordian = ({
                                         src={url.trim()}
                                         controls
                                         onEnded={() => console.log("Playback ended")}
-                                        poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" :"https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
+                                        poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
                                         className="rounded-lg w-full mb-2"
                                       />
                                     ))}
@@ -242,7 +243,7 @@ const LibraryTestsAccordian = ({
                                   src={test.description_media}
                                   controls
                                   onEnded={() => console.log("Playback ended")}
-                                  poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" :"https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
+                                  poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
                                   className="rounded-lg w-full"
                                 />
                               )}
@@ -273,10 +274,29 @@ const LibraryTestsAccordian = ({
                       )}
                       {test.scenario_case != 'observation' && (
                         <div className="flex justify-end mt-2">
-                          <CopyToClipboard
+                          {/* <CopyToClipboard
                             textToCopy={test.test_code}
                             copyType="code"
-                          />
+                          /> */}
+                          <Button
+                            variant={"secondary"}
+                            className={`p-2 h-8 border border-gray-200 max-sm:text-xs`}
+                            onClick={() => {
+                              if (typeof window !== "undefined" && typeof (window as any).handleAttemptScenaiosSTT === "function") {
+                                (window as any).appendMessage2({
+                                  title: test.title,
+                                  description: test.description,
+                                  instructions: "Response should be at least 15 words.",
+                                });
+                                (window as any).openChatContainer2();
+                                (window as any).handleAttemptScenaiosSTT(test.title, test.test_code);
+                              } else {
+                                console.warn("handleAttemptScenaiosSTT is not defined on window");
+                              }
+                            }}
+                          >
+                            Start Interaction
+                          </Button>
                         </div>
                       )
 

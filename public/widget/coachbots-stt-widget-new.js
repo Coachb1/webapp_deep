@@ -292,6 +292,7 @@ let increaseSessionForFirstTestStt = false;
 let FeedbackVideoLinkStt;
 let FetchTestCodeReportStt = false;
 let widegtStatus = 'closed';
+let libraryTestoptionsStt = [];
 
 let ws;
 let mediaRecorder2;
@@ -6812,7 +6813,7 @@ function copyClipboard(block_id_to_copy) {
 
 const handleAttemptScenaiosSTT = async (title, test_code) => {
   console.log("Attempting Scenaios", test_code, title);
-
+  libraryTestoptionsStt.push(title);
   testCode2 = test_code;
   userAcessAvailability2 = true;
   optedNo2 = true;
@@ -6860,6 +6861,7 @@ const handleAttemptScenaiosSTT = async (title, test_code) => {
   }, 100);
 };
 
+window.handleAttemptScenaiosSTT = handleAttemptScenaiosSTT
 async function handleScenarioRegeneration(signals) {
   const gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   console.log(signals);
@@ -7531,14 +7533,14 @@ const addReportButtons = async () => {
       font-size: 12px;
       border: 1px solid lightgray;
       border-radius: 4px;
-      background-color: transparent;
+      background-color: white;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
       display: ${window.user ? 'inline-block' : 'none'};
     `;
 
     button.onmouseover = () => (button.style.backgroundColor = '#e5e7eb');
-    button.onmouseleave = () => (button.style.backgroundColor = 'transparent');
+    button.onmouseleave = () => (button.style.backgroundColor = 'white');
 
     if (!window.user) button.disabled = true;
 
@@ -11439,6 +11441,10 @@ loadExternalModule().then(() => {
               buttonTextArray.push(buttonText);
             });
 
+            libraryTestoptionsStt.forEach((text) => {
+              buttonTextArray.push(text);
+            });
+
             if (buttonTextArray.includes(latestMessage)) {
               if (responsesDone2 === false && questionIndex2 > 0) {
                 signals.onResponse({
@@ -13370,6 +13376,7 @@ loadExternalModule().then(() => {
 });
 
 const openChatContainer2 = () => {
+  waitForMessagesElement();
   widegtStatus = 'open'
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
@@ -13504,3 +13511,5 @@ const closeFromTop2 = () => {
     chatIcon2.src = widgetImageLink;
   }
 };
+
+window.openChatContainer2 = openChatContainer2;
