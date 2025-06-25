@@ -2348,6 +2348,11 @@ const audioCanvasUiForQuestionsStt = (audio, canvas) => {
   draw()
 }
 
+function isAudioURLTalk(url){
+  const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
+  return isAudio
+}
+
 const handleProceedClick = async (choice) => {
   if (choice == "Yes") {
     isProceed = "true";
@@ -2420,7 +2425,7 @@ const handleProceedClick = async (choice) => {
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
                               ></iframe>`);
-            } else {
+            } else if (isAudioURLTalk(element)) {
               console.log(element);
               appendMessage(`<audio style="${window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
@@ -2429,6 +2434,15 @@ const handleProceedClick = async (choice) => {
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio>`);
+            } else {
+              appendMessage(`
+                <a href="${element}" target="_blank"
+                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                  View Context
+                </a>
+                `)
             }
           });
         } else {
@@ -2452,7 +2466,25 @@ const handleProceedClick = async (choice) => {
             <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
             ></div></div>
             `);
-          }
+          } else if (isAudioURLTalk(questionMediaLink)) {
+              console.log(questionMediaLink);
+              appendMessage(`<audio style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+                }" controls autoplay>
+              <source src=${questionMediaLink} type="audio/mpeg" />
+              Your browser does not support the audio element.
+              </audio>`);
+            } else {
+              appendMessage(`
+                <a href="${questionMediaLink}" target="_blank"
+                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                  View Context
+                </a>
+                `)
+            }
         }
       }
 
@@ -5030,7 +5062,7 @@ loadExternalModule().then(() => {
                                           mozallowfullscreen="true" 
                                           webkitallowfullscreen="true"
                                           ></iframe>`);
-                      } else {
+                      } else if (isAudioURLTalk(element)){
                         console.log(element);
                         appendMessage(`<div ><audio style="${window.innerWidth < 600
                           ? "width: 200px; max-width: 200px !important;"
@@ -5039,6 +5071,14 @@ loadExternalModule().then(() => {
                           <source src=${element} type="audio/mpeg" />
                           Your browser does not support the audio element.
                           </audio></div>`);
+                      } else {
+                        appendMessage(`
+                          <a href="${element}" target="_blank"
+                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                          View Context
+                        </a>`)
                       }
                     });
                   } else {
@@ -5062,7 +5102,24 @@ loadExternalModule().then(() => {
                         <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                         ></div></div>
                         `);
-                    }
+                    } else if (isAudioURLTalk(questionMediaLink)){
+                        console.log(questionMediaLink);
+                        appendMessage(`<div ><audio style="${window.innerWidth < 600
+                          ? "width: 200px; max-width: 200px !important;"
+                          : " min-width: 50vw !important;"
+                          }" controls autoplay>
+                          <source src=${questionMediaLink} type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                          </audio></div>`);
+                      } else {
+                        appendMessage(`
+                          <a href="${questionMediaLink}" target="_blank"
+                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                          View Context
+                        </a>`)
+                      }
                   }
                 }
               }
@@ -6402,7 +6459,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`;
-                              } else {
+                              } else if (isAudioURLTalk(element)) {
                                 console.log(element);
                                 questionText =
                                   questionText +
@@ -6414,6 +6471,16 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
+                              } else {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" + `<a href="${element}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`
                               }
                             });
                           } else {
@@ -6463,7 +6530,29 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
-                            }
+                            } else if (isAudioURLTalk(element)) {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" +
+                                  `<div ><audio style="${window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${element} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`;
+                              } else {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" + `<a href="${element}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`
+                              }
                           }
                         }
                       }
@@ -6738,7 +6827,12 @@ loadExternalModule().then(() => {
                                   title: senarioTitle,
                                   description: senarioDescription,
                                   instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                                  oem: `<a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>`
+                                  oem: `<a href="${senarioMediaDescription}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`
                                 }
                               );
                             }
@@ -6928,7 +7022,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`);
-                              } else {
+                              } else if (isAudioURLTalk(element)) {
                                 console.log(element);
                                 appendMessage(`<div ><audio style="${window.innerWidth < 600
                                   ? "width: 200px; max-width: 200px !important;"
@@ -6937,6 +7031,13 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`);
+                              } else {
+                                appendMessage(`<a href="${element}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`)
                               }
                             });
                           } else {
@@ -6964,7 +7065,23 @@ loadExternalModule().then(() => {
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
                               `);
-                            }
+                            }else if (isAudioURLTalk(questionMediaLink)) {
+                                console.log(questionMediaLink);
+                                appendMessage(`<div ><audio style="${window.innerWidth < 600
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${questionMediaLink} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`);
+                              } else {
+                                appendMessage(`<a href="${questionMediaLink}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`)
+                              }
                           }
                         }
                       }

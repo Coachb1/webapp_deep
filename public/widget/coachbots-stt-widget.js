@@ -5088,6 +5088,11 @@ const handleGameQuestion = async (
   })
 };
 
+function isAudioURL(url){
+  const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
+  return isAudio
+}
+
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
     isProceedStt = "true";
@@ -5167,7 +5172,7 @@ const handleProceedClickStt = async (choice) => {
                                 mozallowfullscreen="true" 
                                 webkitallowfullscreen="true"
                                 ></iframe>`);
-            } else {
+            } else if (isAudioURL(element)) {
               console.log(element);
               console.log('Ahere8')
 
@@ -5178,6 +5183,15 @@ const handleProceedClickStt = async (choice) => {
                 <source src=${element} type="audio/mpeg" />
                 Your browser does not support the audio element.
                 </audio></div>`);
+            } else {
+              // considering else a aritcle url
+
+              appendMessage2(`<a href="${element}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`)
             }
           });
         } else {
@@ -5205,7 +5219,27 @@ const handleProceedClickStt = async (choice) => {
               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
               ></div></div>
               `);
-          }
+          } else if (isAudioURL(questionMediaLinkStt)) {
+              console.log(questionMediaLinkStt);
+              console.log('Ahere8')
+
+              appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+                }" controls autoplay>
+                <source src=${questionMediaLinkStt} type="audio/mpeg" />
+                Your browser does not support the audio element.
+                </audio></div>`);
+            } else {
+              // considering else a aritcle url
+
+              appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`)
+            }
         }
       }
 
@@ -11987,7 +12021,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true"
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`;
-                              } else {
+                              } else if (isAudioURL(element)) {
                                 console.log(element);
                                 questionText2 =
                                   questionText2 +
@@ -11999,6 +12033,16 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
+                              } else {
+                                // considering else a aritcle url
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" + `<a href="${element}" target="_blank"
+                                                style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                                onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                                onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                View Context
+                                              </a>`
                               }
                             });
                           } else {
@@ -12045,7 +12089,29 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true"
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
-                            }
+                            }else if (isAudioURL(questionMediaLinkStt)) {
+                                console.log(questionMediaLinkStt);
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<div ><audio style="${window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${questionMediaLinkStt} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`;
+                              } else{
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<a href="${questionMediaLinkStt}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`;
+                              }
                           }
                         }
                       }
@@ -12337,7 +12403,12 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
-                                  oem: `<a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>`
+                                  oem: `<a href="${senarioMediaDescription2}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`
                                 }
                               );
                             }
@@ -12574,7 +12645,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true"
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`);
-                              } else {
+                              } else if (isAudioURL(element)) {
                                 console.log(element);
                                 appendMessage2(`<div ><audio style="${window.innerWidth < 600
                                   ? "width: 200px; max-width: 200px !important;"
@@ -12583,6 +12654,13 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`);
+                              } else {
+                                appendMessage2(`<a href="${element}" target="_blank"
+                                                style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                                onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                                onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                View Context
+                                              </a>`)
                               }
                             });
                           } else {
@@ -12612,7 +12690,23 @@ loadExternalModule().then(() => {
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
                               `);
-                            }
+                            }else if (isAudioURL(questionMediaLinkStt)) {
+                                console.log(questionMediaLinkStt);
+                                appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${questionMediaLinkStt} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`);
+                              } else {
+                                appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
+                                                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                  View Context
+                                                </a>`)
+                              }
                           }
                         }
                       }

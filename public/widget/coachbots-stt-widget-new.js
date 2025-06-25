@@ -325,7 +325,7 @@ async function handleCustomStt() {
   ws.onopen = async () => {
     console.log("widget.js: WebSocket connection established for STT");
     const gShadowRoot2 = document.getElementById("chat-element2")?.shadowRoot;
-        gShadowRoot2?.getElementById("text-input").focus();
+    gShadowRoot2?.getElementById("text-input").focus();
     const textBox = gShadowRoot2?.getElementById("text-input");
     finalTranscriptAccumulator = textBox.textContent || "";
 
@@ -382,16 +382,16 @@ async function handleCustomStt() {
         const textBox = gShadowRoot2?.getElementById("text-input");
         console.log('widget.js: input', textBox)
         if (data.isFinal) {
-            // If it's a final transcript, add it to our accumulator
-            // and ensure there's a space after it if it's not empty.
-            finalTranscriptAccumulator += (transcript.trim() + " ");
-            // Update the textbox with the accumulated final text
-            textBox.textContent = finalTranscriptAccumulator;
+          // If it's a final transcript, add it to our accumulator
+          // and ensure there's a space after it if it's not empty.
+          finalTranscriptAccumulator += (transcript.trim() + " ");
+          // Update the textbox with the accumulated final text
+          textBox.textContent = finalTranscriptAccumulator;
         } else {
-            // If it's an interim transcript, we show it along with the final part.
-            // We trim the interim transcript to avoid extra spaces at the start if it's
-            // just a single word.
-            textBox.textContent = finalTranscriptAccumulator + transcript.trim();
+          // If it's an interim transcript, we show it along with the final part.
+          // We trim the interim transcript to avoid extra spaces at the start if it's
+          // just a single word.
+          textBox.textContent = finalTranscriptAccumulator + transcript.trim();
         }
         // Scroll to the bottom of the textbox if content overflows
         textBox.scrollTop = textBox.scrollHeight;
@@ -1027,9 +1027,9 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
         "other data: ",
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
-      const msg = formFieldsstt[0] === "email" ? 
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      const msg = formFieldsstt[0] === "email" ?
+        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
       appendMessage2(msg);
     } else {
       // we are asking initial question
@@ -1056,9 +1056,9 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
          </div>`
       );
 
-      const msg = formFieldsstt[0] === "email" ? 
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      const msg = formFieldsstt[0] === "email" ?
+        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
 
       appendMessage2(msg);
     } else {
@@ -1203,9 +1203,9 @@ const getUserOrAnonymousDetails = async (choice) => {
         "other data: ",
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
-      const msg = formFieldsstt[0] === "email" ? 
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      const msg = formFieldsstt[0] === "email" ?
+        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
       appendMessage2(msg);
     } else {
       FeedbackUserEmail = user_email2;
@@ -1938,7 +1938,7 @@ async function setupBotAndProceed() {
     }
     hideLoader();
   }
-  
+
   return botId;
 }
 
@@ -2398,7 +2398,7 @@ const getBotDetails2 = async (botId) => {
                       ${buttons}
                       </div>`;
     // sending welcome msg
-    if (snnipetConfigSTT?.welcomeMessage !== undefined){
+    if (snnipetConfigSTT?.welcomeMessage !== undefined) {
       botWelcomeMessage = snnipetConfigSTT.welcomeMessage
     }
     if (botType === "user_bot") {
@@ -3860,9 +3860,9 @@ function handleEndConversation(isInActive) {
     } else {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
-      const msg = formFieldsstt[0] === "email" ? 
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      const msg = formFieldsstt[0] === "email" ?
+        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
       appendMessage2(msg);
     }
   } else {
@@ -4070,7 +4070,7 @@ const handleEndCoachingClick2 = async (randomId) => {
       );
     }
 
-    if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+    if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0) {
       appendMessage2({
         "feedback_media": snippetDivSTT(FeedbackVideoLinkStt)
       })
@@ -4104,8 +4104,8 @@ const handleEndCoachingClick2 = async (randomId) => {
     // appendMessage2(getCredentialsForm2());
     isEmailFormstt = true;
     formFieldsstt = ["name", "email"];
-    const msg = formFieldsstt[0] === "email" ? 
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
+    const msg = formFieldsstt[0] === "email" ?
+      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
       : `<b>Please enter your ${formFieldsstt[0]}</b>`;
     appendMessage2(msg);
   }
@@ -4151,7 +4151,7 @@ function appendMessageForUser2(message2) {
 }
 
 function formatMessage2(message) {
-  const getMediaPreviewHTML = (iframe, heading='▶️ AI Coach Lesson or Additional Context') => `
+  const getMediaPreviewHTML = (iframe, heading = '▶️ AI Coach Lesson or Additional Context') => `
     <details>
       <summary style="cursor: pointer; font-weight: bold; margin-top: 1em;">${heading}</summary>
       <div style="margin-top: 0.5em;">
@@ -4181,11 +4181,11 @@ function formatMessage2(message) {
       const value = message[key];
       if (!value) return null;
 
-      if (['oem','feedback_media' ].includes(key) && value.includes('iframe')) {
+      if (['oem', 'feedback_media'].includes(key) && value.includes('iframe')) {
 
         return `
           <div>
-              ${getMediaPreviewHTML(value,keyToTitleMappings[key])}
+              ${getMediaPreviewHTML(value, keyToTitleMappings[key])}
           </div>`;
       }
 
@@ -4355,7 +4355,7 @@ function snippetDivSTT(url) {
   } else if (url.includes("youtube")) {
     const videoId = url.split("v=")[1];
     url = `https://www.youtube.com/embed/${videoId}?autoplay=1`
-    return  `
+    return `
     <iframe
       allow="autoplay; encrypted-media; fullscreen;"
       style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
@@ -5094,6 +5094,11 @@ const handleGameQuestion = async (
   })
 };
 
+function isAudioURL(url){
+  const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
+  return isAudio
+}
+
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
     isProceedStt = "true";
@@ -5173,7 +5178,7 @@ const handleProceedClickStt = async (choice) => {
                                 mozallowfullscreen="true" 
                                 webkitallowfullscreen="true"
                                 ></iframe>`);
-            } else {
+            } else if (isAudioURL(element)) {
               console.log(element);
               console.log('Ahere8')
 
@@ -5184,6 +5189,15 @@ const handleProceedClickStt = async (choice) => {
                 <source src=${element} type="audio/mpeg" />
                 Your browser does not support the audio element.
                 </audio></div>`);
+            } else {
+              // considering else a aritcle url
+
+              appendMessage2(`<a href="${element}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`)
             }
           });
         } else {
@@ -5211,7 +5225,27 @@ const handleProceedClickStt = async (choice) => {
               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
               ></div></div>
               `);
-          }
+          }else if (isAudioURL(questionMediaLinkStt)) {
+              console.log(questionMediaLinkStt);
+              console.log('Aheresa')
+
+              appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+                }" controls autoplay>
+                <source src=${questionMediaLinkStt} type="audio/mpeg" />
+                Your browser does not support the audio element.
+                </audio></div>`);
+            } else {
+              // considering else a aritcle url
+
+              appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`)
+            }
         }
       }
 
@@ -6089,9 +6123,9 @@ async function setMcqVariablesStt() {
       //   credentialsForm2;
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
-      const msg = formFieldsstt[0] === "email" ? 
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      const msg = formFieldsstt[0] === "email" ?
+        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
       appendMessage2(msg);
     }
 
@@ -6127,7 +6161,7 @@ async function setMcqVariablesStt() {
           }
           appendMessage2(message2);
 
-          if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+          if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0) {
             appendMessage2({
               "feedback_media": snippetDivSTT(FeedbackVideoLinkStt)
             })
@@ -6241,7 +6275,7 @@ function sendEmail2(session_id, reportUrl) {
     is_whatsapp: false,
   });
 
-  if (!emailCandidate2){
+  if (!emailCandidate2) {
     queryParams22.append("send_report_to_candidate", false)
   }
 
@@ -6669,7 +6703,7 @@ const getAllReportsTestcode = async (test_code) => {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ test_code: test_code, participant_id: userId2  }),
+      body: JSON.stringify({ test_code: test_code, participant_id: userId2 }),
     });
 
     const responseData = await response.json();
@@ -7406,21 +7440,21 @@ async function handleReportButtonClickStt(choice) {
   FetchTestCodeReportStt = false;
 
   const participantData = await getParticipantReportDataStt(userId2);
-  if (participantData?.participant_info.total_questions_attempted === 0 && choice !== 'report-leaderboard'){
+  if (participantData?.participant_info.total_questions_attempted === 0 && choice !== 'report-leaderboard') {
     let msg = "NO attempt history found!"
-    if (choice === 'report-test'){
+    if (choice === 'report-test') {
       msg = "No test attempts found. Please attempt a test to fetch a report."
-    } else if (choice === 'report-history'){
+    } else if (choice === 'report-history') {
       msg = "No history report available. Please attempt a test to generate a report."
-    } 
+    }
     appendMessage2(
       msg
     )
     enableReportButtons();
     return;
-  } 
-  if (participantData?.participant_info.total_questions_attempted < 3 && choice === 'report-leaderboard'){
-    if (choice === 'report-leaderboard'){
+  }
+  if (participantData?.participant_info.total_questions_attempted < 3 && choice === 'report-leaderboard') {
+    if (choice === 'report-leaderboard') {
       msg = "Not enough data.";
       appendMessage2(
         msg
@@ -7456,10 +7490,10 @@ async function handleReportButtonClickStt(choice) {
         userId2
       );
       appendMessage2(`You are currently ranked #<b>${userPositionDetails[0].rating}</b>`);
-    } else if (choice == 'report-test'){
+    } else if (choice == 'report-test') {
       appendMessage2(`Enter interaction code to fetch its latest report.`)
       FetchTestCodeReportStt = true;
-    } 
+    }
   } catch (err) {
     console.error("Error generating report:", err);
     appendMessage2("An error occurred while generating the report.");
@@ -7471,7 +7505,7 @@ async function handleReportButtonClickStt(choice) {
 function enableReportButtons() {
   const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
   if (faqButtonsWrapper) {
-    faqButtonsWrapper.style.display = window.user ?"flex": "none" ;
+    faqButtonsWrapper.style.display = window.user ? "flex" : "none";
   }
   const wrapper = document.getElementById("report-buttons-stt");
   if (wrapper) {
@@ -7551,7 +7585,7 @@ const addReportButtons = async () => {
   faqButtonsGenerator('report-test', "Interaction Report");
   faqButtonsGenerator('report-leaderboard', "Leaderboard Rank");
 
-  faqButtonsWrapper.style.display = window.user ?"flex": "none" ;
+  faqButtonsWrapper.style.display = window.user ? "flex" : "none";
   faqButtonsWrapper.appendChild(buttonsWrapper);
 
   waitForMessagesElement();
@@ -7675,10 +7709,10 @@ async function loadExternalModule() {
 loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
 
-  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt){
+  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt) {
     USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
   }
-  if (Object.keys(snnipetConfigSTT).length > 0){
+  if (Object.keys(snnipetConfigSTT).length > 0) {
     if (snnipetConfigSTT?.widgetHeight && snnipetConfigSTT?.widgetHeight.length > 0) {
       widgetHeight = snnipetConfigSTT?.widgetHeight;
     }
@@ -7949,7 +7983,7 @@ loadExternalModule().then(() => {
 
     </deep-chat>
     ${USE_CUSTOM_STT ?
-    `<button id="startMicBtn" style="
+      `<button id="startMicBtn" style="
       position: absolute; 
       /* These will be set dynamically by JavaScript */
       left: 0; 
@@ -7972,7 +8006,7 @@ loadExternalModule().then(() => {
         <path d="M12 14q-1.25 0-2.125-.875T9 11V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v6q0 1.25-.875 2.125T12 14Zm-1 7v-3.1q-2.875-.35-4.738-2.437Q4.4 13.375 4.4 10.4H6q0 2.275 1.613 3.938Q9.225 16 12 16q2.775 0 4.388-1.662Q18 12.675 18 10.4h1.6q0 2.975-1.862 5.062Q15.875 17.55 13 17.9V21Z"/>
       </svg>
     </button>`
-    : ""
+      : ""
     }
 
     <div 
@@ -8075,7 +8109,7 @@ loadExternalModule().then(() => {
   }
 
   console.log('custommic', customMicButton);
-  if (customMicButton){
+  if (customMicButton) {
     updateMicButtonPosition();
     customMicButton.addEventListener("click", handleCustomStt);
     customMicButton.addEventListener('resize', updateMicButtonPosition);
@@ -8365,7 +8399,7 @@ loadExternalModule().then(() => {
     </div>`;
   }
   // if botid is null or notdefined show other message
-  console.log(botId == undefined,snnipetConfigSTT?.createBotSheetUrl == undefined)
+  console.log(botId == undefined, snnipetConfigSTT?.createBotSheetUrl == undefined)
   if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT["psychometric"] === "true") {
@@ -10121,23 +10155,23 @@ loadExternalModule().then(() => {
           // fetch report for a test code
           if (FetchTestCodeReportStt) {
             const code = latestMessage?.trim();
-              if (isTestCode2(code) && code.length == 7) {
+            if (isTestCode2(code) && code.length == 7) {
 
-                  LoadingMessageWithText(
-                    "Please wait, we are fetching your report!!"
-                  );
-                  try{
-                    const [reportUrl, success] = await getAllReportsTestcode(code);
-                    if (!success){
-                      signals.onResponse({
-                        html: `<b style='font-size: 14px;color: #991b1b;'>${reportUrl}. Retry again!</b>`
-                      });
-                      FetchTestCodeReportStt = false;
-                      return;
-                    } else{
+              LoadingMessageWithText(
+                "Please wait, we are fetching your report!!"
+              );
+              try {
+                const [reportUrl, success] = await getAllReportsTestcode(code);
+                if (!success) {
+                  signals.onResponse({
+                    html: `<b style='font-size: 14px;color: #991b1b;'>${reportUrl}. Retry again!</b>`
+                  });
+                  FetchTestCodeReportStt = false;
+                  return;
+                } else {
 
-                    signals.onResponse({
-                      html: `
+                  signals.onResponse({
+                    html: `
                           <a href="${reportUrl[0].report_url}" target="_blank" rel="noopener noreferrer" style="
                             display: inline-block;
                             padding: 4px 8px;
@@ -10153,32 +10187,32 @@ loadExternalModule().then(() => {
                             View Interaction Report
                           </a>
                       `
-                    });
-                    }
+                  });
+                }
 
-                  } catch (error) {
-                    console.error("Report fetch error:", error);               
-                    signals.onResponse({
-                      html: `
+              } catch (error) {
+                console.error("Report fetch error:", error);
+                signals.onResponse({
+                  html: `
                         <b style='font-size: 14px;color: #991b1b;'>
                           Unable to fetch report. Please check your test code or try again later.
                         </b>
                       `
-                    });
+                });
 
-                  }
-                  FetchTestCodeReportStt = false;
-              } else {
-                signals.onResponse({
-                  html: `
+              }
+              FetchTestCodeReportStt = false;
+            } else {
+              signals.onResponse({
+                html: `
                     <b style='font-size: 14px;color: #991b1b;'>
                       Invalid test code format. It must be 7 characters long and start with 'Q'.
                     </b>
                   `
-                });
-              }
-              return;
+              });
             }
+            return;
+          }
 
 
           if (startScenarioRecommendationsStt) {
@@ -10297,7 +10331,7 @@ loadExternalModule().then(() => {
               askAccessBotCodeSTT = false;
               if (snnipetConfigSTT.flowType === "no") {
                 handleOptionButtonClick2("", signals);
-              }  else if (snnipetConfigSTT.flowType === 'both') {
+              } else if (snnipetConfigSTT.flowType === 'both') {
                 signals.onResponse({
                   html: `<b>Do you have interaction code for your simulation?</b><br/><br/>
                   <div class="deep-chat-temporary-message">
@@ -10400,9 +10434,9 @@ loadExternalModule().then(() => {
               return;
             }
             if (formFieldsstt.length > 0) {
-              const msg = formFieldsstt[0] === "email" ? 
-              `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-              : `<b>Please enter your ${formFieldsstt[0]}.</b>`;
+              const msg = formFieldsstt[0] === "email" ?
+                `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+                : `<b>Please enter your ${formFieldsstt[0]}.</b>`;
               signals.onResponse({
                 html: msg,
               });
@@ -10520,10 +10554,10 @@ loadExternalModule().then(() => {
                       signals.onResponse({
                         html: `Great! Please enter the interaction code to get started. A scenario will be presented & few questions will follow based on the same.`,
                       });
-                    } 
+                    }
                   }
                   if (snnipetConfigSTT?.isReportButtons === 'true') enableReportButtons();
-                  
+
                 } catch (error) {
                   console.error("Error creating user:", error);
                   signals.onResponse({
@@ -10538,7 +10572,7 @@ loadExternalModule().then(() => {
                 }
                 appendMessage2(message);
 
-                if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+                if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0) {
                   appendMessage2({
                     "feedback_media": snippetDivSTT(FeedbackVideoLinkStt)
                   })
@@ -11701,7 +11735,7 @@ loadExternalModule().then(() => {
                   ) {
                     sttWidgetClientId = clientuserInformationSTT.client_name;
                   }
-                  if(snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true'){
+                  if (snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true') {
                     emailCandidate2 = false;
                   }
                 } else {
@@ -12014,7 +12048,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true"
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`;
-                              } else {
+                              } else if (isAudioURL(element)) {
                                 console.log(element);
                                 questionText2 =
                                   questionText2 +
@@ -12026,6 +12060,16 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
+                              } else{
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<a href="${element}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`;
                               }
                             });
                           } else {
@@ -12072,7 +12116,29 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true"
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
-                            }
+                            } else if (isAudioURL(questionMediaLinkStt)) {
+                                console.log(questionMediaLinkStt);
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<div ><audio style="${window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${questionMediaLinkStt} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`;
+                              } else{
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<a href="${questionMediaLinkStt}" target="_blank"
+                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              View Context
+                            </a>`;
+                              }
                           }
                         }
                       }
@@ -12238,8 +12304,8 @@ loadExternalModule().then(() => {
                                            >`
                             }
                           );
-                        } else if (senarioMediaDescription2.includes("player.cloudinary.com") || senarioMediaDescription2.includes('storage.googleapis.com')){
-                          
+                        } else if (senarioMediaDescription2.includes("player.cloudinary.com") || senarioMediaDescription2.includes('storage.googleapis.com')) {
+
                           appendMessage2({
                             title: senarioTitle2,
                             description: senarioDescription2,
@@ -12364,7 +12430,13 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
-                                  oem: `<a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>`
+                                  oem: `<a href="${senarioMediaDescription2}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>
+                                        `
                                 }
                               );
                             }
@@ -12601,7 +12673,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true"
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`);
-                              } else {
+                              } else if (isAudioURL(element)) {
                                 console.log(element);
                                 appendMessage2(`<div ><audio style="${window.innerWidth < 600
                                   ? "width: 200px; max-width: 200px !important;"
@@ -12610,6 +12682,13 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`);
+                              } else {
+                                appendMessage2(`<a href="${element}" target="_blank"
+                                                style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                                onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                                onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                View Context
+                                              </a>`)
                               }
                             });
                           } else {
@@ -12639,7 +12718,23 @@ loadExternalModule().then(() => {
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
                               `);
-                            }
+                            }else if (isAudioURL(questionMediaLinkStt)) {
+                                console.log(questionMediaLinkStt);
+                                appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${questionMediaLinkStt} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`);
+                              } else {
+                                appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
+                                                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                  View Context
+                                                </a>`)
+                              }
                           }
                         }
                       }
@@ -13168,9 +13263,9 @@ loadExternalModule().then(() => {
                     ) {
                       formFieldsstt = ["name", "email"];
                       isEmailFormstt = true;
-                      const msg = formFieldsstt[0] === "email" ? 
-                      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>` 
-                      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+                      const msg = formFieldsstt[0] === "email" ?
+                        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
+                        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
                       signals.onResponse({
                         html: msg,
                       });
@@ -13183,7 +13278,7 @@ loadExternalModule().then(() => {
 
                       appendMessage2(message);
 
-                      if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+                      if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0) {
                         appendMessage2({
                           "feedback_media": snippetDivSTT(FeedbackVideoLinkStt)
                         })
@@ -13234,7 +13329,7 @@ loadExternalModule().then(() => {
                         "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
                     }
                     appendMessage2(message);
-                    if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0){
+                    if (FeedbackVideoLinkStt && FeedbackVideoLinkStt.length > 0) {
                       appendMessage2({
                         "feedback_media": snippetDivSTT(FeedbackVideoLinkStt)
                       })
@@ -13381,7 +13476,7 @@ const openChatContainer2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
   const chatIconContainer2 = document.getElementById("chat-icon2");
-  
+
   let backdrop = document.getElementById("backdrop");
   backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
@@ -13463,14 +13558,14 @@ const openChatContainer2 = () => {
     chatIconContainer2.style.backgroundColor = "white";
     chatIconContainer2.style.height = snippetOrigin() === 'external' ? "6rem" : "4.5rem";
     chatIconContainer2.style.width = snippetOrigin() === 'external' ? "6rem" : "4.5rem";
-    chatIconContainer2.style.borderRadius= "40%";
+    chatIconContainer2.style.borderRadius = "40%";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
     // chatIconContainer2.style.backgroundColor = "#06ddb8";
     chatIconContainer2.style.height = widgetHeight;
     chatIconContainer2.style.width = widgetWidth;
-    chatIconContainer2.style.borderRadius= "0%";
+    chatIconContainer2.style.borderRadius = "0%";
     chatIcon2.src = widgetImageLink;
   }
 };
@@ -13480,14 +13575,14 @@ const closeFromTop2 = () => {
   console.log('closing widget')
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
-  
+
   document.body.style.overflowY = "scroll";
   let backdrop = document.getElementById("backdrop");
   backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
   const chatIconContainer2 = document.getElementById("chat-icon2");
-  
+
 
   //end session due to inactivity :- row 708
   // setTimeout(() => {
@@ -13498,7 +13593,7 @@ const closeFromTop2 = () => {
   // }, 900000);
 
   if (
-    chatIcon2.src ===widgetImageLink
+    chatIcon2.src === widgetImageLink
   ) {
     chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
@@ -13507,7 +13602,7 @@ const closeFromTop2 = () => {
     // chatIconContainer2.style.backgroundColor = "#06ddb8";
     chatIconContainer2.style.height = widgetHeight;
     chatIconContainer2.style.width = widgetWidth;
-    chatIconContainer2.style.borderRadius= "0%";
+    chatIconContainer2.style.borderRadius = "0%";
     chatIcon2.src = widgetImageLink;
   }
 };
