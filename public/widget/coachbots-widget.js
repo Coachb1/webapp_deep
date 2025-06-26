@@ -3563,6 +3563,7 @@ const AddReportButtons = async () => {
       border: 1px solid lightgray;
       border-radius: 4px;
       background-color: white;
+      border-color: green;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
       display: ${window.user ? 'inline-block' : 'none'};
