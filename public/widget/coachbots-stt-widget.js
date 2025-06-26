@@ -291,6 +291,8 @@ let userScenarioRecommendationStt;
 let increaseSessionForFirstTestStt = false;
 let FeedbackVideoLinkStt;
 let FetchTestCodeReportStt = false;
+let testCountDown = 0;
+let timerInterval = null;
 
 let ws;
 let mediaRecorder2;
@@ -5100,6 +5102,17 @@ function isAudioURL(url){
 
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
+    if (testCountDown > 0){
+    startModernTimer(testCountDown, async () => {
+          console.log("⏰ Timer completed!", sessionStatusStt);
+          // Call any function here
+          await window.getSessionStatusStt(sessionId2);
+          if (sessionStatusStt != 'completed'){
+            await StopSession();
+          }
+    });
+
+    }
     isProceedStt = "true";
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -7693,6 +7706,118 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
   }
 }
 
+
+const StopSession = async() =>{
+  await window.cancelTestStt(participantId2); // cancelling session
+  if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+    const shadowRoot =
+      document.getElementById("chat-element2").shadowRoot;
+    const button = shadowRoot.getElementById(
+      `mcq-option-stt-${mcqFormIdStt}`
+    );
+    // button.parentNode.removeChild(button)
+    const thankYouMessage = document.createElement("div");
+    thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    button.parentNode.replaceChild(thankYouMessage, button);
+  }
+  if (isProceedStt === "false") {
+    const gshadowRoot =
+      document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+  }
+  // resetAllVariablesStt(); //reseting variables
+  // signals.onResponse({
+  //   html: "<b>Your session is terminated. You can restart again!</b>",
+  // });
+  resetAllVariablesStt().then(() => {
+    console.log("Your session is terminated. You can restart again!");
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+      appendMessage2('<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>')
+    } else {
+      appendMessage2('<b>Your session is terminated. You can restart again!</b>');
+    }
+
+    //Enable Copy Paste
+    var chatElementRef2 = document.getElementById("chat-element2");
+    var shadowRoot = chatElementRef2.shadowRoot;
+
+    const textInputElement = shadowRoot.getElementById("text-input");
+    textInputElement.removeAttribute("onpaste");
+
+    //@disable the input
+    const tChatElementRef = document.getElementById("chat-element2");
+    const tShadowRoot = tChatElementRef.shadowRoot;
+
+    const chatInputBox = tShadowRoot.getElementById("text-input");
+    chatInputBox.classList.remove("text-input-disabled");
+    chatInputBox.contentEditable = true;
+  });
+            
+}
+
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function startModernTimer(seconds, onComplete) {
+  const container = document.getElementById("timerContainer");
+  const countdownEl = document.getElementById("countdown");
+
+  let timeLeft = seconds;
+  container.style.display = "inline-block";
+  countdownEl.textContent = formatTime(timeLeft);
+
+  // Reset styles
+  container.style.borderColor = "#4CAF50";
+  container.style.background = "#f9fff9";
+  container.style.color = "#2b2b2b";
+
+  if (timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = formatTime(timeLeft);
+
+    // Change color based on remaining time
+    if (timeLeft <= 10) {
+      container.style.borderColor = "#f44336"; // red
+      container.style.background = "#fff5f5";
+    } else if (timeLeft <= 30) {
+      container.style.borderColor = "#ffc107"; // orange
+      container.style.background = "#fffdf2";
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      container.style.display = "none";
+      if (typeof onComplete === "function") {
+        onComplete();
+      }
+    }
+  }, 1000);
+}
+
+function stopModernTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    const container = document.getElementById("timerContainer");
+    container.style.display = "none";
+    console.log("⛔ Timer stopped");
+  }
+}
+
+
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
@@ -7839,6 +7964,26 @@ loadExternalModule().then(() => {
     } </p>
     <p id="warning-banner-stt">
     </p>
+    <div id="timerContainer" style="
+  display: none;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: 1.5px solid #4CAF50;
+  border-radius: 6px;
+  background: #f9fff9;
+  color: #2b2b2b;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  z-index: 1000;
+  width: 80px;
+  text-align: center;
+">
+  ⏱ <span id="countdown">00:00</span>
+</div>
   </div>
     <div 
       id="close-top2" 
@@ -8562,6 +8707,9 @@ loadExternalModule().then(() => {
     }
   };
 
+  window.cancelTestStt= cancelTestStt;
+
+
   // get session status
   const getSessionStatusStt = async (session_id) => {
     const url = `${baseURL2}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
@@ -8588,6 +8736,9 @@ loadExternalModule().then(() => {
       console.error(`Error in getSessionStatus: ${error}`);
     }
   };
+
+  window.getSessionStatusStt= getSessionStatusStt;
+
 
   const getAttemptedTestList2 = async (userId) => {
     const url = `${baseURL2}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
@@ -11678,6 +11829,8 @@ loadExternalModule().then(() => {
                 IsSingleSelectSTT = questionData2.results[0].is_single_select;
                 console.log("IsSingleSelectSTT", IsSingleSelectSTT);
 
+                testCountDown = questionData2.results[0].time_limit || 0;
+
                 // if (testUIInfoStt) {
                 //   if (Object.keys(testUIInfoStt).length > 0) {
                 //     signals.onResponse({
@@ -12917,6 +13070,8 @@ loadExternalModule().then(() => {
 
                   LoadingMessageWithText("Crunching report data");
 
+                  stopModernTimer();
+
                   // const messageNode = document.createElement("div");
                   // messageNode.classList.add("inner-message-container");
                   // const messageBubble = document.createElement("div");
@@ -13449,6 +13604,7 @@ loadExternalModule().then(() => {
 });
 
 const openChatContainer2 = () => {
+  waitForMessagesElement();
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
   const chatIconContainer2 = document.getElementById("chat-icon2");
