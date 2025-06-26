@@ -151,6 +151,8 @@ let userScenarioRecommendation;
 let increaseSessionForFirstTest = false;
 let FeedbackVideoLink;
 let FetchTestCodeReport = false;
+let testCountDownTalk = 0;
+let timerIntervalTalk = null;
 
 let botAvatarImageURLTalk =
   "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8c3ZnIGZpbGw9IiMwMDAwMDAiIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIAoJCXZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8cGF0aCBkPSJNMjMsMzAuMzZIOWMtMi40MDQsMC00LjM2LTEuOTU2LTQuMzYtNC4zNlYxNWMwLTIuNDA0LDEuOTU2LTQuMzYsNC4zNi00LjM2aDMuNjU5CgkJYzAuMTY3LTEuNTY2LDEuNDE1LTIuODEzLDIuOTgxLTIuOTgxVjUuMzMzYy0xLjEzMS0wLjE3NC0yLTEuMTU0LTItMi4zMzNjMC0xLjMwMSwxLjA1OS0yLjM2LDIuMzYtMi4zNgoJCWMxLjMwMiwwLDIuMzYsMS4wNTksMi4zNiwyLjM2YzAsMS4xNzktMC44NjksMi4xNTktMiwyLjMzM1Y3LjY2YzEuNTY2LDAuMTY3LDIuODE0LDEuNDE1LDIuOTgxLDIuOTgxSDIzCgkJYzIuNDA0LDAsNC4zNiwxLjk1Niw0LjM2LDQuMzZ2MTFDMjcuMzYsMjguNDA0LDI1LjQwNCwzMC4zNiwyMywzMC4zNnogTTksMTEuMzZjLTIuMDA3LDAtMy42NCwxLjYzMy0zLjY0LDMuNjR2MTEKCQljMCwyLjAwNywxLjYzMywzLjY0LDMuNjQsMy42NGgxNGMyLjAwNywwLDMuNjQtMS42MzMsMy42NC0zLjY0VjE1YzAtMi4wMDctMS42MzMtMy42NC0zLjY0LTMuNjRIOXogTTEzLjM4NCwxMC42NGg1LjIzMQoJCUMxOC40MzksOS4zNTQsMTcuMzM0LDguMzYsMTYsOC4zNkMxNC42NjcsOC4zNiwxMy41NjEsOS4zNTQsMTMuMzg0LDEwLjY0eiBNMTYsMS4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NAoJCVMxNS4wOTYsNC42NCwxNiw0LjY0YzAuOTA0LDAsMS42NC0wLjczNiwxLjY0LTEuNjRTMTYuOTA0LDEuMzYsMTYsMS4zNnogTTIwLDI3LjM2aC04Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2CgkJczEuMDU5LTIuMzYsMi4zNi0yLjM2aDhjMS4zMDIsMCwyLjM2LDEuMDU5LDIuMzYsMi4zNlMyMS4zMDIsMjcuMzYsMjAsMjcuMzZ6IE0xMiwyMy4zNmMtMC45MDQsMC0xLjY0LDAuNzM1LTEuNjQsMS42NAoJCXMwLjczNiwxLjY0LDEuNjQsMS42NGg4YzAuOTA0LDAsMS42NC0wLjczNSwxLjY0LTEuNjRzLTAuNzM1LTEuNjQtMS42NC0xLjY0SDEyeiBNMzEsMjMuODZoLTJjLTAuMTk5LDAtMC4zNi0wLjE2MS0wLjM2LTAuMzZWMTUKCQljMC0wLjE5OSwwLjE2MS0wLjM2LDAuMzYtMC4zNmgyYzAuMTk5LDAsMC4zNiwwLjE2MSwwLjM2LDAuMzZ2OC41QzMxLjM2LDIzLjY5OSwzMS4xOTksMjMuODYsMzEsMjMuODZ6IE0yOS4zNiwyMy4xNGgxLjI3OXYtNy43OAoJCUgyOS4zNlYyMy4xNHogTTMsMjMuODZIMWMtMC4xOTksMC0wLjM2LTAuMTYxLTAuMzYtMC4zNlYxNWMwLTAuMTk5LDAuMTYxLTAuMzYsMC4zNi0wLjM2aDJjMC4xOTksMCwwLjM2LDAuMTYxLDAuMzYsMC4zNnY4LjUKCQlDMy4zNiwyMy42OTksMy4xOTksMjMuODYsMywyMy44NnogTTEuMzYsMjMuMTRoMS4yOHYtNy43OEgxLjM2VjIzLjE0eiBNMjAsMjAuMzZjLTEuMzAyLDAtMi4zNi0xLjA1OS0yLjM2LTIuMzYKCQlzMS4wNTktMi4zNiwyLjM2LTIuMzZzMi4zNiwxLjA1OSwyLjM2LDIuMzZDMjIuMzYsMTkuMzAyLDIxLjMwMiwyMC4zNiwyMCwyMC4zNnogTTIwLDE2LjM2Yy0wLjkwNCwwLTEuNjQsMC43MzYtMS42NCwxLjY0CgkJczAuNzM1LDEuNjQsMS42NCwxLjY0czEuNjQtMC43MzUsMS42NC0xLjY0UzIwLjkwNCwxNi4zNiwyMCwxNi4zNnogTTEyLDIwLjM2Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2czEuMDU5LTIuMzYsMi4zNi0yLjM2CgkJczIuMzYsMS4wNTksMi4zNiwyLjM2QzE0LjM2LDE5LjMwMiwxMy4zMDEsMjAuMzYsMTIsMjAuMzZ6IE0xMiwxNi4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NHMwLjczNiwxLjY0LDEuNjQsMS42NAoJCXMxLjY0LTAuNzM1LDEuNjQtMS42NFMxMi45MDQsMTYuMzYsMTIsMTYuMzZ6Ii8+Cgk8cmVjdCBzdHlsZT0iZmlsbDpub25lOyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+Cjwvc3ZnPg==";
@@ -726,7 +728,12 @@ function formatMessage(message) {
           </div>`;
       }
 
-      return `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${value}</span></div>`;
+      let heading = keyToTitleMappings[key];
+      if (key === 'oem'){
+        heading = "📰 Additional Context"
+      }
+
+      return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
     }).filter(Boolean).join("<hr />");
   }
 
@@ -2348,9 +2355,25 @@ const audioCanvasUiForQuestionsStt = (audio, canvas) => {
   draw()
 }
 
+function isAudioURLTalk(url){
+  const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
+  return isAudio
+}
+
 const handleProceedClick = async (choice) => {
   if (choice == "Yes") {
     isProceed = "true";
+    if (testCountDownTalk > 0){
+    startModernTimerTalk(testCountDownTalk, async () => {
+          console.log("⏰ Timer completed!", sessionStatus);
+          // Call any function here
+          await window.getSessionStatus(sessionId);
+          if (sessionStatus != 'completed'){
+            await StopSessionTalk();
+          }
+    });
+
+    }
     const gshadowRoot = document.getElementById("chat-element").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option");
     // button.parentNode.removeChild(button)
@@ -2420,7 +2443,7 @@ const handleProceedClick = async (choice) => {
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
                               ></iframe>`);
-            } else {
+            } else if (isAudioURLTalk(element)) {
               console.log(element);
               appendMessage(`<audio style="${window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
@@ -2429,6 +2452,15 @@ const handleProceedClick = async (choice) => {
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio>`);
+            } else {
+              appendMessage(`
+                <a href="${element}" target="_blank"
+                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                  View Context
+                </a>
+                `)
             }
           });
         } else {
@@ -2452,7 +2484,25 @@ const handleProceedClick = async (choice) => {
             <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
             ></div></div>
             `);
-          }
+          } else if (isAudioURLTalk(questionMediaLink)) {
+              console.log(questionMediaLink);
+              appendMessage(`<audio style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+                }" controls autoplay>
+              <source src=${questionMediaLink} type="audio/mpeg" />
+              Your browser does not support the audio element.
+              </audio>`);
+            } else {
+              appendMessage(`
+                <a href="${questionMediaLink}" target="_blank"
+                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                  View Context
+                </a>
+                `)
+            }
         }
       }
 
@@ -3526,6 +3576,7 @@ const AddReportButtons = async () => {
       border: 1px solid lightgray;
       border-radius: 4px;
       background-color: white;
+      border-color: green;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
       display: ${window.user ? 'inline-block' : 'none'};
@@ -3575,6 +3626,107 @@ function displayBrowserWarning2() {
       </b>`
   }
 }
+
+const StopSessionTalk = async() =>{
+  if (testType === "mcq" || testType === "dynamic_mcq") {
+    const shadowRoot =
+      document.getElementById("chat-element").shadowRoot;
+    const button = shadowRoot.getElementById(
+      `mcq-option-${mcqFormId}`
+    );
+    // button.parentNode.removeChild(button)
+    const thankYouMessage = document.createElement("div");
+    thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    button.parentNode.replaceChild(thankYouMessage, button);
+  }
+  if (isProceed === "false") {
+    const gshadowRoot =
+      document.getElementById("chat-element").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+  }
+  await window.cancelTest(participantId); // cancelling session
+
+  resetAllVariables().then(() => {
+    console.log("Your session is terminated. You can restart again!");
+
+    if (Object.keys(snnipetConfig).length > 0) {
+      appendMessage("<b>Your session is terminated. You can restart again!</b>")
+    } else {
+      appendMessage("<b>Your session is terminated. You can restart again!</b>")
+    }
+
+    //Enable Copy Paste
+    var chatElementRef2 = document.getElementById("chat-element");
+    var shadowRoot = chatElementRef2.shadowRoot;
+
+    const textInputElement = shadowRoot.getElementById("text-input")
+    textInputElement.removeAttribute("onpaste")
+  });
+
+}
+
+
+function formatTimeTalk(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function startModernTimerTalk(seconds, onComplete) {
+  const container = document.getElementById("timerContainerTalk");
+  const countdownEl = document.getElementById("countdownTalk");
+
+  let timeLeft = seconds;
+  container.style.display = "inline-block";
+  countdownEl.textContent = formatTimeTalk(timeLeft);
+
+  // Reset styles
+  container.style.borderColor = "#4CAF50";
+  container.style.background = "#f9fff9";
+  container.style.color = "#2b2b2b";
+
+  if (timerIntervalTalk) clearInterval(timerIntervalTalk);
+
+  timerIntervalTalk = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = formatTimeTalk(timeLeft);
+
+    // Change color based on remaining time
+    if (timeLeft <= 10) {
+      container.style.borderColor = "#f44336"; // red
+      container.style.background = "#fff5f5";
+    } else if (timeLeft <= 30) {
+      container.style.borderColor = "#ffc107"; // orange
+      container.style.background = "#fffdf2";
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerIntervalTalk);
+      timerInterval = null;
+      container.style.display = "none";
+      if (typeof onComplete === "function") {
+        onComplete();
+      }
+    }
+  }, 1000);
+}
+
+function stopModernTimerTalk() {
+  if (timerIntervalTalk) {
+    clearInterval(timerIntervalTalk);
+    timerInterval = null;
+    const container = document.getElementById("timerContainerTalk");
+    container.style.display = "none";
+    console.log("⛔ Timer stopped");
+  }
+}
+
 
 //* Function to handle button click for no-code flow : end
 
@@ -3714,6 +3866,26 @@ loadExternalModule().then(() => {
   <p id="header-text2" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
     };text-align:center;">Accessibility features may not work inside the bot.</p>
   <p id="warning-banner"></p>
+  <div id="timerContainerTalk" style="
+  display: none;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: 1.5px solid #4CAF50;
+  border-radius: 6px;
+  background: #f9fff9;
+  color: #2b2b2b;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  z-index: 1000;
+  width: 80px;
+  text-align: center;
+">
+  ⏱ <span id="countdownTalk">00:00</span>
+</div>
 </div>
     <div 
       id="close-top" 
@@ -4256,6 +4428,8 @@ loadExternalModule().then(() => {
     }
   };
 
+  window.cancelTest = cancelTest;
+
   // get session status
   const getSessionStatus = async (session_id) => {
     const url = `${baseURL}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
@@ -4283,6 +4457,9 @@ loadExternalModule().then(() => {
       console.error(`Error in getSessionStatus: ${error}`);
     }
   };
+
+  window.getSessionStatus = getSessionStatus;
+
 
   // apis for restriction to attempt test like test previllage
   const getAttemptedTestList = async (userId) => {
@@ -5030,7 +5207,7 @@ loadExternalModule().then(() => {
                                           mozallowfullscreen="true" 
                                           webkitallowfullscreen="true"
                                           ></iframe>`);
-                      } else {
+                      } else if (isAudioURLTalk(element)){
                         console.log(element);
                         appendMessage(`<div ><audio style="${window.innerWidth < 600
                           ? "width: 200px; max-width: 200px !important;"
@@ -5039,6 +5216,14 @@ loadExternalModule().then(() => {
                           <source src=${element} type="audio/mpeg" />
                           Your browser does not support the audio element.
                           </audio></div>`);
+                      } else {
+                        appendMessage(`
+                          <a href="${element}" target="_blank"
+                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                          View Context
+                        </a>`)
                       }
                     });
                   } else {
@@ -5062,7 +5247,24 @@ loadExternalModule().then(() => {
                         <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                         ></div></div>
                         `);
-                    }
+                    } else if (isAudioURLTalk(questionMediaLink)){
+                        console.log(questionMediaLink);
+                        appendMessage(`<div ><audio style="${window.innerWidth < 600
+                          ? "width: 200px; max-width: 200px !important;"
+                          : " min-width: 50vw !important;"
+                          }" controls autoplay>
+                          <source src=${questionMediaLink} type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                          </audio></div>`);
+                      } else {
+                        appendMessage(`
+                          <a href="${questionMediaLink}" target="_blank"
+                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                          View Context
+                        </a>`)
+                      }
                   }
                 }
               }
@@ -5122,6 +5324,8 @@ loadExternalModule().then(() => {
               document.getElementById("chat-element").shadowRoot;
 
             LoadingMessageWithText2("Crunching report data", shadowRoot)
+
+            stopModernTimerTalk();
 
             // const messageNode = document.createElement("div");
             // messageNode.classList.add("inner-message-container");
@@ -6087,6 +6291,7 @@ loadExternalModule().then(() => {
 
                 responseWordLimit = senarioCase === 'psychometric' ? 20 : 15
                 console.log('responseWordLimit: ', responseWordLimit)
+                testCountDownTalk = questionData.results[0].time_limit || 0;
 
                 if (Object.keys(snnipetConfig).length > 0) {
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
@@ -6402,7 +6607,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`;
-                              } else {
+                              } else if (isAudioURLTalk(element)) {
                                 console.log(element);
                                 questionText =
                                   questionText +
@@ -6414,6 +6619,16 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
+                              } else {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" + `<a href="${element}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`
                               }
                             });
                           } else {
@@ -6463,7 +6678,29 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
-                            }
+                            } else if (isAudioURLTalk(element)) {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" +
+                                  `<div ><audio style="${window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${element} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`;
+                              } else {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" + `<a href="${element}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`
+                              }
                           }
                         }
                       }
@@ -6738,7 +6975,12 @@ loadExternalModule().then(() => {
                                   title: senarioTitle,
                                   description: senarioDescription,
                                   instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                                  oem: `<a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>`
+                                  oem: `<a href="${senarioMediaDescription}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; border-color: green; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          Reference
+                                        </a>`
                                 }
                               );
                             }
@@ -6928,7 +7170,7 @@ loadExternalModule().then(() => {
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`);
-                              } else {
+                              } else if (isAudioURLTalk(element)) {
                                 console.log(element);
                                 appendMessage(`<div ><audio style="${window.innerWidth < 600
                                   ? "width: 200px; max-width: 200px !important;"
@@ -6937,6 +7179,13 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`);
+                              } else {
+                                appendMessage(`<a href="${element}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`)
                               }
                             });
                           } else {
@@ -6964,7 +7213,23 @@ loadExternalModule().then(() => {
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
                               `);
-                            }
+                            }else if (isAudioURLTalk(questionMediaLink)) {
+                                console.log(questionMediaLink);
+                                appendMessage(`<div ><audio style="${window.innerWidth < 600
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
+                                  }" controls autoplay>
+                                <source src=${questionMediaLink} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`);
+                              } else {
+                                appendMessage(`<a href="${questionMediaLink}" target="_blank"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          View Context
+                                        </a>`)
+                              }
                           }
                         }
                       }
@@ -7040,6 +7305,9 @@ loadExternalModule().then(() => {
                     document.getElementById("chat-element").shadowRoot;
 
                   LoadingMessageWithText2("Crunching report data", shadowRoot)
+
+                  stopModernTimerTalk();
+
 
                   // const messageNode = document.createElement("div");
                   // messageNode.classList.add("inner-message-container");
@@ -7508,6 +7776,7 @@ loadExternalModule().then(() => {
 let sendBtn;
 let InputField;
 const openChatContainer = () => {
+  WaitForMessagesElement();
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
 
@@ -7706,14 +7975,19 @@ const openChatContainer = () => {
 
     // close stt bot
     const chatContainer2 = document.getElementById("chat-container2");
+    if (chatContainer2){
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
     const backdrop = document.getElementById("backdrop")
     backdrop.style.display = "none";
-
     const chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+    }
+    
+    
+
+    
   }
 
   if (
