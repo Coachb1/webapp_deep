@@ -293,6 +293,8 @@ let FeedbackVideoLinkStt;
 let FetchTestCodeReportStt = false;
 let widegtStatus = 'closed';
 let libraryTestoptionsStt = [];
+let testCountDown = 0;
+let timerInterval = null;
 
 let ws;
 let mediaRecorder2;
@@ -4189,7 +4191,12 @@ function formatMessage2(message) {
           </div>`;
       }
 
-      return `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${value}</span></div>`;
+      let heading = keyToTitleMappings[key];
+      if (key === 'oem'){
+        heading = "📰 Additional Context"
+      }
+
+      return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
     }).filter(Boolean).join("<hr />");
   }
 
@@ -5094,13 +5101,25 @@ const handleGameQuestion = async (
   })
 };
 
-function isAudioURL(url){
+function isAudioURL(url) {
   const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
   return isAudio
 }
 
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
+    if (testCountDown > 0){
+    startModernTimer(testCountDown, async () => {
+          console.log("⏰ Timer completed!", sessionStatusStt);
+          // Call any function here
+          await window.getSessionStatusStt(sessionId2);
+          if (sessionStatusStt != 'completed'){
+            await StopSession();
+          }
+    });
+
+    }
+    
     isProceedStt = "true";
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -5225,27 +5244,27 @@ const handleProceedClickStt = async (choice) => {
               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
               ></div></div>
               `);
-          }else if (isAudioURL(questionMediaLinkStt)) {
-              console.log(questionMediaLinkStt);
-              console.log('Aheresa')
+          } else if (isAudioURL(questionMediaLinkStt)) {
+            console.log(questionMediaLinkStt);
+            console.log('Aheresa')
 
-              appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                ? "width: 200px; max-width: 200px !important;"
-                : " min-width: 50vw !important;"
-                }" controls autoplay>
+            appendMessage2(`<div ><audio style="${window.innerWidth < 600
+              ? "width: 200px; max-width: 200px !important;"
+              : " min-width: 50vw !important;"
+              }" controls autoplay>
                 <source src=${questionMediaLinkStt} type="audio/mpeg" />
                 Your browser does not support the audio element.
                 </audio></div>`);
-            } else {
-              // considering else a aritcle url
+          } else {
+            // considering else a aritcle url
 
-              appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
+            appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
                               onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`)
-            }
+          }
         }
       }
 
@@ -7568,6 +7587,7 @@ const addReportButtons = async () => {
       border: 1px solid lightgray;
       border-radius: 4px;
       background-color: white;
+      border-color: green;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
       display: ${window.user ? 'inline-block' : 'none'};
@@ -7692,6 +7712,117 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
 
   }
 }
+
+const StopSession = async() =>{
+  await window.cancelTestStt(participantId2); // cancelling session
+  if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+    const shadowRoot =
+      document.getElementById("chat-element2").shadowRoot;
+    const button = shadowRoot.getElementById(
+      `mcq-option-stt-${mcqFormIdStt}`
+    );
+    // button.parentNode.removeChild(button)
+    const thankYouMessage = document.createElement("div");
+    thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    button.parentNode.replaceChild(thankYouMessage, button);
+  }
+  if (isProceedStt === "false") {
+    const gshadowRoot =
+      document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+  }
+  // resetAllVariablesStt(); //reseting variables
+  // signals.onResponse({
+  //   html: "<b>Your session is terminated. You can restart again!</b>",
+  // });
+  resetAllVariablesStt().then(() => {
+    console.log("Your session is terminated. You can restart again!");
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+      appendMessage2('<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>')
+    } else {
+      appendMessage2('<b>Your session is terminated. You can restart again!</b>');
+    }
+
+    //Enable Copy Paste
+    var chatElementRef2 = document.getElementById("chat-element2");
+    var shadowRoot = chatElementRef2.shadowRoot;
+
+    const textInputElement = shadowRoot.getElementById("text-input");
+    textInputElement.removeAttribute("onpaste");
+
+    //@disable the input
+    const tChatElementRef = document.getElementById("chat-element2");
+    const tShadowRoot = tChatElementRef.shadowRoot;
+
+    const chatInputBox = tShadowRoot.getElementById("text-input");
+    chatInputBox.classList.remove("text-input-disabled");
+    chatInputBox.contentEditable = true;
+  });
+            
+}
+
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function startModernTimer(seconds, onComplete) {
+  const container = document.getElementById("timerContainer");
+  const countdownEl = document.getElementById("countdown");
+
+  let timeLeft = seconds;
+  container.style.display = "inline-block";
+  countdownEl.textContent = formatTime(timeLeft);
+
+  // Reset styles
+  container.style.borderColor = "#4CAF50";
+  container.style.background = "#f9fff9";
+  container.style.color = "#2b2b2b";
+
+  if (timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = formatTime(timeLeft);
+
+    // Change color based on remaining time
+    if (timeLeft <= 10) {
+      container.style.borderColor = "#f44336"; // red
+      container.style.background = "#fff5f5";
+    } else if (timeLeft <= 30) {
+      container.style.borderColor = "#ffc107"; // orange
+      container.style.background = "#fffdf2";
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      container.style.display = "none";
+      if (typeof onComplete === "function") {
+        onComplete();
+      }
+    }
+  }, 1000);
+}
+
+function stopModernTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    const container = document.getElementById("timerContainer");
+    container.style.display = "none";
+    console.log("⛔ Timer stopped");
+  }
+}
+
 
 async function loadExternalModule() {
   try {
@@ -7856,6 +7987,31 @@ loadExternalModule().then(() => {
     } </p>
     <p id="warning-banner-stt">
     </p>
+    
+<div id="timerContainer" style="
+  display: none;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: 1.5px solid #4CAF50;
+  border-radius: 6px;
+  background: #f9fff9;
+  color: #2b2b2b;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  z-index: 1000;
+  width: 80px;
+  text-align: center;
+">
+  ⏱ <span id="countdown">00:00</span>
+</div>
+
+
+
+
   </div>
     <div 
       id="close-top2" 
@@ -8453,7 +8609,7 @@ loadExternalModule().then(() => {
     } else {
       chatElementRef2.initialMessages = [
         {
-          html: `<p>Welcome to Coachbot. Please enter a interaction code for your micro-lesson and simulation.</p>`,
+          html: `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`,
           role: "ai",
         },
       ];
@@ -8579,6 +8735,8 @@ loadExternalModule().then(() => {
     }
   };
 
+  window.cancelTestStt = cancelTestStt;
+
   // get session status
   const getSessionStatusStt = async (session_id) => {
     const url = `${baseURL2}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
@@ -8605,6 +8763,8 @@ loadExternalModule().then(() => {
       console.error(`Error in getSessionStatus: ${error}`);
     }
   };
+
+  window.getSessionStatusStt = getSessionStatusStt;
 
   const getAttemptedTestList2 = async (userId) => {
     const url = `${baseURL2}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
@@ -11699,6 +11859,10 @@ loadExternalModule().then(() => {
                 IsSingleSelectSTT = questionData2.results[0].is_single_select;
                 console.log("IsSingleSelectSTT", IsSingleSelectSTT);
 
+                testCountDown = questionData2.results[0].time_limit || 0;
+                console.log("testCountDown", questionData2.results[0].time_limit, testCountDown);
+
+
                 // if (testUIInfoStt) {
                 //   if (Object.keys(testUIInfoStt).length > 0) {
                 //     signals.onResponse({
@@ -12060,7 +12224,7 @@ loadExternalModule().then(() => {
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
-                              } else{
+                              } else {
                                 questionText2 =
                                   questionText2 +
                                   "\n" +
@@ -12117,28 +12281,28 @@ loadExternalModule().then(() => {
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
                             } else if (isAudioURL(questionMediaLinkStt)) {
-                                console.log(questionMediaLinkStt);
-                                questionText2 =
-                                  questionText2 +
-                                  "\n" +
-                                  `<div ><audio style="${window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
-                                  }" controls autoplay>
+                              console.log(questionMediaLinkStt);
+                              questionText2 =
+                                questionText2 +
+                                "\n" +
+                                `<div ><audio style="${window.innerWidth < 600
+                                  ? "width: 200px; max-width: 200px !important;"
+                                  : " min-width: 50vw !important;"
+                                }" controls autoplay>
                                 <source src=${questionMediaLinkStt} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`;
-                              } else{
-                                questionText2 =
-                                  questionText2 +
-                                  "\n" +
-                                  `<a href="${questionMediaLinkStt}" target="_blank"
+                            } else {
+                              questionText2 =
+                                questionText2 +
+                                "\n" +
+                                `<a href="${questionMediaLinkStt}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
                               onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`;
-                              }
+                            }
                           }
                         }
                       }
@@ -12431,10 +12595,10 @@ loadExternalModule().then(() => {
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
                                   oem: `<a href="${senarioMediaDescription2}" target="_blank"
-                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; border-color:green; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                           onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
                                           onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                          View Context
+                                          Reference
                                         </a>
                                         `
                                 }
@@ -12718,23 +12882,23 @@ loadExternalModule().then(() => {
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
                               `);
-                            }else if (isAudioURL(questionMediaLinkStt)) {
-                                console.log(questionMediaLinkStt);
-                                appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                                  ? "width: 200px; max-width: 200px !important;"
-                                  : " min-width: 50vw !important;"
-                                  }" controls autoplay>
+                            } else if (isAudioURL(questionMediaLinkStt)) {
+                              console.log(questionMediaLinkStt);
+                              appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                                ? "width: 200px; max-width: 200px !important;"
+                                : " min-width: 50vw !important;"
+                                }" controls autoplay>
                                 <source src=${questionMediaLinkStt} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                                 </audio></div>`);
-                              } else {
-                                appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
+                            } else {
+                              appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
                                                   style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                                   onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
                                                   onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                                                   View Context
                                                 </a>`)
-                              }
+                            }
                           }
                         }
                       }
@@ -12938,6 +13102,8 @@ loadExternalModule().then(() => {
                     document.getElementById("chat-element2").shadowRoot;
 
                   LoadingMessageWithText("Crunching report data");
+
+                  stopModernTimer(); 
 
                   // const messageNode = document.createElement("div");
                   // messageNode.classList.add("inner-message-container");

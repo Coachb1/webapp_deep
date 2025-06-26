@@ -726,7 +726,12 @@ function formatMessage(message) {
           </div>`;
       }
 
-      return `<div><strong>${keyToTitleMappings[key]}:</strong> <span>${value}</span></div>`;
+      let heading = keyToTitleMappings[key];
+      if (key === 'oem'){
+        heading = "📰 Additional Context"
+      }
+
+      return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
     }).filter(Boolean).join("<hr />");
   }
 
@@ -6828,10 +6833,10 @@ loadExternalModule().then(() => {
                                   description: senarioDescription,
                                   instructions: "Audio/Video Messages should be atleast 15 secs long.",
                                   oem: `<a href="${senarioMediaDescription}" target="_blank"
-                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; border-color: green; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                           onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
                                           onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                          View Context
+                                          Reference
                                         </a>`
                                 }
                               );
