@@ -350,7 +350,7 @@ const CoachIntake = ({ user }: any) => {
             console.log(data.data.user_info[0].departments, "Departments");
             setDepartments(
               data.data.user_info[0].departments
-                .split(",")
+                ?.split(",")
                 .map((dep: string) => dep.trim())
             );
           }
@@ -365,7 +365,7 @@ const CoachIntake = ({ user }: any) => {
             );
             setAreaDomains(
               data.data.user_info[0].coach_expertise
-                .split(",")
+                ?.split(",")
                 .map((exp: string) => exp.trim())
             );
           }
@@ -2133,7 +2133,7 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.department
                 );
                 setAreaDomain(
-                  resultingBot.signature_bot.data.additional_data.area_domain.trim()
+                  resultingBot.signature_bot.data.additional_data.area_domain?.trim()
                 );
 
                 setDiscussionTopics(
@@ -2152,7 +2152,7 @@ const CoachIntake = ({ user }: any) => {
                 );
 
                 setMentoringPreferences(
-                  resultingBot.signature_bot.data.additional_data.mentoring_preferences.trim()
+                  resultingBot.signature_bot.data.additional_data.mentoring_preferences?.trim()
                 );
 
                 setMentoringPreferencess(
@@ -3131,7 +3131,7 @@ const CoachIntake = ({ user }: any) => {
                               setDepartment(value);
                             }}
                           >
-                            {departments.map((val: string, i: number) => (
+                            {departments?.map((val: string, i: number) => (
                               <div
                                 key={i}
                                 className="flex items-center space-x-2 "
@@ -3184,7 +3184,7 @@ const CoachIntake = ({ user }: any) => {
                                 setAreaDomain(value);
                               }}
                             >
-                              {areaDomains.map((val, i) => (
+                              {areaDomains?.map((val, i) => (
                                 <div
                                   key={i}
                                   className="flex items-center space-x-2 "

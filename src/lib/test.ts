@@ -11,6 +11,9 @@ export interface Test {
   assigned_to?: string;
   creator_user_id?: string;
   is_micro?: boolean;
+  descriptoin_media?: string;
+  tab_sticker?: string;
+  scenario_case?: string;
 }
 
 export type CategoryMap = {

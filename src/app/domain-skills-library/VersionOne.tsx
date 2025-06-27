@@ -29,7 +29,7 @@ import LibraryTestsAccordian from "../library/LibraryTestsAccordian";
 import CountdownBanner from "@/components/ui/CountdownBanner";
 
 
-const VersionTwo = ({ user, helpModeText }: any) => {
+const VersionOne = ({ user, helpModeText }: any) => {
     let shouldRenderDiv;
     if (user) {
         const userEmail = user?.email;
@@ -62,14 +62,13 @@ const VersionTwo = ({ user, helpModeText }: any) => {
     const [tabTypeInformation, setTabTypeInformation] = useState<any>({});
     const [tabCategoryInfo, setTabCategoryInfo] = useState<any>({});
 
-
     const [requestedScenariosLoading, setRequestedScenariosLoading] =
         useState(false);
     const {
         userInfo,
         requestedTestsData,
         attemptedTests,
-        leadershipLibrary
+        domainSkillLibrary
 
     } = useUser();
     useEffect(() => {
@@ -123,14 +122,15 @@ const VersionTwo = ({ user, helpModeText }: any) => {
 
         const fetchTestMappings = async () => {
             try {
-                console.log("Fetching test mappings...", leadershipLibrary);
-                setTabTypeInformation(leadershipLibrary?.tab_type_info);
-                setTabCategoryInfo(leadershipLibrary?.page_scenarios.category_info);
-                setData(leadershipLibrary?.page_scenarios.results);
+                console.log('testmappings', domainSkillLibrary)
+
+                setTabTypeInformation(domainSkillLibrary?.tab_type_info);
+                setTabCategoryInfo(domainSkillLibrary?.page_scenarios.category_info);
+                setData(domainSkillLibrary?.page_scenarios.results);
 
             } catch (error: any) {
                 console.error("Failed to load test mappings:", error);
-                setData({});
+                // setData({});
 
             }
         };
@@ -150,29 +150,25 @@ const VersionTwo = ({ user, helpModeText }: any) => {
             .replace(/[^a-z0-9]+/g, '-')   // Replace spaces & symbols with hyphens
             .replace(/^-+|-+$/g, '');      // Remove leading/trailing hyphens
     };
-    console.log('tab', tabTypeInformation)
-    const colorList = ['bg-gray-300', 'bg-blue-300', 'bg-green-300', 'bg-gray-300', 'bg-gray-300'];
     const tabTypeColors: { [key: string]: string } = {
         simulation: "bg-blue-300",
         'roleplay observation (difficult conversations)': "bg-green-300",
         undefined: "bg-gray-200",
         'psychometric assessment': "bg-green-300",
-      };
-      
+    };
     return (
         <>
             <HelpMode steps={HelpModeSteps} forPage="demo" />
             <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
                 <CountdownBanner />
                 <h1 className="text-4xl mt-6 font-bold max-sm:text-2xl text-gray-600 ">
-                    Leadership Micro-lessons and Simulations
+                    Domain Area Micro-Lessons & Simulations
                 </h1>
                 <p className="mt-4">Thousands of Microlearning embedded roleplay simulations!</p>
-
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
                     <>
-                        {Object.entries(tabTypeInformation).map(([tabType, categories],index) => (
+                        {Object.entries(tabTypeInformation).map(([tabType, categories], index) => (
                             <>
                                 <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()]}`}>
                                     {tabType === 'undefined' ? 'Roleplay Observation' : `MicroLessons - ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
@@ -212,7 +208,6 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                         ))}
                     </>
                 )}
-
 
 
                 <div
@@ -417,4 +412,4 @@ const VersionTwo = ({ user, helpModeText }: any) => {
     );
 };
 
-export default VersionTwo;
+export default VersionOne;

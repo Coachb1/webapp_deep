@@ -1,3 +1,5 @@
+import { CategoryMap } from "./test";
+
 interface Recommendation {
   title: string;
   test_code: string;
@@ -51,6 +53,10 @@ export interface UserIDPsType {
   recommended_scenarios: RecommendedScenarios;
   report: string;
 }
+export interface LibraryPaageScenariosType {
+  page_scenarios: any;
+  tab_type_info: any;
+}
 
 export interface TestsType {
   title: string;
@@ -62,6 +68,7 @@ export interface TestsType {
   assigned_by?: string;
   assigned_to?: string;
   creator_user_id?: string;
+  domain?: string;
 }
 
 export interface competencySkillsTestType {
@@ -108,6 +115,10 @@ export interface TestData {
   is_recommended: boolean;
   is_micro?: boolean;
   interaction_mode?: string;
+  descriptoin_media?: string;
+  tab_sticker?: string;
+  scenario_case?: string;
+
 }
 
 export interface DomainData {

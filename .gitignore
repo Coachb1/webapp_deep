@@ -47,4 +47,5 @@ cypress/downloads
 .qodo
 
 html.html
-
+.vscode
+new widget.html

@@ -14,6 +14,7 @@ import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import { Switch } from "./ui/switch";
+import { useUser } from "@/context/UserContext";
 
 interface CustomWindow extends Window {
   user?: any;
@@ -27,9 +28,15 @@ const windowDec: CustomWindow =
   typeof window !== "undefined" ? window : ({} as CustomWindow);
 
 const NetworkNav = ({ user, restrictedPages }: any) => {
+  const {
+    userRole,
+  } = useUser();
+
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+  console.log('userNet', user, windowDec.user);
+  console.log('userProfile', userRole, windowDec);
 
   const { updateHelpModeState, helpModeState } = UseHelpMode();
 
@@ -43,6 +50,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
     } else if (
       (pathname === "/profile" ||
         pathname === "/content-library" ||
+        pathname === "/domain-skills-library" ||
         pathname.includes("intake")) &&
       scrolledUp > 0
     ) {
@@ -96,7 +104,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               <Link href={"/"}>Network Directory</Link>
             </Button>
           )}
-          {!restrictedPages?.includes("Library") && (
+          {!restrictedPages?.includes("Leadership Library") && (
             <Button
               variant={"outline"}
               className={` h-8 ${
@@ -106,10 +114,23 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/content-library"}>Simulations</Link>
+              <Link href={"/content-library"}>Leadership</Link>
             </Button>
           )}
-          {!restrictedPages?.includes("Creator Studio") && (
+          {!restrictedPages?.includes("Domain Skills Library") && (
+            <Button
+              variant={"outline"}
+              className={` h-8 ${
+                pathname.includes("/domain-skills-library")
+                  ? "border border-gray-500 shadow-md"
+                  : ""
+              } `}
+              asChild
+            >
+              <Link href={"/domain-skills-library"}>Domain Area</Link>
+            </Button>
+          )}
+          {userRole === 'super_admin' && (
             <Button
               variant={"outline"}
               className={` h-8 ${
@@ -124,7 +145,8 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
           )}
         </div>
         {!restrictedPages?.includes("Network Directory") &&
-          !restrictedPages?.includes("Library") &&
+          !restrictedPages?.includes("Leadership Library") &&
+          !restrictedPages?.includes("Domain Skills Library") &&
           !restrictedPages?.includes("Creator Studio") && (
             <div className="hidden max-sm:block max-lg:block max-sm:text-xs">
               <DropdownMenu>
@@ -150,18 +172,28 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       <Link href={"/"}> Network directory</Link>
                     </DropdownMenuItem>
                   )}
-                  {!restrictedPages?.includes("Library") && (
+                  {!restrictedPages?.includes("Leadership Library") && (
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
                         pathname.includes("/content-library") ? "bg-gray-200" : null
                       }`}
                       asChild
                     >
-                      <Link href={"/content-library"}>Simulations</Link>
+                      <Link href={"/content-library"}>Leadership</Link>
+                    </DropdownMenuItem>
+                  )}
+                  {!restrictedPages?.includes("Domain Skills Library") && (
+                    <DropdownMenuItem
+                      className={`max-sm:text-xs ${
+                        pathname.includes("/domain-skills-library") ? "bg-gray-200" : null
+                      }`}
+                      asChild
+                    >
+                      <Link href={"/domain-skills-library"}>Domain Area</Link>
                     </DropdownMenuItem>
                   )}
 
-                  {!restrictedPages?.includes("Creator Studio") && (
+                  {userRole === 'super_admin' &&(
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
                         pathname.includes("/create-scenario")

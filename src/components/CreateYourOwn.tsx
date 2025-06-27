@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   baseURL,
   basicAuth,
+  capitalizeText,
   getUserAccount,
   getUsersForClient,
   truncateString,
@@ -25,6 +26,7 @@ import { Radio, Select, Tooltip } from "antd";
 import { Div } from "./ui/moving-border";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { useUser } from "@/context/UserContext";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 interface OptionType {
   value: string;
@@ -65,6 +67,14 @@ const CreateYourOwn = ({
   const [objective, setObjective] = useState("");
   const [department, setDepartment] = useState("");
   const [keyStakeholders, setKeyStakeholders] = useState("");
+  const [skillDomain, setSkillDomain] = useState("");
+  const [responder, setResponder] = useState("");
+  const [targetedSkills, setTargetedSkills] = useState("");
+
+  const [asker, setAsker] = useState("");
+  const [skillType, setSkillType] = useState("general");
+  const [testType, setTestType] = useState("simulation");
+
 
   const [assignInit, setAssignInit] = useState(false);
   const [simulationType, setSimulationType] = useState("short");
@@ -129,28 +139,67 @@ const CreateYourOwn = ({
       );
 
       const add_prompt_list = [
-        "role_play",
-        "normal",
-        "interview",
-        "checkin",
-        "case",
+        "static_role_play",
+        "normal_static",
+        "interview_static",
+        "checkin_static",
+        "case_static",
       ];
+
+      let scenarioType = add_prompt_list[numOfTries];
+
+      
+
+      if (skillType === "soft_skill" && testType === "simulation") {
+        scenarioType = "static_soft";
+      } else if (skillType === "hard_skill" && testType === "simulation") {
+        scenarioType = "static_hard";
+      } else if (skillType === "general" && testType === "simulation") {
+        scenarioType = "normal_static";
+      } else if (skillType === "soft_skill" && testType === "role_play") {
+        scenarioType = "static_role_play_soft";
+      } else if (skillType === "hard_skill" && testType === "role_play") {
+        scenarioType = "static_role_play_hard";
+      } else if (skillType === "general" && testType === "role_play") {
+        scenarioType = "static_role_play";
+      }
+      console.log(
+        "Scenario Type: ",
+        scenarioType,
+        "Skill Type: ",
+        skillType,
+        "Test Type: ",
+        testType,
+        "Simulation Type: ",
+        simulationType,
+        "Num of Tries: ",
+        numOfTries
+      )
 
       const params = {
         mode: "A",
         information: JSON.stringify({
           data: {
-            information: `${userContextRef.current.value}\nObjective: ${objective}\nIndustry: ${industry}\nDepartment: ${department}\nKey Stakeholders: ${keyStakeholders}`,
+            information: `${userContextRef.current.value}\n
+            Objective: ${objective}\n
+            Industry: ${industry}\n
+            Department: ${department}\n
+            Asker: ${asker}\n
+            Responder: ${responder}\n
+            Skill Domain: ${skillDomain}\n
+            Targeted Skills: ${targetedSkills}\n
+            `,
           },
           title: "",
         }),
-        access_token: basicAuth,
         creator_user_id: userId,
-        flavour: add_prompt_list[numOfTries],
+        flavour: scenarioType,
         is_micro: simulationType === "short",
+        available_case_list: scenarioType,
+        use_anthropic: false
       };
 
-      console.log(add_prompt_list[numOfTries], numOfTries, "numoftries");
+      console.log(add_prompt_list[numOfTries], scenarioType, numOfTries, "numoftries");
 
 
       let awaitedData: NodeJS.Timeout | undefined;
@@ -307,6 +356,48 @@ const CreateYourOwn = ({
           <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
         </Tooltip>
       </div>
+      <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 my-2">
+        Select Test Type and Skill Type
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 mt-3">
+        {/* Test Type Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              {testType === '' ? 'Select Test Type' : `Test - ${capitalizeText(testType.replace('_', ' '))}`}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-64 rounded-lg shadow-lg border border-gray-200">
+            <DropdownMenuLabel>Test Type</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup value={testType} onValueChange={setTestType}>
+              <DropdownMenuRadioItem value="simulation">Simulation</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="role_play">Role Play</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Skill Type Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              {skillType === '' ? 'Select Skill Type' : `Skill - ${capitalizeText(skillType.replace('_', ' '))}`}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-64 rounded-lg shadow-lg border border-gray-200">
+            <DropdownMenuLabel>Skill Type</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup value={skillType} onValueChange={setSkillType}>
+              <DropdownMenuRadioItem value="soft_skill">Soft Skill</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="hard_skill">Hard Skill</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="general">General</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+      </div>
+
       <div className="flex flex-col gap-2">
         <div className="flex flex-row max-sm:flex-col w-full gap-2 mt-2">
           <div className="w-full">
@@ -314,6 +405,7 @@ const CreateYourOwn = ({
               Objective
             </p>
             <input
+              required
               type="text"
               placeholder="Define the primary goal"
               value={objective}
@@ -328,6 +420,7 @@ const CreateYourOwn = ({
               Industry
             </p>
             <input
+              required
               type="text"
               value={industry}
               placeholder="Specify the industry this plan pertains to"
@@ -344,6 +437,7 @@ const CreateYourOwn = ({
               Department
             </p>
             <input
+              required
               type="text"
               value={department}
               placeholder="Identify the department (e.g., Marketing)"
@@ -355,18 +449,65 @@ const CreateYourOwn = ({
           </div>
           <div className="w-full">
             <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
-              Key Stakeholders
+              Skill Domain
             </p>
             <input
+              required
               type="text"
-              placeholder="List the key individual (e.g.,Marketing Team)"
-              value={keyStakeholders}
+              placeholder="Enter the skill domain (e.g., Communication)"
+              value={skillDomain}
               onChange={(e) => {
-                setKeyStakeholders(e.target.value);
+                setSkillDomain(e.target.value);
               }}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />
           </div>
+        </div>
+        <div className="flex flex-row max-sm:flex-col w-full gap-2">
+          <div className="w-full">
+            <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+              Asker
+            </p>
+            <input
+              required
+              type="text"
+              value={asker}
+              placeholder="Enter the name/position of the person asking the question"
+              onChange={(e) => {
+                setAsker(e.target.value);
+              }}
+              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+            />
+          </div>
+          <div className="w-full">
+            <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+              Responder
+            </p>
+            <input
+              required
+              type="text"
+              placeholder="Enter the name/position of the person responding"
+              value={responder}
+              onChange={(e) => {
+                setResponder(e.target.value);
+              }}
+              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+            />
+          </div>
+        </div>
+        <div>
+          <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 ">
+            Please enter the targeted skill
+          </p>
+          <input
+              type="text"
+              placeholder="Please enter comma separated skills (e.g., Communication, Leadership) at least 6 skills"
+              value={targetedSkills}
+              onChange={(e) => {
+                setTargetedSkills(e.target.value);
+              }}
+              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+            />
         </div>
         <div>
           <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 ">
@@ -395,9 +536,8 @@ const CreateYourOwn = ({
           />
           <div className="flex flex-row justify-between w-full">
             <p
-              className={`text-red-500 text-xs self-start ${
-                !inputError && "invisible"
-              }`}
+              className={`text-red-500 text-xs self-start ${!inputError && "invisible"
+                }`}
             >
               Please describe your situation in 20-500 words.
             </p>
@@ -416,8 +556,8 @@ const CreateYourOwn = ({
                 ? "Regenerating"
                 : "Regenerate"
               : isLoading
-              ? "Generating"
-              : "Generate"}
+                ? "Generating"
+                : "Generate"}
             {isLoading && (
               <Loader className="h-4 w-4 inline ml-2 animate-spin" />
             )}

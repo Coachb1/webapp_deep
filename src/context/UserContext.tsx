@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { emptyData, getUserAccounts, hideConsoleLogs } from "@/lib/utils";
+import { emptyData, getTestMappings, getUserAccounts, hideConsoleLogs } from "@/lib/utils";
 import {
   getActionPoints,
   getAttemptedTestsList,
@@ -37,6 +37,7 @@ import {
   ConvertedConversation,
   FeedbackConversationType,
   KudosDetailsType,
+  LibraryPaageScenariosType,
   PositionedUserTypes,
   TestsType,
   UserIDPsType,
@@ -111,6 +112,8 @@ interface UserContextType {
   };
   actionPoints: number;
   userIDPs: UserIDPsType[];
+  leadershipLibrary: LibraryPaageScenariosType | undefined;
+  domainSkillLibrary: LibraryPaageScenariosType | undefined;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -195,6 +198,35 @@ export const UserProvider = ({
   const [actionPoints, setActionPoints] = useState(0);
   const [competencyData, setCompetencyData] = useState<any>();
   const [userIDPs, setUserIDPs] = useState<UserIDPsType[]>([]);
+  const [leadershipLibrary, setLeadershipLibrary] = useState<LibraryPaageScenariosType>();
+  const [domainSkillLibrary, setDomainSkillLibrary] = useState<LibraryPaageScenariosType>();
+
+  const fetchTestMappings = async (clientName:string, page_name: string) => {
+              try {
+                  const json = await getTestMappings(clientName, page_name)
+                  console.log("testmappingv2 userContext", json, json.results);
+                  const separatedByTabType: { [key: string]: any[] } = {};
+                  Object.values(json.category_info).forEach((item: any) => {
+                      const type = item.tab_type || 'undefined';
+                      if (!separatedByTabType[type]) {
+                          separatedByTabType[type] = [];
+                      }
+  
+                      separatedByTabType[type].push(item);
+                  });
+
+                  // setLeadershipLibrary()
+
+                  return {
+                    tab_type_info: separatedByTabType,
+                    page_scenarios: json
+                }
+  
+              } catch (error: any) {
+                  console.error("Failed to load test mappings:", error);
+              }
+  };
+  
 
   const fetchUserData = async (
     userEmail: string | null | undefined,
@@ -228,13 +260,19 @@ export const UserProvider = ({
       const userInfo = await getClientUserInfo(userEmail, user);
       console.log("userInfo", userInfo);
       setUserInfo(userInfo);
+      const leadership_library = await fetchTestMappings(userInfo.clientName, 'leadership_library');
+      setLeadershipLibrary(leadership_library);
+      console.log("fetchmapping", leadership_library)
+
+      const domain_skill_library = await fetchTestMappings(userInfo.clientName, 'domain_skills_library');
+      setDomainSkillLibrary(domain_skill_library);
+      console.log("domain_skills_library", domain_skill_library)
 
       if (!userInfo.isDemoUser && !userInfo.isRestricted) {
         if (userInfo.restrictedPages?.includes("Network Directory")) {
-          // if (!userInfo.restrictedPages?.includes("Explore")) {
-          //   router.push("content-library");
-          // } 
-          if (!userInfo.restrictedPages?.includes("Library")) {
+          if (!userInfo.restrictedPages?.includes("Domain Skills Library")) {
+            router.push("domain-skills-library");
+          } else if (!userInfo.restrictedPages?.includes("Leadership Library")) {
             router.push("content-library");
           } else if (!userInfo.restrictedPages?.includes("Creator Studio")) {
             router.push("create-scenario");
@@ -277,7 +315,7 @@ export const UserProvider = ({
           setLoadingState(false);
         }
 
-        if (!userInfo.restrictedPages?.includes("Library")) {
+        if (!userInfo.restrictedPages?.includes("Leadership Library") || !userInfo.restrictedPages?.includes("Domain Skills Library")) {
           const attemptedTests = await getAttemptedTestsList(data.uid);
           console.log(attemptedTests);
           setAttemptedTests(attemptedTests);
@@ -597,6 +635,8 @@ export const UserProvider = ({
       botConversations,
       actionPoints,
       userIDPs,
+      leadershipLibrary,
+      domainSkillLibrary
     }),
     [
       userId,
@@ -627,6 +667,8 @@ export const UserProvider = ({
       botConversations,
       actionPoints,
       userIDPs,
+      leadershipLibrary,
+      domainSkillLibrary,
     ]
   );
 

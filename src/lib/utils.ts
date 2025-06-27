@@ -849,3 +849,26 @@ export function formatTimeWithAmPm(isoString: string) {
 
   return `${hours}:${minutesFormatted} ${ampm}`;
 }
+
+export async function getTestMappings(clientName: string,page_name: string) {
+  try {
+    const res = await fetch(`${baseURL}/tests/test-mappings/?client_name=${clientName}&page_name=${page_name}`);
+
+    if (!res.ok) {
+        console.error(`HTTP error! Status: ${res.status}`);
+        return null;
+    }
+
+    if (res.status !== 200) {
+        console.error("Failed a to fetch test mappings", res.status);
+        return null;
+    }
+    const json = await res.json();
+    console.log("[getTestMappings] for ", clientName, page_name, json, json.results);
+    return json
+
+} catch (error: any) {
+    console.error("Failed to load test mappings:", error);
+    return null
+}
+}
