@@ -91,7 +91,7 @@ const Page = async () => {
   return (
     <div>
       <VersionOne user={user} />
-      <Widgets from="content-library" />
+      <Widgets from="domain-skills-library" />
     </div>
   );
 };

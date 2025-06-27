@@ -2995,7 +2995,7 @@ async function handleScenarioRegenerationCT(signals) {
   await fetch(url, {
     method: "POST",
     headers: {
-      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data_params)
@@ -3973,20 +3973,26 @@ loadExternalModule().then(() => {
       id="starting-faq-buttons-talk"
       style=" 
         position: absolute; 
-        left : ${window.innerWidth < 768 ? "1rem" : "7rem"}; 
-        bottom : ${window.innerWidth < 768 ? "13vh" : "5.5rem"}; 
-        width : auto; 
-        overflow: scroll;
-        scrollbar-width : none;
-        height : 36px; 
-        display : flex;
-        flex-direction : row;
-        gap : 4px;
-        padding : 2px;
-        padding-top : ${window.innerWidth < 768 ? "4px" : "2px"}; 
-        border-radius : 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: ${window.innerWidth < 768 ? "13vh" : "5.5rem"};
+        max-width: calc(100% - 4rem);
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;
+        height: 36px; 
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 6px;
         display: none;
         z-index: 0;
+        background-color: white;
       ">
     </div>
     <p id="bot-footer2" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
