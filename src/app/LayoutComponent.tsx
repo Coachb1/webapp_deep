@@ -201,7 +201,7 @@ const LayoutComponent = ({
       if (coachtalk) {
         coachtalk.removeAttribute("style");
       }
-    } else if (pathname === "/content-library") {
+    } else if (["/content-library", "/domain-skills-library"].includes(pathname)) {
       if (coachScribe) {
         coachScribe.removeAttribute("style");
       }
