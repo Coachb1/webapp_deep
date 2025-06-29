@@ -92,18 +92,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         </div>
       </Link>
       <div className="flex flex-row">
-        <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">
-          {!restrictedPages?.includes("Network Directory") && (
-            <Button
-              variant={"outline"}
-              className={` h-8 ${
-                pathname === "/" ? "border border-gray-500 shadow-md" : ""
-              } `}
-              asChild
-            >
-              <Link href={"/"}>Network Directory</Link>
-            </Button>
-          )}
+        <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">          
           {!restrictedPages?.includes("Leadership Library") && (
             <Button
               variant={"outline"}
@@ -128,6 +117,17 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               asChild
             >
               <Link href={"/domain-skills-library"}>Domain Area</Link>
+            </Button>
+          )}
+          {!restrictedPages?.includes("Network Directory") && (
+            <Button
+              variant={"outline"}
+              className={` h-8 ${
+                pathname === "/" ? "border border-gray-500 shadow-md" : ""
+              } `}
+              asChild
+            >
+              <Link href={"/"}>AI Coaching Network</Link>
             </Button>
           )}
           {userRole === 'super_admin' && (
