@@ -172,9 +172,9 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                 {/* Category buttons */}
                 {Object.keys(data).length > 0 && (
                     <>
-                        {Object.entries(tabTypeInformation).map(([tabType, categories],index) => (
+                        {Object.entries(tabTypeInformation).sort(([aKey], [bKey]) => aKey.localeCompare(bKey)).map(([tabType, categories],index) => (
                             <>
-                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()]}`}>
+                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()] || 'bg-gray-200'}`}>
                                     {tabType === 'undefined' ? 'Roleplay Observation' : ` ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
                                 </Badge>
 
@@ -216,14 +216,13 @@ const VersionTwo = ({ user, helpModeText }: any) => {
 
 
                 <div
-                    className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 p-3 rounded-md"
+                    className="flex flex-row flex-wrap justify-center mt-2 z-[2] gap-2 p-3 rounded-md"
                 >
                     {!userInfo.restrictedFeatures?.includes("Requested-scenarios") ||
                         (!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
                             <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
                         ))}
 
-                    
                     <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300 bg-blue-200`}>
                                     Others
                     </Badge>
