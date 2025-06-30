@@ -242,37 +242,37 @@ export const LoginWall = () => {
   
   const items = [
     {
-      title: "Roleplay Observation and Micro-Learning",
+      title: "Rehearse for Your Reality",
       description:
-        "Observe and study the roleplay interactions with built-in key takeaways. Dive into case-based microlearning.",
+        "This is more than a library; it's your private workshop. We partner with you to build and refine hyper-realistic simulations that mirror your unique culture, language, and business challenges.",
       header: <h3 className="text-xl font-bold text-gray-500">01</h3>,
       icon: <MonitorPlayIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Simulations with Feedback Reports",
+      title: "Practice with Purpose, Not Just Theory",
       description:
-        "Explore simulations for any use case for your team. Use the curated path, request your own, or use simulations based on existing learning resources.",
+        "Move beyond generic lessons. Engage in dynamic, AI-powered roleplay designed to build the specific behavioral skills needed to execute your company's most critical strategies.",
       header: <h3 className="text-xl font-bold text-gray-500">02</h3>,
       icon: <FileSearchIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Coaching & Mentoring",
+      title: "Receive Actionable, Data-Driven Insights",
       description:
-        "Leverage built-in coaching and mentoring network with automated session notes, exercises, and agentic AI session support to maintain continuity without the physical presence of the coach/mentor.",
+        "After each practice session, receive objective feedback that goes beyond a simple pass/fail. Our reports are designed to be a starting point for powerful coaching and collaborative development conversations.",
       header: <h3 className="text-xl font-bold text-gray-500">03</h3>,
       icon: <HeartHandshakeIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Leadership or Subject Matter Development",
+      title: `Build a Living "Readiness" Playbook`,
       description:
-        "Whether for new manager development or technical fluency, leverage conversational AI to demonstrate competence.",
+        "This is not a static course. Together, we will build a growing library of your team's best practices, creating a dynamic, always-on resource that ensures your leaders are ready for what's next.",
       header: <h3 className="text-xl font-bold text-gray-500">04</h3>,
       icon: <AwardIcon className=" text-3xl mb-4" />,
     },
     {
-      title: "Track Your Progress",
+      title: "Partner to Measure and Elevate Performance",
       description:
-        "Track your skill scores based on simulations. Deep dive with historical reports to view patterns in your learning journey.",
+        "Our goal is your goal. We work with you to track tangible improvement in core leadership competencies, ensuring our collaborative efforts translate into measurable business impact.",
       header: <h3 className="text-xl  font-bold text-gray-500">05</h3>,
       icon: <LineChartIcon className=" text-3xl mb-4" />,
     },
@@ -290,27 +290,10 @@ export const LoginWall = () => {
             BOT
           </h1>
           <p className="mt-4 text-3xl">
-            Micro-Learning, Simulations and Coaching-mentoring Network
+            CONTINUOUS ENABLEMENT PLATFORM
           </p>
-          <div className="p-4 max-sm:px-6">
-            <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
-              How it works?
-            </h2>
-            <BentoGrid className="w-[100%] mx-auto">
-              {items.map((item, i) => (
-                <BentoGridItem
-                  key={i}
-                  title={item.title}
-                  description={item.description}
-                  header={item.header}
-                  icon={item.icon}
-                  className={`${i === 1 || i === 6 ? "md:col-span-2" : ""}`}
-                />
-              ))}
-            </BentoGrid>
-          </div>
           <div className="my-4 max-sm:mb-12">
-            <LoginLink postLoginRedirectURL={pathname}>
+            <LoginLink>
               <div className="relative group cursor-pointer">
                 <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                 <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -326,6 +309,40 @@ export const LoginWall = () => {
               </div>
             </LoginLink>
           </div>
+          {/* <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
+            How it works?
+          </h2> */}
+          <div className="p-4 max-sm:px-6">
+            <BentoGrid className="w-[100%] mx-auto">
+              {items.map((item, i) => (
+                <BentoGridItem
+                  key={i}
+                  title={item.title}
+                  description={item.description}
+                  header={item.header}
+                  icon={item.icon}
+                  className={`${i === 1 || i === 6 ? "md:col-span-2" : ""}`}
+                />
+              ))}
+            </BentoGrid>
+          </div>
+          {/* <div className="my-4 max-sm:mb-12">
+            <LoginLink postLoginRedirectURL={pathname}>
+              <div className="relative group cursor-pointer">
+                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
+                  <div className="space-y-2">
+                    <Button
+                      variant={"secondary"}
+                      className="border border-gray-200 text-gray-600 font-bold text-xl hover:cursor-pointer w-fit"
+                    >
+                      Login <LogIn className="ml-2 h-4 w-4 inline" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </LoginLink>
+          </div> */}
         </MaxWidthWrapper>{" "}
       </div>
     );

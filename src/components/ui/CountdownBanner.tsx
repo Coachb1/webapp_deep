@@ -54,9 +54,9 @@ const CountdownBanner = () => {
       aria-live="polite"
     >
       <div className="flex flex-wrap justify-center items-center text-center">
-        🎉 HAPPY {dayName.toUpperCase()}! YOU HAVE ONLY
+        🎉 Welcome to your Co-Creation Sandbox! Content refreshed on fixed cadence. Countdown:
         <span className="text-green-700 mx-2">{timeLeft}</span>
-        LEFT BEFORE THESE LESSONS AND SIMULATIONS LEAVE FOREVER!
+        
       </div>
     </div>
   );
