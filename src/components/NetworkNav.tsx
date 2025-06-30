@@ -92,18 +92,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         </div>
       </Link>
       <div className="flex flex-row">
-        <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">
-          {!restrictedPages?.includes("Network Directory") && (
-            <Button
-              variant={"outline"}
-              className={` h-8 ${
-                pathname === "/" ? "border border-gray-500 shadow-md" : ""
-              } `}
-              asChild
-            >
-              <Link href={"/"}>Network Directory</Link>
-            </Button>
-          )}
+        <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">          
           {!restrictedPages?.includes("Leadership Library") && (
             <Button
               variant={"outline"}
@@ -130,6 +119,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               <Link href={"/domain-skills-library"}>Domain Area</Link>
             </Button>
           )}
+          
           {userRole === 'super_admin' && (
             <Button
               variant={"outline"}
@@ -141,6 +131,18 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               asChild
             >
               <Link href={"/create-scenario"}>Studio </Link>
+            </Button>
+          )}
+
+          {!restrictedPages?.includes("Network Directory") && (
+            <Button
+              variant={"outline"}
+              className={` h-8 ${
+                pathname === "/" ? "border border-gray-500 shadow-md" : ""
+              } `}
+              asChild
+            >
+              <Link href={"/"}>AI Coaching Network</Link>
             </Button>
           )}
         </div>
@@ -162,16 +164,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                   align="end"
                   className="z-[999] w-fit max-sm:text-xs"
                 >
-                  {!restrictedPages?.includes("Network Directory") && (
-                    <DropdownMenuItem
-                      className={`max-sm:text-xs ${
-                        pathname === "/" ? "bg-gray-200" : null
-                      }`}
-                      asChild
-                    >
-                      <Link href={"/"}> Network directory</Link>
-                    </DropdownMenuItem>
-                  )}
+                  
                   {!restrictedPages?.includes("Leadership Library") && (
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
@@ -203,6 +196,16 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       asChild
                     >
                       <Link href={"/create-scenario"}>Studio</Link>
+                    </DropdownMenuItem>
+                  )}
+                  {!restrictedPages?.includes("Network Directory") && (
+                    <DropdownMenuItem
+                      className={`max-sm:text-xs ${
+                        pathname === "/" ? "bg-gray-200" : null
+                      }`}
+                      asChild
+                    >
+                      <Link href={"/"}>AI Coaching Network</Link>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

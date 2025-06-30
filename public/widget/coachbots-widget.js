@@ -714,7 +714,7 @@ function formatMessage(message) {
       description: "Description",
       instructions: "Instructions",
       oem: "▶️ AI Coach Lesson or Additional Context (Expand to view or pause)",
-      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view or pause)"
+      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)"
     };
 
     return Object.keys(keyToTitleMappings).map(key => {
@@ -786,7 +786,7 @@ function snippetDiv(url) {
   else {
     return `
     <iframe
-      allow="autoplay; encrypted-media; fullscreen;"
+      allow="encrypted-media; fullscreen;"
       style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"}; scrollbar-width: none;"
       src=${url}
       frameborder="0"

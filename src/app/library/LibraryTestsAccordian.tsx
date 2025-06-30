@@ -283,10 +283,19 @@ const LibraryTestsAccordian = ({
                             className={`p-2 h-8 border border-gray-200 max-sm:text-xs`}
                             onClick={() => {
                               if (typeof window !== "undefined" && typeof (window as any).handleAttemptScenaiosSTT === "function") {
+                                let instruction = `Response should be at least 15 words.`;
+                                if (test.interaction_media_link){
+                                  instruction = instruction +  `<a href="${test.interaction_media_link}" target="_blank"
+                                  style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+                                  onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
+                                  Reference
+                                </a>`
+                                };
                                 (window as any).appendMessage2({
                                   title: test.title,
                                   description: test.description,
-                                  instructions: "Response should be at least 15 words.",
+                                  instructions: instruction,
                                 });
                                 (window as any).openChatContainer2();
                                 (window as any).handleAttemptScenaiosSTT(test.title, test.test_code);

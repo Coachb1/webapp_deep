@@ -304,7 +304,7 @@ let finalTranscriptAccumulator = "";
 let widgetHeight = `clamp(100px, 85vh, calc(100vh - 83px))`
 let widgetWidth = `auto`
 let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`
-
+let InstructinoMediaLinkStt;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -4175,12 +4175,13 @@ function formatMessage2(message) {
       title: "Title",
       description: "Description",
       instructions: "Instructions",
+      instruction_media: "Reference",
       oem: "▶️ AI Coach Lesson or Additional Context (Expand to view or pause)",
-      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view or pause)"
+      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)"
     };
 
     return Object.keys(keyToTitleMappings).map(key => {
-      const value = message[key];
+      let value = message[key];
       if (!value) return null;
 
       if (['oem', 'feedback_media'].includes(key) && value.includes('iframe')) {
@@ -4196,7 +4197,21 @@ function formatMessage2(message) {
         heading = "📰 Additional Context"
       }
 
-      return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
+      console.log('formatmsg', key, message.instruction_media, message)
+      if (key === 'instructions' && message.instruction_media) {
+        value = value + ` 
+                <a href="${message.instruction_media}" target="_blank"
+                  style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+                  onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
+                  Reference
+                </a>`;
+
+      }
+
+      if (key != 'instruction_media'){
+        return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
+      }
     }).filter(Boolean).join("<hr />");
   }
 
@@ -4380,7 +4395,7 @@ function snippetDivSTT(url) {
   else {
     return `
     <iframe
-      allow="autoplay; encrypted-media; fullscreen;"
+      allow="encrypted-media; fullscreen;"
       style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" : "45vw"
       }; scrollbar-width: none;"
       src=${url}
@@ -5214,7 +5229,7 @@ const handleProceedClickStt = async (choice) => {
               appendMessage2(`<a href="${element}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`)
             }
@@ -5261,7 +5276,7 @@ const handleProceedClickStt = async (choice) => {
             appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`)
           }
@@ -11839,6 +11854,8 @@ loadExternalModule().then(() => {
                 senarioCase2 = questionData2.results[0].scenario_case;
                 emailCandidate2 = questionData2.results[0].email_candidate;
                 FeedbackVideoLinkStt = questionData2.results[0].feedback_script_video_link;
+                InstructinoMediaLinkStt = questionData2.results[0].instruction_media_link;
+                console.log('InstructinoMediaLinkStt', InstructinoMediaLinkStt)
 
                 if (
                   clientuserInformationSTT?.report_on &&
@@ -12238,7 +12255,7 @@ loadExternalModule().then(() => {
                                   `<a href="${element}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`;
                               }
@@ -12306,7 +12323,7 @@ loadExternalModule().then(() => {
                                 `<a href="${questionMediaLinkStt}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`;
                             }
@@ -12410,9 +12427,19 @@ loadExternalModule().then(() => {
                       }, 1000);
                     }
                     console.log(senarioMediaDescription2, "mediadesc");
-                    if (senarioMediaDescription2 && !AttemptTestDirectSTT) {
+                    if ((senarioMediaDescription2 || InstructinoMediaLinkStt) && !AttemptTestDirectSTT) {
                       let embeddingUrl2 = "";
-                      if (senarioMediaDescription2.length > 0) {
+                      if (!senarioMediaDescription2 && InstructinoMediaLinkStt){
+                        appendMessage2(
+                          {
+                              title: senarioTitle2,
+                              description: senarioDescription2,
+                              instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLinkStt
+                          }
+                        )
+                      } else {
+                        if (senarioMediaDescription2.length > 0) {
                         console.log(senarioMediaDescription2);
                         if (senarioMediaDescription2.includes("youtube.com")) {
                           const videoId =
@@ -12424,6 +12451,7 @@ loadExternalModule().then(() => {
                               title: senarioTitle2,
                               description: senarioDescription2,
                               instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLinkStt,
                               oem: `<iframe
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                           src=${embeddingUrl2}
@@ -12446,6 +12474,7 @@ loadExternalModule().then(() => {
                               title: senarioTitle2,
                               description: senarioDescription2,
                               instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLinkStt,
                               oem: `<iframe
                                         style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                                         src=${embeddingUrl2}
@@ -12466,6 +12495,7 @@ loadExternalModule().then(() => {
                               title: senarioTitle2,
                               description: senarioDescription2,
                               instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLinkStt,
                               oem: `<iframe
                                             allow="autoplay; encrypted-media; fullscreen;"
                                             style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
@@ -12481,6 +12511,7 @@ loadExternalModule().then(() => {
                             title: senarioTitle2,
                             description: senarioDescription2,
                             instructions: "Response should be at least 15 words.",
+                            instruction_media: InstructinoMediaLinkStt,
                             oem: `
                                 <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
                                   <div id="poster-overlay" style="
@@ -12516,6 +12547,7 @@ loadExternalModule().then(() => {
                                 title: senarioTitle2,
                                 description: senarioDescription2,
                                 instructions: "Response should be at least 15 words.",
+                                instruction_media: InstructinoMediaLinkStt,
                               }
                             );
                             urlList.forEach((element) => {
@@ -12562,6 +12594,7 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
+                                  instruction_media: InstructinoMediaLinkStt,
                                 }
                               );
                               appendMessage2(`<iframe src=${url}
@@ -12585,6 +12618,7 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
+                                  instruction_media: InstructinoMediaLinkStt,
                                 }
                               );
                               appendMessage2(`
@@ -12601,10 +12635,11 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
+                                  instruction_media: InstructinoMediaLinkStt,
                                   oem: `<a href="${senarioMediaDescription2}" target="_blank"
                                           style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; border-color:green; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                           onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                          onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                                           Reference
                                         </a>
                                         `
@@ -12627,6 +12662,8 @@ loadExternalModule().then(() => {
                         //       title: senarioTitle2,
                         //       description: senarioDescription2,
                         //       instructions: "Response should be at least 15 words.",
+                        //       instruction_media: InstructinoMediaLinkStt,
+
                         //       oem: `<iframe
                         //                   style="width: 100%; border-radius: 8px; min-height: 50vh; margin-top: 8px;"
                         //                   src=${embeddingUrl2}
@@ -12642,6 +12679,7 @@ loadExternalModule().then(() => {
                             title: senarioTitle2,
                             description: senarioDescription2,
                             instructions: "Response should be at least 15 words.",
+                            instruction_media: InstructinoMediaLinkStt,
                           }
                         );
                         if (senarioSnippetURLStt) {
@@ -12653,6 +12691,9 @@ loadExternalModule().then(() => {
                           }
                         }
                       }
+
+                      }
+                      
                       // proceed buttion will show
                       console.log("2quetext");
                       signals.onResponse({
@@ -12747,9 +12788,15 @@ loadExternalModule().then(() => {
                         let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
                         if (!['game'].includes(senarioCase2)) {
                           instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
+                          const instruction = `Response should be at least ${wordLimit} words. <a href="${message.instruction_media}" target="_blank"
+                              style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
+                              Reference
+                            </a>`
                           messages.push({
                             title: "Instructions",
-                            description: `Response should be at least ${wordLimit} words.`
+                            description: instruction
                           })
                         }
                         console.log('desc section 11')
@@ -12857,7 +12904,7 @@ loadExternalModule().then(() => {
                                 appendMessage2(`<a href="${element}" target="_blank"
                                                 style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                                 onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                                onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                                                 View Context
                                               </a>`)
                               }
@@ -12902,7 +12949,7 @@ loadExternalModule().then(() => {
                               appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
                                                   style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                                   onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                                  onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                                  onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                                                   View Context
                                                 </a>`)
                             }
@@ -13623,7 +13670,10 @@ loadExternalModule().then(() => {
           const que_msg = document.createElement("div");
           que_msg.innerHTML = "Thank You"; // You can customize the message here
           // Replace the button with the "Thank you" message
+          if (msg){
           msg.parentNode.replaceChild(que_msg, msg);
+
+          }
         }
 
         resetAllVariablesStt();
