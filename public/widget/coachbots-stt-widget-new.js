@@ -11855,6 +11855,7 @@ loadExternalModule().then(() => {
                 emailCandidate2 = questionData2.results[0].email_candidate;
                 FeedbackVideoLinkStt = questionData2.results[0].feedback_script_video_link;
                 InstructinoMediaLinkStt = questionData2.results[0].instruction_media_link;
+                console.log('InstructinoMediaLinkStt', InstructinoMediaLinkStt)
 
                 if (
                   clientuserInformationSTT?.report_on &&
@@ -12426,9 +12427,19 @@ loadExternalModule().then(() => {
                       }, 1000);
                     }
                     console.log(senarioMediaDescription2, "mediadesc");
-                    if (senarioMediaDescription2 && !AttemptTestDirectSTT) {
+                    if ((senarioMediaDescription2 || InstructinoMediaLinkStt) && !AttemptTestDirectSTT) {
                       let embeddingUrl2 = "";
-                      if (senarioMediaDescription2.length > 0) {
+                      if (!senarioMediaDescription2 && InstructinoMediaLinkStt){
+                        appendMessage2(
+                          {
+                              title: senarioTitle2,
+                              description: senarioDescription2,
+                              instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLinkStt
+                          }
+                        )
+                      } else {
+                        if (senarioMediaDescription2.length > 0) {
                         console.log(senarioMediaDescription2);
                         if (senarioMediaDescription2.includes("youtube.com")) {
                           const videoId =
@@ -12536,6 +12547,7 @@ loadExternalModule().then(() => {
                                 title: senarioTitle2,
                                 description: senarioDescription2,
                                 instructions: "Response should be at least 15 words.",
+                                instruction_media: InstructinoMediaLinkStt,
                               }
                             );
                             urlList.forEach((element) => {
@@ -12582,6 +12594,7 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
+                                  instruction_media: InstructinoMediaLinkStt,
                                 }
                               );
                               appendMessage2(`<iframe src=${url}
@@ -12605,6 +12618,7 @@ loadExternalModule().then(() => {
                                   title: senarioTitle2,
                                   description: senarioDescription2,
                                   instructions: "Response should be at least 15 words.",
+                                  instruction_media: InstructinoMediaLinkStt,
                                 }
                               );
                               appendMessage2(`
@@ -12665,6 +12679,7 @@ loadExternalModule().then(() => {
                             title: senarioTitle2,
                             description: senarioDescription2,
                             instructions: "Response should be at least 15 words.",
+                            instruction_media: InstructinoMediaLinkStt,
                           }
                         );
                         if (senarioSnippetURLStt) {
@@ -12676,6 +12691,9 @@ loadExternalModule().then(() => {
                           }
                         }
                       }
+
+                      }
+                      
                       // proceed buttion will show
                       console.log("2quetext");
                       signals.onResponse({
@@ -12770,9 +12788,15 @@ loadExternalModule().then(() => {
                         let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
                         if (!['game'].includes(senarioCase2)) {
                           instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
+                          const instruction = `Response should be at least ${wordLimit} words. <a href="${message.instruction_media}" target="_blank"
+                              style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
+                              Reference
+                            </a>`
                           messages.push({
                             title: "Instructions",
-                            description: `Response should be at least ${wordLimit} words.`
+                            description: instruction
                           })
                         }
                         console.log('desc section 11')
@@ -13646,7 +13670,10 @@ loadExternalModule().then(() => {
           const que_msg = document.createElement("div");
           que_msg.innerHTML = "Thank You"; // You can customize the message here
           // Replace the button with the "Thank you" message
+          if (msg){
           msg.parentNode.replaceChild(que_msg, msg);
+
+          }
         }
 
         resetAllVariablesStt();
