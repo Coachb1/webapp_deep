@@ -74,7 +74,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
       } `}
     >
       <Link
-        href={"/"}
+        href={""}
         className={`pl-12 max-sm:pl-1  ${
           scrolled || pathname !== "/" ? "visible" : "invisible"
         }`}
@@ -119,7 +119,6 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               <Link href={"/domain-skills-library"}>Domain Area</Link>
             </Button>
           )}
-          
           {userRole === 'super_admin' && (
             <Button
               variant={"outline"}

@@ -66,7 +66,7 @@ const NavProfile = ({ user }: any) => {
               </Link>
             </DropdownMenuItem> */}
 
-            <DropdownMenuItem asChild className="max-sm:text-xs ">
+            {/* <DropdownMenuItem asChild className="max-sm:text-xs ">
               <Link
                 href={"https://open.coachbots.com/"}
                 target="_blank"
@@ -97,7 +97,7 @@ const NavProfile = ({ user }: any) => {
                 <ExternalLink className="h-4 w-4 mr-2 text-blue-500" />{" "}
                 Content library
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
 
             <DropdownMenuSeparator />
 

@@ -91,7 +91,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 target: "#nav3",
                 content: dynamicHelpText?.nav_three
                     ? dynamicHelpText.nav_three
-                    : `Each micro-lesson topic has a short video and associated Simulation exercise. Copy the interaction code from the panel and use the same in the widget.`,
+                    : `Each micro-lesson topic has a short video and associated Simulation exercise. Click start to begin simulation.`,
             },
             // {
             //     target: "#system-demos",
@@ -105,12 +105,12 @@ const VersionOne = ({ user, helpModeText }: any) => {
                     ? dynamicHelpText.coachTalk
                     : "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
             },
-            {
-                target: ".chat-icon2",
-                content: dynamicHelpText?.coachScribe
-                    ? dynamicHelpText.coachScribe
-                    : "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
-            },
+            // {
+            //     target: ".chat-icon2",
+            //     content: dynamicHelpText?.coachScribe
+            //         ? dynamicHelpText.coachScribe
+            //         : "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
+            // },
             {
                 target: "#manager-plus",
                 disableScrolling: false,
@@ -170,8 +170,8 @@ const VersionOne = ({ user, helpModeText }: any) => {
                     <>
                         {Object.entries(tabTypeInformation).sort(([aKey], [bKey]) => aKey.localeCompare(bKey)).map(([tabType, categories], index) => (
                             <>
-                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()] || 'bg-gray-200'}`}>
-                                    {tabType === 'undefined' ? 'Roleplay Observation' : ` ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
+                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()]}`}>
+                                    {tabType === 'undefined' ? 'Roleplay Observation' : `MicroLessons - ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
                                 </Badge>
 
                                 <div className="bg-transparent h-4" />
