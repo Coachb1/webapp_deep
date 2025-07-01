@@ -174,8 +174,8 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                     <>
                         {Object.entries(tabTypeInformation).sort(([aKey], [bKey]) => aKey.localeCompare(bKey)).map(([tabType, categories],index) => (
                             <>
-                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()]}`}>
-                                    {tabType === 'undefined' ? 'Roleplay Observation' : `MicroLessons - ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
+                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()] || 'bg-gray-200'}`}>
+                                    {tabType === 'undefined' ? 'Roleplay Observation' : ` ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
                                 </Badge>
 
                                 <div className="bg-transparent h-4" />
@@ -223,7 +223,38 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                             <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
                         ))}
 
-                    <div
+                    <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300 bg-blue-200`}>
+                                    Others
+                    </Badge>
+                    
+                    <div className="bg-transparent h-4" />
+
+
+                    <div className="w-full max-w-4xl">
+                        <Div id="nav2" className="bg-white border border-gray-300 rounded-md p-4 shadow-sm">
+                            <div className="flex flex-wrap justify-center gap-3 mt-2">
+                                {!userInfo.restrictedFeatures?.includes("Assigned-scenarios") && (
+                                    <Button
+
+                                        onClick={() => {
+                                            document
+                                                .getElementById("assigned-tests")
+                                                ?.scrollIntoView({
+                                                    behavior: "smooth",
+                                                });
+                                        }}
+                                        className={`h-8 max-xs:text-xm font-medium border bg-gray-100 border-gray-200 rounded-md text-black hover:bg-gray-100 `}
+                                    >
+                                        Assigned Simulations{" "}
+                                        <History className="h-4 w-4 ml-2" />
+                                    </Button>
+                                )}
+                            </div>
+                        </Div>
+                    </div> 
+
+
+                    {/* <div
                         id="nav2"
                         className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
                     >
@@ -241,7 +272,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                                 Assigned Simulations{" "}
                                 <History className="h-4 w-4 ml-2" />
                             </Button>
-                        )} 
+                        )} */}
                         {/* {!userInfo.restrictedFeatures?.includes("Requested-scenarios") && (
                                 <Button
                                     onClick={() => {
@@ -257,7 +288,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                                     <History className="h-4 w-4 ml-2" />
                                 </Button>
                             )} */}
-                    </div>
+                    {/* </div> */}
                 </div>
             </MaxWidthWrapper>
 

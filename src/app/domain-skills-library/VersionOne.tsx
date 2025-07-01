@@ -170,8 +170,8 @@ const VersionOne = ({ user, helpModeText }: any) => {
                     <>
                         {Object.entries(tabTypeInformation).sort(([aKey], [bKey]) => aKey.localeCompare(bKey)).map(([tabType, categories], index) => (
                             <>
-                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()]}`}>
-                                    {tabType === 'undefined' ? 'Roleplay Observation' : `MicroLessons - ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
+                                <Badge className={`mt-6 -mb-6 px-4 z-10 rounded-md text-gray-800 hover:bg-gray-300  capitalize ${tabTypeColors[tabType.toLowerCase()] || 'bg-gray-200'}`}>
+                                    {tabType === 'undefined' ? 'Roleplay Observation' : ` ${tabType.charAt(0).toUpperCase() + tabType.slice(1)}`}
                                 </Badge>
 
                                 <div className="bg-transparent h-4" />
