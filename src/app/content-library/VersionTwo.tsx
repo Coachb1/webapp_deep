@@ -92,7 +92,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                 target: "#nav3",
                 content: dynamicHelpText?.nav_three
                     ? dynamicHelpText.nav_three
-                    : `Each micro-lesson topic has a short video and associated Simulation exercise. Copy the interaction code from the panel and use the same in the widget.`,
+                    : `Each micro-lesson topic has a short video and associated Simulation exercise. Click start to begin simulation.`,
             },
             // {
             //     target: "#system-demos",
@@ -106,12 +106,12 @@ const VersionTwo = ({ user, helpModeText }: any) => {
                     ? dynamicHelpText.coachTalk
                     : "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
             },
-            {
-                target: ".chat-icon2",
-                content: dynamicHelpText?.coachScribe
-                    ? dynamicHelpText.coachScribe
-                    : "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
-            },
+            // {
+            //     target: ".chat-icon2",
+            //     content: dynamicHelpText?.coachScribe
+            //         ? dynamicHelpText.coachScribe
+            //         : "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
+            // },
             {
                 target: "#manager-plus",
                 disableScrolling: false,

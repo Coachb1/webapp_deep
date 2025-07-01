@@ -151,8 +151,13 @@ let userScenarioRecommendation;
 let increaseSessionForFirstTest = false;
 let FeedbackVideoLink;
 let FetchTestCodeReport = false;
+
 let testCountDownTalk = 0;
 let timerIntervalTalk = null;
+let libraryTestoptions = [];
+let InstructinoMediaLink;
+
+
 
 let botAvatarImageURLTalk =
   "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8c3ZnIGZpbGw9IiMwMDAwMDAiIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIAoJCXZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8cGF0aCBkPSJNMjMsMzAuMzZIOWMtMi40MDQsMC00LjM2LTEuOTU2LTQuMzYtNC4zNlYxNWMwLTIuNDA0LDEuOTU2LTQuMzYsNC4zNi00LjM2aDMuNjU5CgkJYzAuMTY3LTEuNTY2LDEuNDE1LTIuODEzLDIuOTgxLTIuOTgxVjUuMzMzYy0xLjEzMS0wLjE3NC0yLTEuMTU0LTItMi4zMzNjMC0xLjMwMSwxLjA1OS0yLjM2LDIuMzYtMi4zNgoJCWMxLjMwMiwwLDIuMzYsMS4wNTksMi4zNiwyLjM2YzAsMS4xNzktMC44NjksMi4xNTktMiwyLjMzM1Y3LjY2YzEuNTY2LDAuMTY3LDIuODE0LDEuNDE1LDIuOTgxLDIuOTgxSDIzCgkJYzIuNDA0LDAsNC4zNiwxLjk1Niw0LjM2LDQuMzZ2MTFDMjcuMzYsMjguNDA0LDI1LjQwNCwzMC4zNiwyMywzMC4zNnogTTksMTEuMzZjLTIuMDA3LDAtMy42NCwxLjYzMy0zLjY0LDMuNjR2MTEKCQljMCwyLjAwNywxLjYzMywzLjY0LDMuNjQsMy42NGgxNGMyLjAwNywwLDMuNjQtMS42MzMsMy42NC0zLjY0VjE1YzAtMi4wMDctMS42MzMtMy42NC0zLjY0LTMuNjRIOXogTTEzLjM4NCwxMC42NGg1LjIzMQoJCUMxOC40MzksOS4zNTQsMTcuMzM0LDguMzYsMTYsOC4zNkMxNC42NjcsOC4zNiwxMy41NjEsOS4zNTQsMTMuMzg0LDEwLjY0eiBNMTYsMS4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NAoJCVMxNS4wOTYsNC42NCwxNiw0LjY0YzAuOTA0LDAsMS42NC0wLjczNiwxLjY0LTEuNjRTMTYuOTA0LDEuMzYsMTYsMS4zNnogTTIwLDI3LjM2aC04Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2CgkJczEuMDU5LTIuMzYsMi4zNi0yLjM2aDhjMS4zMDIsMCwyLjM2LDEuMDU5LDIuMzYsMi4zNlMyMS4zMDIsMjcuMzYsMjAsMjcuMzZ6IE0xMiwyMy4zNmMtMC45MDQsMC0xLjY0LDAuNzM1LTEuNjQsMS42NAoJCXMwLjczNiwxLjY0LDEuNjQsMS42NGg4YzAuOTA0LDAsMS42NC0wLjczNSwxLjY0LTEuNjRzLTAuNzM1LTEuNjQtMS42NC0xLjY0SDEyeiBNMzEsMjMuODZoLTJjLTAuMTk5LDAtMC4zNi0wLjE2MS0wLjM2LTAuMzZWMTUKCQljMC0wLjE5OSwwLjE2MS0wLjM2LDAuMzYtMC4zNmgyYzAuMTk5LDAsMC4zNiwwLjE2MSwwLjM2LDAuMzZ2OC41QzMxLjM2LDIzLjY5OSwzMS4xOTksMjMuODYsMzEsMjMuODZ6IE0yOS4zNiwyMy4xNGgxLjI3OXYtNy43OAoJCUgyOS4zNlYyMy4xNHogTTMsMjMuODZIMWMtMC4xOTksMC0wLjM2LTAuMTYxLTAuMzYtMC4zNlYxNWMwLTAuMTk5LDAuMTYxLTAuMzYsMC4zNi0wLjM2aDJjMC4xOTksMCwwLjM2LDAuMTYxLDAuMzYsMC4zNnY4LjUKCQlDMy4zNiwyMy42OTksMy4xOTksMjMuODYsMywyMy44NnogTTEuMzYsMjMuMTRoMS4yOHYtNy43OEgxLjM2VjIzLjE0eiBNMjAsMjAuMzZjLTEuMzAyLDAtMi4zNi0xLjA1OS0yLjM2LTIuMzYKCQlzMS4wNTktMi4zNiwyLjM2LTIuMzZzMi4zNiwxLjA1OSwyLjM2LDIuMzZDMjIuMzYsMTkuMzAyLDIxLjMwMiwyMC4zNiwyMCwyMC4zNnogTTIwLDE2LjM2Yy0wLjkwNCwwLTEuNjQsMC43MzYtMS42NCwxLjY0CgkJczAuNzM1LDEuNjQsMS42NCwxLjY0czEuNjQtMC43MzUsMS42NC0xLjY0UzIwLjkwNCwxNi4zNiwyMCwxNi4zNnogTTEyLDIwLjM2Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2czEuMDU5LTIuMzYsMi4zNi0yLjM2CgkJczIuMzYsMS4wNTksMi4zNiwyLjM2QzE0LjM2LDE5LjMwMiwxMy4zMDEsMjAuMzYsMTIsMjAuMzZ6IE0xMiwxNi4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NHMwLjczNiwxLjY0LDEuNjQsMS42NAoJCXMxLjY0LTAuNzM1LDEuNjQtMS42NFMxMi45MDQsMTYuMzYsMTIsMTYuMzZ6Ii8+Cgk8cmVjdCBzdHlsZT0iZmlsbDpub25lOyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+Cjwvc3ZnPg==";
@@ -713,12 +718,13 @@ function formatMessage(message) {
       title: "Title",
       description: "Description",
       instructions: "Instructions",
+      instruction_media: "Reference",
       oem: "▶️ AI Coach Lesson or Additional Context (Expand to view or pause)",
       "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)"
     };
 
     return Object.keys(keyToTitleMappings).map(key => {
-      const value = message[key];
+      let value = message[key];
       if (!value) return null;
 
       if (['oem', 'feedback_media'].includes(key) && value.includes('iframe')) {
@@ -732,8 +738,21 @@ function formatMessage(message) {
       if (key === 'oem'){
         heading = "📰 Additional Context"
       }
+      console.log('formatmsg', key, message.instruction_media, message)
+      if (key === 'instructions' && message.instruction_media) {
+        value = value + ` 
+                <a href="${message.instruction_media}" target="_blank"
+                  style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+                  onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
+                  Reference
+                </a>`;
 
-      return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
+      }
+
+      if (key != 'instruction_media'){
+        return `<div><strong>${heading}:</strong> <span>${value}</span></div>`;
+      }
     }).filter(Boolean).join("<hr />");
   }
 
@@ -1280,7 +1299,7 @@ async function setMcqVariables() {
         const que_msg = document.createElement("div");
         que_msg.innerHTML = "Thank You"; // You can customize the message here
         // Replace the button with the "Thank you" message
-        msg.parentNode.replaceChild(que_msg, msg);
+        if (msg) msg.parentNode.replaceChild(que_msg, msg);
       }
       resetAllVariables(); //reseting variables
 
@@ -2381,7 +2400,7 @@ const handleProceedClick = async (choice) => {
       const que_msg = document.createElement("div");
       que_msg.innerHTML = "Please Wait.."; // You can customize the message here
       // Replace the button with the "Thank you" message
-      msg.parentNode.replaceChild(que_msg, msg);
+      if (msg) msg.parentNode.replaceChild(que_msg, msg);
     }
 
     if (
@@ -2855,7 +2874,7 @@ const handleProceedClick = async (choice) => {
     const que_msg = document.createElement("div");
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    if (msg) msg.parentNode.replaceChild(que_msg, msg);
     if (Object.keys(snnipetConfig).length > 0) {
       appendMessage("<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>");
 
@@ -3648,7 +3667,7 @@ const StopSessionTalk = async() =>{
     const que_msg = document.createElement("div");
     que_msg.innerHTML = "Thank You"; // You can customize the message here
     // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    if (msg) msg.parentNode.replaceChild(que_msg, msg);
   }
   await window.cancelTest(participantId); // cancelling session
 
@@ -4793,7 +4812,7 @@ loadExternalModule().then(() => {
             const que_msg = document.createElement("div");
             que_msg.innerHTML = "Thank You"; // You can customize the message here
             // Replace the button with the "Thank you" message
-            msg.parentNode.replaceChild(que_msg, msg);
+            if (msg) msg.parentNode.replaceChild(que_msg, msg);
           }
 
           if (questionIndex <= questionLength) {
@@ -5452,7 +5471,7 @@ loadExternalModule().then(() => {
                     const que_msg = document.createElement("div");
                     que_msg.innerHTML = "Thank You"; // You can customize the message here
                     // Replace the button with the "Thank you" message
-                    msg.parentNode.replaceChild(que_msg, msg);
+                    if (msg) msg.parentNode.replaceChild(que_msg, msg);
                   }
                   resetAllVariables(); //reseting variables
 
@@ -6042,6 +6061,7 @@ loadExternalModule().then(() => {
           }
 
           if (body.messages[0].text.toUpperCase() === "STOP") {
+            stopModernTimerTalk();
             if (testType === "mcq" || testType === "dynamic_mcq") {
               const shadowRoot =
                 document.getElementById("chat-element").shadowRoot;
@@ -6062,7 +6082,7 @@ loadExternalModule().then(() => {
               const que_msg = document.createElement("div");
               que_msg.innerHTML = "Thank You"; // You can customize the message here
               // Replace the button with the "Thank you" message
-              msg.parentNode.replaceChild(que_msg, msg);
+              if (msg) msg.parentNode.replaceChild(que_msg, msg);
             }
             await cancelTest(participantId); // cancelling session
             // resetAllVariables(); //reseting variables
@@ -6298,6 +6318,10 @@ loadExternalModule().then(() => {
                 responseWordLimit = senarioCase === 'psychometric' ? 20 : 15
                 console.log('responseWordLimit: ', responseWordLimit)
                 testCountDownTalk = questionData.results[0].time_limit || 0;
+                InstructinoMediaLink = questionData.results[0].instruction_media_link;
+                console.log('InstructinoMediaLink', InstructinoMediaLink)
+
+
 
                 if (Object.keys(snnipetConfig).length > 0) {
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
@@ -6803,218 +6827,243 @@ loadExternalModule().then(() => {
 
                     }
 
-                    if (senarioMediaDescription && !AttemptTestDirect) {
-                      let embeddingUrl = "";
-                      if (senarioMediaDescription.length > 0) {
-                        if (senarioMediaDescription.includes("youtube.com")) {
-                          const videoId =
-                            senarioMediaDescription.split("v=")[1];
-                          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-
-                          appendMessage(
-                            {
+                    if ((senarioMediaDescription || InstructinoMediaLink) && !AttemptTestDirect) {
+                      if (!senarioMediaDescription && InstructinoMediaLink){
+                        appendMessage(
+                          {
                               title: senarioTitle,
                               description: senarioDescription,
-                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                              oem: `<iframe
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
-                                                src=${embeddingUrl}
-                                                frameborder="0"
-                                                allowfullscreen
-                                              >`
-                            }
-                          );
-                        } else if (
-                          senarioMediaDescription.includes("vimeo.com")
-                        ) {
-                          const videoId = senarioMediaDescription
-                            .split("/")
-                            .pop();
-                          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                              instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLink
+                          }
+                        )
+                        console.log('dec2')
 
-                          appendMessage(
-                            {
-                              title: senarioTitle,
-                              description: senarioDescription,
-                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                              oem: `<iframe
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
-                                                src=${embeddingUrl}
-                                                frameborder="0"
-                                                allowfullscreen
-                                              >`
-                            }
-                          );
-                        } else if (
-                          senarioMediaDescription.includes("twitter.com")
-                        ) {
-                          embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
+                      } else {
+                        let embeddingUrl = "";
+                        if (senarioMediaDescription.length > 0) {
+                          console.log('dec3')
 
-                          appendMessage(
-                            {
-                              title: senarioTitle,
-                              description: senarioDescription,
-                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                              oem: `<iframe
-                                                allow="autoplay; encrypted-media; fullscreen;"
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
-                                                src=${embeddingUrl}
-                                                frameborder="0"
-                                                allowfullscreen
-                                              >`
-                            }
-                          );
-                        } else if (senarioMediaDescription.includes("player.cloudinary.com") || senarioMediaDescription.includes('storage.googleapis.com')){
-                          
-                          appendMessage({
-                            title: senarioTitle,
-                            description: senarioDescription,
-                            instructions: "Response should be at least 15 words.",
-                            oem: `
-                                <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
-                                  <div id="poster-overlay" style="
-                                    position: absolute;
-                                    top: 0; left: 0;
-                                    width: 100%; height: 100%;
-                                    background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
-                                    z-index: 2;
-                                    transition: opacity 0.5s ease;
-                                    border-radius: 8px;
-                                  "></div>
+                          if (senarioMediaDescription.includes("youtube.com")) {
+                            const videoId =
+                              senarioMediaDescription.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 
-                                  <iframe
-                                    onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
-                                    allow="autoplay; encrypted-media; fullscreen;"
-                                    style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
-                                    src="${senarioMediaDescription}"
-                                    frameborder="0"
-                                    allowfullscreen
-                                  ></iframe>
-                                </div>
-                                `
-                          });
-                        }
-                        else {
-                          const urlList = senarioMediaDescription.split(",");
-                          console.log(urlList);
-                          if (urlList.length > 1) {
                             appendMessage(
                               {
                                 title: senarioTitle,
                                 description: senarioDescription,
                                 instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                instruction_media: InstructinoMediaLink,
+                                oem: `<iframe
+                                                  style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
+                                                  src=${embeddingUrl}
+                                                  frameborder="0"
+                                                  allowfullscreen
+                                                >`
+                              }
+                            );
+                          } else if (
+                            senarioMediaDescription.includes("vimeo.com")
+                          ) {
+                            const videoId = senarioMediaDescription
+                              .split("/")
+                              .pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+
+                            appendMessage(
+                              {
+                                title: senarioTitle,
+                                description: senarioDescription,
+                                instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                instruction_media: InstructinoMediaLink,
+                                oem: `<iframe
+                                                  style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
+                                                  src=${embeddingUrl}
+                                                  frameborder="0"
+                                                  allowfullscreen
+                                                >`
+                              }
+                            );
+                          } else if (
+                            senarioMediaDescription.includes("twitter.com")
+                          ) {
+                            embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
+
+                            appendMessage(
+                              {
+                                title: senarioTitle,
+                                description: senarioDescription,
+                                instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                instruction_media: InstructinoMediaLink,
+                                oem: `<iframe
+                                                  allow="autoplay; encrypted-media; fullscreen;"
+                                                  style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw; margin-top: 8px;"
+                                                  src=${embeddingUrl}
+                                                  frameborder="0"
+                                                  allowfullscreen
+                                                >`
+                              }
+                            );
+                          } else if (senarioMediaDescription.includes("player.cloudinary.com") || senarioMediaDescription.includes('storage.googleapis.com')){
+                            
+                            appendMessage({
+                              title: senarioTitle,
+                              description: senarioDescription,
+                              instructions: "Response should be at least 15 words.",
+                              instruction_media: InstructinoMediaLink,
+                              oem: `
+                                  <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
+                                    <div id="poster-overlay" style="
+                                      position: absolute;
+                                      top: 0; left: 0;
+                                      width: 100%; height: 100%;
+                                      background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
+                                      z-index: 2;
+                                      transition: opacity 0.5s ease;
+                                      border-radius: 8px;
+                                    "></div>
+
+                                    <iframe
+                                      onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
+                                      allow="autoplay; encrypted-media; fullscreen;"
+                                      style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
+                                      src="${senarioMediaDescription}"
+                                      frameborder="0"
+                                      allowfullscreen
+                                    ></iframe>
+                                  </div>
+                                  `
+                            });
+                          }
+                          else {
+                            const urlList = senarioMediaDescription.split(",");
+                            console.log(urlList);
+                            if (urlList.length > 1) {
+                              appendMessage(
+                                {
+                                  title: senarioTitle,
+                                  description: senarioDescription,
+                                  instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                  instruction_media: InstructinoMediaLink
+                                });
+                              urlList.forEach((element) => {
+                                element = element.trim();
+                                if (element.includes("docs.google.com")) {
+                                  let url =
+                                    element.split("edit?")[0] +
+                                    "embed?start=true&loop=true&delayms=3000";
+                                  console.log(url);
+                                  appendMessage(`<iframe src=${url}
+                                                  frameborder="0" 
+                                                  style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                  allowfullscreen="true" 
+                                                  mozallowfullscreen="true" 
+                                                  webkitallowfullscreen="true"
+                                                  ></iframe>`);
+                                } else {
+                                  console.log(element);
+                                  appendMessage(
+                                    `<div ><audio style="${window.innerWidth < 600
+                                      ? "width: 200px; max-width: 200px !important;"
+                                      : " min-width: 50vw !important;"
+                                    }" controls autoplay>
+                                    <source src=${element} type="audio/mpeg" />
+                                    Your browser does not support the audio element.
+                                    </audio></div>`
+                                  );
+                                }
                               });
-                            urlList.forEach((element) => {
-                              element = element.trim();
-                              if (element.includes("docs.google.com")) {
+                            } else {
+                              if (
+                                senarioMediaDescription.includes(
+                                  "docs.google.com"
+                                )
+                              ) {
                                 let url =
-                                  element.split("edit?")[0] +
+                                  senarioMediaDescription.split("edit?")[0] +
                                   "embed?start=true&loop=true&delayms=3000";
                                 console.log(url);
+                                appendMessage(
+                                  {
+                                    title: senarioTitle,
+                                    description: senarioDescription,
+                                    instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                    instruction_media: InstructinoMediaLink
+                                  }
+                                );
                                 appendMessage(`<iframe src=${url}
                                                 frameborder="0" 
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                                 allowfullscreen="true" 
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
                                                 ></iframe>`);
-                              } else {
-                                console.log(element);
+                              } else if (
+                                senarioMediaDescription.includes("guidejar.com")
+                              ) {
+                                const guidejarId = senarioMediaDescription
+                                  .split("/")
+                                  .pop();
                                 appendMessage(
-                                  `<div ><audio style="${window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
-                                  }" controls autoplay>
-                                  <source src=${element} type="audio/mpeg" />
-                                  Your browser does not support the audio element.
-                                  </audio></div>`
+                                  {
+                                    title: senarioTitle,
+                                    description: senarioDescription,
+                                    instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                    instruction_media: InstructinoMediaLink
+                                  }
+                                );
+
+                                appendMessage(`
+                                <div style="width:640px">
+                                <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                                <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                                ></div></div>
+                                `);
+                              } else {
+                                appendMessage(
+                                  {
+                                    title: senarioTitle,
+                                    description: senarioDescription,
+                                    instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                                    instruction_media: InstructinoMediaLink,
+                                    oem: `<a href="${senarioMediaDescription}" target="_blank"
+                                            style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; border-color: green; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                            onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                            onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                            Reference
+                                          </a>`
+                                  }
                                 );
                               }
-                            });
-                          } else {
-                            if (
-                              senarioMediaDescription.includes(
-                                "docs.google.com"
-                              )
-                            ) {
-                              let url =
-                                senarioMediaDescription.split("edit?")[0] +
-                                "embed?start=true&loop=true&delayms=3000";
-                              console.log(url);
-                              appendMessage(
-                                {
-                                  title: senarioTitle,
-                                  description: senarioDescription,
-                                  instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                                }
-                              );
-                              appendMessage(`<iframe src=${url}
-                                              frameborder="0" 
-                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                              allowfullscreen="true" 
-                                              mozallowfullscreen="true" 
-                                              webkitallowfullscreen="true"
-                                              ></iframe>`);
-                            } else if (
-                              senarioMediaDescription.includes("guidejar.com")
-                            ) {
-                              const guidejarId = senarioMediaDescription
-                                .split("/")
-                                .pop();
-                              appendMessage(
-                                {
-                                  title: senarioTitle,
-                                  description: senarioDescription,
-                                  instructions: "Audio/Video Messages should be atleast 15 secs long."
-                                }
-                              );
-
-                              appendMessage(`
-                              <div style="width:640px">
-                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-                              ></div></div>
-                              `);
-                            } else {
-                              appendMessage(
-                                {
-                                  title: senarioTitle,
-                                  description: senarioDescription,
-                                  instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                                  oem: `<a href="${senarioMediaDescription}" target="_blank"
-                                          style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; border-color: green; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                                          onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                          onmouseout="this.style.background='white'; this.style.borderColor='#ddd'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                          Reference
-                                        </a>`
-                                }
-                              );
                             }
                           }
-                        }
-                        // if (!senarioMediaDescription.includes("twitter.com")) {
-                        //   appendMessage(
-                        //     `▪ Title : ${senarioTitle} <br><br>
-                        //        ▪ Description : ${senarioDescription} <br><br>
-                        //        ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                        //        ▪ <b>Optional Enrichment Media</b><br>  <iframe
-                        //                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                        //                         src=${embeddingUrl}
-                        //                         frameborder="0"
-                        //                         allowfullscreen
-                        //                       >
+                          // if (!senarioMediaDescription.includes("twitter.com")) {
+                          //   appendMessage(
+                          //     `▪ Title : ${senarioTitle} <br><br>
+                          //        ▪ Description : ${senarioDescription} <br><br>
+                          //        ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
+                          //        ▪ <b>Optional Enrichment Media</b><br>  <iframe
+                          //                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                          //                         src=${embeddingUrl}
+                          //                         frameborder="0"
+                          //                         allowfullscreen
+                          //                       >
 
-                        //       `
-                        //   );
-                        // }
-                      } else {
-                        appendMessage(
-                          {
-                            title: senarioTitle,
-                            description: senarioDescription,
-                            instructions: "Audio/Video Messages should be atleast 15 secs long.",
-                          }
-                        );
+                          //       `
+                          //   );
+                          // }
+                        } else {
+                          appendMessage(
+                            {
+                              title: senarioTitle,
+                              description: senarioDescription,
+                              instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                              instruction_media: InstructinoMediaLink,
+                            }
+                          );
+                          console.log('dec1')
+                        }
                       }
                       //   if (testType != "coaching") {
                       if (senarioSnippetURL) {
@@ -7029,6 +7078,7 @@ loadExternalModule().then(() => {
                       signals.onResponse({
                         html: questionText,
                       });
+                      console.log('sending quesitontext')
                       //   }
                     } else if (
                       mediaProps &&
@@ -7083,12 +7133,16 @@ loadExternalModule().then(() => {
                     } else {
                       if (!AttemptTestDirect) {
                         const temp_que_text = questionText
+                        console.log('dec4')
+
                         signals.onResponse({
                           html: formatMessage({
                             title: senarioTitle,
                             description: senarioDescription,
                             instructions: "Audio/Video Messages should be atleast 15 secs long.",
+                            instruction_media: InstructinoMediaLink,
                           })
+
                         }).then(() => {
                           if (senarioSnippetURL) {
                             if (senarioSnippetURL.length > 0) {
@@ -7543,7 +7597,7 @@ loadExternalModule().then(() => {
                       const que_msg = document.createElement("div");
                       que_msg.innerHTML = "Thank You"; // You can customize the message here
                       // Replace the button with the "Thank you" message
-                      msg.parentNode.replaceChild(que_msg, msg);
+                      if (msg) msg.parentNode.replaceChild(que_msg, msg);
                     }
                     resetAllVariables(); //reseting variables
 
@@ -7731,7 +7785,8 @@ loadExternalModule().then(() => {
                 const que_msg = document.createElement("div");
                 que_msg.innerHTML = "Thank You"; // You can customize the message here
                 // Replace the button with the "Thank you" message
-                msg.parentNode.replaceChild(que_msg, msg);
+                if (msg) msg.parentNode.replaceChild(que_msg, msg);
+
               }
               resetAllVariables(); //reseting variables
 
@@ -7767,7 +7822,7 @@ loadExternalModule().then(() => {
           const que_msg = document.createElement("div");
           que_msg.innerHTML = "Thank You"; // You can customize the message here
           // Replace the button with the "Thank you" message
-          msg.parentNode.replaceChild(que_msg, msg);
+          if (msg) msg.parentNode.replaceChild(que_msg, msg);
         }
         resetAllVariables(); //reseting variables
 
