@@ -6131,7 +6131,7 @@ async function setMcqVariablesStt() {
         const que_msg = document.createElement("div");
         que_msg.innerHTML = "Thank You"; // You can customize the message here
         // Replace the button with the "Thank you" message
-        msg.parentNode.replaceChild(que_msg, msg);
+        if (msg) msg.parentNode.replaceChild(que_msg, msg);
       }
 
       resetAllVariablesStt();
@@ -7750,7 +7750,7 @@ const StopSession = async() =>{
     const que_msg = document.createElement("div");
     que_msg.innerHTML = "Thank You"; // You can customize the message here
     // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    if (msg) msg.parentNode.replaceChild(que_msg, msg);
   }
   // resetAllVariablesStt(); //reseting variables
   // signals.onResponse({
@@ -11570,6 +11570,7 @@ loadExternalModule().then(() => {
             return;
           }
           if (body.messages[0].text.toUpperCase() === "STOP") {
+            stopModernTimer();
             await cancelTestStt(participantId2); // cancelling session
             if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
               const shadowRoot =
@@ -11591,7 +11592,7 @@ loadExternalModule().then(() => {
               const que_msg = document.createElement("div");
               que_msg.innerHTML = "Thank You"; // You can customize the message here
               // Replace the button with the "Thank you" message
-              msg.parentNode.replaceChild(que_msg, msg);
+              if (msg) msg.parentNode.replaceChild(que_msg, msg);
             }
             // resetAllVariablesStt(); //reseting variables
             // signals.onResponse({
@@ -12785,15 +12786,17 @@ loadExternalModule().then(() => {
                             description: senarioDescription2
                           }
                         ]
-                        let instruction = ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2}`
                         if (!['game'].includes(senarioCase2)) {
-                          instruction += `\n\n ▪ Instructions : Response should be at least ${wordLimit} words.`
-                          const instruction = `Response should be at least ${wordLimit} words. <a href="${message.instruction_media}" target="_blank"
+                          let instruction = `Response should be at least ${wordLimit} words.`
+                          if (InstructinoMediaLinkStt){
+                            instruction += ` <a href="${InstructinoMediaLinkStt}" target="_blank"
                               style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                               onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
                               onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
                               Reference
                             </a>`
+                          }
+
                           messages.push({
                             title: "Instructions",
                             description: instruction
@@ -13390,7 +13393,7 @@ loadExternalModule().then(() => {
                       const que_msg = document.createElement("div");
                       que_msg.innerHTML = "Thank You"; // You can customize the message here
                       // Replace the button with the "Thank you" message
-                      msg.parentNode.replaceChild(que_msg, msg);
+                      if (msg) msg.parentNode.replaceChild(que_msg, msg);
                     }
                     resetAllVariablesStt();
                     signals.onResponse({
@@ -13617,7 +13620,7 @@ loadExternalModule().then(() => {
                 const que_msg = document.createElement("div");
                 que_msg.innerHTML = "Thank You"; // You can customize the message here
                 // Replace the button with the "Thank you" message
-                msg.parentNode.replaceChild(que_msg, msg);
+                if (msg) msg.parentNode.replaceChild(que_msg, msg);
               }
               resetAllVariablesStt();
               console.log(body.messages[0].text.toUpperCase() != 'STOP')
