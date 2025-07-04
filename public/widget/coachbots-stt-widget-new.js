@@ -7636,16 +7636,21 @@ if (window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "playground.coachbots.com" ||
-    window.location.hostname === "platform.coachbots.com"
-  ) {
+  const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+
+  const isInternalHost = 
+    hostname === "localhost" ||
+    hostname === "playground.coachbots.com" ||
+    hostname === "platform.coachbots.com";
+
+  if (isInternalHost && !pathname.startsWith("/widget/")) {
     return "internal";
   } else {
     return "external";
   }
 };
+
 
 const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
   if (type === 'system') {
@@ -8360,7 +8365,7 @@ loadExternalModule().then(() => {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
   }
-  console.log(botId)
+  console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
   } else {
@@ -8589,7 +8594,7 @@ loadExternalModule().then(() => {
         if (snnipetConfigSTT?.["welcomeMessage"]) {
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
         }
-        console.log(welcomeMessage)
+        console.log(welcomeMessage, 'welcome')
         const indivisualPageUserEmail = localStorage.getItem("userEmail");
         if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
           const userName = indivisualPageUserEmail.split('@')[0];

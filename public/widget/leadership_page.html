@@ -5,7 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leadership Area Simulations - Coachbot</title>
-  <link rel="icon" href="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441255/u0mayoqhacwaufonx8ej.webp" type="image/x-icon" />
+  <link rel="icon" href="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441255/u0mayoqhacwaufonx8ej.webp"
+    type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <!-- <link rel="stylesheet" href="./test.css" /> -->
   <style>
@@ -698,6 +699,18 @@
     .launch-widget-btn:hover {
       background-color: #00a97d;
     }
+
+    @keyframes glowBorder {
+      from {
+        box-shadow: 0 0 10px #00c193;
+        border-color: #00c193;
+      }
+
+      to {
+        box-shadow: 0 0 20px #00c193;
+        border-color: #00f0d1;
+      }
+    }
   </style>
 </head>
 
@@ -705,7 +718,8 @@
   <!-- Header -->
   <header class="header">
     <div class="logo">
-      <img class="img-logo" src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441022/z8xdbllhrk8lq6ppyofk.png" alt="" />
+      <img class="img-logo" src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441022/z8xdbllhrk8lq6ppyofk.png"
+        alt="" />
     </div>
     <div class="nav-icons">
       <a href="https://playground.coachbots.com/widget/domain_page.html"><button class="tr-btn">Domain View</button></a>
@@ -725,29 +739,63 @@
       Thousands of Microlearning embedded roleplay simulations!
     </p>
 
-    <div style="display: flex; justify-content: center; margin: 30px 0">
-      <video width="900" controls style="
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ddd;
-          ">
-        <source src="https://storage.googleapis.com/publicvid/observation2/Leadership%20Final.mp4" type="video/mp4" />
+    <div style="position: relative; display: flex; justify-content: center; margin: 30px 0;">
+      <video id="customVideo" width="900" controls
+        style="border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); border: 1px solid #ddd;">
+        <source src="https://storage.googleapis.com/publicvid/observation2/Leadership%20Final.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
+
+      <div id="playIcon" style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 193, 147, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            ">
+        <svg viewBox="0 0 64 64" width="32" height="32" fill="#fff" style="margin-left: 5px;">
+          <polygon points="16,12 52,32 16,52"></polygon>
+        </svg>
+      </div>
     </div>
 
-    <div id="emailSection" class="email-section">
-            <div class="email-box">
-                <h2>Enter your email to continue</h2>
-                <input type="email" id="userEmail" placeholder="Enter your email..." required />
-                <button id="submitEmail">Enter</button>
-            </div>
-        </div>
+    <div id="emailSection" style="display: flex; justify-content: center; margin-top: -10px;">
+      <form style="
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            gap: 16px; 
+            background: #fff; 
+            border: 2px solid #00c193; 
+            border-radius: 12px; 
+            padding: 18px 24px; 
+            max-width: 900px; 
+            width: 100%; 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            animation: glowBorder 2s infinite alternate;
+            " onsubmit="event.preventDefault(); document.getElementById('submitEmail').click();">
+        <label for="userEmail"
+          style="font-size: 1.1rem; color: #333; font-weight: 500; white-space: nowrap;">Email</label>
+        <input type="email" id="userEmail" placeholder="Enter your email..." required
+          style="flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; outline: none; transition: border 0.2s;"
+          onfocus="this.style.borderColor='#00c193'" onblur="this.style.borderColor='#ccc'" />
+        <button id="submitEmail" type="button"
+          style="padding: 10px 22px; font-size: 16px; background: #00c193; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;">Enter</button>
+      </form>
+    </div>
 
     <div id="pageContent" style="display: none;">
 
-        <!-- Api Fetch Data Container -->
-        <div id="test-container"></div>
+      <!-- Api Fetch Data Container -->
+      <div id="test-container"></div>
 
     </div>
 
@@ -758,6 +806,18 @@
   </main>
 
   <script>
+    const video = document.getElementById("customVideo");
+    const playIcon = document.getElementById("playIcon");
+
+    playIcon.addEventListener("click", () => {
+      video.play();
+      playIcon.style.display = "none";
+    });
+
+    // Optionally hide icon if video started via controls
+    video.addEventListener("play", () => {
+      playIcon.style.display = "none";
+    });
 
     function updateWeeklyBanner() {
       const now = new Date();

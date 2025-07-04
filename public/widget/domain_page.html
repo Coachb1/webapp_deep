@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Domain Area Simulations - Coachbot</title>
-    <link rel="icon" href="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441255/u0mayoqhacwaufonx8ej.webp" type="image/x-icon">
+    <link rel="icon" href="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441255/u0mayoqhacwaufonx8ej.webp"
+        type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- <link rel="stylesheet" href="./test.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -699,15 +700,35 @@
         .launch-widget-btn:hover {
             background-color: #00a97d;
         }
+
+        @keyframes glowBorder {
+            from {
+                box-shadow: 0 0 10px #00c193;
+                border-color: #00c193;
+            }
+
+            to {
+                box-shadow: 0 0 20px #00c193;
+                border-color: #00f0d1;
+            }
+        }
+
+        #playIcon:hover {
+            background: rgba(0, 225, 176, 0.9);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
     </style>
 </head>
 
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="logo"><img class="img-logo" src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441022/z8xdbllhrk8lq6ppyofk.png" alt=""></div>
+        <div class="logo"><img class="img-logo"
+                src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1751441022/z8xdbllhrk8lq6ppyofk.png" alt="">
+        </div>
         <div class="nav-icons">
-            <a href="https://playground.coachbots.com/widget/leadership_page.html"><button class="tr-btn">Leadership View</button></a>
+            <a href="https://playground.coachbots.com/widget/leadership_page.html"><button class="tr-btn">Leadership
+                    View</button></a>
         </div>
     </header>
 
@@ -723,22 +744,58 @@
         <p class="section-subtitle">Thousands of Microlearning embedded roleplay simulations!</p>
 
 
-        <div style="display: flex; justify-content: center; margin: 30px 0;">
-            <video width="900" controls
+        <div style="position: relative; display: flex; justify-content: center; margin: 30px 0;">
+            <video id="customVideo" width="900" controls
                 style="border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); border: 1px solid #ddd;">
                 <source src="https://storage.googleapis.com/publicvid/observation2/Leadership%20Final.mp4"
                     type="video/mp4">
                 Your browser does not support the video tag.
             </video>
+
+            <div id="playIcon" style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 80px;
+                height: 80px;
+                background: rgba(0, 193, 147, 0.8);
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: background 0.3s, transform 0.2s;
+                ">
+                <svg viewBox="0 0 64 64" width="32" height="32" fill="#fff" style="margin-left: 5px;">
+                    <polygon points="16,12 52,32 16,52"></polygon>
+                </svg>
+            </div>
         </div>
 
-
-        <div id="emailSection" class="email-section">
-            <div class="email-box">
-                <h2>Enter your email to continue</h2>
-                <input type="email" id="userEmail" placeholder="Enter your email..." required />
-                <button id="submitEmail">Enter</button>
-            </div>
+        <div id="emailSection" style="display: flex; justify-content: center; margin-top: -10px;">
+            <form style="
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            gap: 16px; 
+            background: #fff; 
+            border: 2px solid #00c193; 
+            border-radius: 12px; 
+            padding: 18px 24px; 
+            max-width: 900px; 
+            width: 100%; 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            animation: glowBorder 2s infinite alternate;
+            " onsubmit="event.preventDefault(); document.getElementById('submitEmail').click();">
+                <label for="userEmail"
+                    style="font-size: 1.1rem; color: #333; font-weight: 500; white-space: nowrap;">Email</label>
+                <input type="email" id="userEmail" placeholder="Enter your email..." required
+                    style="flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; outline: none; transition: border 0.2s;"
+                    onfocus="this.style.borderColor='#00c193'" onblur="this.style.borderColor='#ccc'" />
+                <button id="submitEmail" type="button"
+                    style="padding: 10px 22px; font-size: 16px; background: #00c193; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;">Enter</button>
+            </form>
         </div>
 
         <div id="pageContent" style="display: none;">
@@ -748,21 +805,28 @@
 
         </div>
         <!-- <script src="https://playground.coachbots.com/widget/coachbots-stt-widget-new.js" defer> </script> -->
-        <div class="coachbots-coachscribe" 
-            data-client-id="Sample Course" 
-            data-allow-audio-interaction="false"
+        <div class="coachbots-coachscribe" data-client-id="Sample Course" data-allow-audio-interaction="false"
             data-Welcome-Message="Hi coach scribe there! Welcome to the Leadership Potential Assessment, powered by our Cognitive Leadership Framework. This assessment will provide you with a valuable Leadership EQ Report."
-            data-is-bussiness-email="false"
-            data-is-report-buttons="true"
-            data-bypass-email="true"
-            >
+            data-is-bussiness-email="false" data-is-report-buttons="true" data-bypass-email="true">
         </div>
     </main>
 
 
 
     <script>
-        
+        const video = document.getElementById("customVideo");
+        const playIcon = document.getElementById("playIcon");
+
+        playIcon.addEventListener("click", () => {
+            video.play();
+            playIcon.style.display = "none";
+        });
+
+        // Optionally hide icon if video started via controls
+        video.addEventListener("play", () => {
+            playIcon.style.display = "none";
+        });
+
         function updateWeeklyBanner() {
             const now = new Date();
             const daysOfWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
@@ -805,7 +869,7 @@
 
         // Email page Disapper
 
-        document.addEventListener("DOMContentLoaded", async() => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const emailSection = document.getElementById("emailSection");
             const pageContent = document.getElementById("pageContent");
             const emailInput = document.getElementById("userEmail");
@@ -829,7 +893,7 @@
 
             }
 
-            
+
 
             submitBtn.addEventListener("click", () => {
                 const email = emailInput.value.trim();
@@ -1239,24 +1303,24 @@
                                 console.log(`Starting interaction for test code: ${sim.test_code}`);
                                 if (typeof window !== "undefined" && typeof (window).handleAttemptScenaiosSTT === "function") {
                                     let instruction = `Response should be at least 15 words.`;
-                                if (sim.interaction_media_link){
-                                  instruction = instruction +  `<a href="${sim.interaction_media_link}" target="_blank"
+                                    if (sim.interaction_media_link) {
+                                        instruction = instruction + `<a href="${sim.interaction_media_link}" target="_blank"
                                   style="display:inline-block; margin-left:8px; background:white; color:#333; padding:2px 6px; border:1px solid green; border-radius:4px; text-decoration:none; font-family:sans-serif; font-size:11px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
                                   onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
                                   onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)';">
                                   Reference
                                 </a>`
-                                };
-                                (window).appendMessage2({
-                                  title: sim.title,
-                                  description: sim.description,
-                                  instructions: instruction,
-                                });
-                                (window).openChatContainer2();
-                                (window).handleAttemptScenaiosSTT(sim.title, sim.test_code);
-                              } else {
-                                console.log("handleAttemptScenaiosSTT is not defined on window");
-                              }
+                                    };
+                                    (window).appendMessage2({
+                                        title: sim.title,
+                                        description: sim.description,
+                                        instructions: instruction,
+                                    });
+                                    (window).openChatContainer2();
+                                    (window).handleAttemptScenaiosSTT(sim.title, sim.test_code);
+                                } else {
+                                    console.log("handleAttemptScenaiosSTT is not defined on window");
+                                }
                             });
                             content.appendChild(startBtn);
                         }
