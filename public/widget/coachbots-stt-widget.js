@@ -7633,16 +7633,21 @@ if (window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "playground.coachbots.com" ||
-    window.location.hostname === "platform.coachbots.com"
-  ) {
+  const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+
+  const isInternalHost = 
+    hostname === "localhost" ||
+    hostname === "playground.coachbots.com" ||
+    hostname === "platform.coachbots.com";
+
+  if (isInternalHost && !pathname.startsWith("/widget/")) {
     return "internal";
   } else {
     return "external";
   }
 };
+
 
 const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
   if (type === 'system') {
