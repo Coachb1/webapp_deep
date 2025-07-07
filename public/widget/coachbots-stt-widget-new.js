@@ -7636,16 +7636,21 @@ if (window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "playground.coachbots.com" ||
-    window.location.hostname === "platform.coachbots.com"
-  ) {
+  const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+
+  const isInternalHost = 
+    hostname === "localhost" ||
+    hostname === "playground.coachbots.com" ||
+    hostname === "platform.coachbots.com";
+
+  if (isInternalHost && !pathname.startsWith("/widget/")) {
     return "internal";
   } else {
     return "external";
   }
 };
+
 
 const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
   if (type === 'system') {
@@ -8360,7 +8365,7 @@ loadExternalModule().then(() => {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
   }
-  console.log(botId)
+  console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
   } else {
@@ -8580,12 +8585,26 @@ loadExternalModule().then(() => {
   console.log(botId == undefined, snnipetConfigSTT?.createBotSheetUrl == undefined)
   if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0) {
-      if (snnipetConfigSTT["psychometric"] === "true") {
-        let welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
+        let welcomeMessage;
+        if (snnipetConfigSTT["psychometric"] === "true") {
+          welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
+        } else{
+          welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+        }
         if (snnipetConfigSTT?.["welcomeMessage"]) {
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
         }
-        console.log(welcomeMessage)
+        console.log(welcomeMessage, 'welcome')
+        const indivisualPageUserEmail = localStorage.getItem("userEmail");
+        if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
+          const userName = indivisualPageUserEmail.split('@')[0];
+          createUserSTT(userName, indivisualPageUserEmail);
+          chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          }]
+        } else {
         isEmailFormstt = true;
         formFieldsstt = ["email", "name"];
         console.log(
@@ -8604,29 +8623,6 @@ loadExternalModule().then(() => {
             role: "ai",
           },
         ];
-      } else {
-        let welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
-        if (snnipetConfigSTT?.["welcomeMessage"]) {
-          welcomeMessage = snnipetConfigSTT["welcomeMessage"];
-        }
-        chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          },
-          {
-            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
-            role: "ai",
-          },
-        ];
-        isEmailFormstt = true;
-        formFieldsstt = ["email", "name"];
-        console.log(
-          "### formFieldsstt : ",
-          formFieldsstt,
-          "other data: ",
-          `Please enter your ${formFieldsstt[0]}`
-        );
       }
     } else {
       chatElementRef2.initialMessages = [
@@ -13073,6 +13069,7 @@ loadExternalModule().then(() => {
 
                       if (response.is_last_question) {
                         appendMessage2(`<b>That's it! Thank you for participating!</b>`)
+                        stopModernTimer();
 
                         //@disable the input
                         const tChatElementRef = document.getElementById("chat-element2")
