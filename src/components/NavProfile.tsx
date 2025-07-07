@@ -55,6 +55,17 @@ const NavProfile = ({ user }: any) => {
               </Link>
             </DropdownMenuItem>
 
+            <DropdownMenuItem asChild className="max-sm:text-xs ">
+              <Link
+                href={"https://www.coachbots.com/codesign-user-requirements"}
+                target="_blank"
+                className="w-full"
+              >
+                <ExternalLink className="h-4 w-4 mr-2 text-blue-500" /> Co-design
+                Lab
+              </Link>
+            </DropdownMenuItem>
+
             {/* <DropdownMenuItem
               className={`max-sm:text-xs ${
                 pathname === "/content-library" ? "bg-gray-200" : null
