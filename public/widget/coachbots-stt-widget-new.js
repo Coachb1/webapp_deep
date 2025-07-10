@@ -4235,6 +4235,7 @@ function createMessageNode2(message, isMarkdown = false) {
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
   messageBubble.style.maxWidth = "100%";
+  messageBubble.style.width = "calc(100% - 3rem)";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
@@ -7073,26 +7074,27 @@ async function handleScenarioRegeneration(signals) {
         const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
-
-        <button 
-        onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
-        style="
-          background-color: #bfdbfe; 
-          border-radius : 6px; 
-          font-size: 14px; 
-          font-weight : 600; 
-          border: 1px solid #1d4ed8; 
-          color : #1d4ed8; 
-          width : 100%; 
-          padding: 4px; 
-          margin : 8px 0 0 0;
-        "
-        onmouseout="this.style.backgroundColor = '#bfdbfe'"
-        id="scenario-err-regenerate-buttonn"
-        >
-          Regenerate
-        </button>
+        <div style="display: flex; justify-content: flex-end;">
+          <button 
+              id="scenario-err-regenerate-buttonn"
+              type="button"
+              style="
+                margin-top: 8px;
+                padding: 4px 10px;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid green;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+              " 
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+            >
+             🔄 Regenerate
+            </button>
         </div>
         </div>
         `;
@@ -7111,7 +7113,7 @@ async function handleScenarioRegeneration(signals) {
             html: ErrorDiv,
           });
         } else {
-          appendMessage(ErrorDiv);
+          appendMessage2(ErrorDiv);
         }
         return;
       }
@@ -7132,35 +7134,36 @@ async function handleScenarioRegeneration(signals) {
 
       let divCont = "";
       scenarios.forEach((element, i) => {
+        const testHtml = formatMessage2({
+          title: element.title,
+          description: element.description,
+          instructions: "Response should be at least 15 words."
+        });
+
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"
-          }">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === "test" ? "Simulation" : "Roleplay"
-          }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title
-          }</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description
-          }</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
-          <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
-            style="
-              margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
-              border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
-              font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
-            " 
-            id="attempt-btn-regen-${i}"
-            onmouseout="this.style.backgroundColor = '#16a34a'">
-            Attempt
-          </button>
-        </div>
-        </div>
+            ${testHtml}
+          <div style="display: flex; justify-content: flex-end;">
+
+            <button
+              id="attempt-btn-regen-${i}"
+              type="button"
+              style="
+                margin-top: 0.75rem;
+                padding: 0.25rem 0.75rem;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+              "
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='#999';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='#ccc';"
+            >
+              Attempt
+            </button>
+          </div>
         `;
 
         setTimeout(() => {
@@ -7179,7 +7182,7 @@ async function handleScenarioRegeneration(signals) {
         });
       } else {
         appendMessage2(`
-            <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
+            <div id='create-scenario-section' style="gap: 4px;">
             ${divCont}
             </div>
             `);
@@ -7337,24 +7340,27 @@ async function handleOptionButtonClick2(
         const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          <div style="display: flex; justify-content: flex-end;">
           <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
-            style="
-              margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
-              border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
-              font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
-            " 
-            onmouseout="this.style.backgroundColor = '#16a34a'"
-            id="scenario-err-regenerate-button">
-            Regenerate
-          </button>
+              id="scenario-err-regenerate-button"
+              type="button"
+              style="
+                margin-top: 8px;
+                padding: 4px 10px;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid green;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+              " 
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+            >
+             🔄 Regenerate
+            </button>
         </div>
         </div>
         `;
@@ -7372,41 +7378,67 @@ async function handleOptionButtonClick2(
             html: ErrorDiv,
           });
         } else {
-          appendMessage(ErrorDiv);
+          appendMessage2(ErrorDiv);
         }
         return;
       }
 
       let divCont = "";
+      const scenarioCount = scenarios.length;
       scenarios.forEach((element, i) => {
+        const testHtml = formatMessage2({
+          title: element.title,
+          description: element.description,
+          instructions: "Response should be at least 15 words."
+        });
+
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"
-          }">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === "test" ? "Simulation" : "Roleplay"
-          }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title
-          }</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description
-          }</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          ${testHtml}
+          <div style="display: flex; justify-content: flex-end; ${scenarioCount ===1 ? "gap: 4px;": ""}">
           <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
+            id="attempt-btn-${i}"
+            type="button"
             style="
               margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
+              padding: 4px 10px;
+              background-color: #fff;
+              color: #333;
+              border: 1px solid #ccc;
               border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
               font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
+              font-weight: 500;
+              cursor: pointer;
+              transition: background-color 0.2s, border-color 0.2s, color 0.2s;
             " 
-            id="attempt-btn-${i}"
-            onmouseout="this.style.backgroundColor = '#16a34a'">
+            onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='#999';"
+            onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='#ccc';"
+          >
             Attempt
           </button>
-        </div>
-        </div>
+          ${scenarioCount === 1 && (
+            `<button 
+              id="scenario-regenerate-button"
+
+              type="button"
+              style="
+                margin-top: 8px;
+                padding: 4px 10px;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid green;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+              " 
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+            >
+             🔄 Regenerate
+            </button>`
+          )}
+          </div>
         `;
 
         setTimeout(() => {
@@ -7420,31 +7452,35 @@ async function handleOptionButtonClick2(
       if (signals) {
         signals.onResponse({
           html: `
-            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 500px;">
-            ${divCont}
-
-              <div style="display:flex; flex-direction: row; justify-content: flex-end;">
-              <button 
-              onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
-              style="
-                background-color: #bfdbfe; 
-                border-radius : 6px; 
-                font-size: 14px; 
-                font-weight : 600; 
-                border: 1px solid #1d4ed8; 
-                color : #1d4ed8; 
-                width : fit-content;
-                padding: 4px; 
-                margin : 8px 0 0 0;
-              "
-              onmouseout="this.style.backgroundColor = '#bfdbfe'"
-              id="scenario-regenerate-button"
-              >
-                Regenerate
-              </button>
-              </div>
+            <div id="create-scenario-section">
+              ${divCont}
+              ${scenarioCount > 1 ? `
+                <hr/>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button 
+                    id="scenario-regenerate-button"
+                    type="button"
+                    style="
+                      margin-top: 8px;
+                      padding: 4px 10px;
+                      background-color: #fff;
+                      color: #333;
+                      border: 1px solid green;
+                      border-radius: 4px;
+                      font-size: 12px;
+                      font-weight: 500;
+                      cursor: pointer;
+                      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+                    " 
+                    onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+                    onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+                  >
+                    🔄 Regenerate
+                  </button>
+                </div>
+              ` : ""}
             </div>
-            `,
+          `,
         });
 
         setTimeout(() => {
@@ -7457,7 +7493,7 @@ async function handleOptionButtonClick2(
         }, 50);
       } else {
         appendMessage2(`
-      <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
+      <div id='create-scenario-section' style="display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
       `);
@@ -8058,7 +8094,7 @@ loadExternalModule().then(() => {
           "shared": {"bubble": {"maxWidth": ${JSON.stringify(
       messageBubbleMaxWidth
     )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
-          "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
+          "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
