@@ -17,6 +17,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@/components/ui/card-hover-effect";
 import { BulletList } from "@/components/MarkdownHandler";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
+
 
 interface LibraryTestsAccordianType {
   tests: any;
@@ -33,6 +35,7 @@ const LibraryTestsAccordian = ({
   type,
   tabInformation
 }: LibraryTestsAccordianType) => {
+  const {userTestMapping} = useUser()
   // State for pagination
   const [shortCurrentPage, setShortCurrentPage] = useState(1);
   const [standardCurrentPage, setStandardCurrentPage] = useState(1);
@@ -187,6 +190,14 @@ const LibraryTestsAccordian = ({
                         ) : (
                           <>{test.title}</>
                         )} */}
+                        {userTestMapping?.tests?.includes(test.test_code) && userTestMapping?.sticker && (
+                          <span
+                            className="mr-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800 animate-float animate-pulse"
+                          >
+                            {userTestMapping.sticker}
+                          </span>
+                        )}
+
                         {test.domain ? (
                           <><strong>{test.domain}</strong>  -  {test.title}</>
                         ) : (
@@ -197,14 +208,14 @@ const LibraryTestsAccordian = ({
                         )}
 
 
-                        {attemptedTests.includes(test.test_code) && (
+                        {/* {attemptedTests.includes(test.test_code) && (
                           <Badge
                             variant={"secondary"}
                             className="ml-2 rounded-sm bg-gray-200 text-xs text-gray-700 hover:bg-gray-300"
                           >
                             ✅
                           </Badge>
-                        )}
+                        )} */}
                         {test.is_recommended && (
                           <Badge
                             variant={"secondary"}
@@ -213,6 +224,9 @@ const LibraryTestsAccordian = ({
                             Recommended
                           </Badge>
                         )}
+                        
+
+
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="max-sm:text-xs ">

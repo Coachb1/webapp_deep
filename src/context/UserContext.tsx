@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { emptyData, getTestMappings, getUserAccounts, hideConsoleLogs } from "@/lib/utils";
+import { emptyData, getTestMappings, getUserAccounts, getUserTestMappings, hideConsoleLogs } from "@/lib/utils";
 import {
   getActionPoints,
   getAttemptedTestsList,
@@ -114,6 +114,7 @@ interface UserContextType {
   userIDPs: UserIDPsType[];
   leadershipLibrary: LibraryPaageScenariosType | undefined;
   domainSkillLibrary: LibraryPaageScenariosType | undefined;
+  userTestMapping: any;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -200,6 +201,7 @@ export const UserProvider = ({
   const [userIDPs, setUserIDPs] = useState<UserIDPsType[]>([]);
   const [leadershipLibrary, setLeadershipLibrary] = useState<LibraryPaageScenariosType>();
   const [domainSkillLibrary, setDomainSkillLibrary] = useState<LibraryPaageScenariosType>();
+  const [userTestMapping, setUserTestMapping] = useState<any>(null);
 
   const fetchTestMappings = async (clientName:string, page_name: string) => {
               try {
@@ -260,6 +262,10 @@ export const UserProvider = ({
       const userInfo = await getClientUserInfo(userEmail, user);
       console.log("userInfo", userInfo);
       setUserInfo(userInfo);
+
+      const userTestMapping = await getUserTestMappings(data.uid);
+      setUserTestMapping(userTestMapping)
+
       const leadership_library = await fetchTestMappings(userInfo.clientName, 'leadership_library');
       setLeadershipLibrary(leadership_library);
       console.log("fetchmapping", leadership_library)
@@ -636,7 +642,8 @@ export const UserProvider = ({
       actionPoints,
       userIDPs,
       leadershipLibrary,
-      domainSkillLibrary
+      domainSkillLibrary,
+      userTestMapping
     }),
     [
       userId,
@@ -669,6 +676,7 @@ export const UserProvider = ({
       userIDPs,
       leadershipLibrary,
       domainSkillLibrary,
+      userTestMapping
     ]
   );
 

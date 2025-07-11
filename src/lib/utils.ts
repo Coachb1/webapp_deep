@@ -872,3 +872,27 @@ export async function getTestMappings(clientName: string,page_name: string) {
     return null
 }
 }
+
+
+export async function getUserTestMappings(userId:string) {
+  try {
+    const res = await fetch(`${baseURL}/tests/user-test-mappings/?user_id=${userId}`);
+
+    if (!res.ok) {
+        console.error(`HTTP error! Status: ${res.status}`);
+        return null;
+    }
+
+    if (res.status !== 200) {
+        console.error("Failed a to fetch user test mappings", res.status);
+        return null;
+    }
+    const json = await res.json();
+    console.log("[getUserTestMappings] for ", json, json);
+    return json
+
+} catch (error: any) {
+    console.error("Failed to load user test mappings:", error);
+    return null
+}
+}
