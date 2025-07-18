@@ -8227,7 +8227,7 @@ loadExternalModule().then(() => {
         position: absolute; 
         left: 50%;
         transform: translateX(-50%);
-        bottom: ${window.innerWidth < 768 ? "13vh" : "5.5rem"};
+        bottom: ${window.innerWidth < 768 ? "13vh" : "5rem"};
         max-width: calc(100% - 4rem);
         overflow-x: auto;
         overflow-y: hidden;
