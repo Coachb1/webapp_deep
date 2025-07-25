@@ -2122,137 +2122,137 @@ const getBotDetails2 = async (botId) => {
         `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
     }
 
-    if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
-      const dropdownButton = document.createElement("button");
-      dropdownButton.id = "styles-dropdown-button";
-      dropdownButton.innerHTML = dropdownButtonText;
-      dropdownButton.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background : white; color: #374151;`
-      );
+    // if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
+    //   const dropdownButton = document.createElement("button");
+    //   dropdownButton.id = "styles-dropdown-button";
+    //   dropdownButton.innerHTML = dropdownButtonText;
+    //   dropdownButton.setAttribute(
+    //     "style",
+    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background : white; color: #374151;`
+    //   );
 
-      dropdownButton.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'"
-      );
-      dropdownButton.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = 'white'"
-      );
+    //   dropdownButton.setAttribute(
+    //     "onmouseover",
+    //     "this.style.backgroundColor = '#f9fafb'"
+    //   );
+    //   dropdownButton.setAttribute(
+    //     "onmouseleave",
+    //     "this.style.backgroundColor = 'white'"
+    //   );
 
-      buttonsWrapper.appendChild(dropdownButton);
+    //   buttonsWrapper.appendChild(dropdownButton);
 
-      const dropdown = document.createElement("div");
-      dropdown.id = "dropdown";
-      dropdown.style.position = "absolute";
-      dropdown.style.backgroundColor = "#f3f4f6";
-      dropdown.style.borderRadius = "4px";
-      dropdown.style.border = "1px solid #1f2937";
-      if (window.innerWidth < 768) {
-        dropdown.style.bottom = "7rem";
-        dropdown.style.left = "1rem";
-      } else {
-        dropdown.style.bottom = "6rem";
-        dropdown.style.left = "6rem";
-      }
-      dropdown.classList.add("hiddenn");
+    //   const dropdown = document.createElement("div");
+    //   dropdown.id = "dropdown";
+    //   dropdown.style.position = "absolute";
+    //   dropdown.style.backgroundColor = "#f3f4f6";
+    //   dropdown.style.borderRadius = "4px";
+    //   dropdown.style.border = "1px solid #1f2937";
+    //   if (window.innerWidth < 768) {
+    //     dropdown.style.bottom = "7rem";
+    //     dropdown.style.left = "1rem";
+    //   } else {
+    //     dropdown.style.bottom = "6rem";
+    //     dropdown.style.left = "6rem";
+    //   }
+    //   dropdown.classList.add("hiddenn");
 
-      const options = [
-        "basic",
-        "cheerleader",
-        "change_manager",
-        "calculator",
-        "conversationalist",
-        "co_creator",
-      ];
-      options.forEach((option, i) => {
-        const item = document.createElement("div");
+    //   const options = [
+    //     "basic",
+    //     "cheerleader",
+    //     "change_manager",
+    //     "calculator",
+    //     "conversationalist",
+    //     "co_creator",
+    //   ];
+    //   options.forEach((option, i) => {
+    //     const item = document.createElement("div");
 
-        item.style.padding = "8px 12px";
-        item.style.fontSize = "14px";
-        if (window.innerWidth < 768) {
-          item.style.fontSize = "12px";
-        } else {
-          item.style.fontSize = "14px";
-        }
-        item.setAttribute(
-          "onmouseover",
-          "this.style.backgroundColor = '#e5e7eb',this.style.cursor = 'pointer', this.style.borderRadius = '4px'"
-        );
-        item.setAttribute(
-          "onmouseleave",
-          "this.style.backgroundColor = '#f3f4f6',this.style.cursor = 'default', this.style.borderRadius = '4px'"
-        );
-        if (i !== options.length - 1) {
-          item.style.borderBottom = "1px solid #1f2937";
-        }
-        item.className = "dropdown-item";
-        item.textContent = convertTextToCorrectFormat(option);
+    //     item.style.padding = "8px 12px";
+    //     item.style.fontSize = "14px";
+    //     if (window.innerWidth < 768) {
+    //       item.style.fontSize = "12px";
+    //     } else {
+    //       item.style.fontSize = "14px";
+    //     }
+    //     item.setAttribute(
+    //       "onmouseover",
+    //       "this.style.backgroundColor = '#e5e7eb',this.style.cursor = 'pointer', this.style.borderRadius = '4px'"
+    //     );
+    //     item.setAttribute(
+    //       "onmouseleave",
+    //       "this.style.backgroundColor = '#f3f4f6',this.style.cursor = 'default', this.style.borderRadius = '4px'"
+    //     );
+    //     if (i !== options.length - 1) {
+    //       item.style.borderBottom = "1px solid #1f2937";
+    //     }
+    //     item.className = "dropdown-item";
+    //     item.textContent = convertTextToCorrectFormat(option);
 
-        item.addEventListener("click", (event) => {
-          console.log(
-            convertTextToOriginalFormat(event.target.textContent),
-            participantId2
-          );
+    //     item.addEventListener("click", (event) => {
+    //       console.log(
+    //         convertTextToOriginalFormat(event.target.textContent),
+    //         participantId2
+    //       );
 
-          if (participantId2) {
-            fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-              method: "POST",
-              headers: {
-                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                user_id: participantId2,
-                response_style: convertTextToOriginalFormat(
-                  event.target.textContent
-                ),
-              }),
-            })
-              .then((res) => {
-                res.json;
-              })
-              .then((data) => {
-                data;
-              });
-          }
-          dropdownButton.innerHTML =
-            "Response style : " + `<b>${event.target.textContent}</b>`;
-          dropdown.classList.add("hiddenn");
-          dropdown.style.display = "none";
-        });
-        dropdown.appendChild(item);
+    //       if (participantId2) {
+    //         fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+    //           method: "POST",
+    //           headers: {
+    //             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+    //             "Content-Type": "application/json",
+    //           },
+    //           body: JSON.stringify({
+    //             user_id: participantId2,
+    //             response_style: convertTextToOriginalFormat(
+    //               event.target.textContent
+    //             ),
+    //           }),
+    //         })
+    //           .then((res) => {
+    //             res.json;
+    //           })
+    //           .then((data) => {
+    //             data;
+    //           });
+    //       }
+    //       dropdownButton.innerHTML =
+    //         "Response style : " + `<b>${event.target.textContent}</b>`;
+    //       dropdown.classList.add("hiddenn");
+    //       dropdown.style.display = "none";
+    //     });
+    //     dropdown.appendChild(item);
 
-        console.log("selectedResponseType", selectedResponseType);
-        if (!selectedResponseType) {
-          const basicOption = Array.from(dropdown.children).find(
-            (item) => item.textContent.toLowerCase() === "basic"
-          );
-          if (basicOption) {
-            basicOption.click();
-          }
-        }
-      });
+    //     console.log("selectedResponseType", selectedResponseType);
+    //     if (!selectedResponseType) {
+    //       const basicOption = Array.from(dropdown.children).find(
+    //         (item) => item.textContent.toLowerCase() === "basic"
+    //       );
+    //       if (basicOption) {
+    //         basicOption.click();
+    //       }
+    //     }
+    //   });
 
-      dropdownButton.addEventListener("click", () => {
-        const shadowRootForDropdowns =
-          document.getElementById("chat-element2").shadowRoot;
-        shadowRootForDropdowns.appendChild(dropdown);
-        console.log(dropdown);
-        dropdown.style.display =
-          dropdown.style.display === "block" ? "none" : "block";
-      });
+    //   dropdownButton.addEventListener("click", () => {
+    //     const shadowRootForDropdowns =
+    //       document.getElementById("chat-element2").shadowRoot;
+    //     shadowRootForDropdowns.appendChild(dropdown);
+    //     console.log(dropdown);
+    //     dropdown.style.display =
+    //       dropdown.style.display === "block" ? "none" : "block";
+    //   });
 
-      document.addEventListener("click", (event) => {
-        if (
-          !dropdownButton.contains(event.target) &&
-          !dropdown.contains(event.target)
-        ) {
-          dropdown.classList.add("hiddenn");
-          dropdown.style.display = "none";
-        }
-      });
-    }
+    //   document.addEventListener("click", (event) => {
+    //     if (
+    //       !dropdownButton.contains(event.target) &&
+    //       !dropdown.contains(event.target)
+    //     ) {
+    //       dropdown.classList.add("hiddenn");
+    //       dropdown.style.display = "none";
+    //     }
+    //   });
+    // }
 
     if (
       botDetails.data.is_fitment_analysis &&
@@ -2422,6 +2422,9 @@ const getBotDetails2 = async (botId) => {
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+    const faqButtonsWrapper2 = document.getElementById("starting-faq-buttons-headers");
+
+    console.log("faqButtonsWrapper", faqButtonsWrapper);
 
     if (botType != "feedback_bot") {
       fitmentAnalysisQuestions = botDetails.data.fitment_qna;
@@ -2431,8 +2434,14 @@ const getBotDetails2 = async (botId) => {
       isStrictFitment = botDetails.data.is_strict_fitment;
       isBotAudioResponse = botDetails.data.is_audio_response;
       CoachingForFitment = botDetails.data.coaching_for_fitment;
-      faqButtonsWrapper.style.display = "flex";
-      faqButtonsWrapper.append(buttonsWrapper);
+
+      if (snnipetConfigSTT?.buttonPosition === "top") {
+        faqButtonsWrapper2.style.display = "flex";
+        faqButtonsWrapper2.append(buttonsWrapper);
+      } else {
+        faqButtonsWrapper.style.display = "flex";
+        faqButtonsWrapper.append(buttonsWrapper);
+      }
       if (botType === "deep_dive") {
         botInitialQuestions = {
           1: "Please let us know more about your context for this survey such as role, impact and whatever else you may feel comfortable with.",
@@ -2444,6 +2453,12 @@ const getBotDetails2 = async (botId) => {
       feedbackBotQuestions = botDetails.data.feedback_qna;
       initialfeedbackBotQuestions = botDetails.data.feedback_qna;
     }
+
+
+    if  (!window.user) {
+      setBeginSessionEnabled(false);
+    }
+
 
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
@@ -7879,6 +7894,56 @@ function stopModernTimer() {
   }
 }
 
+  function setBeginSessionEnabled(enabled) {
+  const button = document.getElementById("begin-session-button");
+  if (!button) return;
+
+  if (enabled) {
+    button.disabled = false;
+    Object.assign(button.style, {
+      backgroundColor: "#22c55e",
+      color: "white",
+      fontWeight: "normal",
+    });
+
+    button.style.cursor = "pointer";
+
+    // Optional: restore hover behavior
+    button.addEventListener("mouseover", () => {
+      if (!button.disabled) {
+        button.style.backgroundColor = "#4ade80";
+    button.style.cursor = "pointer";
+
+      }
+    });
+    button.addEventListener("mouseleave", () => {
+      if (!button.disabled) {
+        button.style.backgroundColor = "#22c55e";
+    button.style.cursor = "pointer";
+
+      }
+    });
+  } else {
+    button.disabled = true;
+    Object.assign(button.style, {
+      cursor: "not-allowed",
+      backgroundColor: "#d3d3d3",
+      color: "#a0a0a0",
+      fontWeight: "600",
+    });
+
+    // Override hover behavior
+    button.addEventListener("mouseover", () => {
+      button.style.backgroundColor = "#d3d3d3";
+      button.style.cursor = "not-allowed";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.backgroundColor = "#d3d3d3";
+      button.style.cursor = "not-allowed";
+    });
+  }
+}
+
 
 async function loadExternalModule() {
   try {
@@ -8004,37 +8069,68 @@ loadExternalModule().then(() => {
       padding: ${snippetOrigin() === "internal" ? "0" : "0.8rem 0"};
     ">
     <div 
-    id="bot-header-logo-2"
+  id="bot-header-logo-2"
+  style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: fit-content;
+    padding: 8px 16px;
+    background-color: #f3f4f6;
+    border-radius: 1rem 1rem 0 0;
+    gap: 8px;
+  "
+>
+  <h1 
+    id="logo-h1"
     style="
+      margin: 0;
+      color: #2DC092;
+      border: 2px solid #2DC092;
+      padding: 4px 8px;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 800;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: fit-content;
-      background-color: #f3f4f6;
-      border-radius: 1rem 1rem 0 0;
-    ">
-    <h1 id="logo-h1" style="
-      margin : 8px;
-      color : #2DC092;
-      border : 2px solid #2DC092;
-      padding : 3px;
-      font-size : 16px;
-      line-height : 20px;
-      font-weight : 800;
-    ">
-      <span id="logo-span" style="
-        background-color : #2DC092;
-        color : white;
-        font-size : 14px;
-        font-weight : 700;
-        margin-right : 4px;
-        padding : 4px;
-      ">
-        COACH
-      </span>
-      BOT
-    </h1>
+    "
+  >
+    <span 
+      id="logo-span"
+      style="
+        background-color: #2DC092;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        margin-right: 4px;
+        padding: 4px;
+      "
+    >
+      COACH
+    </span>
+    BOT
+  </h1>
+
+  <div 
+    id="starting-faq-buttons-headers"
+    style="
+      display: none;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background-color: transparent;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+    "
+  >
     </div>
+</div>
+
     <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
     <p id="header-text" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
     }; text-align:center;"> ${window.location.href.includes("knowledge-bot")
@@ -9624,6 +9720,8 @@ loadExternalModule().then(() => {
     endSessionButton.disabled = false;
   };
 
+
+
   let calledOnceError = 0;
 
   const GeminiAiResponse = async (
@@ -10705,6 +10803,8 @@ loadExternalModule().then(() => {
                   emailNameformJsonstt["name"],
                   emailNameformJsonstt["email"]
                 );
+                setBeginSessionEnabled(true)
+
                 if (botType === "feedback_bot") {
                   const thumbsupdiv = await feedbackBotInitialFlow("save_email");
                   signals.onResponse({
