@@ -293,6 +293,7 @@ let askAccessBotCodeSTT = false;
 let AttemptTestDirectSTT = false;
 let emailCandidate2;
 let buttonPositionSTT = 'top';
+let previousChatHistory = [];
 
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = [];
@@ -1664,6 +1665,122 @@ const getUserBotConversation = async (participant_id) => {
   }
 };
 
+function populateChatHistory(chatId) {
+  const results = previousChatHistory.filter(session => session.uid === chatId);
+  if (results.length === 0) {
+    console.warn("No chat history found for session:", chatId);
+    return;
+  }
+
+  const sessionData = results[0];
+  const conversations = sessionData.conversations;
+
+  if (!Array.isArray(conversations) || conversations.length === 0) {
+    console.warn("No conversations in this session:", chatId);
+    return;
+  }
+
+  console.log('Loading previous chat history:', chatId, conversations);
+
+  // Display chat header
+  appendMessage2(`<b>🔄 Loading previous chat:</b> <i>${sessionData.summary?.slice(0, 30) || "No Summary"}...</i>`);
+
+  conversations.forEach((entry, index) => {
+    const coachMessage = entry.coach_message_text?.trim();
+    const participantMessage = entry.participant_message_text?.trim();
+
+    if (coachMessage && index !== 0) {
+      appendMessage2(coachMessage);
+    }
+
+    if (participantMessage) {
+      const cleanedMessage = participantMessage
+        .replace(" I am not sure if you are getting my point, let me know and I can explain further.", "")
+        .replace(" Always respond in less than 50 tokens. Note: Never mention token count.", "")
+        .trim();
+
+      if (cleanedMessage) {
+        appendMessageForUser2(cleanedMessage);
+      }
+    }
+  });
+
+  // Display chat footer
+  appendMessage2(
+  `<b>✅ End of chat:</b> <i title="${sessionData.summary || "No Summary"}">
+    ${sessionData.summary?.slice(0, 30) || "No Summary"}...
+  </i>`
+);
+
+
+  // Disable the selected dropdown option
+  const dropdown = document.getElementById('chatHistoryDropdown');
+  if (dropdown) {
+    Array.from(dropdown.options).forEach(opt => (opt.disabled = false)); // Reset all first
+    const selectedOption = Array.from(dropdown.options).find(opt => opt.value === chatId);
+    if (selectedOption) selectedOption.disabled = true;
+  }
+}
+
+
+async function populateChatHistoryOptions() {
+  const chathistorywrapper = document.getElementById('chat-history-wrapper');
+  
+  const dropdown = document.getElementById('chatHistoryDropdown');
+  if (!dropdown) return;
+
+  // Clear existing options first
+  dropdown.innerHTML = `<option value="">Previous Chats</option>`;
+
+  if (previousChatHistory.length === 0) {
+    await getPreviousChats(userId2, botId);
+  }
+
+  if (previousChatHistory.length > 0) {
+    previousChatHistory.forEach(chat => {
+      const option = document.createElement('option');
+      option.value = chat.uid;
+
+      // Truncate summary to 30 characters for display
+      const truncated = chat.summary && chat.summary.length > 30
+        ? chat.summary.slice(0, 30) + '...'
+        : chat.summary || `Chat ${chat.uid}`;
+
+      option.textContent = truncated;
+      option.title = chat.summary || `Chat ${chat.uid}`; // Tooltip on hover
+
+      dropdown.appendChild(option);
+    });
+  }
+  if (chathistorywrapper){
+      chathistorywrapper.style.display = 'block'
+    }
+}
+
+
+async function getPreviousChats(participant_id, bot_id) {
+  try {
+    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    const botConv = await response.json();
+    console.log("Previous chats", botConv);
+    previousChatHistory = botConv
+
+    return botConv; // optional: if you want to use it elsewhere
+  } catch (error) {
+    console.error("Failed to fetch previous chats:", error);
+    return [];
+  }
+}
+
+
 async function populateBotConversation(participant_id) {
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
 
@@ -2500,11 +2617,14 @@ const getBotDetails2 = async (botId) => {
     //   const faqs = botDetails.faq;
     console.log("id", userId2, participantId2);
     console.log("id from web app", window.userIdFromWebApp);
-    if (
-      !isBotConversationPopulated &&
-      !["feedback_bot", "deep_dive", "user_bot"].includes(botType)
-    ) {
-      populateBotConversation(window.userIdFromWebApp);
+    // if (
+    //   !isBotConversationPopulated &&
+    //   !["feedback_bot", "deep_dive", "user_bot"].includes(botType)
+    // ) {
+    //   populateBotConversation(window.userIdFromWebApp);
+    // }
+    if(window.user) {
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions();   
     }
     return botDetails;
   } catch (error) {
@@ -8191,6 +8311,24 @@ loadExternalModule().then(() => {
     "
   >
     </div>
+
+   <div id="chat-history-wrapper" style="position: relative; display: none">
+  <select 
+    id="chatHistoryDropdown"
+    style="
+      font-size: 12px;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-left: 8px;
+      cursor: pointer;
+      vertical-align: middle;
+    "
+    onchange="loadChatHistory(this.value)"
+  >
+    <option value="">Previous Chats</option>
+  </select>
+</div>
 </div>
 
 <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -8450,6 +8588,36 @@ loadExternalModule().then(() => {
     header.style.flexDirection = "row";
   }
 }
+  function adjustChatDropdownSize() {
+    const logo = document.getElementById("logo-h1");
+    const dropdown = document.getElementById("chatHistoryDropdown");
+    if (logo && dropdown) {
+      const logoStyles = window.getComputedStyle(logo);
+      const logoWidth = parseFloat(logoStyles.width);
+      const logoHeight = parseFloat(logoStyles.height);
+
+      dropdown.style.width = (logoWidth * 3) + "px";
+      dropdown.style.height = logoHeight;
+    }
+  }
+
+  
+  
+
+  function loadChatHistory(chatId) {
+    if (!chatId) return;
+    alert(`Load chat history for: ${chatId}`);
+  }
+
+adjustChatDropdownSize();
+
+document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
+  const selectedChatId = this.value;
+  if (selectedChatId) {
+    populateChatHistory(selectedChatId);
+  }
+});
+
 
 // Call on load and on resize
 window.addEventListener("load", adjustHeaderLayout);
@@ -10879,6 +11047,9 @@ window.addEventListener("resize", adjustHeaderLayout);
                   emailNameformJsonstt["email"]
                 );
                 setBeginSessionEnabled(true)
+                if(window.user) {
+                  if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions();   
+                }
 
                 if (botType === "feedback_bot") {
                   const thumbsupdiv = await feedbackBotInitialFlow("save_email");
