@@ -92,6 +92,40 @@ style.textContent = `
       padding: 1px 4px;
       font: 16px Arial;
     }
+
+    
+
+    @media screen and (max-width: 426px) {
+      #chat-container2 {
+        width: auto !important;
+        height: 100vh !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
+        overflow-y: auto;
+
+      }
+      // #chat-icon2 img {
+      //   height: 20% !important;
+      //   width: 100% !important;
+      // }
+
+      .chat-icon-container2 {
+        width: 90px !important;
+        height: 270px !important;
+      }
+
+      .chat-icon2 {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        display: block;
+      }
+        
+    }
+
+
 `;
 document.head.appendChild(style);
 
@@ -258,6 +292,7 @@ let snnipetConfigSTT;
 let askAccessBotCodeSTT = false;
 let AttemptTestDirectSTT = false;
 let emailCandidate2;
+let buttonPositionSTT = 'top';
 
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = [];
@@ -453,8 +488,11 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
   return token2;
 }
 function displayBrowserWarning() {
+  const warningBannerContainer = document.getElementById("warning-banner-stt");
+  warningBannerContainer.style.display = 'none'
   if (!isChromeSTT()) {
     const warningBannerContainer = document.getElementById("warning-banner-stt");
+    warningBannerContainer.style.display = 'block'
     warningBannerContainer.innerHTML = `<b style="color: red;text-align: center;font-size: 14px;font-size: ${window.innerWidth < 768 ? "10px" : "12px"
       };" >
       Warning: we detected that you are on a non-supported browser. Please switch to Chrome to avoid interruptions.
@@ -2434,8 +2472,9 @@ const getBotDetails2 = async (botId) => {
       isStrictFitment = botDetails.data.is_strict_fitment;
       isBotAudioResponse = botDetails.data.is_audio_response;
       CoachingForFitment = botDetails.data.coaching_for_fitment;
+      const effectiveButtonPosition = snnipetConfigSTT?.buttonPosition ?? buttonPositionSTT;
 
-      if (snnipetConfigSTT?.buttonPosition === "top") {
+      if ( effectiveButtonPosition === "top"){
         faqButtonsWrapper2.style.display = "flex";
         faqButtonsWrapper2.append(buttonsWrapper);
       } else {
@@ -2453,12 +2492,9 @@ const getBotDetails2 = async (botId) => {
       feedbackBotQuestions = botDetails.data.feedback_qna;
       initialfeedbackBotQuestions = botDetails.data.feedback_qna;
     }
-
-
     if  (!window.user) {
       setBeginSessionEnabled(false);
     }
-
 
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
@@ -3722,11 +3758,16 @@ function sendBotTranscript2() {
   //     credsUpdated2 = data.status;
   //     console.log("name email updated, sending email");
 
+  const send_email = snnipetConfigSTT.sendTranscriptEmail ?? 'true'
+
   const queryParamsEmail2 = new URLSearchParams({
     submitted_email: userEmail,
     submitted_name: userName,
     test_attempt_session_id: sessionId2,
+    send_email: (send_email === 'true').toString()
   });
+
+  console.log('send transcription email', send_email)
 
   fetch(
     `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParamsEmail2}`,
@@ -7588,11 +7629,20 @@ async function handleReportButtonClickStt(choice) {
 }
 
 function enableReportButtons() {
-  const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+  let faqButtonsWrapper;
+  const faqButtonsWrapperBottom = document.getElementById("starting-faq-buttons");
+  const faqButtonsWrappertop= document.getElementById("starting-faq-buttons-headers");
+  const effectiveButtonPosition = snnipetConfigSTT?.buttonPosition ?? buttonPositionSTT;
+
+  if ( effectiveButtonPosition === "top"){
+    faqButtonsWrapper = faqButtonsWrappertop;
+  } else {
+    faqButtonsWrapper = faqButtonsWrapperBottom;
+  }
   if (faqButtonsWrapper) {
     faqButtonsWrapper.style.display = window.user ? "flex" : "none";
   }
-  const wrapper = document.getElementById("report-buttons-stt");
+  const wrapper = document.getElementById(`report-buttons-stt-${effectiveButtonPosition}`);
   if (wrapper) {
     wrapper.querySelectorAll("button").forEach((btn) => {
       btn.disabled = false;
@@ -7628,10 +7678,20 @@ function waitForMessagesElement(maxAttempts = 20, delay = 100) {
 
 
 const addReportButtons = async () => {
-  const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+  let faqButtonsWrapper;
+  const faqButtonsWrapperBottom = document.getElementById("starting-faq-buttons");
+  const faqButtonsWrappertop= document.getElementById("starting-faq-buttons-headers");
+  const effectiveButtonPosition = snnipetConfigSTT?.buttonPosition ?? buttonPositionSTT;
+
+  if ( effectiveButtonPosition === "top"){    
+    faqButtonsWrapper = faqButtonsWrappertop;
+  } else {
+    faqButtonsWrapper = faqButtonsWrapperBottom;
+  }
+
 
   const buttonsWrapper = document.createElement("div");
-  buttonsWrapper.id = "report-buttons-stt";
+  buttonsWrapper.id = `report-buttons-stt-${effectiveButtonPosition}`;
   buttonsWrapper.style.cssText = `
     display: flex;
     flex-direction: row;
@@ -8044,7 +8104,9 @@ loadExternalModule().then(() => {
     style="
       position: fixed;
       scale: 0;
-      bottom: 15vh;
+      // bottom: 15vh;
+      top: 5vh;
+      bottom: auto;
       width: 80vw;
       right: 6rem; 
       transition: 0.4s ease-in-out; 
@@ -8066,7 +8128,7 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
-      padding: ${snippetOrigin() === "internal" ? "0" : "0.8rem 0"};
+      padding: ${snippetOrigin() === "internal" ? "0" : "0.4rem 0 0 0"};
     ">
     <div 
   id="bot-header-logo-2"
@@ -8075,7 +8137,7 @@ loadExternalModule().then(() => {
     justify-content: space-between;
     align-items: center;
     height: fit-content;
-    padding: 8px 16px;
+    padding: 2px 0 0 2px;
     background-color: #f3f4f6;
     border-radius: 1rem 1rem 0 0;
     gap: 8px;
@@ -8102,8 +8164,8 @@ loadExternalModule().then(() => {
         color: white;
         font-size: 14px;
         font-weight: 700;
-        margin-right: 4px;
-        padding: 4px;
+        margin-right: 2px;
+        padding: 2px;
       "
     >
       COACH
@@ -8131,7 +8193,8 @@ loadExternalModule().then(() => {
     </div>
 </div>
 
-    <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+<div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+    
     <p id="header-text" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
     }; text-align:center;"> ${window.location.href.includes("knowledge-bot")
       ? "Simple AI Knowledge Agent. Check 'Instructions' for more"
@@ -8140,31 +8203,31 @@ loadExternalModule().then(() => {
     <p id="warning-banner-stt">
     </p>
     
-<div id="timerContainer" style="
-  display: none;
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 8px;
-  border: 1.5px solid #4CAF50;
-  border-radius: 6px;
-  background: #f9fff9;
-  color: #2b2b2b;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  z-index: 1000;
-  width: 80px;
-  text-align: center;
-">
-  ⏱ <span id="countdown">00:00</span>
-</div>
-
-
-
-
+  <div id="timerContainer" style="
+    display: none;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border: 1.5px solid #4CAF50;
+    border-radius: 6px;
+    background: #f9fff9;
+    color: #2b2b2b;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    z-index: 1000;
+    width: 80px;
+    text-align: center;
+  ">
+    ⏱ <span id="countdown">00:00</span>
   </div>
+
+
+
+
+</div>
     <div 
       id="close-top2" 
       onmouseover="this.style.cursor ='pointer'"
@@ -8377,6 +8440,20 @@ loadExternalModule().then(() => {
     </p> 
   </div>
   `;
+
+  function adjustHeaderLayout() {
+  const header = document.getElementById("bot-header-logo-2");
+  if (window.innerWidth < 768) {
+    header.style.flexDirection = "column";
+    header.style.alignItems = "center";
+  } else {
+    header.style.flexDirection = "row";
+  }
+}
+
+// Call on load and on resize
+window.addEventListener("load", adjustHeaderLayout);
+window.addEventListener("resize", adjustHeaderLayout);
 
   const customMicButton = document.getElementById("startMicBtn");
   function updateMicButtonPosition() {
@@ -9719,8 +9796,6 @@ loadExternalModule().then(() => {
     endSessionButton.setAttribute("onclick", `handleEndConversation()`);
     endSessionButton.disabled = false;
   };
-
-
 
   let calledOnceError = 0;
 
