@@ -97,14 +97,12 @@ style.textContent = `
 
     @media screen and (max-width: 426px) {
       #chat-container2 {
-        width: auto !important;
+        width: 100vw !important;
         height: 100vh !important;
         left: 0 !important;
         top: 0 !important;
         bottom: 0 !important;
-        border-radius: 0 !important;
-        overflow-y: auto;
-
+        border-radius: 0 !important;       
       }
       // #chat-icon2 img {
       //   height: 20% !important;
@@ -121,10 +119,22 @@ style.textContent = `
         height: 100% !important;
         object-fit: contain !important;
         display: block;
-      }
-        
+      }      
     }
 
+    @media screen and (max-width: 768px) {
+      #bot-header-logo-2 {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #logo-h1 {
+        position: static !important;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+    }
 
 `;
 document.head.appendChild(style);
@@ -8261,6 +8271,7 @@ loadExternalModule().then(() => {
     background-color: #f3f4f6;
     border-radius: 1rem 1rem 0 0;
     gap: 8px;
+    postion: relative;
   "
 >
   <h1 
@@ -8275,6 +8286,8 @@ loadExternalModule().then(() => {
       font-weight: 800;
       display: flex;
       align-items: center;
+      position: absolute;
+      left: 4rem;
     "
   >
     <span 
