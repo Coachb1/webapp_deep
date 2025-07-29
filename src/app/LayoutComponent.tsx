@@ -53,7 +53,7 @@ const LayoutComponent = ({
       });
 
       window.user = user;
-      const ENVIRONMENT = process.env.KINDE_POST_LOGIN_REDIRECT_URL?.includes("localhost") ? "local" : "production";
+      const ENVIRONMENT = process.env.NEXT_PUBLIC_ENV;
 
       if (ENVIRONMENT != "local") {
         Sentry.init({
