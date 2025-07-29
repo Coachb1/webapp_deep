@@ -341,6 +341,8 @@ let widgetHeight = `clamp(100px, 85vh, calc(100vh - 83px))`
 let widgetWidth = `auto`
 let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`
 let InstructinoMediaLinkStt;
+let selectedChatId = null;
+let onlyCurrentSession = false;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -1714,16 +1716,16 @@ function populateChatHistory(chatId) {
 
 
   // Disable the selected dropdown option
-  const dropdown = document.getElementById('chatHistoryDropdown');
-  if (dropdown) {
-    Array.from(dropdown.options).forEach(opt => (opt.disabled = false)); // Reset all first
-    const selectedOption = Array.from(dropdown.options).find(opt => opt.value === chatId);
-    if (selectedOption) selectedOption.disabled = true;
-  }
+  // const dropdown = document.getElementById('chatHistoryDropdown');
+  // if (dropdown) {
+  //   Array.from(dropdown.options).forEach(opt => (opt.disabled = false)); // Reset all first
+  //   const selectedOption = Array.from(dropdown.options).find(opt => opt.value === chatId);
+  //   if (selectedOption) selectedOption.disabled = true;
+  // }
 }
 
 
-async function populateChatHistoryOptions() {
+async function populateChatHistoryOptions(refresh=false) {
   const chathistorywrapper = document.getElementById('chat-history-wrapper');
   
   const dropdown = document.getElementById('chatHistoryDropdown');
@@ -1732,8 +1734,8 @@ async function populateChatHistoryOptions() {
   // Clear existing options first
   dropdown.innerHTML = `<option value="">Previous Chats</option>`;
 
-  if (previousChatHistory.length === 0) {
-    await getPreviousChats(userId2, botId);
+  if (previousChatHistory.length === 0 || refresh) {
+    await getPreviousChats(userId2, botId, refresh);
   }
 
   if (previousChatHistory.length > 0) {
@@ -1758,9 +1760,9 @@ async function populateChatHistoryOptions() {
 }
 
 
-async function getPreviousChats(participant_id, bot_id) {
+async function getPreviousChats(participant_id, bot_id, refresh = false) {
   try {
-    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}`;
+    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -3601,10 +3603,13 @@ async function handleFaqButtonClick(question) {
         // <p>
         // Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
         // <p>`,'#22c55e'))
+        const msg = selectedChatId ? `Welcome back! Let's pick up right where we left off. If anything has changed or you’d like to adjust your direction, just let me know. Otherwise, feel free to continue from where we paused—I'm here to help you reach your goals.` 
+                     :`Hello, welcome to the session! I know it's the same old boring message you see every time, but if you engage meaningfully, we can deep dive into any issue together. Please let me know in detail what you want to accomplish with this session and what your goals are.`;
+
         appendMessage2(
           addStickerToMessage(
             "Begin Session",
-            `Hello, welcome to the session! I know it's the same old boring message you see every time, but if you engage meaningfully, we can deep dive into any issue together. Please let me know in detail what you want to accomplish with this session and what your goals are.`,
+            msg,
             "#22c55e"
           )
         );
@@ -3903,6 +3908,7 @@ function sendBotTranscript2() {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamic mcq response : ", data);
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(true);
 
       // appendMessage2(faqHtmlData)
 
@@ -8324,7 +8330,6 @@ loadExternalModule().then(() => {
       cursor: pointer;
       vertical-align: middle;
     "
-    onchange="loadChatHistory(this.value)"
   >
     <option value="">Previous Chats</option>
   </select>
@@ -8601,18 +8606,11 @@ loadExternalModule().then(() => {
     }
   }
 
-  
-  
-
-  function loadChatHistory(chatId) {
-    if (!chatId) return;
-    alert(`Load chat history for: ${chatId}`);
-  }
 
 adjustChatDropdownSize();
 
 document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
-  const selectedChatId = this.value;
+  selectedChatId = this.value.length > 0 ? this.value: null;
   if (selectedChatId) {
     populateChatHistory(selectedChatId);
   }
@@ -11583,9 +11581,11 @@ window.addEventListener("resize", adjustHeaderLayout);
                       test_id: botId,
                       is_signature_bot: true,
                       is_idp_discussion_opted: isIDPDiscussionOpted,
+                      signature_session_id: selectedChatId
                     }),
                   }
                 );
+                onlyCurrentSession = selectedChatId? true:false;
                 const data = await response.json();
                 sessionId2 = data.uid;
                 isSessionActiveStt = true;
@@ -11678,6 +11678,7 @@ window.addEventListener("resize", adjustHeaderLayout);
                     participant_message_url: "",
                     is_signature_bot: true,
                     is_prompt_only: true,
+                    only_current_session: onlyCurrentSession
                   }),
                 }
               );
