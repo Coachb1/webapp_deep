@@ -119,7 +119,17 @@ style.textContent = `
         height: 100% !important;
         object-fit: contain !important;
         display: block;
-      }      
+      } 
+      
+      #close-top2 {
+        position: absolute !important;
+        top: 5px !important;
+        right: 0 !important;
+        left: 5px !important;
+        z-index: 1000 !important;
+      }
+
+
     }
 
     @media screen and (max-width: 768px) {
@@ -14226,3 +14236,45 @@ const closeFromTop2 = () => {
 };
 
 window.openChatContainer2 = openChatContainer2;
+
+function fixMobileHeightInShadowDOM() {
+  const shadowHost = document.getElementById("chat-element2");
+  if (!shadowHost) return;
+
+  const shadowRoot = shadowHost.shadowRoot;
+  if (!shadowRoot) return;
+
+  const container = shadowRoot.querySelector("#container");
+  if (!container) return;
+
+  // Inject a style tag directly inside the shadow root
+  const styleTag = document.createElement("style");
+  styleTag.textContent = `
+    @media screen and (max-width: 426px) {
+      #container {
+        height: 75dvh !important;
+        max-height: 75dvh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+      }
+
+      #messages {
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+        padding-bottom: 0 !important;
+      }
+
+      #input {
+        flex-shrink: 0 !important;
+        padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+      }
+    }
+  `;
+  shadowRoot.appendChild(styleTag);
+}
+
+// Call this once chat-element2 is mounted and rendered
+window.addEventListener("load", () => {
+  setTimeout(fixMobileHeightInShadowDOM, 1000);
+});
