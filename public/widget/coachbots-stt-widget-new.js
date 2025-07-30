@@ -339,7 +339,11 @@ let USE_CUSTOM_STT = false;
 let finalTranscriptAccumulator = "";
 let widgetHeight = `clamp(100px, 85vh, calc(100vh - 83px))`
 let widgetWidth = `auto`
-let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`
+let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`;
+
+if (window.location.pathname.startsWith('/coach/')) {
+  widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1753852561/uzvcufh7w5ezxs2oyjeg.png`;
+}
 let InstructinoMediaLinkStt;
 let selectedChatId = null;
 let onlyCurrentSession = false;
