@@ -2283,137 +2283,125 @@ const getBotDetails2 = async (botId) => {
         `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
     }
 
-    // if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
-    //   const dropdownButton = document.createElement("button");
-    //   dropdownButton.id = "styles-dropdown-button";
-    //   dropdownButton.innerHTML = dropdownButtonText;
-    //   dropdownButton.setAttribute(
-    //     "style",
-    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background : white; color: #374151;`
-    //   );
+    if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
+  // Create the dropdown button
+  const dropdownButton = document.createElement("button");
+  dropdownButton.id = "styles-dropdown-button";
+  dropdownButton.innerHTML = dropdownButtonText;
+  dropdownButton.setAttribute(
+    "style",
+    `padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; background: white; color: #374151;`
+  );
+  dropdownButton.setAttribute("onmouseover", "this.style.backgroundColor = '#f9fafb'");
+  dropdownButton.setAttribute("onmouseleave", "this.style.backgroundColor = 'white'");
 
-    //   dropdownButton.setAttribute(
-    //     "onmouseover",
-    //     "this.style.backgroundColor = '#f9fafb'"
-    //   );
-    //   dropdownButton.setAttribute(
-    //     "onmouseleave",
-    //     "this.style.backgroundColor = 'white'"
-    //   );
+  // Append the button to the wrapper (or wrap with right side layout if needed)
+  buttonsWrapper.appendChild(dropdownButton);
 
-    //   buttonsWrapper.appendChild(dropdownButton);
+  // Create the dropdown element
+  const dropdown = document.createElement("div");
+  dropdown.id = "dropdown";
+  dropdown.style.position = "absolute";
+  dropdown.style.backgroundColor = "#f3f4f6";
+  dropdown.style.borderRadius = "4px";
+  dropdown.style.zIndex = "9999";
+  dropdown.style.border = "1px solid #1f2937";
+  dropdown.style.padding = "4px 0";
+  dropdown.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+  dropdown.style.display = "none";
 
-    //   const dropdown = document.createElement("div");
-    //   dropdown.id = "dropdown";
-    //   dropdown.style.position = "absolute";
-    //   dropdown.style.backgroundColor = "#f3f4f6";
-    //   dropdown.style.borderRadius = "4px";
-    //   dropdown.style.border = "1px solid #1f2937";
-    //   if (window.innerWidth < 768) {
-    //     dropdown.style.bottom = "7rem";
-    //     dropdown.style.left = "1rem";
-    //   } else {
-    //     dropdown.style.bottom = "6rem";
-    //     dropdown.style.left = "6rem";
-    //   }
-    //   dropdown.classList.add("hiddenn");
+  const options = [
+    "ICF Aligned Coach",
+    "Solution Focused Mentor",
+    "CBT Aligned Mindset",
+  ];
 
-    //   const options = [
-    //     "basic",
-    //     "cheerleader",
-    //     "change_manager",
-    //     "calculator",
-    //     "conversationalist",
-    //     "co_creator",
-    //   ];
-    //   options.forEach((option, i) => {
-    //     const item = document.createElement("div");
+  options.forEach((option, i) => {
+    const item = document.createElement("div");
+    item.textContent = convertTextToCorrectFormat(option);
+    item.className = "dropdown-item";
 
-    //     item.style.padding = "8px 12px";
-    //     item.style.fontSize = "14px";
-    //     if (window.innerWidth < 768) {
-    //       item.style.fontSize = "12px";
-    //     } else {
-    //       item.style.fontSize = "14px";
-    //     }
-    //     item.setAttribute(
-    //       "onmouseover",
-    //       "this.style.backgroundColor = '#e5e7eb',this.style.cursor = 'pointer', this.style.borderRadius = '4px'"
-    //     );
-    //     item.setAttribute(
-    //       "onmouseleave",
-    //       "this.style.backgroundColor = '#f3f4f6',this.style.cursor = 'default', this.style.borderRadius = '4px'"
-    //     );
-    //     if (i !== options.length - 1) {
-    //       item.style.borderBottom = "1px solid #1f2937";
-    //     }
-    //     item.className = "dropdown-item";
-    //     item.textContent = convertTextToCorrectFormat(option);
+    item.style.padding = "8px 12px";
+    item.style.fontSize = window.innerWidth < 768 ? "12px" : "14px";
+    item.style.cursor = "pointer";
+    item.style.borderRadius = "4px";
+    item.style.backgroundColor = "#f3f4f6";
 
-    //     item.addEventListener("click", (event) => {
-    //       console.log(
-    //         convertTextToOriginalFormat(event.target.textContent),
-    //         participantId2
-    //       );
+    if (i !== options.length - 1) {
+      item.style.borderBottom = "1px solid #1f2937";
+    }
 
-    //       if (participantId2) {
-    //         fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-    //           method: "POST",
-    //           headers: {
-    //             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-    //             "Content-Type": "application/json",
-    //           },
-    //           body: JSON.stringify({
-    //             user_id: participantId2,
-    //             response_style: convertTextToOriginalFormat(
-    //               event.target.textContent
-    //             ),
-    //           }),
-    //         })
-    //           .then((res) => {
-    //             res.json;
-    //           })
-    //           .then((data) => {
-    //             data;
-    //           });
-    //       }
-    //       dropdownButton.innerHTML =
-    //         "Response style : " + `<b>${event.target.textContent}</b>`;
-    //       dropdown.classList.add("hiddenn");
-    //       dropdown.style.display = "none";
-    //     });
-    //     dropdown.appendChild(item);
+    item.addEventListener("mouseover", () => item.style.backgroundColor = "#e5e7eb");
+    item.addEventListener("mouseleave", () => item.style.backgroundColor = "#f3f4f6");
 
-    //     console.log("selectedResponseType", selectedResponseType);
-    //     if (!selectedResponseType) {
-    //       const basicOption = Array.from(dropdown.children).find(
-    //         (item) => item.textContent.toLowerCase() === "basic"
-    //       );
-    //       if (basicOption) {
-    //         basicOption.click();
-    //       }
-    //     }
-    //   });
+    item.addEventListener("click", (event) => {
+      const selected = convertTextToOriginalFormat(event.target.textContent);
+      if (participantId2) {
+        fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: participantId2,
+            response_style: selected,
+          }),
+        }).then((res) => res.json()).then(() => {});
+      }
 
-    //   dropdownButton.addEventListener("click", () => {
-    //     const shadowRootForDropdowns =
-    //       document.getElementById("chat-element2").shadowRoot;
-    //     shadowRootForDropdowns.appendChild(dropdown);
-    //     console.log(dropdown);
-    //     dropdown.style.display =
-    //       dropdown.style.display === "block" ? "none" : "block";
-    //   });
+      dropdownButton.innerHTML = "Response style : " + `<b>${event.target.textContent}</b>`;
+      dropdown.style.display = "none";
+    });
 
-    //   document.addEventListener("click", (event) => {
-    //     if (
-    //       !dropdownButton.contains(event.target) &&
-    //       !dropdown.contains(event.target)
-    //     ) {
-    //       dropdown.classList.add("hiddenn");
-    //       dropdown.style.display = "none";
-    //     }
-    //   });
-    // }
+    dropdown.appendChild(item);
+  });
+
+  // === Dropdown Button Click Handler ===
+  dropdownButton.addEventListener("click", () => {
+    const shadowHost = document.getElementById("chat-element2");
+    const shadowRoot = shadowHost?.shadowRoot;
+    if (!shadowRoot) return;
+
+    // Add a relative-positioned container inside shadow DOM if it doesn’t exist
+    let container = shadowRoot.getElementById("dropdown-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "dropdown-container";
+      container.style.position = "relative";
+      container.style.width = "100%";
+      shadowRoot.appendChild(container);
+    }
+
+    // Append dropdown inside the container if not already present
+    if (!container.contains(dropdown)) {
+      container.appendChild(dropdown);
+    }
+
+    // Get positions relative to the shadow DOM container
+    const buttonRect = dropdownButton.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    dropdown.style.top = `${buttonRect.bottom - containerRect.top + 4}px`;
+    dropdown.style.left = `${buttonRect.left - containerRect.left}px`;
+
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  });
+
+  // === Close Dropdown on Outside Click ===
+  document.addEventListener("click", (event) => {
+    const shadowHost = document.getElementById("chat-element2");
+    const shadowRoot = shadowHost?.shadowRoot;
+    if (!shadowRoot) return;
+
+    if (
+      !dropdownButton.contains(event.target) &&
+      !dropdown.contains(event.target)
+    ) {
+      dropdown.style.display = "none";
+    }
+  });
+}
 
     if (
       botDetails.data.is_fitment_analysis &&
