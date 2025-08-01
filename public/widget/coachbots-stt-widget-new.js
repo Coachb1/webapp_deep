@@ -1672,6 +1672,8 @@ const getUserBotConversation = async (participant_id) => {
 };
 
 function populateChatHistory(chatId) {
+  if (optedBeginSession) return;
+  
   const results = previousChatHistory.filter(session => session.uid === chatId);
   if (results.length === 0) {
     console.warn("No chat history found for session:", chatId);
@@ -8667,7 +8669,7 @@ loadExternalModule().then(() => {
 adjustChatDropdownSize();
 
 document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
-  selectedChatId = this.value.length > 0 ? this.value: null;
+  selectedChatId = this.value != 'new-chat' ? this.value: null;
   if (selectedChatId) {
     populateChatHistory(selectedChatId);
   }
