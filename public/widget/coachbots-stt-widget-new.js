@@ -125,6 +125,55 @@ style.textContent = `
         
     }
 
+    <style>
+  #bot-header-logo-2 {
+    display: flex;
+    flex-wrap: wrap; /* allows wrapping on small screens */
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background-color: #f3f4f6;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2px 0 0 2px;
+  }
+
+  #chat-history-wrapper,
+  #response-style {
+    display: flex;
+    align-items: center;
+  }
+
+  #chatHistoryDropdown,
+  #style-selector {
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    #chat-history-wrapper,
+    #response-style {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 4px;
+    }
+
+    #chatHistoryDropdown,
+    #style-selector {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+</style>
+
+
+
 
 `;
 document.head.appendChild(style);
@@ -2276,144 +2325,9 @@ const getBotDetails2 = async (botId) => {
         .join("_");
     }
 
-    let dropdownButtonText = "Styles";
-    if (selectedResponseType) {
-      dropdownButtonText =
-        "Response style : " +
-        `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
-    }
+    
 
-    // if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
-    //   const dropdownButton = document.createElement("button");
-    //   dropdownButton.id = "styles-dropdown-button";
-    //   dropdownButton.innerHTML = dropdownButtonText;
-    //   dropdownButton.setAttribute(
-    //     "style",
-    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background : white; color: #374151;`
-    //   );
 
-    //   dropdownButton.setAttribute(
-    //     "onmouseover",
-    //     "this.style.backgroundColor = '#f9fafb'"
-    //   );
-    //   dropdownButton.setAttribute(
-    //     "onmouseleave",
-    //     "this.style.backgroundColor = 'white'"
-    //   );
-
-    //   buttonsWrapper.appendChild(dropdownButton);
-
-    //   const dropdown = document.createElement("div");
-    //   dropdown.id = "dropdown";
-    //   dropdown.style.position = "absolute";
-    //   dropdown.style.backgroundColor = "#f3f4f6";
-    //   dropdown.style.borderRadius = "4px";
-    //   dropdown.style.border = "1px solid #1f2937";
-    //   if (window.innerWidth < 768) {
-    //     dropdown.style.bottom = "7rem";
-    //     dropdown.style.left = "1rem";
-    //   } else {
-    //     dropdown.style.bottom = "6rem";
-    //     dropdown.style.left = "6rem";
-    //   }
-    //   dropdown.classList.add("hiddenn");
-
-    //   const options = [
-    //     "basic",
-    //     "cheerleader",
-    //     "change_manager",
-    //     "calculator",
-    //     "conversationalist",
-    //     "co_creator",
-    //   ];
-    //   options.forEach((option, i) => {
-    //     const item = document.createElement("div");
-
-    //     item.style.padding = "8px 12px";
-    //     item.style.fontSize = "14px";
-    //     if (window.innerWidth < 768) {
-    //       item.style.fontSize = "12px";
-    //     } else {
-    //       item.style.fontSize = "14px";
-    //     }
-    //     item.setAttribute(
-    //       "onmouseover",
-    //       "this.style.backgroundColor = '#e5e7eb',this.style.cursor = 'pointer', this.style.borderRadius = '4px'"
-    //     );
-    //     item.setAttribute(
-    //       "onmouseleave",
-    //       "this.style.backgroundColor = '#f3f4f6',this.style.cursor = 'default', this.style.borderRadius = '4px'"
-    //     );
-    //     if (i !== options.length - 1) {
-    //       item.style.borderBottom = "1px solid #1f2937";
-    //     }
-    //     item.className = "dropdown-item";
-    //     item.textContent = convertTextToCorrectFormat(option);
-
-    //     item.addEventListener("click", (event) => {
-    //       console.log(
-    //         convertTextToOriginalFormat(event.target.textContent),
-    //         participantId2
-    //       );
-
-    //       if (participantId2) {
-    //         fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-    //           method: "POST",
-    //           headers: {
-    //             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-    //             "Content-Type": "application/json",
-    //           },
-    //           body: JSON.stringify({
-    //             user_id: participantId2,
-    //             response_style: convertTextToOriginalFormat(
-    //               event.target.textContent
-    //             ),
-    //           }),
-    //         })
-    //           .then((res) => {
-    //             res.json;
-    //           })
-    //           .then((data) => {
-    //             data;
-    //           });
-    //       }
-    //       dropdownButton.innerHTML =
-    //         "Response style : " + `<b>${event.target.textContent}</b>`;
-    //       dropdown.classList.add("hiddenn");
-    //       dropdown.style.display = "none";
-    //     });
-    //     dropdown.appendChild(item);
-
-    //     console.log("selectedResponseType", selectedResponseType);
-    //     if (!selectedResponseType) {
-    //       const basicOption = Array.from(dropdown.children).find(
-    //         (item) => item.textContent.toLowerCase() === "basic"
-    //       );
-    //       if (basicOption) {
-    //         basicOption.click();
-    //       }
-    //     }
-    //   });
-
-    //   dropdownButton.addEventListener("click", () => {
-    //     const shadowRootForDropdowns =
-    //       document.getElementById("chat-element2").shadowRoot;
-    //     shadowRootForDropdowns.appendChild(dropdown);
-    //     console.log(dropdown);
-    //     dropdown.style.display =
-    //       dropdown.style.display === "block" ? "none" : "block";
-    //   });
-
-    //   document.addEventListener("click", (event) => {
-    //     if (
-    //       !dropdownButton.contains(event.target) &&
-    //       !dropdown.contains(event.target)
-    //     ) {
-    //       dropdown.classList.add("hiddenn");
-    //       dropdown.style.display = "none";
-    //     }
-    //   });
-    // }
 
     if (
       botDetails.data.is_fitment_analysis &&
@@ -2491,6 +2405,84 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(endSessionButton);
     }
     console.log("buttons : ", buttons);
+  if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+
+  const styleMap = {
+    "ICF Aligned Coach": "icf_aligned_coach",
+    "Solution Focused Mentor": "solution_focused_mentor",
+    "CBT Aligned Mindset": "cbt_aligned_mindset"
+  };
+
+  function convertTextToOriginalFormat(displayText) {
+    return styleMap[displayText] || displayText;
+  }
+
+  function convertTextToCorrectFormat(backendValue) {
+    const reverseMap = Object.fromEntries(
+      Object.entries(styleMap).map(([k, v]) => [v, k])
+    );
+    return reverseMap[backendValue] || backendValue;
+  }
+
+  // Create dropdown
+  const select = document.createElement("select");
+  select.id = "style-selector";
+  select.style.cssText = `
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  `;
+
+  // Add default option
+  const defaultOption = document.createElement("option");
+  defaultOption.textContent = "Select Style";
+  defaultOption.value = "";
+  defaultOption.disabled = true;
+  if (!selectedResponseType) defaultOption.selected = true;
+  select.appendChild(defaultOption);
+
+  // Add style options with pre-selected logic
+  for (const label in styleMap) {
+    const value = styleMap[label];
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    if (selectedResponseType === value) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  // Handle selection change
+  select.addEventListener("change", () => {
+    const selectedValue = select.value;
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedValue,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  });
+
+  // Inject into #response-style
+  const container = document.getElementById("response-style");
+  container.innerHTML = ""; // clear if re-rendering
+  container.appendChild(select);
+  container.style.display = "block";
+}
+
 
     // if (!["user_bot",'deep_dive'].includes(botType)) {
     //    //canned button one
@@ -2630,7 +2622,10 @@ const getBotDetails2 = async (botId) => {
     //   populateBotConversation(window.userIdFromWebApp);
     // }
     if(window.user) {
-      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions();   
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) 
+        { 
+          populateChatHistoryOptions();   
+        }
     }
     return botDetails;
   } catch (error) {
@@ -8337,6 +8332,8 @@ loadExternalModule().then(() => {
   >
     <option value="">Previous Chats</option>
   </select>
+</div>
+<div id="response-style" style="position: relative; display: none">
 </div>
 </div>
 
