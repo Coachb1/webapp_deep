@@ -125,6 +125,55 @@ style.textContent = `
         
     }
 
+    <style>
+  #bot-header-logo-2 {
+    display: flex;
+    flex-wrap: wrap; /* allows wrapping on small screens */
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background-color: #f3f4f6;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2px 0 0 2px;
+  }
+
+  #chat-history-wrapper,
+  #response-style {
+    display: flex;
+    align-items: center;
+  }
+
+  #chatHistoryDropdown,
+  #style-selector {
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    #chat-history-wrapper,
+    #response-style {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 4px;
+    }
+
+    #chatHistoryDropdown,
+    #style-selector {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+</style>
+
+
+
 
 `;
 document.head.appendChild(style);
@@ -2276,132 +2325,9 @@ const getBotDetails2 = async (botId) => {
         .join("_");
     }
 
-    let dropdownButtonText = "Styles";
-    if (selectedResponseType) {
-      dropdownButtonText =
-        "Response style : " +
-        `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
-    }
+    
 
-    if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
-  // Create the dropdown button
-  const dropdownButton = document.createElement("button");
-  dropdownButton.id = "styles-dropdown-button";
-  dropdownButton.innerHTML = dropdownButtonText;
-  dropdownButton.setAttribute(
-    "style",
-    `padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; background: white; color: #374151;`
-  );
-  dropdownButton.setAttribute("onmouseover", "this.style.backgroundColor = '#f9fafb'");
-  dropdownButton.setAttribute("onmouseleave", "this.style.backgroundColor = 'white'");
 
-  // Append the button to the wrapper (or wrap with right side layout if needed)
-  buttonsWrapper.appendChild(dropdownButton);
-
-  // Create the dropdown element
-  const dropdown = document.createElement("div");
-  dropdown.id = "dropdown";
-  dropdown.style.position = "absolute";
-  dropdown.style.backgroundColor = "#f3f4f6";
-  dropdown.style.borderRadius = "4px";
-  dropdown.style.zIndex = "9999";
-  dropdown.style.border = "1px solid #1f2937";
-  dropdown.style.padding = "4px 0";
-  dropdown.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
-  dropdown.style.display = "none";
-
-  const options = [
-    "ICF Aligned Coach",
-    "Solution Focused Mentor",
-    "CBT Aligned Mindset",
-  ];
-
-  options.forEach((option, i) => {
-    const item = document.createElement("div");
-    item.textContent = convertTextToCorrectFormat(option);
-    item.className = "dropdown-item";
-
-    item.style.padding = "8px 12px";
-    item.style.fontSize = window.innerWidth < 768 ? "12px" : "14px";
-    item.style.cursor = "pointer";
-    item.style.borderRadius = "4px";
-    item.style.backgroundColor = "#f3f4f6";
-
-    if (i !== options.length - 1) {
-      item.style.borderBottom = "1px solid #1f2937";
-    }
-
-    item.addEventListener("mouseover", () => item.style.backgroundColor = "#e5e7eb");
-    item.addEventListener("mouseleave", () => item.style.backgroundColor = "#f3f4f6");
-
-    item.addEventListener("click", (event) => {
-      const selected = convertTextToOriginalFormat(event.target.textContent);
-      if (participantId2) {
-        fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: participantId2,
-            response_style: selected,
-          }),
-        }).then((res) => res.json()).then(() => {});
-      }
-
-      dropdownButton.innerHTML = "Response style : " + `<b>${event.target.textContent}</b>`;
-      dropdown.style.display = "none";
-    });
-
-    dropdown.appendChild(item);
-  });
-
-  // === Dropdown Button Click Handler ===
-  dropdownButton.addEventListener("click", () => {
-    const shadowHost = document.getElementById("chat-element2");
-    const shadowRoot = shadowHost?.shadowRoot;
-    if (!shadowRoot) return;
-
-    // Add a relative-positioned container inside shadow DOM if it doesn’t exist
-    let container = shadowRoot.getElementById("dropdown-container");
-    if (!container) {
-      container = document.createElement("div");
-      container.id = "dropdown-container";
-      container.style.position = "relative";
-      container.style.width = "100%";
-      shadowRoot.appendChild(container);
-    }
-
-    // Append dropdown inside the container if not already present
-    if (!container.contains(dropdown)) {
-      container.appendChild(dropdown);
-    }
-
-    // Get positions relative to the shadow DOM container
-    const buttonRect = dropdownButton.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    dropdown.style.top = `${buttonRect.bottom - containerRect.top + 4}px`;
-    dropdown.style.left = `${buttonRect.left - containerRect.left}px`;
-
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-  });
-
-  // === Close Dropdown on Outside Click ===
-  document.addEventListener("click", (event) => {
-    const shadowHost = document.getElementById("chat-element2");
-    const shadowRoot = shadowHost?.shadowRoot;
-    if (!shadowRoot) return;
-
-    if (
-      !dropdownButton.contains(event.target) &&
-      !dropdown.contains(event.target)
-    ) {
-      dropdown.style.display = "none";
-    }
-  });
-}
 
     if (
       botDetails.data.is_fitment_analysis &&
@@ -2479,6 +2405,84 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(endSessionButton);
     }
     console.log("buttons : ", buttons);
+  if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+
+  const styleMap = {
+    "ICF Aligned Coach": "icf_aligned_coach",
+    "Solution Focused Mentor": "solution_focused_mentor",
+    "CBT Aligned Mindset": "cbt_aligned_mindset"
+  };
+
+  function convertTextToOriginalFormat(displayText) {
+    return styleMap[displayText] || displayText;
+  }
+
+  function convertTextToCorrectFormat(backendValue) {
+    const reverseMap = Object.fromEntries(
+      Object.entries(styleMap).map(([k, v]) => [v, k])
+    );
+    return reverseMap[backendValue] || backendValue;
+  }
+
+  // Create dropdown
+  const select = document.createElement("select");
+  select.id = "style-selector";
+  select.style.cssText = `
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  `;
+
+  // Add default option
+  const defaultOption = document.createElement("option");
+  defaultOption.textContent = "Select Style";
+  defaultOption.value = "";
+  defaultOption.disabled = true;
+  if (!selectedResponseType) defaultOption.selected = true;
+  select.appendChild(defaultOption);
+
+  // Add style options with pre-selected logic
+  for (const label in styleMap) {
+    const value = styleMap[label];
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    if (selectedResponseType === value) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  // Handle selection change
+  select.addEventListener("change", () => {
+    const selectedValue = select.value;
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedValue,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  });
+
+  // Inject into #response-style
+  const container = document.getElementById("response-style");
+  container.innerHTML = ""; // clear if re-rendering
+  container.appendChild(select);
+  container.style.display = "block";
+}
+
 
     // if (!["user_bot",'deep_dive'].includes(botType)) {
     //    //canned button one
@@ -2618,7 +2622,10 @@ const getBotDetails2 = async (botId) => {
     //   populateBotConversation(window.userIdFromWebApp);
     // }
     if(window.user) {
-      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions();   
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) 
+        { 
+          populateChatHistoryOptions();   
+        }
     }
     return botDetails;
   } catch (error) {
@@ -8325,6 +8332,8 @@ loadExternalModule().then(() => {
   >
     <option value="">Previous Chats</option>
   </select>
+</div>
+<div id="response-style" style="position: relative; display: none">
 </div>
 </div>
 
