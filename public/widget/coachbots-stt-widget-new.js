@@ -1721,6 +1721,8 @@ const getUserBotConversation = async (participant_id) => {
 };
 
 function populateChatHistory(chatId) {
+  if (optedBeginSession) return;
+  
   const results = previousChatHistory.filter(session => session.uid === chatId);
   if (results.length === 0) {
     console.warn("No chat history found for session:", chatId);
@@ -1778,39 +1780,92 @@ function populateChatHistory(chatId) {
 }
 
 
-async function populateChatHistoryOptions(refresh=false) {
+async function populateChatHistoryOptions(refresh = false) {
   const chathistorywrapper = document.getElementById('chat-history-wrapper');
-  
   const dropdown = document.getElementById('chatHistoryDropdown');
   if (!dropdown) return;
 
-  // Clear existing options first
-  dropdown.innerHTML = `<option value="">Previous Chats</option>`;
+  // Clear existing options
+  dropdown.innerHTML = "";
 
+  // 1. Disabled "Previous Chats" option
+  const defaultOption = document.createElement("option");
+  defaultOption.textContent = "Previous Chats";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  dropdown.appendChild(defaultOption);
+
+  // 2. "➕ Start New Chat" option
+  const newChatOption = document.createElement("option");
+  newChatOption.textContent = "➕ Start New Chat";
+  newChatOption.value = "new-chat"; // special value
+  newChatOption.style.fontWeight = "bold";
+  newChatOption.style.color = "#0066cc";
+  dropdown.appendChild(newChatOption);
+
+  // 3. Fetch chats if empty or refresh
   if (previousChatHistory.length === 0 || refresh) {
     await getPreviousChats(userId2, botId, refresh);
   }
 
+  // 4. Create optgroups
   if (previousChatHistory.length > 0) {
+    const completedOptGroup = document.createElement("optgroup");
+    completedOptGroup.label = "Completed Chats";
+
+    const incompleteOptGroup = document.createElement("optgroup");
+    incompleteOptGroup.label = "Incomplete Chats";
+
     previousChatHistory.forEach(chat => {
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.value = chat.uid;
 
-      // Truncate summary to 30 characters for display
+      const isIncomplete =
+        chat.summary === null ||
+        chat.summary === '' ||
+        chat.summary.includes('No Summary');
+
       const truncated = chat.summary && chat.summary.length > 30
-        ? chat.summary.slice(0, 30) + '...'
+        ? chat.summary.slice(0, 30) + "..."
         : chat.summary || `Chat ${chat.uid}`;
 
-      option.textContent = truncated;
-      option.title = chat.summary || `Chat ${chat.uid}`; // Tooltip on hover
+      option.textContent = isIncomplete ? `❌ ${truncated}` : truncated;
+      option.title = isIncomplete ? "Abandoned chat — needs attention" : chat.summary || `Chat ${chat.uid}`;
+      option.style.color = isIncomplete ? "red" : "green";
 
-      dropdown.appendChild(option);
+      if (isIncomplete) {
+        incompleteOptGroup.appendChild(option);
+      } else {
+        completedOptGroup.appendChild(option);
+      }
     });
+
+    if (completedOptGroup.children.length > 0) dropdown.appendChild(completedOptGroup);
+    if (incompleteOptGroup.children.length > 0) dropdown.appendChild(incompleteOptGroup);
   }
-  if (chathistorywrapper){
-      chathistorywrapper.style.display = 'block'
+
+  // 5. Show the dropdown wrapper
+  if (chathistorywrapper) {
+    chathistorywrapper.style.display = "block";
+  }
+
+  // 6. Add listener to handle "Start New Chat"
+  dropdown.addEventListener("change", (e) => {
+  const selectedValue = e.target.value;
+  if (selectedValue === "new-chat") {
+    // ✅ Simulate a click on the "Begin session" button
+    const beginSessionButton = document.getElementById("begin-session-button");
+    if (beginSessionButton) {
+      beginSessionButton.click();
     }
+
+    // Optional: Reset dropdown to first item
+    dropdown.selectedIndex = 0;
+  }
+  });
 }
+
+
 
 
 async function getPreviousChats(participant_id, bot_id, refresh = false) {
@@ -8611,7 +8666,7 @@ loadExternalModule().then(() => {
 adjustChatDropdownSize();
 
 document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
-  selectedChatId = this.value.length > 0 ? this.value: null;
+  selectedChatId = this.value != 'new-chat' ? this.value: null;
   if (selectedChatId) {
     populateChatHistory(selectedChatId);
   }
