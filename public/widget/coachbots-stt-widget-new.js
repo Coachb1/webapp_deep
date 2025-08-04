@@ -471,6 +471,7 @@ if (window.location.pathname.startsWith('/coach/')) {
 let InstructinoMediaLinkStt;
 let selectedChatId = null;
 let onlyCurrentSession = false;
+let allowAudioInteraction = false;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -2321,6 +2322,16 @@ const getBotDetails2 = async (botId) => {
     LLMsystemInstructions = botDetails.data.system_instructions;
     // botSelectedLLM = botDetails.data.selected_llms;
 
+    if (window.user){
+      if( botType == 'user_bot'){
+            updateAudioAllowed(false, false)
+      } else {
+        updateAudioAllowed(true, true)
+      }
+    }
+   
+
+
     if (botType === "user_bot") {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
@@ -2555,7 +2566,27 @@ const getBotDetails2 = async (botId) => {
     return reverseMap[backendValue] || backendValue;
   }
 
-  let selectedResponseType = localStorage.getItem("selectedResponseType") || "base_prompt";
+
+  // If not valid, default to base_prompt
+  const allowedValues = Object.values(styleMap);
+  if (!allowedValues.includes(selectedResponseType)) {
+    selectedResponseType = "base_prompt";
+
+    // Send default immediately if needed
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedResponseType,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  }
 
 
   // Create dropdown
@@ -8263,6 +8294,109 @@ function stopModernTimer() {
   }
 }
 
+function updateAudioInteraction(newState) {
+  allowAudioInteraction = newState;
+  console.log("Audio toggle changed:", allowAudioInteraction);
+
+  // Update the checkbox to reflect the new state
+  const audioToggle = document.getElementById("bot-audio-interaction-switch");
+
+  if (audioToggle) {
+    audioToggle.checked = newState;
+  }
+
+  // Perform actions based on the new state
+  if (!allowAudioInteraction) {
+    console.log("Audio interaction is OFF.");
+  } else {
+    console.log("Audio interaction is ON.");
+  }
+}
+
+async function  updateAudioAllowed(initial, showToggel=true){
+  let isaudio = false;
+
+  if (initial){
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+    isaudio =
+      snnipetConfigSTT.allowAudioInteraction === "true";
+    
+  } else {
+    console.log(
+      "clientAllowAudioInteraction2",
+      clientAllowAudioInteraction2
+    );
+    console.log(
+      "userAllowAudioInteraction2",
+      userAllowAudioInteraction2
+    );
+    console.log(
+      "prioritiseUserAllowInteraction2",
+      prioritiseUserAllowInteraction2
+    );
+
+    if (clientAllowAudioInteraction2) {
+      isaudio = userAllowAudioInteraction2;
+    } else {
+      isaudio = false;
+    }
+  }
+
+  }
+  
+
+  updateAudioInteraction(isaudio);
+  allowAudioInteraction = isaudio;
+  isImmersiveStt = isaudio;
+
+  const audiointeraction = document.getElementById("audio-interaction");
+
+  if (showToggel){
+    audiointeraction.style.display = 'flex'
+  } else{
+  audiointeraction.style.display = 'none'
+
+  }
+
+  return isaudio;
+}
+
+function updateResponseStyle(newValue) {
+  const styleMap = {
+    "Standard": "base_prompt",
+    "ICF Aligned Coach": "icf_aligned_coach",
+    "Solution Focused Mentor": "solution_focused_mentor",
+    "CBT Aligned Mindset": "cbt_aligned_mindset"
+  };
+  const allowedValues = Object.values(styleMap);
+  if (!allowedValues.includes(newValue)) {
+    console.warn(`Invalid response style: "${newValue}"`);
+    return;
+  }
+
+  const select = document.getElementById("style-selector");
+  if (select) {
+    select.value = newValue;
+
+    // Send to backend
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: newValue,
+        }),
+      }).then((res) => res.json()).then(() => {
+        console.log("Response style updated to:", newValue);
+      });
+    }
+  }
+}
+
 
 async function loadExternalModule() {
   try {
@@ -8469,7 +8603,7 @@ loadExternalModule().then(() => {
 </div>
 <div id="response-style" style="position: relative; display: none">
 </div>
-<div id="audio-interaction" class="audio-interaction">
+<div id="audio-interaction" class="audio-interaction" style='display: none'>
   <p class="label">Bot Audio :</p>
   <div class="toggle-wrapper">
     <span class="toggle-text">No</span>
@@ -8761,6 +8895,11 @@ document.getElementById('chatHistoryDropdown')?.addEventListener('change', funct
     populateChatHistory(selectedChatId);
   }
 });
+document.getElementById('bot-audio-interaction-switch')?.addEventListener('change', function (event) {
+    allowAudioInteraction = event.target.checked;
+    isImmersiveStt = allowAudioInteraction;
+    console.log("Audio toggle changed:", allowAudioInteraction);
+});
 
 
 // Call on load and on resize
@@ -8897,6 +9036,9 @@ window.addEventListener("resize", adjustHeaderLayout);
       }
     } else {
       const _ = addReportButtons();
+    }
+    if(window.user){
+      updateAudioAllowed(true, true)
     }
   }
 
@@ -11192,8 +11334,12 @@ window.addEventListener("resize", adjustHeaderLayout);
                 );
                 setBeginSessionEnabled(true)
                 if(window.user) {
-                  if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions();   
+                  if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
+                  console.log('selectedResponseType ', selectedResponseType)
+                  updateResponseStyle('base_prompt');
                 }
+
+                if (botType != 'user_bot')  updateAudioAllowed(true, true)
 
                 if (botType === "feedback_bot") {
                   const thumbsupdiv = await feedbackBotInitialFlow("save_email");
@@ -11225,6 +11371,10 @@ window.addEventListener("resize", adjustHeaderLayout);
                     emailNameformJsonstt["name"],
                     emailNameformJsonstt["email"]
                   );
+
+                  updateAudioAllowed(true, true)
+
+                  
                   if (!clientuserInformationSTT) {
                     clientuserInformationSTT = await getClientInformationStt(
                       "only_client_data",
@@ -11837,42 +11987,40 @@ window.addEventListener("resize", adjustHeaderLayout);
 
               conversation_id2 = responseData["uid"];
 
-              let allowAudioInteraction = false;
               console.log(
                 "snnipetConfigSTT",
                 Object.keys(snnipetConfigSTT).length
               );
-              if (Object.keys(snnipetConfigSTT).length > 1) {
-                console.log(
-                  "snnipetConfigSTT audio interaction enabled",
-                  snnipetConfigSTT.allowAudioInteraction
-                );
-                allowAudioInteraction =
-                  snnipetConfigSTT.allowAudioInteraction === "true";
-              } else {
-                console.log(
-                  "clientAllowAudioInteraction2",
-                  clientAllowAudioInteraction2
-                );
-                console.log(
-                  "userAllowAudioInteraction2",
-                  userAllowAudioInteraction2
-                );
-                console.log(
-                  "prioritiseUserAllowInteraction2",
-                  prioritiseUserAllowInteraction2
-                );
+              // if (Object.keys(snnipetConfigSTT).length > 1) {
+              //   console.log(
+              //     "snnipetConfigSTT audio interaction enabled",
+              //     snnipetConfigSTT.allowAudioInteraction
+              //   );
+              //   allowAudioInteraction =
+              //     snnipetConfigSTT.allowAudioInteraction === "true";
+              // } else {
+              //   console.log(
+              //     "clientAllowAudioInteraction2",
+              //     clientAllowAudioInteraction2
+              //   );
+              //   console.log(
+              //     "userAllowAudioInteraction2",
+              //     userAllowAudioInteraction2
+              //   );
+              //   console.log(
+              //     "prioritiseUserAllowInteraction2",
+              //     prioritiseUserAllowInteraction2
+              //   );
 
-                if (clientAllowAudioInteraction2) {
-                  allowAudioInteraction = userAllowAudioInteraction2;
-                } else {
-                  allowAudioInteraction = false;
-                }
-
-                if (botType === "user_bot") {
+              //   if (clientAllowAudioInteraction2) {
+              //     allowAudioInteraction = userAllowAudioInteraction2;
+              //   } else {
+              //     allowAudioInteraction = false;
+              //   }
+              // }
+              if (botType === "user_bot") {
                   allowAudioInteraction = true;
                 }
-              }
               console.log("allowAudioInteraction => ", allowAudioInteraction);
 
               //streaming responses
@@ -12441,8 +12589,7 @@ window.addEventListener("resize", adjustHeaderLayout);
                 }
 
                 if (Object.keys(snnipetConfigSTT).length > 0) {
-                  isImmersiveStt =
-                    snnipetConfigSTT.allowAudioInteraction === "true";
+                  
                   if (
                     clientuserInformationSTT &&
                     "client_name" in clientuserInformationSTT
@@ -12452,26 +12599,8 @@ window.addEventListener("resize", adjustHeaderLayout);
                   if (snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true') {
                     emailCandidate2 = false;
                   }
-                } else {
-                  console.log(
-                    "clientAllowAudioInteraction2",
-                    clientAllowAudioInteraction2
-                  );
-                  console.log(
-                    "userAllowAudioInteraction2",
-                    userAllowAudioInteraction2
-                  );
-                  console.log(
-                    "prioritiseUserAllowInteraction2",
-                    prioritiseUserAllowInteraction2
-                  );
-
-                  if (clientAllowAudioInteraction2) {
-                    isImmersiveStt = userAllowAudioInteraction2;
-                  } else {
-                    isImmersiveStt = false;
-                  }
                 }
+                updateAudioAllowed(true,true)
                 console.log("isImmersive", isImmersiveStt);
                 if (testType2 === "mcq") {
                   globalQuestionLengthStt = Math.log2(questionLength2 + 1);
@@ -14360,27 +14489,5 @@ const closeFromTop2 = () => {
 };
 
 window.openChatContainer2 = openChatContainer2;
-
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const audioToggle = document.getElementById("bot-audio-interaction-switch");
-  if (audioToggle) {
-    // initial state
-    audioToggle.checked = allowAudioInteraction;
-
-    audioToggle.addEventListener("change", (e) => {
-      allowAudioInteraction = e.target.checked;
-      console.log("Audio toggle changed:", allowAudioInteraction);
-
-      if (!allowAudioInteraction) {
-        stopAudioIfRunning();
-        removeAudioBlocks();
-      }
-    });
-  }
-});
 
   
