@@ -93,7 +93,82 @@ style.textContent = `
       font: 16px Arial;
     }
 
-    
+    .audio-interaction {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  font-size: 14px;
+}
+
+.audio-interaction .label {
+  font-size: 14px;
+}
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.toggle-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #4b5563; /* gray-600 */
+}
+
+/* Switch styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Checked state */
+.switch input:checked + .slider {
+  background-color: #4ade80; /* green-400 */
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Disabled state */
+.switch input:disabled + .slider {
+  background-color: #e5e7eb; /* gray-200 */
+  cursor: not-allowed;
+}
 
     @media screen and (max-width: 426px) {
       #chat-container2 {
@@ -1790,7 +1865,7 @@ async function populateChatHistoryOptions(refresh = false) {
 
   // 1. Disabled "Previous Chats" option
   const defaultOption = document.createElement("option");
-  defaultOption.textContent = "Previous Chats";
+  defaultOption.textContent = "Session History";
   defaultOption.disabled = true;
   defaultOption.selected = true;
   dropdown.appendChild(defaultOption);
@@ -2463,6 +2538,7 @@ const getBotDetails2 = async (botId) => {
   if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
 
   const styleMap = {
+    "Standard": "base_prompt",
     "ICF Aligned Coach": "icf_aligned_coach",
     "Solution Focused Mentor": "solution_focused_mentor",
     "CBT Aligned Mindset": "cbt_aligned_mindset"
@@ -2479,6 +2555,9 @@ const getBotDetails2 = async (botId) => {
     return reverseMap[backendValue] || backendValue;
   }
 
+  let selectedResponseType = localStorage.getItem("selectedResponseType") || "base_prompt";
+
+
   // Create dropdown
   const select = document.createElement("select");
   select.id = "style-selector";
@@ -2494,12 +2573,12 @@ const getBotDetails2 = async (botId) => {
   `;
 
   // Add default option
-  const defaultOption = document.createElement("option");
-  defaultOption.textContent = "Select Style";
-  defaultOption.value = "";
-  defaultOption.disabled = true;
-  if (!selectedResponseType) defaultOption.selected = true;
-  select.appendChild(defaultOption);
+  // const defaultOption = document.createElement("option");
+  // defaultOption.textContent = "Select Style";
+  // defaultOption.value = "";
+  // defaultOption.disabled = true;
+  // if (!selectedResponseType) defaultOption.selected = true;
+  // select.appendChild(defaultOption);
 
   // Add style options with pre-selected logic
   for (const label in styleMap) {
@@ -8390,6 +8469,17 @@ loadExternalModule().then(() => {
 </div>
 <div id="response-style" style="position: relative; display: none">
 </div>
+<div id="audio-interaction" class="audio-interaction">
+  <p class="label">Bot Audio :</p>
+  <div class="toggle-wrapper">
+    <span class="toggle-text">No</span>
+    <label class="switch">
+      <input type="checkbox" id="bot-audio-interaction-switch" />
+      <span class="slider"></span>
+    </label>
+    <span class="toggle-text">Yes</span>
+  </div>
+</div>
 </div>
 
 <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -14270,3 +14360,27 @@ const closeFromTop2 = () => {
 };
 
 window.openChatContainer2 = openChatContainer2;
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const audioToggle = document.getElementById("bot-audio-interaction-switch");
+  if (audioToggle) {
+    // initial state
+    audioToggle.checked = allowAudioInteraction;
+
+    audioToggle.addEventListener("change", (e) => {
+      allowAudioInteraction = e.target.checked;
+      console.log("Audio toggle changed:", allowAudioInteraction);
+
+      if (!allowAudioInteraction) {
+        stopAudioIfRunning();
+        removeAudioBlocks();
+      }
+    });
+  }
+});
+
+  
