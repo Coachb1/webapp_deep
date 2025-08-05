@@ -472,6 +472,7 @@ let InstructinoMediaLinkStt;
 let selectedChatId = null;
 let onlyCurrentSession = false;
 let allowAudioInteraction = false;
+let styleMap = {};
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -1756,6 +1757,29 @@ const feedbackBotInitialFlow = async (flow) => {
     return div_cont;
   }
 };
+async function getResponseStyleList() {
+  try {
+    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    console.log("responseStyle", data);
+    return data; // styleMap equivalent
+  } catch (error) {
+    console.error("Failed to fetch response style list:", error);
+    return null;
+  }
+}
+
 
 const getUserBotConversation = async (participant_id) => {
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
@@ -2548,12 +2572,7 @@ const getBotDetails2 = async (botId) => {
     console.log("buttons : ", buttons);
   if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
 
-  const styleMap = {
-    "Standard": "base_prompt",
-    "ICF Aligned Coach": "icf_aligned_coach",
-    "Solution Focused Mentor": "solution_focused_mentor",
-    "CBT Aligned Mindset": "cbt_aligned_mindset"
-  };
+   styleMap = await getResponseStyleList()
 
   function convertTextToOriginalFormat(displayText) {
     return styleMap[displayText] || displayText;
@@ -2567,10 +2586,10 @@ const getBotDetails2 = async (botId) => {
   }
 
 
-  // If not valid, default to base_prompt
+  // If not valid, default to "standard"
   const allowedValues = Object.values(styleMap);
   if (!allowedValues.includes(selectedResponseType)) {
-    selectedResponseType = "base_prompt";
+    selectedResponseType = "standard";
 
     // Send default immediately if needed
     if (participantId2) {
@@ -3768,7 +3787,7 @@ async function handleFaqButtonClick(question) {
         // Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
         // <p>`,'#22c55e'))
         const msg = selectedChatId ? `Welcome back! Let's pick up right where we left off. If anything has changed or you’d like to adjust your direction, just let me know. Otherwise, feel free to continue from where we paused—I'm here to help you reach your goals.` 
-                     :`Hello, welcome to the session! I know it's the same old boring message you see every time, but if you engage meaningfully, we can deep dive into any issue together. Please let me know in detail what you want to accomplish with this session and what your goals are.`;
+                     :`Welcome to the session today! We can explore any topic we can together. You can switch between any of the coaching modes via the dropdown at the header. Please check the guide below if you need help selecting the best mode. Let's get started.`;
 
         appendMessage2(
           addStickerToMessage(
@@ -8361,13 +8380,8 @@ async function  updateAudioAllowed(initial, showToggel=true){
   return isaudio;
 }
 
-function updateResponseStyle(newValue) {
-  const styleMap = {
-    "Standard": "base_prompt",
-    "ICF Aligned Coach": "icf_aligned_coach",
-    "Solution Focused Mentor": "solution_focused_mentor",
-    "CBT Aligned Mindset": "cbt_aligned_mindset"
-  };
+async function updateResponseStyle(newValue) {
+  styleMap = await getResponseStyleList()
   const allowedValues = Object.values(styleMap);
   if (!allowedValues.includes(newValue)) {
     console.warn(`Invalid response style: "${newValue}"`);
@@ -8604,7 +8618,7 @@ loadExternalModule().then(() => {
 <div id="response-style" style="position: relative; display: none">
 </div>
 <div id="audio-interaction" class="audio-interaction" style='display: none'>
-  <p class="label">Bot Audio :</p>
+  <p class="label">Audio:</p>
   <div class="toggle-wrapper">
     <span class="toggle-text">No</span>
     <label class="switch">
@@ -11336,7 +11350,7 @@ window.addEventListener("resize", adjustHeaderLayout);
                 if(window.user) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
                   console.log('selectedResponseType ', selectedResponseType)
-                  updateResponseStyle('base_prompt');
+                  await updateResponseStyle("standard");
                 }
 
                 if (botType != 'user_bot')  updateAudioAllowed(true, true)
