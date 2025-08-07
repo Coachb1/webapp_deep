@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Widget</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #chat-container2 {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        height: 100% !important;
+        scale: 1 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+
+      #chat-icon2,
+      #close-top2 {
+        display: none !important;
+      }
+    </style>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const pathname = urlParams.get("pathname") || "";
+
+      console.log("decwindow", window.location);
+      console.log("pathname from query:", pathname);
+
+      // Dynamically inject the widget script
+      const script = document.createElement("script");
+      script.src = `${pathname}/widget/coachbots-stt-widget-new.js`;
+      script.defer = true;
+      document.head.appendChild(script);
+    </script>
+  </head>
+  <body>
+    <div class="coachbots-coachscribe"></div>
+  </body>
+</html>
