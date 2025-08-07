@@ -282,6 +282,8 @@ export const UserProvider = ({
             router.push("content-library");
           } else if (!userInfo.restrictedPages?.includes("Creator Studio")) {
             router.push("create-scenario");
+          } else if (!userInfo.restrictedPages?.includes("AI CoachBot")) {
+            router.push("ai-coaching");
           }
           setLoadingState(false);
         }

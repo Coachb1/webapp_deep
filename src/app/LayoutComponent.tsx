@@ -195,6 +195,7 @@ const LayoutComponent = ({
         coachtalk.setAttribute("style", "display: none;");
       }
     } else if (pathname === "/create-scenario") {
+      console.log(coachScribe,'coachScribe')
       if (coachScribe) {
         coachScribe.removeAttribute("style");
       }
@@ -216,6 +217,11 @@ const LayoutComponent = ({
         coachtalk.setAttribute("style", "display: none;");
       }
     } else if (pathname === "/") {
+      if (coachScribe && coachtalk) {
+        coachtalk.setAttribute("style", "display: none;");
+        coachScribe.setAttribute("style", "display: none;");
+      }
+    } else if (pathname === "/ai-coaching") {
       if (coachScribe && coachtalk) {
         coachtalk.setAttribute("style", "display: none;");
         coachScribe.setAttribute("style", "display: none;");

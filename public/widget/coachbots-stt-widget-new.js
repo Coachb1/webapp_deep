@@ -2364,8 +2364,23 @@ const getBotDetails2 = async (botId) => {
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
         (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
-          ? `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
-          : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
+          ? (window.location.pathname.includes('widget-container')? `Hello! I'm your AI CoachBot. I believe you have the insights you need within you already—my role is to help you discover them through questions.
+
+          I can support you in three specialized ways:
+
+          • Coach Mode - For when you want to explore and discover your solutions through powerful questions in ICF ICF-aligned manner (GROW coaching)
+
+          • Mentor Mode - For when you need direct business advice and proven strategies from executive domain experience
+
+          • Mindset Mode - For when you want to examine and reframe unhelpful thought patterns that are creating stress
+
+          If you are not sure yet, we can get started with a standard session. You can switch the mode by the dropdown in the header if you like a specialized focus. 
+
+          What brings you here today? What's on your mind that you'd like to explore?`
+          :
+                    `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
+            )
+    : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
       console.log(shadowRoot.getElementById("text-input"));
 
@@ -2755,7 +2770,7 @@ const getBotDetails2 = async (botId) => {
         "other data: ",
         `Please enter your ${formFieldsstt[0]}`
       );
-      appendMessage2('Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).')
+      appendMessage2('<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>')
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
@@ -8683,7 +8698,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "64vh"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${window.location.pathname.includes('widget-container')? "84vh" : snippetOrigin() === "internal" ? "68vh" : "64vh"
     }; border: none;"
       messageStyles='{
         "default": {
@@ -9038,6 +9053,8 @@ window.addEventListener("resize", adjustHeaderLayout);
   if (botId === undefined && snippetOrigin() === "internal") {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
+  } else if (window.location.pathname.includes('widget-container')){
+    botId = 'avatar-bot-36f8d-emphasizing-luxury--confidence-the-radiance-edit'
   }
   console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
@@ -12603,7 +12620,8 @@ window.addEventListener("resize", adjustHeaderLayout);
                 }
 
                 if (Object.keys(snnipetConfigSTT).length > 0) {
-                  
+                  isImmersiveStt =
+                    snnipetConfigSTT.allowAudioInteraction === "true";
                   if (
                     clientuserInformationSTT &&
                     "client_name" in clientuserInformationSTT
