@@ -265,7 +265,7 @@ const createLink = (url, text) => {
 
 // attatch the link to the body of the page
 document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
-
+let isFlatWidget = window.location.pathname.includes('widget-container');
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -2364,19 +2364,14 @@ const getBotDetails2 = async (botId) => {
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
         (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
-          ? (window.location.pathname.includes('widget-container')? `Hello! I'm your AI CoachBot. I believe you have the insights you need within you already—my role is to help you discover them through questions.
-
-          I can support you in three specialized ways:
-
-          • Coach Mode - For when you want to explore and discover your solutions through powerful questions in ICF ICF-aligned manner (GROW coaching)
-
-          • Mentor Mode - For when you need direct business advice and proven strategies from executive domain experience
-
-          • Mindset Mode - For when you want to examine and reframe unhelpful thought patterns that are creating stress
-
-          If you are not sure yet, we can get started with a standard session. You can switch the mode by the dropdown in the header if you like a specialized focus. 
-
-          What brings you here today? What's on your mind that you'd like to explore?`
+          ? (isFlatWidget? 
+          `I'm your AI CoachBot, designed to help you discover solutions through guided questions. I offer three modes:
+            
+            • Coach Mode - Explore solutions through ICF-aligned GROW coaching questions
+            • Mentor Mode - Get direct business advice and executive strategies
+            • Mindset Mode - Examine and reframe unhelpful thought patterns
+            • What's on your mind that you'd like to explore today?
+          `
           :
                     `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
             )
@@ -2601,10 +2596,10 @@ const getBotDetails2 = async (botId) => {
   }
 
 
-  // If not valid, default to "standard"
+  // If not valid, default to "icf_aligned_coach"
   const allowedValues = Object.values(styleMap);
   if (!allowedValues.includes(selectedResponseType)) {
-    selectedResponseType = "standard";
+    selectedResponseType = "icf_aligned_coach";
 
     // Send default immediately if needed
     if (participantId2) {
@@ -8073,6 +8068,11 @@ if (window.innerWidth < 768) {
 const snippetOrigin = () => {
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
+  console.log('check', baseURL2)
+  if (window.origin){
+    if (window.botId)  botId=window.botId;
+    return window.origin
+  }
 
   const isInternalHost = 
     hostname === "localhost" ||
@@ -8575,8 +8575,8 @@ loadExternalModule().then(() => {
       font-size: 16px;
       line-height: 20px;
       font-weight: 800;
-      display: flex;
       align-items: center;
+      display: ${window.origin === 'internal' ? 'none' : 'flex'}
     "
   >
     <span 
@@ -8647,11 +8647,6 @@ loadExternalModule().then(() => {
 
 <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
     
-    <p id="header-text" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
-    }; text-align:center;"> ${window.location.href.includes("knowledge-bot")
-      ? "Simple AI Knowledge Agent. Check 'Instructions' for more"
-      : "Accessibility features may not work inside the bot."
-    } </p>
     <p id="warning-banner-stt">
     </p>
     
@@ -8698,7 +8693,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${window.location.pathname.includes('widget-container')? "84vh" : snippetOrigin() === "internal" ? "68vh" : "64vh"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${isFlatWidget? "84vh" : snippetOrigin() === "internal" ? "68vh" : "64vh"
     }; border: none;"
       messageStyles='{
         "default": {
@@ -8860,8 +8855,7 @@ loadExternalModule().then(() => {
     >
     </div>
     <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"
-    }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
+    };  text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Instructions
@@ -9053,8 +9047,6 @@ window.addEventListener("resize", adjustHeaderLayout);
   if (botId === undefined && snippetOrigin() === "internal") {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
-  } else if (window.location.pathname.includes('widget-container')){
-    botId = 'avatar-bot-36f8d-emphasizing-luxury--confidence-the-radiance-edit'
   }
   console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
@@ -11367,7 +11359,7 @@ window.addEventListener("resize", adjustHeaderLayout);
                 if(window.user) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
                   console.log('selectedResponseType ', selectedResponseType)
-                  await updateResponseStyle("standard");
+                  await updateResponseStyle("icf_aligned_coach");
                 }
 
                 if (botType != 'user_bot')  updateAudioAllowed(true, true)

@@ -51,6 +51,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
       (pathname === "/profile" ||
         pathname === "/content-library" ||
         pathname === "/domain-skills-library" ||
+        pathname === "/ai-coaching" ||
         pathname.includes("intake")) &&
       scrolledUp > 0
     ) {
@@ -116,7 +117,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/content-library"}>Leadership</Link>
+              <Link href={"/content-library"}>Leadership Skills</Link>
             </Button>
           )}
           {!restrictedPages?.includes("Domain Skills Library") && (
@@ -129,7 +130,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/domain-skills-library"}>Domain Area</Link>
+              <Link href={"/domain-skills-library"}>Domain Skills</Link>
             </Button>
           )}
           
@@ -142,7 +143,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/"}>AI Coaching Network</Link>
+              <Link href={"/"}>Network</Link>
             </Button>
           )}
 
@@ -195,7 +196,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       }`}
                       asChild
                     >
-                      <Link href={"/content-library"}>Leadership</Link>
+                      <Link href={"/content-library"}>Leadership Skills</Link>
                     </DropdownMenuItem>
                   )}
                   {!restrictedPages?.includes("Domain Skills Library") && (
@@ -205,7 +206,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       }`}
                       asChild
                     >
-                      <Link href={"/domain-skills-library"}>Domain Area</Link>
+                      <Link href={"/domain-skills-library"}>Domain Skills</Link>
                     </DropdownMenuItem>
                   )}
 
@@ -217,7 +218,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       }`}
                       asChild
                     >
-                      <Link href={"/"}>AI Coaching Network</Link>
+                      <Link href={"/"}>Network</Link>
                     </DropdownMenuItem>
                   )}
                   {userRole === 'super_admin' &&(
