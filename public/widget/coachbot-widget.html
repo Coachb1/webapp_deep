@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI CoachBot</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+      overflow: hidden; /* No scrollbars */
+    }
+   
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      padding-top: 3%;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      color: #374151;
+    }
+    iframe {
+      flex: 1;
+      width: 80vw;
+      max-width: 1200px;
+      margin: 0 auto;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    footer {
+      height: 48px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #4b5563;
+      text-align: center;
+      padding: 0 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Content -->
+  <main>
+    <h1 id="page-heading">Welcome!</h1>
+    <iframe id="coachbot-frame"></iframe>
+  </main>
+
+  <!-- Footer -->
+  <footer id="page-footer"></footer>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || 'coach_bot';
+    const botid = urlParams.get('botId') || 'avatar-bot-36f8d-emphasizing-luxury--confidence-the-radiance-edit'
+
+    // Set iframe
+    document.getElementById('coachbot-frame').src = `${window.location.origin}/widget/widget-container.html?type=${type}&botId=${botid}`;
+
+    // Update heading and footer dynamically
+    const headingEl = document.getElementById('page-heading');
+    const footerEl = document.getElementById('page-footer');
+
+    if (type === 'simulation') {
+      headingEl.textContent = "Welcome to your Simulation Session!";
+      footerEl.textContent = "For detailed simulation rules and scoring, please contact your administrator.";
+    } else {
+      headingEl.textContent = "Welcome to your new Coaching Session!";
+      footerEl.textContent = "For detail discussion around methodology and mechanics, please contact your administrator.";
+    }
+  </script>
+</body>
+</html>

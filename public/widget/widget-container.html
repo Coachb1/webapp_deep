@@ -32,7 +32,11 @@
 
     <script>
       const urlParams = new URLSearchParams(window.location.search);
-      const pathname = urlParams.get("pathname") || "";
+      const pathname = window.location.origin;
+      const type = urlParams.get('type') || 'coach_bot'
+      const origin = urlParams.get("origin") || "external";
+      const user = JSON.parse(urlParams.get("user"));
+      const botid = urlParams.get('botId') || 'avatar-bot-36f8d-emphasizing-luxury--confidence-the-radiance-edit'
 
       console.log("decwindow", window.location);
       console.log("pathname from query:", pathname);
@@ -42,6 +46,11 @@
       script.src = `${pathname}/widget/coachbots-stt-widget-new.js`;
       script.defer = true;
       document.head.appendChild(script);
+
+      
+      if (type === 'coach_bot') window.botId = botid;
+      window.user = user;
+      window.origin = origin;
     </script>
   </head>
   <body>
