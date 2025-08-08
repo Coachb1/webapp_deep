@@ -9311,12 +9311,36 @@ window.addEventListener("resize", adjustHeaderLayout);
         ];
       }
     } else {
-      chatElementRef2.initialMessages = [
+      if (!window.user){
+
+        const welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        isEmailFormstt = true;
+        formFieldsstt = ["email", "name"];
+        console.log(
+          "### formFieldsstt : ",
+          formFieldsstt,
+          "other data: ",
+          `Please enter your ${formFieldsstt[0]}`
+        );
+        chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          },
+          {
+            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
+            role: "ai",
+          },
+        ];
+      } else {
+chatElementRef2.initialMessages = [
         {
           html: `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`,
           role: "ai",
         },
       ];
+      }
+      
       // chatElementRef2.initialMessages.push({
       //   html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
       //       <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
