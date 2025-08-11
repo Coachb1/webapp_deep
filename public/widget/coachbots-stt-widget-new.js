@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
-// const devUrlStt = "http://127.0.0.1:8001/api/v1"
+// const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
+const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 let baseURL2 = ["platform"].includes(subdomainStt) ? prodUrlStt : devUrlStt;
@@ -473,6 +473,8 @@ let selectedChatId = null;
 let onlyCurrentSession = false;
 let allowAudioInteraction = false;
 let styleMap = {};
+let isAskingIntake = false;
+
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -3045,6 +3047,68 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
   return formRadio;
 }
 
+
+async function handleIntakeQues(btn) {
+  try {
+    const root = document.getElementById("chat-element2").shadowRoot;
+    const formData = {
+      Name: root.getElementById("intake-name").value.trim(),
+      Role: root.getElementById("intake-role").value,
+      Department: root.getElementById("intake-department").value,
+      Team: root.getElementById("intake-teamSize").value
+    };
+
+    console.log("Form Data:", formData);
+
+    const intakeformdata = {
+      qna: formData,
+      user_id: userId2
+    };
+
+    // Send data to backend
+    const response = await fetch(
+      `${baseURL2}/coaching-conversations/coaching-intake/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(intakeformdata),
+      }
+    );
+
+    const data = await response.json();
+    console.log("Intake Submission Response:", data);
+
+    // ✅ Replace the form block with submitted data summary
+    const formContainer = root.getElementById("quick-intake-form");
+    if (formContainer) {
+      formContainer.innerHTML = `
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          <strong>✅ Intake Submitted</strong><br>
+          <strong>Name:</strong> ${formData.Name}<br>
+          <strong>Role:</strong> ${formData.Role}<br>
+          <strong>Department:</strong> ${formData.Department}<br>
+          <strong>Team Size:</strong> ${formData.Team}
+        </div>
+      `;
+    }
+
+    // Trigger begin session if available
+    const beginSessionButton = document.getElementById("begin-session-button");
+    if (beginSessionButton) {
+      beginSessionButton.click();
+    }
+    isAskingIntake = false;
+
+  } catch (error) {
+    console.error("Error submitting intake:", error);
+  }
+}
+
+
+
 async function SendingFirstInitialQue() {
   // disabling button
   disableOrEnableButtons("initial_question_proceed");
@@ -3574,6 +3638,122 @@ async function handleFaqButtonClick(question) {
         console.log("===> yes optedBeginSession");
         return;
       }
+      if (botType === 'avatar_bot' && botScenarioCase === 'icons_by_ai' ){
+
+        const response = await fetch(`${baseURL2}/coaching-conversations/coaching-intake/?user_id=${userId2}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(
+                key2,
+                secret2
+              )}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const qna = data.qna || {};
+          console.log('intake', data, qna)
+          appendMessage2(`
+            <div style="
+              font-size: 14px;
+            ">
+              <strong>Here is your intake information:</strong>
+              <div><strong>Name:</strong> ${qna["Name"] || "—"}</div>
+              <div><strong>Role:</strong> ${qna['Role'] || "—"}</div>
+              <div><strong>Department:</strong> ${qna['Department'] || "—"}</div>
+              <div><strong>Team:</strong> ${qna['Team'] || "—"}</div>
+            </div>
+          `);
+        } else {
+        // Dynamic option arrays
+        const roleOptions = [
+          "Individual Contributor",
+          "Team Lead/Senior IC",
+          "Manager (1-2 levels below)",
+          "Director/Senior Manager",
+          "VP/Head of Department",
+          "C-Suite/Founder"
+        ];
+
+        const departmentOptions = [
+          "Engineering/Product",
+          "Sales/Business Development",
+          "Marketing",
+          "Operations/Finance",
+          "HR/People",
+          "Customer Success",
+          "Other"
+        ];
+
+        const teamSizeOptions = [
+          "No direct reports",
+          "1-3 direct reports",
+          "4-10 direct reports",
+          "11-25 direct reports",
+          "25+ direct reports"
+        ];
+
+        // Function to generate options HTML
+        function generateOptions(optionsArray, placeholder) {
+  return `<option value="" disabled selected>${placeholder}</option>` +
+    optionsArray.map(opt => `<option>${opt}</option>`).join("");
+}
+
+        // Inject form with inline CSS and dynamic options
+        if (isAskingIntake) return;
+        appendMessage2(`
+  <div id="quick-intake-form" style="
+    display: flex; 
+    align-items: center; 
+    gap: 5px; 
+    flex-wrap: wrap; 
+    background: #f1f0f0; 
+    padding: 8px 10px; 
+    border-radius: 12px; 
+    font-family: Arial, sans-serif; 
+    font-size: 14px; 
+    line-height: 1.5;
+  ">
+    <span style="white-space: nowrap; font-weight: bold;">Please finish quick intake:</span>
+    
+    <input type="text" id="intake-name" placeholder="Name" required
+      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100px;">
+
+    <select id="intake-role" required
+      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
+      ${generateOptions(roleOptions, "Role")}
+    </select>
+
+    <select id="intake-department" required
+      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
+      ${generateOptions(departmentOptions, "Department")}
+    </select>
+
+    <select id="intake-teamSize" required
+      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 110px;">
+      ${generateOptions(teamSizeOptions, "Team Size")}
+    </select>
+
+    <button 
+      id="quickSubmit" 
+      type="button" 
+      style="padding: 2px 6px; font-size: 12px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;"
+      onclick="handleIntakeQues(
+        this
+      )"
+    >✔</button>
+  </div>
+`);
+
+         isAskingIntake = true;
+         return;
+        }
+        
+      }
+
       console.log(window.user, "is_logged_in");
       if (botType === "deep_dive") {
         const today = new Date();
@@ -3796,8 +3976,8 @@ async function handleFaqButtonClick(question) {
         // <p>
         // Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
         // <p>`,'#22c55e'))
-        const msg = selectedChatId ? `Welcome back! Let's pick up right where we left off. If anything has changed or you’d like to adjust your direction, just let me know. Otherwise, feel free to continue from where we paused—I'm here to help you reach your goals.` 
-                     :`Welcome to the session today! We can explore any topic we can together. You can switch between any of the coaching modes via the dropdown at the header. Please check the guide below if you need help selecting the best mode. Let's get started.`;
+        const msg = selectedChatId ? `Welcome back! Let's pick up right where we left off. If anything has changed or you'd like to adjust your direction, just let me know. Otherwise, feel free to continue from where we paused—I'm here to help you reach your goals.` 
+                     :`Welcome to your session! What's the specific challenge you're facing? Once I understand that, I can provide immediate insights based on your background.`;
 
         appendMessage2(
           addStickerToMessage(
@@ -11795,64 +11975,64 @@ chatElementRef2.initialMessages = [
                   isIntakeInProgress = false;
                   isAskingInitialQuestions = false;
                   //********** submit intake to backend: start */
-                  const intakeData = {
-                    method: "post",
-                    qna: JSON.stringify(botInitialQuestionsQnA),
-                    bot_id: botId,
-                    is_positive: "False",
-                    qna_type: "initial_qna",
-                    user_id: userId2,
-                  };
-                  const queryparam = new URLSearchParams(intakeData);
-                  const resp = await fetch(
-                    `${baseURL2}/accounts/get-user-feedback-data/`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Basic ${createBasicAuthToken2(
-                          key2,
-                          secret2
-                        )}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify(intakeData),
-                    }
-                  )
-                    .then((response) => response.json())
-                    .then((data) => {
-                      console.log("Precheck Submission response : ", data);
+                    const intakeData = {
+                        method: "post",
+                        qna: JSON.stringify(botInitialQuestionsQnA),
+                        bot_id: botId,
+                        is_positive: "False",
+                        qna_type: "initial_qna",
+                        user_id: userId2,
+                      };
+                    const queryparam = new URLSearchParams(intakeData);
+                    const resp = await fetch(
+                      `${baseURL2}/accounts/get-user-feedback-data/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Basic ${createBasicAuthToken2(
+                            key2,
+                            secret2
+                          )}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(intakeData),
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        console.log("Precheck Submission response : ", data);
+                      });
+                    //********** submit intake to backend: end */
+                    signals.onResponse({
+                      text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
                     });
-                  //********** submit intake to backend: end */
-                  signals.onResponse({
-                    text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
-                  });
-                  // ****** enabling begin session button
-                  if (
-                    ["avatar_bot", "subject_specific_bot"].includes(botType)
-                  ) {
-                    const begginSessionButton = document.getElementById(
-                      "begin-session-button"
-                    );
-                    begginSessionButton.setAttribute(
-                      "onmouseover",
-                      "this.style.backgroundColor = '#4ade80'"
-                    );
-                    begginSessionButton.setAttribute(
-                      "onmouseleave",
-                      "this.style.backgroundColor = '#22c55e'"
-                    );
-                    begginSessionButton.setAttribute(
-                      "onclick",
-                      `handleFaqButtonClick('something_else')`
-                    );
-                    begginSessionButton.disabled = false;
-                    begginSessionButton.style.cursor = "pointer";
-                    begginSessionButton.style.color = "white";
-                    begginSessionButton.style.backgroundColor = "#22c55e";
-                  } else {
-                    appendMessage2(
-                      `<b>Please scroll above to view the conversation and proceed accordingly.</b>`
-                    );
+                    // ****** enabling begin session button
+                    if (
+                      ["avatar_bot", "subject_specific_bot"].includes(botType)
+                    ) {
+                      const begginSessionButton = document.getElementById(
+                        "begin-session-button"
+                      );
+                      begginSessionButton.setAttribute(
+                        "onmouseover",
+                        "this.style.backgroundColor = '#4ade80'"
+                      );
+                      begginSessionButton.setAttribute(
+                        "onmouseleave",
+                        "this.style.backgroundColor = '#22c55e'"
+                      );
+                      begginSessionButton.setAttribute(
+                        "onclick",
+                        `handleFaqButtonClick('something_else')`
+                      );
+                      begginSessionButton.disabled = false;
+                      begginSessionButton.style.cursor = "pointer";
+                      begginSessionButton.style.color = "white";
+                      begginSessionButton.style.backgroundColor = "#22c55e";
+                    } else {
+                      appendMessage2(
+                        `<b>Please scroll above to view the conversation and proceed accordingly.</b>`
+                      );
                   }
 
                   // ***** disabling intake button
@@ -12134,14 +12314,14 @@ chatElementRef2.initialMessages = [
                 }
 
                 GeminiAiResponse(
-                  responseData.coach_message_metadata.prompt,
-                  signals,
-                  conversation_id2,
-                  latestMessage,
-                  allowAudioInteraction,
-                  selectedModel,
-                  fallbackModel
-                );
+                responseData.coach_message_metadata.prompt,
+                signals,
+                conversation_id2,
+                latestMessage,
+                allowAudioInteraction,
+                selectedModel,
+                fallbackModel
+              );
                 conversationLlmQueue.push(selectedModel);
               }
 
