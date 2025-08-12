@@ -3087,10 +3087,6 @@ async function handleIntakeQues(btn) {
       formContainer.innerHTML = `
         <div style="font-size: 14px; color: #333; line-height: 1.4;">
           <strong>✅ Intake Submitted</strong><br>
-          <strong>Name:</strong> ${formData.Name}<br>
-          <strong>Role:</strong> ${formData.Role}<br>
-          <strong>Department:</strong> ${formData.Department}<br>
-          <strong>Team Size:</strong> ${formData.Team}
         </div>
       `;
     }
@@ -8853,7 +8849,7 @@ loadExternalModule().then(() => {
                 <path d="M10 14 21 3"/>
                 <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
               </svg>
-              <span style="color:black;">Ra</span>
+              <span style="color:black;">Assessment 1</span>
             </div>
             
 
