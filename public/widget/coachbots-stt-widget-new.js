@@ -474,6 +474,22 @@ let onlyCurrentSession = false;
 let allowAudioInteraction = false;
 let styleMap = {};
 let isAskingIntake = false;
+let LLMOrder = {
+  providers : ['gemini', 'gpt', 'anthropic'],
+  models: {
+    gemini: ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite-001'],
+    gpt: [
+      'gpt-4o',
+      'gpt-4o-mini',
+      'gpt-3.5-turbo'
+    ],
+    anthropic: [
+      'claude-3-5-sonnet-20240620',
+      'claude-3-opus-20240229',
+      'claude-3-haiku-20240307'
+    ]
+  }
+}
 
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
@@ -2347,6 +2363,9 @@ const getBotDetails2 = async (botId) => {
     botScenarioCase = botDetails.data.scenario_case;
     LLMsystemInstructions = botDetails.data.system_instructions;
     // botSelectedLLM = botDetails.data.selected_llms;
+    console.log('LLMOrder',LLMOrder,botDetails.data.llm_order);
+    LLMOrder = botDetails.data.llm_order
+
 
     if (window.user){
       if( botType == 'user_bot'){
@@ -9997,7 +10016,7 @@ chatElementRef2.initialMessages = [
     nextLLM,
     fallbackLLM
   ) => {
-    console.log("anthropic", userInputMessage);
+    console.log("anthropic", userInputMessage, nextLLM);
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -10520,6 +10539,74 @@ chatElementRef2.initialMessages = [
 
   let calledOnceError = 0;
 
+async function callLLM(userInputMessage) {
+  for (let i = 0; i < LLMOrder.providers.length; i++) {
+    let provider = LLMOrder.providers[i] || 'gemini';
+    let models = LLMOrder.models[provider] || [];
+
+    for (let j = 0; j < models.length; j++) {
+      let selectedModel = models[j];
+      let apiURL = "";
+      let bodyData = {};
+
+      try {
+        if (provider === 'gemini') {
+          apiURL = "https://next-js-gemini-frontend.vercel.app/api/gemini-stream";
+          bodyData = {
+            prompt: userInputMessage,
+            selectedModel,
+            // systemInstructions: "",
+          };
+        } 
+        else if (provider === 'gpt') {
+          apiURL = "/api/openai";
+          bodyData = {
+            userInput: userInputMessage,
+            selectedModel,
+            systemInstructions: LLMsystemInstructions,
+          };
+        } 
+        else if (provider === 'anthropic') {
+          apiURL = "/api/anthropic";
+          bodyData = {
+            userInput: userInputMessage,
+            selectedModel,
+            systemInstructions: LLMsystemInstructions,
+          };
+        } 
+        else {
+          console.error("Unknown model type:", provider);
+          continue;
+        }
+
+        console.info(`Trying provider: ${provider}, model: ${selectedModel}`);
+
+        const response = await fetch(apiURL, {
+          method: "POST",
+          body: JSON.stringify(bodyData),
+        });
+
+        if (response.ok) {
+          return response; // ✅ Success — stop here
+        } else {
+          console.warn(`Failed with ${provider} ${selectedModel}:`, response.status);
+        }
+
+      } catch (err) {
+        console.error(`Error with ${provider} ${selectedModel}:`, err);
+      }
+    }
+  }
+
+  // If all fail
+  enableEndSessionButton();
+  signals.onResponse({
+    html: `<p style='font-size: 14px;color: #991b1b;'><b>All providers failed. Please try again.</b></p>`,
+  });
+}
+
+
+
   const GeminiAiResponse = async (
     userInputMessage,
     signals,
@@ -10527,13 +10614,13 @@ chatElementRef2.initialMessages = [
     latestMessage,
     streamWithAudio,
     selectedModel,
-    nextModel
-    // nextLLM,
-    // fallbackLLM
+    nextModel,
+    provider='gemini', //can be gemini, gpt, anthropic
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
-    console.log("prompt", userInputMessage);
+    console.log(provider,' model', selectedModel, nextModel);
+    console.log(provider, " prompt", userInputMessage,);
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -10598,15 +10685,9 @@ chatElementRef2.initialMessages = [
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
-    const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
-      //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
-      method: "POST",
-      body: JSON.stringify({
-        prompt: userInputMessage,
-        selectedModel: selectedModel || "gemini-2.0-flash",
-        systemInstructions: LLMsystemInstructions,
-      }),
-    });
+    const response = await callLLM(userInputMessage)
+
+    if (!response) return;
 
     if (response.ok) {
       const reader = response.body.getReader();
@@ -10617,21 +10698,6 @@ chatElementRef2.initialMessages = [
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
-          // if (streamWithAudio) {
-          //   messageBubble.appendChild(audioDiv);
-          //   audioSourceOpen(
-          //     text,
-          //     audioDiv,
-          //     0,
-          //     randomIdForAudioElement,
-          //     signals
-          //   );
-          // } else {
-          //   signals.onResponse({
-          //     html: ".",
-          //   });
-          // }
-
           allMessages.forEach((indvMessage) => {
             if (
               indvMessage.innerText === "." ||
@@ -10654,13 +10720,6 @@ chatElementRef2.initialMessages = [
             messageText.innerText +=
               " \n\n Please explain your question or comment in different words which I may be able to understand better.";
             if (streamWithAudio) {
-              // audioSourceOpen(
-              //   "Please explain your question or comment in different words which I may be able to understand better.",
-              //   audioDiv,
-              //   1,
-              //   randomIdForAudioElement
-              // );
-
               text += " Please explain your question or comment in different words which I may be able to understand better.";
             }
           }
@@ -10669,25 +10728,12 @@ chatElementRef2.initialMessages = [
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
-              // audioSourceOpen(
-              //   " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-              //   audioDiv,
-              //   1,
-              //   randomIdForAudioElement
-              // );
-
               text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
-              // audioSourceOpen(
-              //   "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-              //   audioDiv,
-              //   1,
-              //   randomIdForAudioElement
-              // );
 
               text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
             }
@@ -10792,43 +10838,46 @@ chatElementRef2.initialMessages = [
             console.log(likeIcon, dislikeIcon);
 
             // Add hover effect
-            likeIcon.addEventListener("mouseover", function () {
-              likeIcon.querySelector("svg").style.stroke = "black";
-              likeIcon.style.cursor = "pointer";
-            });
+            if (likeIcon && dislikeIcon) {
 
-            likeIcon.addEventListener("mouseout", function () {
-              likeIcon.querySelector("svg").style.stroke = "gray";
-              likeIcon.style.cursor = "normal";
-            });
-
-            dislikeIcon.addEventListener("mouseover", function () {
-              dislikeIcon.querySelector("svg").style.stroke = "black";
-              dislikeIcon.style.cursor = "pointer";
-            });
-
-            dislikeIcon.addEventListener("mouseout", function () {
-              dislikeIcon.querySelector("svg").style.stroke = "gray";
-              dislikeIcon.style.cursor = "normal";
-            });
-
-            // Add click functionality
-            likeIcon.addEventListener("click", function () {
-              if (!likeIcon.classList.contains("active")) {
-                likeIcon.classList.add("active");
-                likeIcon.querySelector("svg").style.fill = "gray";
+              likeIcon.addEventListener("mouseover", function () {
                 likeIcon.querySelector("svg").style.stroke = "black";
-                dislikeIcon.classList.remove("active");
-                dislikeIcon.querySelector("svg").style.stroke = "gray";
-                dislikeIcon.querySelector("svg").style.fill = "transparent";
-              } else {
-                likeIcon.querySelector("svg").style.fill = "transparent";
+                likeIcon.style.cursor = "pointer";
+              });
+  
+              likeIcon.addEventListener("mouseout", function () {
                 likeIcon.querySelector("svg").style.stroke = "gray";
-                likeIcon.classList.remove("active");
-              }
-            });
+                likeIcon.style.cursor = "normal";
+              });
+  
+              
+  
+              // Add click functionality
+              likeIcon.addEventListener("click", function () {
+                if (!likeIcon.classList.contains("active")) {
+                  likeIcon.classList.add("active");
+                  likeIcon.querySelector("svg").style.fill = "gray";
+                  likeIcon.querySelector("svg").style.stroke = "black";
+                  dislikeIcon.classList.remove("active");
+                  dislikeIcon.querySelector("svg").style.stroke = "gray";
+                  dislikeIcon.querySelector("svg").style.fill = "transparent";
+                } else {
+                  likeIcon.querySelector("svg").style.fill = "transparent";
+                  likeIcon.querySelector("svg").style.stroke = "gray";
+                  likeIcon.classList.remove("active");
+                }
+              });
 
-            dislikeIcon.addEventListener("click", function () {
+              dislikeIcon.addEventListener("mouseover", function () {
+                              dislikeIcon.querySelector("svg").style.stroke = "black";
+                              dislikeIcon.style.cursor = "pointer";
+                            });
+  
+              dislikeIcon.addEventListener("mouseout", function () {
+                dislikeIcon.querySelector("svg").style.stroke = "gray";
+                dislikeIcon.style.cursor = "normal";
+              });
+              dislikeIcon.addEventListener("click", function () {
               if (!dislikeIcon.classList.contains("active")) {
                 dislikeIcon.classList.add("active");
                 dislikeIcon.querySelector("svg").style.fill = "gray";
@@ -10842,6 +10891,8 @@ chatElementRef2.initialMessages = [
                 dislikeIcon.classList.remove("active");
               }
             });
+            }
+            
           }, 100);
 
           console.log("Stream complete");
@@ -10944,6 +10995,7 @@ chatElementRef2.initialMessages = [
         index++;
       }
     } else {
+      console.log('failing gemini with model', selectedModel, 'now try with model: ', nextModel)
       if (calledOnceError < 3) {
         calledOnceError += 1;
         GeminiAiResponse(
@@ -10972,25 +11024,6 @@ chatElementRef2.initialMessages = [
           }
         });
       }
-      // if(nextLLM?.toLowerCase().includes("gpt")){
-      //   OpenAiResponse(
-      //     userInputMessage,
-      //     signals,
-      //     conversationId,
-      //     latestMessage,
-      //     streamWithAudio,
-      //     fallbackLLM
-      //   );
-      // } else {
-      //   anthropicAiResponse(
-      //     userInputMessage,
-      //     signals,
-      //     conversationId,
-      //     latestMessage,
-      //     streamWithAudio,
-      //     fallbackLLM
-      //   );
-      // }
     }
   };
 
@@ -12307,8 +12340,8 @@ chatElementRef2.initialMessages = [
                   conversation_id2,
                   latestMessage,
                   true, // True by Default | allowAudioInteraction,
-                  "gemini-2.0-flash",
-                  "gemini-2.0-flash-lite-001"
+                  "gemini-2.5-flash",
+                  "gemini-2.0-flash"
                 );
               } else {
                 console.log("#similarity LAST QUESTION:", userQuestionsHistory.at(-1));
@@ -12337,7 +12370,7 @@ chatElementRef2.initialMessages = [
                 console.log("#similarity SIMILARITY VALUE:", similarityValue);
                 console.log("#similarity LLM Queue:", conversationLlmQueue);
 
-                const botSelectedLLM = ["gemini-2.0-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
+                const botSelectedLLM = ["gemini-2.5-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
                 const messageFrequency = userQuestionsHistory.filter(
                   (msg) => msg?.toLowerCase() === latestMessage.toLowerCase()
                 ).length;

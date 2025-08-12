@@ -8,7 +8,7 @@ const anthropic = new Anthropic({
 
 export async function POST(req: Request) {
   try {
-    const { userInput } = await req.json();
+    const { userInput, selectedModel="claude-3-haiku-20240307" } = await req.json();
     console.log("User input:", userInput);
 
     if (!userInput || typeof userInput !== "string") {
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const response = await anthropic.messages.create({
       max_tokens: 1000,
       messages: [{ role: "user", content: userInput }],
-      model: "claude-3-haiku-20240307",
+      model: selectedModel,
       temperature: 1,
       stream: true,
     });
