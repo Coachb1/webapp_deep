@@ -3087,10 +3087,6 @@ async function handleIntakeQues(btn) {
       formContainer.innerHTML = `
         <div style="font-size: 14px; color: #333; line-height: 1.4;">
           <strong>✅ Intake Submitted</strong><br>
-          <strong>Name:</strong> ${formData.Name}<br>
-          <strong>Role:</strong> ${formData.Role}<br>
-          <strong>Department:</strong> ${formData.Department}<br>
-          <strong>Team Size:</strong> ${formData.Team}
         </div>
       `;
     }
@@ -4311,7 +4307,7 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-      appendMessage2(`<b>Your session has completed. You will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`)
+      appendMessage2(`<b>Your session has completed. Your session summary, if enabled,  will be emailed to you. Now, you can start new session by clicking "Begin session".</b>`)
     }
   }
 
@@ -8304,17 +8300,8 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
       </div>`
     }
   } else if (type === 'bot') {
-    return `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-        <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
-              <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
-              <li><strong>3. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
-              <li><strong>4. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
-              <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-        </ul>
-      </div>
-      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+    return `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot Coaching interaction guide</b>
         <ol style="list-style-type: none;">
           <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
@@ -8343,10 +8330,28 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
           <li><strong>7. Ask Follow-Up Questions:</strong> As you implement the suggestions from your AI Coach, don't hesitate to ask follow-up questions if you encounter challenges or need further clarification.</li>
           <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
         </ol>
-      </div>`
+      </div>
+      
+        <span id="close-instructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </span>
+      
+      `
 
   }
 }
+
+document.addEventListener("click", function (event) {
+    if (event.target.closest("#close-instructions-pane")) {
+        const instructionsPane = document.getElementById("instructions-pane");
+        if (instructionsPane) {
+            instructionsPane.style.display = "none";
+        }
+    }
+});
 
 const StopSession = async() =>{
   await window.cancelTestStt(participantId2); // cancelling session
@@ -8823,6 +8828,34 @@ loadExternalModule().then(() => {
     <span class="toggle-text">Yes</span>
   </div>
 </div>
+<button id="mindmap-btn" 
+    style="display:none; margin-left:0px; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Mindmap
+</button>
+<div class="header-actions">
+    <div class="assessment-dropdown">
+        <button id="assessment-btn" style="display:none; margin-left:0px; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+            Assessment
+        </button>
+        <div id="assessment-menu" style="display:none; position:absolute; margin-top:10px; right:20px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:130px; z-index:1000;">
+            <div class="dropdown-item" data-assessment="1" style="display: flex; align-items: center; gap: 8px; padding:5px; cursor:pointer; border-radius:4px; transition: background-color 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" 
+                  width="16" height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" stroke="blue" 
+                  stroke-width="2" stroke-linecap="round" 
+                  stroke-linejoin="round">
+                <path d="M15 3h6v6"/>
+                <path d="M10 14 21 3"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              </svg>
+              <span style="color:black;">Assessment 1</span>
+            </div>
+            
+
+        </div>
+    </div>
+</div>
 </div>
 
 <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -9231,6 +9264,13 @@ window.addEventListener("resize", adjustHeaderLayout);
   console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
+    const assessmentBtn = document.getElementById("assessment-btn");
+    if (assessmentBtn) {
+      assessmentBtn.style.display = "block";}
+    const mindmapBtn = document.getElementById("mindmap-btn");
+    if (mindmapBtn) {
+      mindmapBtn.style.display = "block";
+    }
   } else {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
@@ -14718,4 +14758,33 @@ const closeFromTop2 = () => {
 
 window.openChatContainer2 = openChatContainer2;
 
-  
+document.addEventListener("click", function (event) {
+    if (event.target.id === "mindmap-btn") {
+        window.open("https://view.coachbots.com/share/cme5tzmmu0001k10446alv3fs/tour", "_blank");
+    }
+});
+
+document.addEventListener("click", function (event) {
+    if (event.target.closest("#assessment-btn")) {
+        const menu = document.getElementById("assessment-menu");
+        menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+    } 
+    else if (event.target.closest(".dropdown-item")) {
+        const item = event.target.closest(".dropdown-item");
+        const assessment = item.getAttribute("data-assessment");
+        
+        if (assessment === "1") {
+            window.open("https://link.coachbots.com/deee5c2b", "_blank");
+        } 
+        else if (assessment === "2") {
+            window.open("https://your-link-to-assessment2.com", "_blank");
+        } 
+        else if (assessment === "3") {
+            window.open("https://your-link-to-assessment3.com", "_blank");
+        }
+    } 
+    else {
+        document.getElementById("assessment-menu").style.display = "none";
+    }
+});
+
