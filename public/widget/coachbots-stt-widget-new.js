@@ -490,7 +490,8 @@ let LLMOrder = {
     ]
   }
 }
-
+let MindMapLinks;
+let AssessmentLinks;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -2327,6 +2328,73 @@ async function setupBotAndProceed() {
   return botId;
 }
 
+const getMindmapandAssessment = async (user_id) => {
+  try {
+    const response = await fetch(`${baseURL2}/accounts/get-mindmap-and-assessments-report/?user_id=${user_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.log("Error fetching mindmaps and assessments");
+    }
+
+    const data = await response.json();
+    console.log("Mindmaps and Assessments: ", data);
+    MindMapLinks = data.mindmaps || [];
+    AssessmentLinks = data.assessments || [];
+    return data;
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+};
+
+// Utility to populate dropdowns
+async function populateDropdown(menuId ) {
+    if (botId === undefined || botId === null) {
+      return;
+    }
+    const menu = document.getElementById(menuId);
+    menu.innerHTML = ""; // clear existing
+
+    if (!MindMapLinks || !AssessmentLinks) {
+      await getMindmapandAssessment(userId2);
+    }
+
+    let items = [];
+    if (menuId === "mindmap-menu") {
+      const mindmapBtn = document.getElementById("mindmap-btn");
+      items = MindMapLinks || [];
+      mindmapBtn.style.display = items.length > 0 ? "block" : "none";
+    } else if (menuId === "assessment-menu") {
+      const assessmentBtn = document.getElementById("assessment-btn");
+      items = AssessmentLinks || [];
+      assessmentBtn.style.display = items.length > 0 ? "block" : "none";
+    }
+
+    items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "dropdown-item";
+        div.style.cssText = "display:flex; align-items:center; gap:8px; padding:5px; cursor:pointer; border-radius:4px; transition: background-color 0.2s;";
+        div.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 viewBox="0 0 24 24" fill="none" stroke="blue"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6"/>
+                <path d="M10 14 21 3"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            </svg>
+            <span style="color:black;">${item.name}</span>
+        `;
+        div.addEventListener("click", () => {
+            window.open(item.link, "_blank");
+        });
+        menu.appendChild(div);
+    });
+}
+
 const getBotDetails2 = async (botId) => {
   try {
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
@@ -2373,6 +2441,9 @@ const getBotDetails2 = async (botId) => {
       } else {
         updateAudioAllowed(true, true)
       }
+
+      populateDropdown("mindmap-menu");
+      populateDropdown("assessment-menu");
     }
    
 
@@ -8853,34 +8924,26 @@ loadExternalModule().then(() => {
     <span class="toggle-text">Yes</span>
   </div>
 </div>
-<button id="mindmap-btn" 
-    style="display:none; margin-left:0px; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    Mindmap
-</button>
-<div class="header-actions">
-    <div class="assessment-dropdown">
-        <button id="assessment-btn" style="display:none; margin-left:0px; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-            Assessment
-        </button>
-        <div id="assessment-menu" style="display:none; position:absolute; margin-top:10px; right:20px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:130px; z-index:1000;">
-            <div class="dropdown-item" data-assessment="1" style="display: flex; align-items: center; gap: 8px; padding:5px; cursor:pointer; border-radius:4px; transition: background-color 0.2s;">
-              <svg xmlns="http://www.w3.org/2000/svg" 
-                  width="16" height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" stroke="blue" 
-                  stroke-width="2" stroke-linecap="round" 
-                  stroke-linejoin="round">
-                <path d="M15 3h6v6"/>
-                <path d="M10 14 21 3"/>
-                <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-              </svg>
-              <span style="color:black;">Assessment 1</span>
-            </div>
-            
-
-        </div>
+<!-- Mindmap Button + Dropdown -->
+<div class="dropdown">
+    <button id="mindmap-btn" style="display:none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+        Mindmap
+    </button>
+    <div id="mindmap-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
     </div>
 </div>
+
+<!-- Assessment Button + Dropdown -->
+<div class="dropdown">
+    <button id="assessment-btn" style="display:none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+        Assessment
+    </button>
+    <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
+    </div>
+</div>
+
 </div>
 
 <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -9289,13 +9352,6 @@ window.addEventListener("resize", adjustHeaderLayout);
   console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
-    const assessmentBtn = document.getElementById("assessment-btn");
-    if (assessmentBtn) {
-      assessmentBtn.style.display = "block";}
-    const mindmapBtn = document.getElementById("mindmap-btn");
-    if (mindmapBtn) {
-      mindmapBtn.style.display = "block";
-    }
   } else {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
@@ -11765,6 +11821,9 @@ function cleanTextForAudio(text) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
                   console.log('selectedResponseType ', selectedResponseType)
                   await updateResponseStyle("icf_aligned_coach");
+
+                  populateDropdown("mindmap-menu");
+                  populateDropdown("assessment-menu");
                 }
 
                 if (botType != 'user_bot')  updateAudioAllowed(true, true)
@@ -14919,33 +14978,22 @@ const closeFromTop2 = () => {
 
 window.openChatContainer2 = openChatContainer2;
 
+
+// Dropdown toggle
 document.addEventListener("click", function (event) {
-    if (event.target.id === "mindmap-btn") {
-        window.open("https://view.coachbots.com/share/cme5tzmmu0001k10446alv3fs/tour", "_blank");
+    const mindmapMenu = document.getElementById("mindmap-menu");
+    const assessmentMenu = document.getElementById("assessment-menu");
+
+    if (event.target.closest("#mindmap-btn")) {
+        mindmapMenu.style.display = mindmapMenu.style.display === "block" ? "none" : "block";
+        assessmentMenu.style.display = "none";
+    }
+    else if (event.target.closest("#assessment-btn")) {
+        assessmentMenu.style.display = assessmentMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+    }
+    else if (!event.target.closest(".dropdown-menu")) {
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
     }
 });
-
-document.addEventListener("click", function (event) {
-    if (event.target.closest("#assessment-btn")) {
-        const menu = document.getElementById("assessment-menu");
-        menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
-    } 
-    else if (event.target.closest(".dropdown-item")) {
-        const item = event.target.closest(".dropdown-item");
-        const assessment = item.getAttribute("data-assessment");
-        
-        if (assessment === "1") {
-            window.open("https://link.coachbots.com/deee5c2b", "_blank");
-        } 
-        else if (assessment === "2") {
-            window.open("https://your-link-to-assessment2.com", "_blank");
-        } 
-        else if (assessment === "3") {
-            window.open("https://your-link-to-assessment3.com", "_blank");
-        }
-    } 
-    else {
-        document.getElementById("assessment-menu").style.display = "none";
-    }
-});
-
