@@ -1865,7 +1865,7 @@ function populateChatHistory(chatId) {
     const participantMessage = entry.participant_message_text?.trim();
 
     if (coachMessage && index !== 0) {
-      appendMessage2(coachMessage);
+      appendMessage2(parseMarkdown(coachMessage));
     }
 
     if (participantMessage) {
@@ -1875,7 +1875,7 @@ function populateChatHistory(chatId) {
         .trim();
 
       if (cleanedMessage) {
-        appendMessageForUser2(cleanedMessage);
+        appendMessageForUser2(parseMarkdown(cleanedMessage));
       }
     }
   });
@@ -4843,6 +4843,12 @@ function parseMarkdown(markdown) {
   markdown = markdown.replace(/(?:\*|_)(.*?)\1/g, "<em>$1</em>");
   // Handle links [text](url)
   markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  markdown = markdown.replace(
+  /(?<!href=")(https?:\/\/[^\s<)\]]+)([)\].,;!?]*)/,
+  '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; cursor: pointer;">$1</a>$2'
+);
+
   // Convert newlines (\n) to <br>
   markdown = markdown.replace(/\n/g, "<br>");
   // Preserve spaces for better formatting
@@ -10605,6 +10611,93 @@ async function callLLM(userInputMessage) {
   });
 }
 
+function cleanTextForAudio(text) {
+  if (!text || typeof text !== 'string') return '';
+  
+  console.log('Original text for audio:', text);
+  
+  let cleanText = text
+    // Remove emojis (comprehensive emoji regex)
+    .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+    
+    // Remove other emoji ranges
+    .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}]|[\u{2B50}]|[\u{2B55}]|[\u{2934}]|[\u{2935}]/gu, '')
+    
+    // Remove markdown formatting
+    .replace(/\*\*(.*?)\*\*/g, '$1')  // Bold
+    .replace(/\*(.*?)\*/g, '$1')      // Italic
+    .replace(/__(.*?)__/g, '$1')     // Bold underscore
+    .replace(/_(.*?)_/g, '$1')       // Italic underscore
+    .replace(/~~(.*?)~~/g, '$1')     // Strikethrough
+    .replace(/`(.*?)`/g, '$1')       // Inline code
+    .replace(/```[\s\S]*?```/g, '')  // Code blocks
+    
+    // Remove URLs (since they're not readable in audio) - be more specific
+    .replace(/https?:\/\/[^\s\)\]]+/g, '')
+    
+    // Remove HTML tags
+    .replace(/<[^>]*>/g, '')
+    
+    // Remove special symbols and characters that don't sound good in audio
+    .replace(/[🎯📊💼📈💡⚡🔥✨🌟⭐]/g, '')  // Common business emojis
+    .replace(/[→←↑↓⇒⇐⇑⇓]/g, '')          // Arrows
+    .replace(/[•·▪▫■□▲▼◆◇]/g, '')         // Bullet points and shapes
+    .replace(/[©®™℠]/g, '')               // Copyright symbols
+    .replace(/[€£¥₹$]/g, ' dollars ')     // Currency symbols (replace with word)
+    .replace(/[%]/g, ' percent ')         // Percent symbol
+    .replace(/[&]/g, ' and ')             // Ampersand
+    .replace(/[@#]/g, '')                 // Social media symbols
+    
+    // Clean up brackets and parentheses content that might be references
+    .replace(/\[URL:.*?\]/gi, '')         // Remove [URL: ...] references
+    .replace(/\(URL:.*?\)/gi, '')         // Remove (URL: ...) references
+    .replace(/\[.*?:\s*https?:\/\/.*?\]/gi, '') // Remove [text: URL] patterns
+    .replace(/\(\s*https?:\/\/[^\)]*\s*\)/gi, '') // Remove URLs in parentheses
+    
+    // Remove excessive punctuation and clean parentheses
+    .replace(/[.,;:!?]{2,}/g, '. ')      // Multiple punctuation
+    .replace(/[-_]{2,}/g, ' ')           // Multiple dashes/underscores
+    .replace(/\(\s*\)/g, '')             // Empty parentheses
+    .replace(/\[\s*\]/g, '')             // Empty brackets  
+    .replace(/\{\s*\}/g, '')             // Empty braces
+    
+    // Remove standalone numbers that might be references or IDs
+    .replace(/\b\d{4,}\b/g, '')          // Remove long numbers (likely IDs)
+    
+    // Clean up common text artifacts
+    .replace(/\n+/g, ' ')                // Newlines to spaces
+    .replace(/\t+/g, ' ')                // Tabs to spaces
+    .replace(/\s+/g, ' ')                // Multiple spaces to single
+    
+    // Replace common abbreviations with full words for better pronunciation
+    .replace(/\bDr\./gi, 'Doctor')
+    .replace(/\bMr\./gi, 'Mister')
+    .replace(/\bMrs\./gi, 'Missus')
+    .replace(/\bMs\./gi, 'Miss')
+    .replace(/\bProf\./gi, 'Professor')
+    .replace(/\betc\./gi, 'etcetera')
+    .replace(/\be\.g\./gi, 'for example')
+    .replace(/\bi\.e\./gi, 'that is')
+    .replace(/\bvs\./gi, 'versus')
+    .replace(/\bCEO\b/gi, 'Chief Executive Officer')
+    .replace(/\bCTO\b/gi, 'Chief Technology Officer')
+    .replace(/\bCFO\b/gi, 'Chief Financial Officer')
+    .replace(/\bHR\b/gi, 'Human Resources')
+    .replace(/\bAI\b/gi, 'Artificial Intelligence')
+    .replace(/\bAPI\b/gi, 'Application Programming Interface')
+    .replace(/\bUI\b/gi, 'User Interface')
+    .replace(/\bUX\b/gi, 'User Experience');
+
+  // Final cleanup - remove any remaining problematic characters
+  cleanText = cleanText
+    .replace(/[^\w\s.,!?;:+()'-]/g, ' ')  // Keep only basic punctuation and alphanumeric
+    .replace(/\s+/g, ' ')                // Ensure clean spacing
+    .trim();
+  
+  console.log('Cleaned text for audio:', cleanText);
+  
+  return cleanText;
+}
 
 
   const GeminiAiResponse = async (
@@ -10614,13 +10707,10 @@ async function callLLM(userInputMessage) {
     latestMessage,
     streamWithAudio,
     selectedModel,
-    nextModel,
-    provider='gemini', //can be gemini, gpt, anthropic
+    nextModel
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
-    console.log(provider,' model', selectedModel, nextModel);
-    console.log(provider, " prompt", userInputMessage,);
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -10672,16 +10762,7 @@ async function callLLM(userInputMessage) {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
     let audioDiv;
-    // audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
-    // audioDiv.style.width = "100%";
-    // audioDiv.style.height = "3rem";
-    // audioDiv.style.border = "1px solid lightgray";
-    // audioDiv.style.borderRadius = "4px";
-    // audioDiv.style.backgroundColor = "white";
-    // audioDiv.style.overflow = "hidden";
-    // audioDiv.style.marginBottom = "6px";
-    // // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
-    // audioDiv.style.display = "none";
+
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
@@ -10739,7 +10820,11 @@ async function callLLM(userInputMessage) {
             }
           }
 
+          messageText.innerHTML =  parseMarkdown(messageText.innerHTML);
+
           if (streamWithAudio) {
+            text = cleanTextForAudio(text);
+            console.log("text for audio", text);
             const encodedText = encodeURIComponent(text);
 
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
