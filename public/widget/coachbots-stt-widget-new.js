@@ -10561,7 +10561,7 @@ async function callLLM(userInputMessage) {
           bodyData = {
             prompt: userInputMessage,
             selectedModel,
-            // systemInstructions: "",
+            systemInstructions: botScenarioCase !== 'icons_by_ai'? LLMsystemInstructions : "respond within 200 tokens",
           };
         } 
         else if (provider === 'gpt') {
@@ -10719,7 +10719,7 @@ function cleanTextForAudio(text) {
     messageBubble.style.maxWidth = "100%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
-    messageBubble.style.padding = "4";
+    messageBubble.style.padding = "4px";
     messageBubble.style.backgroundColor = "#f3f4f6";
     messageBubble.style.color = "#374151";
 
@@ -10776,8 +10776,37 @@ function cleanTextForAudio(text) {
 
       let index = 0;
       let text = "";
+      const CHUNK_TIMEOUT = 5000; // 5s wait for data
+      const RETRY_DELAY = 2000;   // 2s delay before retry
+      let retries = 0;
+      const MAX_RETRIES = 2;
+
       while (true) {
-        const { done, value } = await reader?.read();
+        let chunk;
+        try {
+          chunk = await Promise.race([
+            reader.read(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Stream timeout")), CHUNK_TIMEOUT)
+            ),
+          ]);
+          console.log("Chunk received:", chunk);
+
+        } catch (err) {
+          console.error("Stream read error:", err.message);
+          if (retries < MAX_RETRIES) {
+            retries++;
+            console.log(`Retrying stream read in ${RETRY_DELAY / 1000}s...`);
+            await new Promise((res) => setTimeout(res, RETRY_DELAY));
+            continue; // try again without breaking
+          } else {
+            console.error("Max retries reached. Ending stream.");
+            break;
+          }
+        }
+
+
+        const { done, value } = chunk;
         if (done) {
           allMessages.forEach((indvMessage) => {
             if (
@@ -10819,13 +10848,13 @@ function cleanTextForAudio(text) {
               text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
             }
           }
+          console.log("STREAMED MESSAGE 1 -> ", messageText.innerText);
 
-          messageText.innerHTML =  parseMarkdown(messageText.innerHTML);
+          messageText.innerHTML =  parseMarkdown(messageText.innerText);
 
+     
           if (streamWithAudio) {
-            text = cleanTextForAudio(text);
-            console.log("text for audio", text);
-            const encodedText = encodeURIComponent(text);
+            const encodedText = encodeURIComponent(cleanTextForAudio(text));
 
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
             const response = await fetch(url, {
@@ -10909,6 +10938,22 @@ function cleanTextForAudio(text) {
                 }, 20);
               });
             }, 100);
+          } else {
+            signals.onResponse({
+                  html: "",
+                });
+                setTimeout(() => {
+                  allMessages.forEach((indvMessage) => {
+                    if (
+                      indvMessage.innerText === "." ||
+                      indvMessage.innerText === "..." ||
+                      indvMessage.innerText === " " ||
+                      indvMessage.innerText === ""
+                    ) {
+                      indvMessage.remove();
+                    }
+                  });
+                }, 20);
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
@@ -11051,30 +11096,28 @@ function cleanTextForAudio(text) {
           }
           return Promise.resolve();
         }
+        if (value) {
+          const decodedText = decoder.decode(value, { stream: !done });
+          console.log('recived decoded text: ',decodedText);
 
-        const decodedText = decoder.decode(value, { stream: !done });
-        console.log(decodedText);
+          messageText.innerText += excludeSpecialCharacters(decodedText);
+          text += excludeSpecialCharacters(decodedText);
 
-        messageText.innerText += excludeSpecialCharacters(decodedText);
-        text += excludeSpecialCharacters(decodedText);
+            //remove loading message
+            const divsToRemove = Array.from(
+              shadowRoot.querySelectorAll(".inner-message-container")
+            ).filter((div) => {
+              return Array.from(div.children).some((child) =>
+                child.classList.contains("loading-message-text")
+              );
+            });
 
-        if (!streamWithAudio) {
-          signals.onResponse({
-            html: ".",
-          });
+            divsToRemove.forEach((div) => {
+              div.remove();
+            });
+          
         } else {
-          //remove loading message
-          const divsToRemove = Array.from(
-            shadowRoot.querySelectorAll(".inner-message-container")
-          ).filter((div) => {
-            return Array.from(div.children).some((child) =>
-              child.classList.contains("loading-message-text")
-            );
-          });
-
-          divsToRemove.forEach((div) => {
-            div.remove();
-          });
+          console.warn("Empty stream chunk received");
         }
         shadowRoot.getElementById("messages").scrollBy(0, 500);
         index++;
