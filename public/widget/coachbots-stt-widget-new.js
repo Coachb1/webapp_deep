@@ -490,7 +490,8 @@ let LLMOrder = {
     ]
   }
 }
-
+let MindMapLinks;
+let AssessmentLinks;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -1865,7 +1866,7 @@ function populateChatHistory(chatId) {
     const participantMessage = entry.participant_message_text?.trim();
 
     if (coachMessage && index !== 0) {
-      appendMessage2(coachMessage);
+      appendMessage2(parseMarkdown(coachMessage));
     }
 
     if (participantMessage) {
@@ -1875,7 +1876,7 @@ function populateChatHistory(chatId) {
         .trim();
 
       if (cleanedMessage) {
-        appendMessageForUser2(cleanedMessage);
+        appendMessageForUser2(parseMarkdown(cleanedMessage));
       }
     }
   });
@@ -2327,6 +2328,73 @@ async function setupBotAndProceed() {
   return botId;
 }
 
+const getMindmapandAssessment = async (user_id) => {
+  try {
+    const response = await fetch(`${baseURL2}/accounts/get-mindmap-and-assessments-report/?user_id=${user_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.log("Error fetching mindmaps and assessments");
+    }
+
+    const data = await response.json();
+    console.log("Mindmaps and Assessments: ", data);
+    MindMapLinks = data.mindmaps || [];
+    AssessmentLinks = data.assessments || [];
+    return data;
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+};
+
+// Utility to populate dropdowns
+async function populateDropdown(menuId ) {
+    if (botId === undefined || botId === null) {
+      return;
+    }
+    const menu = document.getElementById(menuId);
+    menu.innerHTML = ""; // clear existing
+
+    if (!MindMapLinks || !AssessmentLinks) {
+      await getMindmapandAssessment(userId2);
+    }
+
+    let items = [];
+    if (menuId === "mindmap-menu") {
+      const mindmapBtn = document.getElementById("mindmap-btn");
+      items = MindMapLinks || [];
+      mindmapBtn.style.display = items.length > 0 ? "block" : "none";
+    } else if (menuId === "assessment-menu") {
+      const assessmentBtn = document.getElementById("assessment-btn");
+      items = AssessmentLinks || [];
+      assessmentBtn.style.display = items.length > 0 ? "block" : "none";
+    }
+
+    items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "dropdown-item";
+        div.style.cssText = "display:flex; align-items:center; gap:8px; padding:5px; cursor:pointer; border-radius:4px; transition: background-color 0.2s;";
+        div.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 viewBox="0 0 24 24" fill="none" stroke="blue"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6"/>
+                <path d="M10 14 21 3"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            </svg>
+            <span style="color:black;">${item.name}</span>
+        `;
+        div.addEventListener("click", () => {
+            window.open(item.link, "_blank");
+        });
+        menu.appendChild(div);
+    });
+}
+
 const getBotDetails2 = async (botId) => {
   try {
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
@@ -2373,6 +2441,9 @@ const getBotDetails2 = async (botId) => {
       } else {
         updateAudioAllowed(true, true)
       }
+
+      populateDropdown("mindmap-menu");
+      populateDropdown("assessment-menu");
     }
    
 
@@ -4843,6 +4914,12 @@ function parseMarkdown(markdown) {
   markdown = markdown.replace(/(?:\*|_)(.*?)\1/g, "<em>$1</em>");
   // Handle links [text](url)
   markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  markdown = markdown.replace(
+  /(?<!href=")(https?:\/\/[^\s<)\]]+)([)\].,;!?]*)/,
+  '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; cursor: pointer;">$1</a>$2'
+);
+
   // Convert newlines (\n) to <br>
   markdown = markdown.replace(/\n/g, "<br>");
   // Preserve spaces for better formatting
@@ -8847,34 +8924,26 @@ loadExternalModule().then(() => {
     <span class="toggle-text">Yes</span>
   </div>
 </div>
-<button id="mindmap-btn" 
-    style="display:none; margin-left:0px; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    Mindmap
-</button>
-<div class="header-actions">
-    <div class="assessment-dropdown">
-        <button id="assessment-btn" style="display:none; margin-left:0px; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-            Assessment
-        </button>
-        <div id="assessment-menu" style="display:none; position:absolute; margin-top:10px; right:20px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:130px; z-index:1000;">
-            <div class="dropdown-item" data-assessment="1" style="display: flex; align-items: center; gap: 8px; padding:5px; cursor:pointer; border-radius:4px; transition: background-color 0.2s;">
-              <svg xmlns="http://www.w3.org/2000/svg" 
-                  width="16" height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" stroke="blue" 
-                  stroke-width="2" stroke-linecap="round" 
-                  stroke-linejoin="round">
-                <path d="M15 3h6v6"/>
-                <path d="M10 14 21 3"/>
-                <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-              </svg>
-              <span style="color:black;">Assessment 1</span>
-            </div>
-            
-
-        </div>
+<!-- Mindmap Button + Dropdown -->
+<div class="dropdown">
+    <button id="mindmap-btn" style="display:none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+        Mindmap
+    </button>
+    <div id="mindmap-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
     </div>
 </div>
+
+<!-- Assessment Button + Dropdown -->
+<div class="dropdown">
+    <button id="assessment-btn" style="display:none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+        Assessment
+    </button>
+    <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
+    </div>
+</div>
+
 </div>
 
 <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
@@ -9283,13 +9352,6 @@ window.addEventListener("resize", adjustHeaderLayout);
   console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId);
-    const assessmentBtn = document.getElementById("assessment-btn");
-    if (assessmentBtn) {
-      assessmentBtn.style.display = "block";}
-    const mindmapBtn = document.getElementById("mindmap-btn");
-    if (mindmapBtn) {
-      mindmapBtn.style.display = "block";
-    }
   } else {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
@@ -10555,7 +10617,7 @@ async function callLLM(userInputMessage) {
           bodyData = {
             prompt: userInputMessage,
             selectedModel,
-            // systemInstructions: "",
+            systemInstructions: botScenarioCase !== 'icons_by_ai'? LLMsystemInstructions : "respond within 200 tokens",
           };
         } 
         else if (provider === 'gpt') {
@@ -10605,6 +10667,93 @@ async function callLLM(userInputMessage) {
   });
 }
 
+function cleanTextForAudio(text) {
+  if (!text || typeof text !== 'string') return '';
+  
+  console.log('Original text for audio:', text);
+  
+  let cleanText = text
+    // Remove emojis (comprehensive emoji regex)
+    .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+    
+    // Remove other emoji ranges
+    .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}]|[\u{2B50}]|[\u{2B55}]|[\u{2934}]|[\u{2935}]/gu, '')
+    
+    // Remove markdown formatting
+    .replace(/\*\*(.*?)\*\*/g, '$1')  // Bold
+    .replace(/\*(.*?)\*/g, '$1')      // Italic
+    .replace(/__(.*?)__/g, '$1')     // Bold underscore
+    .replace(/_(.*?)_/g, '$1')       // Italic underscore
+    .replace(/~~(.*?)~~/g, '$1')     // Strikethrough
+    .replace(/`(.*?)`/g, '$1')       // Inline code
+    .replace(/```[\s\S]*?```/g, '')  // Code blocks
+    
+    // Remove URLs (since they're not readable in audio) - be more specific
+    .replace(/https?:\/\/[^\s\)\]]+/g, '')
+    
+    // Remove HTML tags
+    .replace(/<[^>]*>/g, '')
+    
+    // Remove special symbols and characters that don't sound good in audio
+    .replace(/[🎯📊💼📈💡⚡🔥✨🌟⭐]/g, '')  // Common business emojis
+    .replace(/[→←↑↓⇒⇐⇑⇓]/g, '')          // Arrows
+    .replace(/[•·▪▫■□▲▼◆◇]/g, '')         // Bullet points and shapes
+    .replace(/[©®™℠]/g, '')               // Copyright symbols
+    .replace(/[€£¥₹$]/g, ' dollars ')     // Currency symbols (replace with word)
+    .replace(/[%]/g, ' percent ')         // Percent symbol
+    .replace(/[&]/g, ' and ')             // Ampersand
+    .replace(/[@#]/g, '')                 // Social media symbols
+    
+    // Clean up brackets and parentheses content that might be references
+    .replace(/\[URL:.*?\]/gi, '')         // Remove [URL: ...] references
+    .replace(/\(URL:.*?\)/gi, '')         // Remove (URL: ...) references
+    .replace(/\[.*?:\s*https?:\/\/.*?\]/gi, '') // Remove [text: URL] patterns
+    .replace(/\(\s*https?:\/\/[^\)]*\s*\)/gi, '') // Remove URLs in parentheses
+    
+    // Remove excessive punctuation and clean parentheses
+    .replace(/[.,;:!?]{2,}/g, '. ')      // Multiple punctuation
+    .replace(/[-_]{2,}/g, ' ')           // Multiple dashes/underscores
+    .replace(/\(\s*\)/g, '')             // Empty parentheses
+    .replace(/\[\s*\]/g, '')             // Empty brackets  
+    .replace(/\{\s*\}/g, '')             // Empty braces
+    
+    // Remove standalone numbers that might be references or IDs
+    .replace(/\b\d{4,}\b/g, '')          // Remove long numbers (likely IDs)
+    
+    // Clean up common text artifacts
+    .replace(/\n+/g, ' ')                // Newlines to spaces
+    .replace(/\t+/g, ' ')                // Tabs to spaces
+    .replace(/\s+/g, ' ')                // Multiple spaces to single
+    
+    // Replace common abbreviations with full words for better pronunciation
+    .replace(/\bDr\./gi, 'Doctor')
+    .replace(/\bMr\./gi, 'Mister')
+    .replace(/\bMrs\./gi, 'Missus')
+    .replace(/\bMs\./gi, 'Miss')
+    .replace(/\bProf\./gi, 'Professor')
+    .replace(/\betc\./gi, 'etcetera')
+    .replace(/\be\.g\./gi, 'for example')
+    .replace(/\bi\.e\./gi, 'that is')
+    .replace(/\bvs\./gi, 'versus')
+    .replace(/\bCEO\b/gi, 'Chief Executive Officer')
+    .replace(/\bCTO\b/gi, 'Chief Technology Officer')
+    .replace(/\bCFO\b/gi, 'Chief Financial Officer')
+    .replace(/\bHR\b/gi, 'Human Resources')
+    .replace(/\bAI\b/gi, 'Artificial Intelligence')
+    .replace(/\bAPI\b/gi, 'Application Programming Interface')
+    .replace(/\bUI\b/gi, 'User Interface')
+    .replace(/\bUX\b/gi, 'User Experience');
+
+  // Final cleanup - remove any remaining problematic characters
+  cleanText = cleanText
+    .replace(/[^\w\s.,!?;:+()'-]/g, ' ')  // Keep only basic punctuation and alphanumeric
+    .replace(/\s+/g, ' ')                // Ensure clean spacing
+    .trim();
+  
+  console.log('Cleaned text for audio:', cleanText);
+  
+  return cleanText;
+}
 
 
   const GeminiAiResponse = async (
@@ -10614,13 +10763,10 @@ async function callLLM(userInputMessage) {
     latestMessage,
     streamWithAudio,
     selectedModel,
-    nextModel,
-    provider='gemini', //can be gemini, gpt, anthropic
+    nextModel
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
-    console.log(provider,' model', selectedModel, nextModel);
-    console.log(provider, " prompt", userInputMessage,);
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -10629,7 +10775,7 @@ async function callLLM(userInputMessage) {
     messageBubble.style.maxWidth = "100%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
-    messageBubble.style.padding = "4";
+    messageBubble.style.padding = "4px";
     messageBubble.style.backgroundColor = "#f3f4f6";
     messageBubble.style.color = "#374151";
 
@@ -10672,16 +10818,7 @@ async function callLLM(userInputMessage) {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
     let audioDiv;
-    // audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
-    // audioDiv.style.width = "100%";
-    // audioDiv.style.height = "3rem";
-    // audioDiv.style.border = "1px solid lightgray";
-    // audioDiv.style.borderRadius = "4px";
-    // audioDiv.style.backgroundColor = "white";
-    // audioDiv.style.overflow = "hidden";
-    // audioDiv.style.marginBottom = "6px";
-    // // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
-    // audioDiv.style.display = "none";
+
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
@@ -10695,8 +10832,37 @@ async function callLLM(userInputMessage) {
 
       let index = 0;
       let text = "";
+      const CHUNK_TIMEOUT = 5000; // 5s wait for data
+      const RETRY_DELAY = 2000;   // 2s delay before retry
+      let retries = 0;
+      const MAX_RETRIES = 2;
+
       while (true) {
-        const { done, value } = await reader?.read();
+        let chunk;
+        try {
+          chunk = await Promise.race([
+            reader.read(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Stream timeout")), CHUNK_TIMEOUT)
+            ),
+          ]);
+          console.log("Chunk received:", chunk);
+
+        } catch (err) {
+          console.error("Stream read error:", err.message);
+          if (retries < MAX_RETRIES) {
+            retries++;
+            console.log(`Retrying stream read in ${RETRY_DELAY / 1000}s...`);
+            await new Promise((res) => setTimeout(res, RETRY_DELAY));
+            continue; // try again without breaking
+          } else {
+            console.error("Max retries reached. Ending stream.");
+            break;
+          }
+        }
+
+
+        const { done, value } = chunk;
         if (done) {
           allMessages.forEach((indvMessage) => {
             if (
@@ -10738,9 +10904,13 @@ async function callLLM(userInputMessage) {
               text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
             }
           }
+          console.log("STREAMED MESSAGE 1 -> ", messageText.innerText);
 
+          messageText.innerHTML =  parseMarkdown(messageText.innerText);
+
+     
           if (streamWithAudio) {
-            const encodedText = encodeURIComponent(text);
+            const encodedText = encodeURIComponent(cleanTextForAudio(text));
 
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
             const response = await fetch(url, {
@@ -10824,6 +10994,22 @@ async function callLLM(userInputMessage) {
                 }, 20);
               });
             }, 100);
+          } else {
+            signals.onResponse({
+                  html: "",
+                });
+                setTimeout(() => {
+                  allMessages.forEach((indvMessage) => {
+                    if (
+                      indvMessage.innerText === "." ||
+                      indvMessage.innerText === "..." ||
+                      indvMessage.innerText === " " ||
+                      indvMessage.innerText === ""
+                    ) {
+                      indvMessage.remove();
+                    }
+                  });
+                }, 20);
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
@@ -10966,30 +11152,28 @@ async function callLLM(userInputMessage) {
           }
           return Promise.resolve();
         }
+        if (value) {
+          const decodedText = decoder.decode(value, { stream: !done });
+          console.log('recived decoded text: ',decodedText);
 
-        const decodedText = decoder.decode(value, { stream: !done });
-        console.log(decodedText);
+          messageText.innerText += excludeSpecialCharacters(decodedText);
+          text += excludeSpecialCharacters(decodedText);
 
-        messageText.innerText += excludeSpecialCharacters(decodedText);
-        text += excludeSpecialCharacters(decodedText);
+            //remove loading message
+            const divsToRemove = Array.from(
+              shadowRoot.querySelectorAll(".inner-message-container")
+            ).filter((div) => {
+              return Array.from(div.children).some((child) =>
+                child.classList.contains("loading-message-text")
+              );
+            });
 
-        if (!streamWithAudio) {
-          signals.onResponse({
-            html: ".",
-          });
+            divsToRemove.forEach((div) => {
+              div.remove();
+            });
+          
         } else {
-          //remove loading message
-          const divsToRemove = Array.from(
-            shadowRoot.querySelectorAll(".inner-message-container")
-          ).filter((div) => {
-            return Array.from(div.children).some((child) =>
-              child.classList.contains("loading-message-text")
-            );
-          });
-
-          divsToRemove.forEach((div) => {
-            div.remove();
-          });
+          console.warn("Empty stream chunk received");
         }
         shadowRoot.getElementById("messages").scrollBy(0, 500);
         index++;
@@ -11637,6 +11821,9 @@ async function callLLM(userInputMessage) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
                   console.log('selectedResponseType ', selectedResponseType)
                   await updateResponseStyle("icf_aligned_coach");
+
+                  populateDropdown("mindmap-menu");
+                  populateDropdown("assessment-menu");
                 }
 
                 if (botType != 'user_bot')  updateAudioAllowed(true, true)
@@ -14791,33 +14978,22 @@ const closeFromTop2 = () => {
 
 window.openChatContainer2 = openChatContainer2;
 
+
+// Dropdown toggle
 document.addEventListener("click", function (event) {
-    if (event.target.id === "mindmap-btn") {
-        window.open("https://view.coachbots.com/share/cme5tzmmu0001k10446alv3fs/tour", "_blank");
+    const mindmapMenu = document.getElementById("mindmap-menu");
+    const assessmentMenu = document.getElementById("assessment-menu");
+
+    if (event.target.closest("#mindmap-btn")) {
+        mindmapMenu.style.display = mindmapMenu.style.display === "block" ? "none" : "block";
+        assessmentMenu.style.display = "none";
+    }
+    else if (event.target.closest("#assessment-btn")) {
+        assessmentMenu.style.display = assessmentMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+    }
+    else if (!event.target.closest(".dropdown-menu")) {
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
     }
 });
-
-document.addEventListener("click", function (event) {
-    if (event.target.closest("#assessment-btn")) {
-        const menu = document.getElementById("assessment-menu");
-        menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
-    } 
-    else if (event.target.closest(".dropdown-item")) {
-        const item = event.target.closest(".dropdown-item");
-        const assessment = item.getAttribute("data-assessment");
-        
-        if (assessment === "1") {
-            window.open("https://link.coachbots.com/deee5c2b", "_blank");
-        } 
-        else if (assessment === "2") {
-            window.open("https://your-link-to-assessment2.com", "_blank");
-        } 
-        else if (assessment === "3") {
-            window.open("https://your-link-to-assessment3.com", "_blank");
-        }
-    } 
-    else {
-        document.getElementById("assessment-menu").style.display = "none";
-    }
-});
-
