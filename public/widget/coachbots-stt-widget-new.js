@@ -101,14 +101,14 @@ style.textContent = `
 }
 
 .audio-interaction .label {
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .toggle-wrapper {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .toggle-text {
@@ -172,7 +172,7 @@ style.textContent = `
 
     @media screen and (max-width: 426px) {
       #chat-container2 {
-        width: auto !important;
+        width: 100% !important;
         height: 100vh !important;
         left: 0 !important;
         top: 0 !important;
@@ -203,15 +203,29 @@ style.textContent = `
     <style>
   #bot-header-logo-2 {
     display: flex;
-    flex-wrap: wrap; /* allows wrapping on small screens */
+    flex-wrap: nowrap !important; 
     justify-content: space-between;
     align-items: center;
     gap: 8px;
     background-color: #f3f4f6;
     border-radius: 1rem 1rem 0 0;
-    padding: 2px 0 0 2px;
+    padding: 2px 2px 0 2px;
+  overflow-x: auto !important;
+  scrollbar-width: none !important; 
+}
+#bot-header-logo-2::-webkit-scrollbar {
+  display: none !important; 
+}
+  @media (max-width: 1024px) {
+  #bot-header-logo-2 {
+    overflow-x: auto;
   }
-
+}
+@media (max-width: 768px) {
+  #bot-header-logo-2 {
+    flex-wrap: wrap;
+  }
+}
   #chat-history-wrapper,
   #response-style {
     display: flex;
@@ -227,7 +241,7 @@ style.textContent = `
     margin-left: 8px;
     cursor: pointer;
     vertical-align: middle;
-    min-width: 160px;
+    min-width: 100px;
   }
 
   /* Responsive behavior */
@@ -242,7 +256,13 @@ style.textContent = `
     #chatHistoryDropdown,
     #style-selector {
       width: 100%;
-      margin-left: 0;
+      margin-left: 5px;
+    }
+
+    #close-top2{
+      position: absolute;
+      top: 15px;
+      left: 0;
     }
   }
 </style>
@@ -5770,6 +5790,10 @@ function isAudioURL(url) {
 }
 
 const handleProceedClickStt = async (choice) => {
+
+  try {
+
+    console.log("Proceed clicked with choice:", choice);
   if (choice == "Yes") {
     if (testCountDown > 0){
     startModernTimer(testCountDown, async () => {
@@ -6364,6 +6388,20 @@ const handleProceedClickStt = async (choice) => {
     //enable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input");
     textInputElement.removeAttribute("onpaste");
+  }
+  } catch (error) { 
+    console.error("Error in handleProceedClickStt:", error);
+    // resetallvariable and show error
+    resetAllVariablesStt();
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    error_message = '<b style="color: red;">Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again.</b>'
+    que_msg.innerHTML = error_message;
+    // customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
   }
 };
 
@@ -8832,6 +8870,8 @@ loadExternalModule().then(() => {
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
       padding: ${snippetOrigin() === "internal" ? "0" : "0.4rem 0 0 0"};
+      overflow-x: auto;
+      overflow-y: hidden;
     ">
     <div 
   id="bot-header-logo-2"
@@ -8857,7 +8897,7 @@ loadExternalModule().then(() => {
       line-height: 20px;
       font-weight: 800;
       align-items: center;
-      display: ${window.origin === 'internal' ? 'none' : 'flex'}
+      display: none
     "
   >
     <span 
@@ -8914,7 +8954,7 @@ loadExternalModule().then(() => {
 <div id="response-style" style="position: relative; display: none">
 </div>
 <div id="audio-interaction" class="audio-interaction" style='display: none'>
-  <p class="label">Audio:</p>
+  <p class="label" style="margin:0px;">🔊</p>
   <div class="toggle-wrapper">
     <span class="toggle-text">No</span>
     <label class="switch">
@@ -9205,7 +9245,7 @@ loadExternalModule().then(() => {
       const logoWidth = parseFloat(logoStyles.width);
       const logoHeight = parseFloat(logoStyles.height);
 
-      dropdown.style.width = (logoWidth * 3) + "px";
+      dropdown.style.width = (logoWidth * 2) + "px";
       dropdown.style.height = logoHeight;
     }
   }
@@ -9790,6 +9830,7 @@ chatElementRef2.initialMessages = [
       }
     } catch (error) {
       console.error(`Error in getSessionStatus: ${error}`);
+      throw new Error(`Failed to fetch session status: ${error}`);
     }
   };
 
@@ -12792,7 +12833,7 @@ function cleanTextForAudio(text) {
           }
           // to check session is active or not
           if (!isTestCode2(latestMessage)) {
-            await getSessionStatusStt(sessionId2);
+              await getSessionStatusStt(sessionId2);
             // getting text which is from option-button-container
             const shadowRoot =
               document.getElementById("chat-element2").shadowRoot;
