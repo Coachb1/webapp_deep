@@ -5790,6 +5790,10 @@ function isAudioURL(url) {
 }
 
 const handleProceedClickStt = async (choice) => {
+
+  try {
+
+    console.log("Proceed clicked with choice:", choice);
   if (choice == "Yes") {
     if (testCountDown > 0){
     startModernTimer(testCountDown, async () => {
@@ -6384,6 +6388,20 @@ const handleProceedClickStt = async (choice) => {
     //enable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input");
     textInputElement.removeAttribute("onpaste");
+  }
+  } catch (error) { 
+    console.error("Error in handleProceedClickStt:", error);
+    // resetallvariable and show error
+    resetAllVariablesStt();
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    error_message = '<b style="color: red;">Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again.</b>'
+    que_msg.innerHTML = error_message;
+    // customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
   }
 };
 
@@ -8879,7 +8897,7 @@ loadExternalModule().then(() => {
       line-height: 20px;
       font-weight: 800;
       align-items: center;
-      display: ${window.origin === 'internal' ? 'none' : 'flex'}
+      display: none
     "
   >
     <span 
@@ -9812,6 +9830,7 @@ chatElementRef2.initialMessages = [
       }
     } catch (error) {
       console.error(`Error in getSessionStatus: ${error}`);
+      throw new Error(`Failed to fetch session status: ${error}`);
     }
   };
 
@@ -12814,7 +12833,7 @@ function cleanTextForAudio(text) {
           }
           // to check session is active or not
           if (!isTestCode2(latestMessage)) {
-            await getSessionStatusStt(sessionId2);
+              await getSessionStatusStt(sessionId2);
             // getting text which is from option-button-container
             const shadowRoot =
               document.getElementById("chat-element2").shadowRoot;
