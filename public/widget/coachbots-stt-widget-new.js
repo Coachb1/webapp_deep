@@ -8953,7 +8953,7 @@ loadExternalModule().then(() => {
 </div>
 <div id="response-style" style="position: relative; display: none">
 </div>
-<div id="audio-interaction" class="audio-interaction" style='display: none'>
+<div id="audio-interaction" class="audio-interaction">
   <p class="label" style="margin:0px;">🔊</p>
   <div class="toggle-wrapper">
     <span class="toggle-text">No</span>
