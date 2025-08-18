@@ -38,6 +38,7 @@ const LayoutComponent = ({
   restrictedPages: string;
 }) => {
   const pathname = usePathname();
+  console.log("pathname: ", pathname);
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
@@ -231,24 +232,24 @@ const LayoutComponent = ({
   return (
     <>
       <>
-        {!user ? (
+        {!user && !pathname.includes("/job-aid") ? (
           <LoginWall />
         ) : (
           <>
-            {isRestricted && ( //Unauth page
+            {isRestricted && !pathname.includes("/job-aid") && ( //Unauth page
               <>
                 <UnAuth user={user} />
               </>
             )}
-            {isDemoUser && ( //demo page
+            {isDemoUser && !pathname.includes("/job-aid") && ( //demo page
               <>
                 <DemoPage user={user} />
               </>
             )}
             {!isDemoUser &&
-              !isRestricted && ( //proceed
+              !isRestricted &&
+              !pathname.includes("/job-aid") && ( //proceed
                 <>
-                  {" "}
                   {subdomain === "platform" ? (
                     <div className="coachbots-coachtalk"></div>
                   ) : (
@@ -262,7 +263,9 @@ const LayoutComponent = ({
                   ) : (
                     <div className="coachbots-coachscribe"></div>
                   )}
-                  {!pathname.includes("/feedback") &&
+                  {  
+                    !pathname.includes("/job-aid") &&
+                    !pathname.includes("/feedback") &&
                     !pathname.includes("/coach") &&
                     !pathname.includes("/subject-expert") &&
                     !pathname.includes("/knowledge-bot") &&
@@ -285,6 +288,7 @@ const LayoutComponent = ({
                   )}
                 </>
               )}
+            {pathname.includes("/job-aid") && <div className="z-[999]">{children}</div>}
           </>
         )}
       </>
