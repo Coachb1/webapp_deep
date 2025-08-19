@@ -483,10 +483,10 @@ let USE_CUSTOM_STT = false;
 let finalTranscriptAccumulator = "";
 let widgetHeight = `clamp(100px, 85vh, calc(100vh - 83px))`
 let widgetWidth = `auto`
-let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`;
+let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575631/twbwglxpze4kbxaotms4.jpg`;
 
 if (window.location.pathname.startsWith('/coach/')) {
-  widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1753852561/uzvcufh7w5ezxs2oyjeg.png`;
+  widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575609/zmvwlpahzrxijcdkhs3r.jpg`;
 }
 let InstructinoMediaLinkStt;
 let selectedChatId = null;
@@ -1965,11 +1965,11 @@ async function populateChatHistoryOptions(refresh = false) {
         chat.summary.includes('No Summary');
 
       const truncated = chat.summary && chat.summary.length > 30
-        ? chat.summary.slice(0, 30) + "..."
-        : chat.summary || `Chat ${chat.uid}`;
+        ? chat.summary.slice(0, 20) + "..."
+        : chat.summary || `Chat ${chat.uid.slice(0, 5)}`;
 
       option.textContent = isIncomplete ? `❌ ${truncated}` : truncated;
-      option.title = isIncomplete ? "Abandoned chat — needs attention" : chat.summary || `Chat ${chat.uid}`;
+      option.title = isIncomplete ? "Abandoned chat — needs attention" : chat.summary || `Chat ${chat.uid.slice(0, 5)}`;
       option.style.color = isIncomplete ? "red" : "green";
 
       if (isIncomplete) {
@@ -2370,6 +2370,34 @@ const getMindmapandAssessment = async (user_id) => {
     console.error("Error: ", error);
   }
 };
+function applyStyle(btn, styles) {
+    Object.entries(styles).forEach(([k, v]) => (btn.style[k] = v));
+  }
+
+function enableDisableMindAssessmentbuttons(buttonId, disabled=true) {
+  const DEFAULT_STYLE = {
+    padding: '3px 9px',
+    border: '1px solid green',
+    background: 'white',
+    color: 'black',
+    borderRadius: '5px',
+    fontSize: '14px',
+    cursor: 'pointer'
+  };
+
+  const DISABLED_STYLE = {
+    background: '#e0e0e0',
+    color: '#888',
+    border: '1px solid #aaa',
+    cursor: 'not-allowed'
+  };
+
+  const btn = document.getElementById(buttonId);
+  if (btn) btn.disabled = disabled;
+
+  applyStyle(btn, disabled ? DISABLED_STYLE : DEFAULT_STYLE);
+}
+
 
 // Utility to populate dropdowns
 async function populateDropdown(menuId ) {
@@ -2385,13 +2413,11 @@ async function populateDropdown(menuId ) {
 
     let items = [];
     if (menuId === "mindmap-menu") {
-      const mindmapBtn = document.getElementById("mindmap-btn");
       items = MindMapLinks || [];
-      mindmapBtn.style.display = items.length > 0 ? "block" : "none";
+      enableDisableMindAssessmentbuttons("mindmap-btn", items.length === 0);
     } else if (menuId === "assessment-menu") {
-      const assessmentBtn = document.getElementById("assessment-btn");
       items = AssessmentLinks || [];
-      assessmentBtn.style.display = items.length > 0 ? "block" : "none";
+      enableDisableMindAssessmentbuttons("assessment-btn", items.length === 0);
     }
 
     items.forEach(item => {
@@ -2463,8 +2489,18 @@ const getBotDetails2 = async (botId) => {
       }
 
       populateDropdown("mindmap-menu");
-      populateDropdown("assessment-menu");
+      populateDropdown("assessment-menu");     
+    } else {
+      enableDisableMindAssessmentbuttons("assessment-btn", true);
+      enableDisableMindAssessmentbuttons("mindmap-btn", true);
     }
+
+    // show the buttons if coaching bot.
+    const mindmapBtn = document.getElementById("mindmap-btn");
+    const assessmentBtn = document.getElementById("assessment-btn");
+    mindmapBtn.style.display = "block";
+    assessmentBtn.style.display = "block";
+    
    
 
 
@@ -8774,6 +8810,8 @@ loadExternalModule().then(() => {
     }
     if (snnipetConfigSTT?.widgetImageLink && snnipetConfigSTT?.widgetImageLink.length > 0) {
       widgetImageLink = snnipetConfigSTT?.widgetImageLink;
+    } else if (snnipetConfigSTT?.botId && snnipetConfigSTT?.botId.length > 0) {
+      widgetImageLink = 'https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575609/zmvwlpahzrxijcdkhs3r.jpg'
     }
   }
 
@@ -8946,6 +8984,7 @@ loadExternalModule().then(() => {
       margin-left: 8px;
       cursor: pointer;
       vertical-align: middle;
+      min-width: 160px;
     "
   >
     <option value="">Previous Chats</option>
@@ -8953,7 +8992,7 @@ loadExternalModule().then(() => {
 </div>
 <div id="response-style" style="position: relative; display: none">
 </div>
-<div id="audio-interaction" class="audio-interaction" style='display: none'>
+<div id="audio-interaction" class="audio-interaction">
   <p class="label" style="margin:0px;">🔊</p>
   <div class="toggle-wrapper">
     <span class="toggle-text">No</span>
@@ -8966,7 +9005,7 @@ loadExternalModule().then(() => {
 </div>
 <!-- Mindmap Button + Dropdown -->
 <div class="dropdown">
-    <button id="mindmap-btn" style="display:none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Mindmap
     </button>
     <div id="mindmap-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
@@ -8976,7 +9015,7 @@ loadExternalModule().then(() => {
 
 <!-- Assessment Button + Dropdown -->
 <div class="dropdown">
-    <button id="assessment-btn" style="display:none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Assessment
     </button>
     <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
@@ -9228,7 +9267,7 @@ loadExternalModule().then(() => {
   </div>
   `;
 
-  function adjustHeaderLayout() {
+function adjustHeaderLayout() {
   const header = document.getElementById("bot-header-logo-2");
   if (window.innerWidth < 768) {
     header.style.flexDirection = "column";
@@ -9237,28 +9276,10 @@ loadExternalModule().then(() => {
     header.style.flexDirection = "row";
   }
 }
-  function adjustChatDropdownSize() {
-    const logo = document.getElementById("logo-h1");
-    const dropdown = document.getElementById("chatHistoryDropdown");
-    if (logo && dropdown) {
-      const logoStyles = window.getComputedStyle(logo);
-      const logoWidth = parseFloat(logoStyles.width);
-      const logoHeight = parseFloat(logoStyles.height);
 
-      dropdown.style.width = (logoWidth * 2) + "px";
-      dropdown.style.height = logoHeight;
-    }
-  }
+window.addEventListener("load", adjustHeaderLayout);
+window.addEventListener("resize", adjustHeaderLayout);
 
-
-adjustChatDropdownSize();
-
-document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
-  selectedChatId = this.value != 'new-chat' ? this.value: null;
-  if (selectedChatId) {
-    populateChatHistory(selectedChatId);
-  }
-});
 document.getElementById('bot-audio-interaction-switch')?.addEventListener('change', function (event) {
     allowAudioInteraction = event.target.checked;
     isImmersiveStt = allowAudioInteraction;
@@ -9266,11 +9287,7 @@ document.getElementById('bot-audio-interaction-switch')?.addEventListener('chang
 });
 
 
-// Call on load and on resize
-window.addEventListener("load", adjustHeaderLayout);
-window.addEventListener("resize", adjustHeaderLayout);
-
-  const customMicButton = document.getElementById("startMicBtn");
+const customMicButton = document.getElementById("startMicBtn");
   function updateMicButtonPosition() {
     const startMicBtn = document.getElementById('startMicBtn');
     if (!startMicBtn) return; // Exit if button not found
@@ -9391,7 +9408,7 @@ window.addEventListener("resize", adjustHeaderLayout);
   }
   console.log(botId, 'botid')
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
-    const _ = getBotDetails2(botId);
+    const _ = getBotDetails2(botId); 
   } else {
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
