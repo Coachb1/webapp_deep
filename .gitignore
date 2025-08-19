@@ -49,3 +49,5 @@ cypress/downloads
 html.html
 .vscode
 new widget.html
+
+ignored
