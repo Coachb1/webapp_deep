@@ -11,6 +11,7 @@ interface QuestionFlowProps {
   onIgnore: () => void;
   error?: string;
   currentAnswer?: string;
+  suggestions?: string; // Suggestions for the current question
 }
 
 const QuestionFlow: React.FC<QuestionFlowProps> = ({
@@ -21,12 +22,16 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
   onIgnore,
   error,
   currentAnswer,
+  suggestions
 }) => {
   const [answer, setAnswer] = useState<string>(currentAnswer || "");
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     setAnswer(currentAnswer || "");
+
+
+    console.log("Current answer updated:", currentAnswer);
   }, [currentAnswer, question.id]);
 
   const handleContinue = () => {
@@ -39,6 +44,10 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
   };
 
   const handleIgnore = () => {
+    if (!answer.trim()) {
+      setShowError(true);
+      return;
+    }
     setAnswer("");
     setShowError(false);
     onIgnore();
@@ -167,15 +176,18 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
           </div>
         )}
 
-        {error && (
+        {suggestions && !error && (
           <div className="bg-yellow-200 text-yellow-700 p-3 rounded-md text-lg border-l-4 border-yellow-600 flex items-center justify-between">
-            <span className="flex-1 text-center">{error}</span>
+            <span className="flex-1 text-center">{suggestions}</span>
             <button
-              onClick={handleIgnore} 
-              className="ml-4 bg-[#00c193] text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-700"
-            >
-              Ignore
-            </button>
+                onClick={handleIgnore} 
+                disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}            
+                className={`ml-4 bg-[#00c193] text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-700
+                  ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
+              >
+                Ignore
+            </button>            
           </div>
         )}
 
@@ -183,6 +195,11 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         {error && (
           <div className="bg-red-200 text-red-700 p-3 rounded-md text-center text-lg border-l-4 border-red-600">
             {error}
+            {suggestions && (
+              <span className="block mt-2 text-yellow-700">
+                Suggestions: {suggestions}
+              </span> 
+            )}
           </div>
         )}
 
@@ -190,10 +207,15 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           <button
             onClick={handleContinue}
-            className="px-8 py-3 bg-[#00c193] text-white font-semibold 
+            disabled={(currentAnswer || "").trim() === answer.trim() || !answer.trim()}            
+            className={`
+                        px-8 py-3 bg-[#00c193] text-white font-semibold 
                        rounded-full shadow-lg min-w-[140px] 
                        transition-transform duration-300
-                       hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0"
+                       hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0
+                        ${(currentAnswer || "").trim() === answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}
+
+            `}
           >
             Continue
           </button>

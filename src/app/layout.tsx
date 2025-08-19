@@ -12,6 +12,9 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UserProvider } from "@/context/UserContext";
 import { ConfigProvider } from "antd";
 import { ReadPaths } from "@/lib/ReadPaths";
+import { usePathname } from "next/navigation";
+import { Main } from "next/document";
+import MainLayoutComponent from "./MainLayout";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -131,51 +134,13 @@ export default async function RootLayout({
     await getClientUserInfo(user?.email, user);
 
   return (
-    <html lang="en" className="bg-white">
-      {/* <head>
-        {!restrictedFeatures?.includes("Accessibility-widget") && (
-          <script src="../widget/accessibility.js"></script>
-        )}
-      </head> */}
-
-      <HelpModeProvider>
-        <>
-          <body className={font.className} suppressHydrationWarning={true}>
-            <UserProvider kindeUser={user}>
-              <>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="light"
-                  enableSystem
-                  disableTransitionOnChange
-                >
-                  <ConfigProvider theme={{ hashed: false }}>
-                    <AntdRegistry>
-                      <Providers>
-                        <LayoutComponent
-                          restrictedPages={restrictedPages}
-                          user={user}
-                          children={children}
-                          isDemoUser={isDemoUser}
-                          isRestricted={isRestricted}
-                        />
-                        <ReadPaths />
-                      </Providers>
-                    </AntdRegistry>
-                  </ConfigProvider>
-                </ThemeProvider>
-              </>
-
-              <Toaster
-                theme="light"
-                closeButton
-                richColors
-                position="top-right"
-              />
-            </UserProvider>
-          </body>
-        </>
-      </HelpModeProvider>
-    </html>
+    <MainLayoutComponent
+      user={user}
+      isDemoUser={isDemoUser}
+      isRestricted={isRestricted}
+      restrictedPages={restrictedPages}
+    >
+      {children}
+    </MainLayoutComponent>
   );
 }

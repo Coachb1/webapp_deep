@@ -11,6 +11,7 @@ export interface Question {
   dropdowns?: string; // CSV string, e.g. "People, Tools, Budget"
   section?: string; // Optional section for grouping questions
   uid?: string; // Unique identifier for the question
+  job_aid_type?: string; // Type of job aid, e.g. "form" or "job_aid"
 }
 
 
@@ -23,13 +24,13 @@ export interface ValidateResponse {
 }
 
 export interface ReportResponse {
-  reportUrl: string;
-  message?: string;
+  report_url: string;
+  session_id?: string;
 }
 
 // ---------- Env Vars ----------
-// const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
-const API_BASE_URL = "http://localhost:8000/api/v1";
+const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
+// const API_BASE_URL = "http://localhost:8001/api/v1";
 
 console.log("API_BASE_URL:", API_BASE_URL);
 
