@@ -26,6 +26,10 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [questionErrors, setQuestionErrors] = useState<
+    Record<string, string>
+  >({});
   const [reportUrl, setReportUrl] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
@@ -53,6 +57,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       setCurrentStep("questions");
       setCurrentQuestionIndex(0);
       setAnswers({});
+      setQuestionErrors({});
     } catch (err: any) {
       setError(err.message ?? "Failed to fetch questions.");
     } finally {
@@ -60,21 +65,49 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     }
   };
 
-  const handleContinue = (answer: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questions[currentQuestionIndex].question]: answer,
-    }));
+  const handleContinue = async (answer: string) => {
+    const currentQ = questions[currentQuestionIndex];
+    const updatedAnswers = {
+      ...answers,
+      [currentQ.id]: answer,
+    };
 
+    setAnswers(updatedAnswers);
+
+    try {
+      // 🔥 validate only this answer
+      const validationResult = await validateAnswers(
+        { [currentQ.id]: answer },
+        job_aid_id
+      );
+
+      if (!validationResult.isValid) {
+        setQuestionErrors((prev) => ({
+          ...prev,
+          [currentQ.id]: "Invalid answer. Please check.",
+        }));
+        return; // 🔥 stop here until corrected
+      } else {
+        // 🔥 clear error if valid
+        setQuestionErrors((prev) => {
+          const { [currentQ.id]: _, ...rest } = prev;
+          return rest;
+        });
+      }
+    } catch (err: any) {
+      setQuestionErrors((prev) => ({
+        ...prev,
+        [currentQ.id]: err.message ?? "Validation error",
+      }));
+      return;
+    }
+
+    // 🔥 move to next only if valid
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
-
     } else {
-      const updatedAnswers = {
-        ...answers,
-        [questions[currentQuestionIndex].question]: answer,
-      };
-      handleValidation(updatedAnswers);
+      // all done → final validation
+      await handleValidation(updatedAnswers);
     }
   };
 
@@ -122,6 +155,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     setQuestions([]);
     setAnswers({});
     setError(null);
+    setQuestionErrors({});
     setReportUrl("");
     setEmail("");
   };
@@ -133,14 +167,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
 
   if (currentStep === "questions" && questions.length > 0) {
     return (
-      <div className="pt-24 flex flex-col items-center">
+      <div className="pt-4 flex flex-col items-center w-full max-w-5xl">
           <QuestionFlow
             question={questions[currentQuestionIndex]}
             questionNumber={currentQuestionIndex + 1}
             totalQuestions={questions.length}
             onContinue={handleContinue}
             onIgnore={handleIgnore}
-            error={error ?? undefined}
+            error={questionErrors[questions[currentQuestionIndex]?.id]}
             currentAnswer={answers[questions[currentQuestionIndex]?.id]}
           />
       </div>

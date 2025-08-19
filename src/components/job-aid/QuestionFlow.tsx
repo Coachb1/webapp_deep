@@ -168,6 +168,19 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         )}
 
         {error && (
+          <div className="bg-yellow-200 text-yellow-700 p-3 rounded-md text-lg border-l-4 border-yellow-600 flex items-center justify-between">
+            <span className="flex-1 text-center">{error}</span>
+            <button
+              onClick={handleIgnore} 
+              className="ml-4 bg-[#00c193] text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-700"
+            >
+              Ignore
+            </button>
+          </div>
+        )}
+
+
+        {error && (
           <div className="bg-red-200 text-red-700 p-3 rounded-md text-center text-lg border-l-4 border-red-600">
             {error}
           </div>

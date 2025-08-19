@@ -17,6 +17,9 @@ export interface Question {
 export interface ValidateResponse {
   isValid: boolean;
   feedback?: string;
+  status: "valid" | "hard_block" | "soft_suggestion";
+  message?: string;
+  suggestions?: string[];
 }
 
 export interface ReportResponse {
@@ -25,8 +28,8 @@ export interface ReportResponse {
 }
 
 // ---------- Env Vars ----------
-const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
-// const API_BASE_URL = "http://localhost:8001/api/v1";
+// const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
+const API_BASE_URL = "http://localhost:8000/api/v1";
 
 console.log("API_BASE_URL:", API_BASE_URL);
 
