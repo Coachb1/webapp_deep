@@ -5,22 +5,26 @@ import React from "react";
 interface WelcomePageProps {
   onStart: () => void;
   loading: boolean;
+  title: string;
+  description: string;
 }
 
-const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading }) => {
+
+const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading, title, description }) => {
+  const isDisabled = loading || !title;
+  
   return (
     <div className="bg-transparent rounded-2xl shadow-none p-10 text-center max-w-xl w-full animate-[fadeInUp_0.8s_ease-out] mt-24 mx-auto">
       <div className="flex flex-col items-center gap-8">
         <h1 className="text-[2.2rem] font-bold text-gray-800 leading-tight mb-2 truncate">
-          Welcome to your Management Action Planner
+          {title || "loading..."}
         </h1>
         <p className="text-lg text-gray-500 leading-relaxed max-w-md">
-          This interactive tool will help you plan and organize your management
-          actions through a series of thoughtful questions.
+          {description}
         </p>
         <button
           onClick={onStart}
-          disabled={loading}
+          disabled={isDisabled}
           className="bg-[#00c193] text-white px-10 py-4 text-lg font-semibold 
                      cursor-pointer transition-all duration-300 
                      shadow-[0_10px_30px_rgba(186,255,236,0.3)] min-w-[200px] 

@@ -14,6 +14,11 @@ export interface Question {
   job_aid_type?: string; // Type of job aid, e.g. "form" or "job_aid"
 }
 
+export interface JobAid {
+  title: string;
+  description: string;
+}
+
 
 export interface ValidateResponse {
   isValid: boolean;
@@ -29,8 +34,8 @@ export interface ReportResponse {
 }
 
 // ---------- Env Vars ----------
-const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
-// const API_BASE_URL = "http://localhost:8001/api/v1";
+// const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
+const API_BASE_URL = "http://localhost:8000/api/v1";
 
 console.log("API_BASE_URL:", API_BASE_URL);
 
@@ -66,6 +71,18 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 // ---------- API Calls ----------
+
+export const fetchJobAid = async (job_aid_id: string): Promise<JobAid> => {
+  try {
+    const data = await fetchJson<JobAid>(
+      `${API_BASE_URL}/job-aid/get-job-aid/?jobaid_id=${job_aid_id}`
+    );
+    return data;
+  } catch (error: unknown) {
+    console.error("Error fetching job aid:", error);
+    throw new Error(getErrorMessage(error));
+  }
+};
 
 // Fetch job aid questions
 export const fetchQuestions = async (job_aid_id: string): Promise<Question[]> => {

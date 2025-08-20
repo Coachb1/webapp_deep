@@ -238,7 +238,7 @@ style.textContent = `
     padding: 4px;
     border-radius: 4px;
     border: 1px solid #ccc;
-    margin-left: 8px;
+    margin-left: 0px !important;
     cursor: pointer;
     vertical-align: middle;
     min-width: 100px;

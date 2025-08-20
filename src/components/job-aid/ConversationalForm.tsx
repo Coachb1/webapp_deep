@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WelcomePage from "./WelcomePage";
 import QuestionFlow from "./QuestionFlow";
 import {
@@ -9,6 +9,8 @@ import {
   Question,
   ReportResponse,
   validateAnswers,
+  fetchJobAid,
+  JobAid
 } from "@/lib/job-aid-apis";
 
 type Step = "welcome" | "questions" | "email" | "completed";
@@ -38,6 +40,22 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   >({});
   const [reportUrl, setReportUrl] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+
+  // Import JobAid type from the correct location
+  const [jobAid, setJobAid] = useState<JobAid | null>(null);
+
+useEffect(() => {
+  const loadJobAid = async () => {
+    try {
+      const data = await fetchJobAid(job_aid_id);
+      setJobAid(data);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to fetch job aid.");
+    }
+  };
+  loadJobAid();
+}, [job_aid_id]);
+
 
   const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -213,7 +231,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
 
   // --- UI Rendering ---
   if (currentStep === "welcome") {
-    return <WelcomePage onStart={handleStart} loading={loading} />;
+    return <WelcomePage onStart={handleStart} loading={loading} title={jobAid?.title ?? ""} description={jobAid?.description ?? ""} />;
   }
 
   if (currentStep === "questions" && questions.length > 0) {
