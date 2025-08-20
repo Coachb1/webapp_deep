@@ -79,7 +79,7 @@ const WidgetPage = ({ user }: { user: any }) => {
             id = 'ai-coach-iframe'
             title="AI Chat Widget"
             src={`/widget/widget-container.html?user=${encodeURIComponent(JSON.stringify(user))}&origin=internal`}
-            className="chat-widget-frame w-[80vw] max-w-[1200px] h-full border border-gray-300 rounded-xl shadow-md"
+            className="chat-widget-frame w-[80vw] max-w-[1200px] h-full border border-green-500 rounded-xl shadow-md"
           />
         </div>
 

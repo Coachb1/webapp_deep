@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WelcomePage from "./WelcomePage";
 import QuestionFlow from "./QuestionFlow";
 import {
@@ -9,18 +9,18 @@ import {
   Question,
   ReportResponse,
   validateAnswers,
+  fetchJobAid,
+  JobAid
 } from "@/lib/job-aid-apis";
 
 type Step = "welcome" | "questions" | "email" | "completed";
 
 interface ConversationalFormProps {
   job_aid_id: string;
-  is_job_aid?: boolean; // Check if this is a job aid or not
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
   job_aid_id,
-  is_job_aid = true, // Check if this is a job aid or not
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -38,6 +38,34 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   >({});
   const [reportUrl, setReportUrl] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+
+
+  // Import JobAid type from the correct location
+  const [jobAid, setJobAid] = useState<JobAid | null>(null);
+
+useEffect(() => {
+  const loadJobAid = async () => {
+    try {
+      setLoading(true)
+      const data = await fetchJobAid(job_aid_id);
+      setJobAid(data);
+      console.log("Job Aid fetched:", data);
+      const normalizedQuestions: Question[] = data?.questions.map((q: any) => ({
+        ...q,
+        id: String(q.id),
+      }));
+      setQuestions(normalizedQuestions);
+      setIsJobAid(data?.job_aid_type === 'job_aid' || false); // Set isJobAid based on the fetched data
+    } catch (err: any) {
+      setError(err.message ?? "Failed to fetch job aid.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  loadJobAid();
+}, [job_aid_id]);
+
 
   const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,7 +76,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       return;
     }
 
-    await handleValidation(answers, email);
+    await handleValidation(answers, email, name);
     setLoading(false);
 
 
@@ -65,14 +93,13 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     setReportUrl("");
 
     try {
-      const fetchedQuestions = await fetchQuestions(job_aid_id);
-      console.log("Fetched questions:", fetchedQuestions);
-      setIsJobAid(is_job_aid); // Set the job aid type based on prop
-      const normalizedQuestions: Question[] = fetchedQuestions.map((q: any) => ({
-        ...q,
-        id: String(q.id),
-      }));
-      setQuestions(normalizedQuestions);
+      // const fetchedQuestions = await fetchQuestions(job_aid_id);
+      // console.log("Fetched questions:", fetchedQuestions);
+      // const normalizedQuestions: Question[] = fetchedQuestions.map((q: any) => ({
+      //   ...q,
+      //   id: String(q.id),
+      // }));
+      // setQuestions(normalizedQuestions);
       setCurrentStep("questions");
       setCurrentQuestionIndex(0);
       setAnswers({});
@@ -92,12 +119,21 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     };
 
     setAnswers(updatedAnswers);
+    if (currentQ.question_type === "dropdown") {
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
+      } else {
+        console.log("All questions answered, validating final answers", answers);
+        setCurrentStep("email");
+      }
+      return;
+    }
 
     try {
       // 🔥 validate only this answer
       const validationResult = await validateAnswers(
         { [currentQ.question]: answer },
-        job_aid_id
+        currentQ.uid
       );
 
       console.log("Validation result:", validationResult);
@@ -170,7 +206,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     }
   };
 
-  const handleValidation = async (answers: Record<string, string>, email: string) => {
+  const handleValidation = async (answers: Record<string, string>, email: string, name: string) => {
     setLoading(true);
     setError(null);
     setSuggestions({});
@@ -180,6 +216,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         const reportResult: ReportResponse = await generateReport(
                 answers,
                 email,
+                name,
                 job_aid_id
               );
               console.log("Report generated:", reportResult);
@@ -202,18 +239,18 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const handleRestart = () => {
     setCurrentStep("welcome");
     setCurrentQuestionIndex(0);
-    setQuestions([]);
     setAnswers({});
     setError(null);
     setSuggestions({});
     setQuestionErrors({});
     setReportUrl("");
     setEmail("");
+    setName("");
   };
 
   // --- UI Rendering ---
   if (currentStep === "welcome") {
-    return <WelcomePage onStart={handleStart} loading={loading} />;
+    return <WelcomePage onStart={handleStart} loading={loading} title={jobAid?.title ?? ""} description={jobAid?.description ?? ""} />;
   }
 
   if (currentStep === "questions" && questions.length > 0) {
@@ -245,6 +282,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             className="flex flex-col items-center gap-4 w-full"
           >
             <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg text-lg"
+            />
+            <input
               type="email"
               placeholder="Enter your email"
               value={email}
@@ -255,7 +300,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all"
+              className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all
+                ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Submit
             </button>

@@ -5,12 +5,18 @@ import { baseURL } from "./utils";
 // ---------- Types ----------
 export interface Question {
   id: number;
+  uid: string; // Unique identifier for the question
   question: string;
   question_type: "text" | "dropdown" | "boolean";
   description: string;
   dropdowns?: string; // CSV string, e.g. "People, Tools, Budget"
   section?: string; // Optional section for grouping questions
-  uid?: string; // Unique identifier for the question
+}
+
+export interface JobAid {
+  title: string;
+  description: string;
+  questions: Question[];
   job_aid_type?: string; // Type of job aid, e.g. "form" or "job_aid"
 }
 
@@ -67,6 +73,18 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 
 // ---------- API Calls ----------
 
+export const fetchJobAid = async (job_aid_id: string): Promise<JobAid> => {
+  try {
+    const data = await fetchJson<JobAid>(
+      `${API_BASE_URL}/job-aid/get-job-aid/?jobaid_id=${job_aid_id}`
+    );
+    return data;
+  } catch (error: unknown) {
+    console.error("Error fetching job aid:", error);
+    throw new Error(getErrorMessage(error));
+  }
+};
+
 // Fetch job aid questions
 export const fetchQuestions = async (job_aid_id: string): Promise<Question[]> => {
   try {
@@ -83,14 +101,14 @@ export const fetchQuestions = async (job_aid_id: string): Promise<Question[]> =>
 // Validate job aid answers
 export const validateAnswers = async (
   answers: Record<string, string | boolean>,
-  job_aid_id: string
+  question_id: string
 ): Promise<ValidateResponse> => {
   try {
     return await fetchJson<ValidateResponse>(
       `${API_BASE_URL}/job-aid/validate-job-aid/`,
       {
         method: "POST",
-        body: JSON.stringify({ qna: answers, jobaid: job_aid_id }),
+        body: JSON.stringify({ qna: answers, question_id: question_id }),
       }
     );
   } catch (error: unknown) {
@@ -103,7 +121,8 @@ export const validateAnswers = async (
 export const generateReport = async (
   answers: Record<string, string | boolean>,
   userEmail = "test@example.com",
-    job_aid_id: string
+  name:string,
+  job_aid_id: string
 ): Promise<ReportResponse> => {
   try {
     return await fetchJson<ReportResponse>(
@@ -113,6 +132,7 @@ export const generateReport = async (
         body: JSON.stringify({
           qna: answers,
           useremail: userEmail,
+          name: name,
           jobaid: job_aid_id,
         }),
       }
@@ -127,6 +147,7 @@ export const generateReport = async (
 export const getMockQuestions = (): Question[] => [
   {
     id: 1,
+    uid: "q1",
     question: "What is your primary management goal for this quarter?",
     question_type: "text",
     description:
@@ -134,6 +155,7 @@ export const getMockQuestions = (): Question[] => [
   },
   {
     id: 2,
+    uid: "q2",
     question: "What challenges do you anticipate facing?",
     question_type: "text",
     description:
@@ -141,6 +163,7 @@ export const getMockQuestions = (): Question[] => [
   },
   {
     id: 3,
+    uid: "q3",
     question: "What resources will you need?",
     question_type: "dropdown",
     description:
@@ -149,6 +172,7 @@ export const getMockQuestions = (): Question[] => [
   },
   {
     id: 4,
+    uid: "q4",
     question: "Do you have a timeline for completion?",
     question_type: "boolean",
     description:
@@ -156,6 +180,7 @@ export const getMockQuestions = (): Question[] => [
   },
   {
     id: 5,
+    uid: "q5",
     question: "How will you measure success?",
     question_type: "text",
     description:
