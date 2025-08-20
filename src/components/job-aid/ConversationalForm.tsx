@@ -17,12 +17,10 @@ type Step = "welcome" | "questions" | "email" | "completed";
 
 interface ConversationalFormProps {
   job_aid_id: string;
-  is_job_aid?: boolean; // Check if this is a job aid or not
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
   job_aid_id,
-  is_job_aid = true, // Check if this is a job aid or not
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -40,6 +38,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   >({});
   const [reportUrl, setReportUrl] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+
 
   // Import JobAid type from the correct location
   const [jobAid, setJobAid] = useState<JobAid | null>(null);
@@ -47,10 +47,20 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
 useEffect(() => {
   const loadJobAid = async () => {
     try {
+      setLoading(true)
       const data = await fetchJobAid(job_aid_id);
       setJobAid(data);
+      console.log("Job Aid fetched:", data);
+      const normalizedQuestions: Question[] = data?.questions.map((q: any) => ({
+        ...q,
+        id: String(q.id),
+      }));
+      setQuestions(normalizedQuestions);
+      setIsJobAid(data?.job_aid_type === 'job_aid' || false); // Set isJobAid based on the fetched data
     } catch (err: any) {
       setError(err.message ?? "Failed to fetch job aid.");
+    } finally {
+      setLoading(false);
     }
   };
   loadJobAid();
@@ -66,7 +76,7 @@ useEffect(() => {
       return;
     }
 
-    await handleValidation(answers, email);
+    await handleValidation(answers, email, name);
     setLoading(false);
 
 
@@ -83,14 +93,13 @@ useEffect(() => {
     setReportUrl("");
 
     try {
-      const fetchedQuestions = await fetchQuestions(job_aid_id);
-      console.log("Fetched questions:", fetchedQuestions);
-      setIsJobAid(is_job_aid); // Set the job aid type based on prop
-      const normalizedQuestions: Question[] = fetchedQuestions.map((q: any) => ({
-        ...q,
-        id: String(q.id),
-      }));
-      setQuestions(normalizedQuestions);
+      // const fetchedQuestions = await fetchQuestions(job_aid_id);
+      // console.log("Fetched questions:", fetchedQuestions);
+      // const normalizedQuestions: Question[] = fetchedQuestions.map((q: any) => ({
+      //   ...q,
+      //   id: String(q.id),
+      // }));
+      // setQuestions(normalizedQuestions);
       setCurrentStep("questions");
       setCurrentQuestionIndex(0);
       setAnswers({});
@@ -110,12 +119,21 @@ useEffect(() => {
     };
 
     setAnswers(updatedAnswers);
+    if (currentQ.question_type === "dropdown") {
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
+      } else {
+        console.log("All questions answered, validating final answers", answers);
+        setCurrentStep("email");
+      }
+      return;
+    }
 
     try {
       // 🔥 validate only this answer
       const validationResult = await validateAnswers(
         { [currentQ.question]: answer },
-        job_aid_id
+        currentQ.uid
       );
 
       console.log("Validation result:", validationResult);
@@ -188,7 +206,7 @@ useEffect(() => {
     }
   };
 
-  const handleValidation = async (answers: Record<string, string>, email: string) => {
+  const handleValidation = async (answers: Record<string, string>, email: string, name: string) => {
     setLoading(true);
     setError(null);
     setSuggestions({});
@@ -198,6 +216,7 @@ useEffect(() => {
         const reportResult: ReportResponse = await generateReport(
                 answers,
                 email,
+                name,
                 job_aid_id
               );
               console.log("Report generated:", reportResult);
@@ -220,13 +239,13 @@ useEffect(() => {
   const handleRestart = () => {
     setCurrentStep("welcome");
     setCurrentQuestionIndex(0);
-    setQuestions([]);
     setAnswers({});
     setError(null);
     setSuggestions({});
     setQuestionErrors({});
     setReportUrl("");
     setEmail("");
+    setName("");
   };
 
   // --- UI Rendering ---
@@ -263,6 +282,14 @@ useEffect(() => {
             className="flex flex-col items-center gap-4 w-full"
           >
             <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg text-lg"
+            />
+            <input
               type="email"
               placeholder="Enter your email"
               value={email}
@@ -273,7 +300,8 @@ useEffect(() => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all"
+              className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all
+                ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Submit
             </button>
