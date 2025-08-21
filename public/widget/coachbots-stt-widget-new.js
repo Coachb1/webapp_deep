@@ -1966,10 +1966,10 @@ async function populateChatHistoryOptions(refresh = false) {
 
       const truncated = chat.summary && chat.summary.length > 30
         ? chat.summary.slice(0, 20) + "..."
-        : chat.summary || `Chat ${chat.uid.slice(0, 5)}`;
+        : chat.summary || `Session ${chat.uid.slice(0, 5)}`;
 
       option.textContent = isIncomplete ? `❌ ${truncated}` : truncated;
-      option.title = isIncomplete ? "Abandoned chat — needs attention" : chat.summary || `Chat ${chat.uid.slice(0, 5)}`;
+      option.title = isIncomplete ? "Abandoned session — needs attention" : chat.summary || `Session ${chat.uid.slice(0, 5)}`;
       option.style.color = isIncomplete ? "red" : "green";
 
       if (isIncomplete) {
@@ -4398,14 +4398,23 @@ function sendBotTranscript2() {
   //     credsUpdated2 = data.status;
   //     console.log("name email updated, sending email");
 
-  const send_email = snnipetConfigSTT.sendTranscriptEmail ?? 'true'
+ const send_email = snnipetConfigSTT.sendTranscriptEmail ?? null;
 
-  const queryParamsEmail2 = new URLSearchParams({
+  let params = {
     submitted_email: userEmail,
     submitted_name: userName,
     test_attempt_session_id: sessionId2,
-    send_email: (send_email === 'true').toString()
-  });
+  };
+
+  // Only add send_email if it's explicitly set
+  if (send_email !== null && send_email !== undefined) {
+    // normalize it to a string 'true' or 'false'
+    params['send_email'] = String(send_email === true || send_email === 'true');
+  }
+
+  console.log(params, 'params');
+
+  const queryParamsEmail2 = new URLSearchParams(params);
 
   console.log('send transcription email', send_email)
 
@@ -9286,6 +9295,12 @@ document.getElementById('bot-audio-interaction-switch')?.addEventListener('chang
     console.log("Audio toggle changed:", allowAudioInteraction);
 });
 
+document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
+  selectedChatId = this.value != 'new-chat' ? this.value: null;
+  if (selectedChatId) {
+    populateChatHistory(selectedChatId);
+  }
+});
 
 const customMicButton = document.getElementById("startMicBtn");
   function updateMicButtonPosition() {
