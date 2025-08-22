@@ -312,7 +312,7 @@ useEffect(() => {
     );
   }
 
-  if (currentStep === "loading") {
+  if (currentStep === "loading" && isJobAid) {
   return (
     <div className="pt-24 flex flex-col items-center">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
