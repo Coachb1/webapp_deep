@@ -210,7 +210,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
             disabled={(currentAnswer || "").trim() === answer.trim() || !answer.trim()}            
             className={`
                         px-8 py-3 bg-[#00c193] text-white font-semibold 
-                       rounded-full shadow-lg min-w-[140px] 
+                       shadow-lg min-w-[140px] 
                        transition-transform duration-300
                        hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0
                         ${(currentAnswer || "").trim() === answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}

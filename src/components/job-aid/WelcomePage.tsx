@@ -37,7 +37,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading, title, desc
           className="bg-[#00c193] text-white px-10 py-4 text-lg font-semibold 
                      cursor-pointer transition-all duration-300 
                      shadow-[0_10px_30px_rgba(186,255,236,0.3)] min-w-[200px] 
-                     rounded-full disabled:opacity-70 disabled:cursor-not-allowed
+                     disabled:opacity-70 disabled:cursor-not-allowed
                      hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(226,237,231,0.4)] 
                      active:translate-y-0"
         >
