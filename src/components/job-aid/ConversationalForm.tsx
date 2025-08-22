@@ -13,7 +13,7 @@ import {
   JobAid
 } from "@/lib/job-aid-apis";
 
-type Step = "welcome" | "questions" | "email" | "completed";
+type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
 interface ConversationalFormProps {
   job_aid_id: string;
@@ -75,6 +75,8 @@ useEffect(() => {
       setError("Please enter a valid email address.");
       return;
     }
+
+    setCurrentStep("loading");
 
     await handleValidation(answers, email, name);
     setLoading(false);
@@ -300,7 +302,7 @@ useEffect(() => {
             <button
               type="submit"
               disabled={loading}
-              className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all
+              className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold text-lg transition-all
                 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Submit
@@ -309,6 +311,23 @@ useEffect(() => {
         </div>
     );
   }
+
+  if (currentStep === "loading") {
+  return (
+    <div className="pt-24 flex flex-col items-center">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        ⏳ Generating Your Report...
+      </h2>
+      <div className="flex justify-center">
+        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+      <p className="text-gray-600 mt-4 text-lg text-center">
+        Please wait while we prepare your personalized Management Action Planner.
+      </p>
+    </div>
+  );
+}
+
 
  if (currentStep === "completed") {
   return (
@@ -334,7 +353,7 @@ useEffect(() => {
               href={reportUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+              className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold transition-all"
             >
               View Report
             </a>
@@ -355,7 +374,7 @@ useEffect(() => {
 
       <button
         onClick={handleRestart}
-        className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all"
+        className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
       >
         Start Over
       </button>
