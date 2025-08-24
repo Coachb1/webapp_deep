@@ -5528,14 +5528,19 @@ const handleGameTypeConversation = async () => {
     )
 
     if (is_last_question) {
-      next_question_text = JSON.parse(next_question_text)
-      next_question_text = `<div>
-      <b>${next_question_text.end_message}</b>
-      <div>
-        <h3>Feedback:</h3>
-        <p>${next_question_text.feedback}</p>
-      </div>
-    </div>`
+      if (!emailCandidate2) {
+        next_question_text =
+          "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
+      } else {
+        next_question_text = JSON.parse(next_question_text)
+        next_question_text = `<div>
+        <b>${next_question_text.end_message}</b>
+        <div>
+          <h3>Feedback:</h3>
+          <p>${next_question_text.feedback}</p>
+        </div>
+      </div>`
+      }
     }
 
     return { is_last_question, next_question_text }
@@ -5548,6 +5553,117 @@ const handleGameTypeConversation = async () => {
     }
   }
 };
+
+const handleMediaLinks = async (questionMediaLinkStt) =>{
+  if (questionMediaLinkStt) {
+        const urlList = questionMediaLinkStt.split(",");
+        console.log("media link list", urlList);
+        if (urlList.length > 0) {
+          urlList.forEach((element) => {
+            element = element.trim();
+            if (element.includes("docs.google.com")) {
+              let url =
+                element.split("edit?")[0] +
+                "embed?start=true&loop=true&delayms=3000";
+              console.log(url);
+              console.log('Ahere7')
+
+              appendMessage2(`<iframe src=${url}
+                                frameborder="0" 
+                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                allowfullscreen="true" 
+                                mozallowfullscreen="true" 
+                                webkitallowfullscreen="true"
+                                ></iframe>`);
+            } else if (element.includes("guidejar.com")) {
+              const guidejarId = element.split("/").pop();
+              console.log('Ahere6')
+
+              appendMessage2(`
+                <div style="width:640px">
+                <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                ></div></div>
+                `);
+            } else if (isAudioURL(element)) {
+              console.log(element);
+              console.log('Aheresa')
+
+              appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+                }" controls autoplay>
+                  <source src=${element} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                  </audio></div>`);
+            } else if (element.includes("player.cloudinary.com") || element.includes('storage.googleapis.com')) {
+                appendMessage2({
+                  oem: `
+                      <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
+                        <div id="poster-overlay" style="
+                          position: absolute;
+                          top: 0; left: 0;
+                          width: 100%; height: 100%;
+                          background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
+                          z-index: 2;
+                          transition: opacity 0.5s ease;
+                          border-radius: 8px;
+                        "></div>
+
+                        <iframe
+                          onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
+                          allow="autoplay; encrypted-media; fullscreen;"
+                          style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
+                          src="${element}"
+                          frameborder="0"
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      `
+                });
+            } else if (
+              element.includes("youtube.com") ||
+              element.includes("vimeo.com") ||
+              element.includes("twitter.com")
+             ) {
+                if (element.includes("youtube.com")) {
+                  const videoId = element.split("v=")[1];
+                  embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                } else if (element.includes("vimeo.com")) {
+                  const videoId = element.split("/").pop();
+                  embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                } else if (element.includes("twitter.com")) {
+                  embeddingUrl = `https://twitframe.com/show?url=${element}`;
+                }
+
+                if (embeddingUrl) {
+                  console.log('Ahere11')
+
+                  appendMessage2({oem: `<iframe
+                                    allow="autoplay; encrypted-media; fullscreen;"
+                                    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                    src=${embeddingUrl}
+                                    frameborder="0"
+                                    allowfullscreen
+                                  >
+                            `});
+                }
+            
+            } else {
+                  // considering else a aritcle url
+                    appendMessage2(`<a href="${element}" target="_blank"
+                                      style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                      onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                      onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                      View Context
+                                    </a>`)
+
+            }
+
+          });
+        }
+      }
+}
 
 const handleGameQuestion = async (
   questionText,
@@ -5564,43 +5680,8 @@ const handleGameQuestion = async (
   chatInputBox.classList.add("text-input-disabled")
   chatInputBox.contentEditable = false
   chatInputBox.placeholder = "Please wait for the next question..."
-  //@disable the input
 
-
-  // const inputText = questionText;
-  // const headingRegex = /^##\s+(.*)$/m;
-  // const scenarioRegex = isSingleSelect ? /(?:\*\*Scenario:\*\*|- \*\*Scenario\*\*):\s+(.*)$/m :  /\*\*Scenario:\*\*\s+(.*)$/m;
-  // const objectiveRegex = /\*\*Objective:\*\*\s+(.*)$/m;
-  // const optionsRegex = /-\s+\*\*([A-D])\.\*\*\s+(.*?)(?=\n|$)/g;
-  // const feedbackRegex = /(?:\*\*Feedback:\*\*|##\s*Feedback:)\s*([\s\S]*)/i;
-  // const decisionRegex =
-  //   /\*\*Decision\*\*:\s*(.*?)\n((?:\s*-\s+\*\*[A-D]\.\*\*.*\n)+)/s;
-
-  // const headingMatch = inputText.match(headingRegex);
-  // const scenarioMatch = inputText.match(scenarioRegex);
-  // const objectiveMatch = inputText.match(objectiveRegex);
-  // const feedbackMatch = inputText.match(feedbackRegex);
-  // const decisionMatch = inputText.match(decisionRegex);
-
-  // const options = [];
-  // let optionMatch;
-  // while ((optionMatch = optionsRegex.exec(inputText)) !== null) {
-  //   options.push({
-  //     option: optionMatch[1],
-  //     description: optionMatch[2]?.trim(),
-  //   });
-  // }
-
-  // const extractedData = {
-  //   heading: headingMatch ? headingMatch[1].trim() : null,
-  //   scenario: scenarioMatch ? scenarioMatch[1].trim() : null,
-  //   decisionMatch: decisionMatch ? decisionMatch[1].trim() : null,
-  //   objective: objectiveMatch ? objectiveMatch[1].trim() : null,
-  //   options: options.length > 0 ? options : null,
-  //   feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
-  // };
-
-  questionText = JSON.parse(questionText)
+  questionText = typeof questionText == 'string' ? JSON.parse(questionText) : questionText
   console.log(questionText)
 
   const heading = questionText?.context
@@ -5827,6 +5908,19 @@ const handleGameQuestion = async (
     exitButton.style.border = "1px solid lightgray";
     exitButton.style.color = "#111827";
   })
+
+
+  const questions = questionData2?.results?.[0]?.questions ?? [];
+  const prevQuestion = questions[questionIndex2 - 1];
+
+  if (prevQuestion) {
+    questionMediaLinkStt = prevQuestion.media_link;
+  } else {
+    questionMediaLinkStt = null; // or handle gracefully
+  }
+  console.log('game', questionMediaLinkStt, questionIndex2-1)
+  
+  handleMediaLinks(questionMediaLinkStt);
 };
 
 function isAudioURL(url) {
@@ -5887,28 +5981,7 @@ const handleProceedClickStt = async (choice) => {
       let embeddingUrl = "";
 
       if (questionMediaLinkStt.length > 0) {
-        if (questionMediaLinkStt.includes("youtube.com")) {
-          const videoId = questionMediaLinkStt.split("v=")[1];
-          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        } else if (questionMediaLinkStt.includes("vimeo.com")) {
-          const videoId = questionMediaLinkStt.split("/").pop();
-          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-        } else if (questionMediaLinkStt.includes("twitter.com")) {
-          embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-        }
-
-        if (embeddingUrl) {
-          console.log('Ahere11')
-
-          appendMessage2(`▪ <b>Optional Enrichment Media</b><br>  <iframe
-                            allow="autoplay; encrypted-media; fullscreen;"
-                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                            src=${embeddingUrl}
-                            frameborder="0"
-                            allowfullscreen
-                          >
-                    `);
-        }
+        
 
         const urlList = questionMediaLinkStt.split(",");
         console.log("list", urlList);
@@ -5988,7 +6061,29 @@ const handleProceedClickStt = async (choice) => {
                 Your browser does not support the audio element.
                 </audio></div>`);
           } else {
-            // considering else a aritcle url
+            if (questionMediaLinkStt.includes("youtube.com")) {
+          const videoId = questionMediaLinkStt.split("v=")[1];
+          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (questionMediaLinkStt.includes("vimeo.com")) {
+          const videoId = questionMediaLinkStt.split("/").pop();
+          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+        } else if (questionMediaLinkStt.includes("twitter.com")) {
+          embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+        }
+
+        if (embeddingUrl) {
+          console.log('Ahere11')
+
+          appendMessage2(`▪ <b>Optional Enrichment Media</b><br>  <iframe
+                            allow="autoplay; encrypted-media; fullscreen;"
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            src=${embeddingUrl}
+                            frameborder="0"
+                            allowfullscreen
+                          >
+                    `);
+        } else {
+          // considering else a aritcle url
 
             appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
                               style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
@@ -5996,9 +6091,37 @@ const handleProceedClickStt = async (choice) => {
                               onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
                               View Context
                             </a>`)
+
+        }
+            
           }
         }
       }
+
+      if (['game'].includes(senarioCase2)) {
+        const randomnumber = generateRandomAlphanumeric(5);
+
+        if (IsSingleSelectSTT !== null) {
+
+          if (IsSingleSelectSTT) {
+            console.log("HERE 2")
+            // add logic to add single box
+            // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+            // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+            handleGameQuestion(initialQuestionTextStt, randomnumber, true)
+          } else {
+            console.log("multiple game")
+
+            // add logic to add multiselect
+            handleGameQuestion(initialQuestionTextStt, randomnumber, false)
+          }
+        } else {
+          appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+
+        }
+
+      } else {
+
 
       if (initialQuestionTextStt) {
         const linkPattern = /(http[s]?:\/\/[^\s]+)/;
@@ -6083,6 +6206,7 @@ const handleProceedClickStt = async (choice) => {
           appendMessage2(initialQuestionTextStt);
         }
       }
+      }
     } else {
       if (
         !questionMediaLinkStt &&
@@ -6093,8 +6217,8 @@ const handleProceedClickStt = async (choice) => {
       ) {
         let responderName;
 
-        if (testType2 === "dynamic_discussion_thread") {
-          if (!['game'].includes(senarioCase2)) {
+        if (!['game'].includes(senarioCase2)) {
+          if (testType2 === "dynamic_discussion_thread") {
 
             if (initialQuestionTextStt.includes(":")) {
               initialQuestionTextStt = initialQuestionTextStt.replace(
@@ -6107,16 +6231,17 @@ const handleProceedClickStt = async (choice) => {
             } else {
               responderName = `<b>System:</b><br>`;
             }
-          }
-        } else {
-          let strLIst = initialQuestionTextStt
-            .replaceAll("*", "")
-            .split(":", 2);
-          if (strLIst.length > 1) {
-            initialQuestionTextStt = strLIst[1];
-            responderName = `<b>${strLIst[0]}:</b><br>`;
+          } else {
+            let strLIst = initialQuestionTextStt
+              .replaceAll("*", "")
+              .split(":", 2);
+            if (strLIst.length > 1) {
+              initialQuestionTextStt = strLIst[1];
+              responderName = `<b>${strLIst[0]}:</b><br>`;
+            }
           }
         }
+
         if (isImmersiveStt && !['game'].includes(senarioCase2)) {
           const queText = initialQuestionTextStt;
 
@@ -6192,6 +6317,8 @@ const handleProceedClickStt = async (choice) => {
               // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
               handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
             } else {
+              console.log("multiple game")
+
               // add logic to add multiselect
               handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
             }
@@ -13299,9 +13426,10 @@ function cleanTextForAudio(text) {
                   console.log("Session Created => ", sessionId2);
 
                   if (senarioCase2 === 'game') {
-                    questionLength2 = 1;
+                    questionLength2 = 999;
                     questionIndex2 = 0;
                     // getting question for the game scenario:
+                    console.log('game init question', data.next_question_text)
                     questionText2 = `${data.next_question_text}`
 
 
@@ -13602,24 +13730,27 @@ function cleanTextForAudio(text) {
                       </div>`;
                       questionText2 = formRadio;
                     } else {
-                      if (testType2 != "coaching" || questionIndex2 == 0) {
-                        if (isHindiStt) {
+                      if (!['game'].includes(senarioCase2)){
+
+                        if (testType2 != "coaching" || questionIndex2 == 0) {
+                          if (isHindiStt) {
+                            questionText2 =
+                              testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                          }
                           questionText2 =
-                            testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                            questionData2.results[0].questions[questionIndex2]
+                              .question;
+                          questionMediaLinkStt =
+                            questionData2.results[0].questions[questionIndex2]
+                              .media_link;
+                          questionSnippetLinkStt =
+                            questionData2.results[0].questions[questionIndex2]
+                              .snippet_url;
                         }
-                        questionText2 =
-                          questionData2.results[0].questions[questionIndex2]
-                            .question;
-                        questionMediaLinkStt =
-                          questionData2.results[0].questions[questionIndex2]
-                            .media_link;
-                        questionSnippetLinkStt =
-                          questionData2.results[0].questions[questionIndex2]
-                            .snippet_url;
                       }
                     }
                   }
-                  console.log(questionText2);
+                  console.log(questionText2, 'init question text');
                   if (questionIndex2 === 0) {
                     if (isHindiStt) {
                       questionText2 =
@@ -14041,7 +14172,8 @@ function cleanTextForAudio(text) {
                     if (
                       testType2 != "orchestrated_conversation" &&
                       testType2 != "dynamic_discussion_thread" &&
-                      testType2 != "coaching"
+                      testType2 != "coaching" &&
+                      !['game'].includes(senarioCase2)
                     ) {
                       if (isHindiStt) {
                         questionText2 = testUIInfoStt[`Question ${questionIndex2 + 1}`];
@@ -14261,6 +14393,7 @@ function cleanTextForAudio(text) {
 
                 if (senarioCase2 === 'game') {
                   if (questionIndex2 !== 0) {
+                    questionIndex2++;
                     try {
                       // Fetch the next game question
                       const response = await handleGameTypeConversation();
