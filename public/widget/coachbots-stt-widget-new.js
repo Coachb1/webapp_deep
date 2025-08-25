@@ -1936,7 +1936,7 @@ async function populateChatHistoryOptions(refresh = false) {
 
   // 2. "➕ Start New Chat" option
   const newChatOption = document.createElement("option");
-  newChatOption.textContent = "➕ Start New Chat";
+  newChatOption.textContent = "➕ Start New Session";
   newChatOption.value = "new-chat"; // special value
   newChatOption.style.fontWeight = "bold";
   newChatOption.style.color = "#0066cc";
@@ -1950,10 +1950,10 @@ async function populateChatHistoryOptions(refresh = false) {
   // 4. Create optgroups
   if (previousChatHistory.length > 0) {
     const completedOptGroup = document.createElement("optgroup");
-    completedOptGroup.label = "Completed Chats";
+    completedOptGroup.label = "Completed Sessions";
 
     const incompleteOptGroup = document.createElement("optgroup");
-    incompleteOptGroup.label = "Incomplete Chats";
+    incompleteOptGroup.label = "Incomplete Sessions";
 
     previousChatHistory.forEach(chat => {
       const option = document.createElement("option");
