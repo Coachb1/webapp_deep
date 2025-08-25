@@ -4883,14 +4883,16 @@ function formatMessage2(message) {
       instructions: "Instructions",
       instruction_media: "Reference",
       oem: "▶️ AI Coach Lesson or Additional Context (Expand to view or pause)",
-      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)"
+      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)",
+      'game_oem': "▶️ AI Coach Lesson / Simulataion (Click to expand & pause)"
+      
     };
 
     return Object.keys(keyToTitleMappings).map(key => {
       let value = message[key];
       if (!value) return null;
 
-      if (['oem', 'feedback_media'].includes(key) && value.includes('iframe')) {
+      if (['oem', 'feedback_media', 'game_oem'].includes(key) && value.includes('iframe')) {
 
         return `
           <div>
@@ -5532,16 +5534,27 @@ const handleGameTypeConversation = async () => {
         next_question_text =
           "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
       } else {
-        next_question_text = JSON.parse(next_question_text)
-        next_question_text = `<div>
-        <b>${next_question_text.end_message}</b>
-        <div>
-          <h3>Feedback:</h3>
-          <p>${next_question_text.feedback}</p>
-        </div>
-      </div>`
+        next_question_text = JSON.parse(next_question_text);
+
+        // Format incorrect answers nicely
+        let formattedFeedback = next_question_text.feedback
+          .replace(/\n❌ Question:/g, "</p><div class='incorrect'><b>❌ Question:</b>")
+          .replace(/\n\s*Your Answer:/g, "<br><b>Your Answer:</b>")
+          .replace(/\n\s*Correct Answer:/g, "<br><b>Correct Answer:</b>")
+          .replace(/\n\s*Explanation:/g, "<br><b>Explanation:</b>")
+          .replace(/\n/g, "<br>") + "</div>";
+
+        next_question_text = `
+          <div>
+            <b>${next_question_text.end_message}</b>
+            <div style="margin-top:10px;">
+              <h3>Feedback:</h3>
+              <p>${formattedFeedback}</p>
+            </div>
+          </div>`;
       }
     }
+
 
     return { is_last_question, next_question_text }
 
@@ -5598,7 +5611,7 @@ const handleMediaLinks = async (questionMediaLinkStt) =>{
                   </audio></div>`);
             } else if (element.includes("player.cloudinary.com") || element.includes('storage.googleapis.com')) {
                 appendMessage2({
-                  oem: `
+                  game_oem: `
                       <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
                         <div id="poster-overlay" style="
                           position: absolute;
@@ -5639,7 +5652,7 @@ const handleMediaLinks = async (questionMediaLinkStt) =>{
                 if (embeddingUrl) {
                   console.log('Ahere11')
 
-                  appendMessage2({oem: `<iframe
+                  appendMessage2({game_oem: `<iframe
                                     allow="autoplay; encrypted-media; fullscreen;"
                                     style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                     src=${embeddingUrl}
@@ -5671,6 +5684,18 @@ const handleGameQuestion = async (
   isSingleSelect,
   signals
 ) => {
+
+  const questions = questionData2?.results?.[0]?.questions ?? [];
+  const prevQuestion = questions[questionIndex2 - 1];
+
+  if (prevQuestion) {
+    questionMediaLinkStt = prevQuestion.media_link;
+  } else {
+    questionMediaLinkStt = null; // or handle gracefully
+  }
+  console.log('game', questionMediaLinkStt, questionIndex2-1)
+  
+  handleMediaLinks(questionMediaLinkStt);
 
 
   const tChatElementRef = document.getElementById("chat-element2")
@@ -5910,17 +5935,7 @@ const handleGameQuestion = async (
   })
 
 
-  const questions = questionData2?.results?.[0]?.questions ?? [];
-  const prevQuestion = questions[questionIndex2 - 1];
 
-  if (prevQuestion) {
-    questionMediaLinkStt = prevQuestion.media_link;
-  } else {
-    questionMediaLinkStt = null; // or handle gracefully
-  }
-  console.log('game', questionMediaLinkStt, questionIndex2-1)
-  
-  handleMediaLinks(questionMediaLinkStt);
 };
 
 function isAudioURL(url) {
