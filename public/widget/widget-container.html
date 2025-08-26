@@ -28,6 +28,58 @@
       #close-top2 {
         display: none !important;
       }
+
+      #chat {
+        display: none; /* hidden until widgetReady */
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: #f9f9f9; /* fallback background */
+      }
+
+      /* Loader wrapper */
+      #loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        z-index: 9999;
+      }
+
+      /* Wave animation */
+      .wave-loader {
+        display: flex;
+        gap: 6px;
+      }
+
+      .wave-loader span {
+        display: block;
+        width: 10px;
+        height: 40px;
+        background: rgb(87, 223, 160);
+        border-radius: 4px;
+        animation: wave 1.2s ease-in-out infinite;
+      }
+
+      .wave-loader span:nth-child(1) { animation-delay: 0s; }
+      .wave-loader span:nth-child(2) { animation-delay: 0.1s; }
+      .wave-loader span:nth-child(3) { animation-delay: 0.2s; }
+      .wave-loader span:nth-child(4) { animation-delay: 0.3s; }
+      .wave-loader span:nth-child(5) { animation-delay: 0.4s; }
+
+      @keyframes wave {
+        0%, 40%, 100% {
+          transform: scaleY(0.3);
+        }
+        20% {
+          transform: scaleY(1);
+        }
+      }
     </style>
 
     <script>
@@ -49,11 +101,50 @@
 
       
       if (type === 'coach_bot') window.botId = botid;
+
+      console.log('user', user)
       window.user = user;
       window.origin = origin;
+
+      // Function to be called when widget is ready
+      window.widgetReady = function () {
+        document.getElementById("loader").style.display = "none";
+        const chat = document.getElementById("chat");
+        if (chat) {
+          chat.style.display = "block";
+        }
+      };
+
+      // Fallback after 5s
+      if (!window.user) {
+        const start = Date.now();
+        setTimeout(() => {
+          const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+          console.log(`widgetReady ran after ${elapsed} seconds (no user case)`);
+          window.widgetReady();
+        }, 5000);
+      } else {
+        const start = Date.now();
+        setTimeout(() => {
+          const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+          console.log(`widgetReady ran after ${elapsed} seconds (user case)`);
+          window.widgetReady();
+        }, 10000);
+      }
+
+      
     </script>
   </head>
   <body>
-    <div class="coachbots-coachscribe"></div>
+    <div id="loader">
+      <div class="wave-loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <div id="chat" class="coachbots-coachscribe"></div>
   </body>
 </html>
