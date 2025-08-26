@@ -2002,6 +2002,8 @@ async function populateChatHistoryOptions(refresh = false) {
     dropdown.selectedIndex = 0;
   }
   });
+
+  window.widgetReady();
 }
 
 
@@ -2350,6 +2352,7 @@ async function setupBotAndProceed() {
 
 const getMindmapandAssessment = async (user_id) => {
   try {
+    console.log('user id mindmap', user_id)
     const response = await fetch(`${baseURL2}/accounts/get-mindmap-and-assessments-report/?user_id=${user_id}`, {
       method: "GET",
       headers: {
@@ -2358,7 +2361,7 @@ const getMindmapandAssessment = async (user_id) => {
     });
 
     if (!response.ok) {
-      console.log("Error fetching mindmaps and assessments");
+      console.error("Error fetching mindmaps and assessments");
     }
 
     const data = await response.json();
