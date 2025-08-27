@@ -5570,7 +5570,7 @@ const handleGameTypeConversation = async () => {
   }
 };
 
-const handleMediaLinks = async (questionMediaLinkStt) =>{
+const handleMediaLinks = async (questionMediaLinkStt, field = "game_oem") =>{
   if (questionMediaLinkStt) {
         const urlList = questionMediaLinkStt.split(",");
         console.log("media link list", urlList);
@@ -5614,7 +5614,7 @@ const handleMediaLinks = async (questionMediaLinkStt) =>{
                   </audio></div>`);
             } else if (element.includes("player.cloudinary.com") || element.includes('storage.googleapis.com')) {
                 appendMessage2({
-                  game_oem: `
+                  [field]: `
                       <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
                         <div id="poster-overlay" style="
                           position: absolute;
@@ -5655,7 +5655,7 @@ const handleMediaLinks = async (questionMediaLinkStt) =>{
                 if (embeddingUrl) {
                   console.log('Ahere11')
 
-                  appendMessage2({game_oem: `<iframe
+                  appendMessage2({[field]: `<iframe
                                     allow="autoplay; encrypted-media; fullscreen;"
                                     style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                     src=${embeddingUrl}
@@ -5998,123 +5998,7 @@ const handleProceedClickStt = async (choice) => {
       console.log(questionMediaLinkStt);
       let embeddingUrl = "";
 
-      if (questionMediaLinkStt.length > 0) {
-        
-
-        const urlList = questionMediaLinkStt.split(",");
-        console.log("list", urlList);
-        if (urlList.length > 1) {
-          urlList.forEach((element) => {
-            element = element.trim();
-            if (element.includes("docs.google.com")) {
-              let url =
-                element.split("edit?")[0] +
-                "embed?start=true&loop=true&delayms=3000";
-              console.log(url);
-              console.log('Ahere10')
-
-              appendMessage2(`<iframe src=${url}
-                                frameborder="0" 
-                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                allowfullscreen="true" 
-                                mozallowfullscreen="true" 
-                                webkitallowfullscreen="true"
-                                ></iframe>`);
-            } else if (isAudioURL(element)) {
-              console.log(element);
-              console.log('Ahere8')
-
-              appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                ? "width: 200px; max-width: 200px !important;"
-                : " min-width: 50vw !important;"
-                }" controls autoplay>
-                <source src=${element} type="audio/mpeg" />
-                Your browser does not support the audio element.
-                </audio></div>`);
-            } else {
-              // considering else a aritcle url
-
-              appendMessage2(`<a href="${element}" target="_blank"
-                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                              View Context
-                            </a>`)
-            }
-          });
-        } else {
-          if (questionMediaLinkStt.includes("docs.google.com")) {
-            let url =
-              questionMediaLinkStt.split("edit?")[0] +
-              "embed?start=true&loop=true&delayms=3000";
-            console.log(url);
-            console.log('Ahere7')
-
-            appendMessage2(`<iframe src=${url}
-                              frameborder="0" 
-                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                              allowfullscreen="true" 
-                              mozallowfullscreen="true" 
-                              webkitallowfullscreen="true"
-                              ></iframe>`);
-          } else if (questionMediaLinkStt.includes("guidejar.com")) {
-            const guidejarId = questionMediaLinkStt.split("/").pop();
-            console.log('Ahere6')
-
-            appendMessage2(`
-              <div style="width:640px">
-              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-              ></div></div>
-              `);
-          } else if (isAudioURL(questionMediaLinkStt)) {
-            console.log(questionMediaLinkStt);
-            console.log('Aheresa')
-
-            appendMessage2(`<div ><audio style="${window.innerWidth < 600
-              ? "width: 200px; max-width: 200px !important;"
-              : " min-width: 50vw !important;"
-              }" controls autoplay>
-                <source src=${questionMediaLinkStt} type="audio/mpeg" />
-                Your browser does not support the audio element.
-                </audio></div>`);
-          } else {
-            if (questionMediaLinkStt.includes("youtube.com")) {
-          const videoId = questionMediaLinkStt.split("v=")[1];
-          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        } else if (questionMediaLinkStt.includes("vimeo.com")) {
-          const videoId = questionMediaLinkStt.split("/").pop();
-          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-        } else if (questionMediaLinkStt.includes("twitter.com")) {
-          embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-        }
-
-        if (embeddingUrl) {
-          console.log('Ahere11')
-
-          appendMessage2(`▪ <b>Optional Enrichment Media</b><br>  <iframe
-                            allow="autoplay; encrypted-media; fullscreen;"
-                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                            src=${embeddingUrl}
-                            frameborder="0"
-                            allowfullscreen
-                          >
-                    `);
-        } else {
-          // considering else a aritcle url
-
-            appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
-                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                              View Context
-                            </a>`)
-
-        }
-            
-          }
-        }
-      }
+      handleMediaLinks(questionMediaLinkStt, "oem");
 
       if (['game'].includes(senarioCase2)) {
         const randomnumber = generateRandomAlphanumeric(5);
@@ -13666,7 +13550,35 @@ function cleanTextForAudio(text) {
                                               mozallowfullscreen="true"
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
-                            } else if (isAudioURL(questionMediaLinkStt)) {
+                            } else if (questionMediaLinkStt.includes("player.cloudinary.com") || questionMediaLinkStt.includes('storage.googleapis.com')) {
+
+                          appendMessage2({
+                            oem: `
+                                <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
+                                  <div id="poster-overlay" style="
+                                    position: absolute;
+                                    top: 0; left: 0;
+                                    width: 100%; height: 100%;
+                                    background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
+                                    z-index: 2;
+                                    transition: opacity 0.5s ease;
+                                    border-radius: 8px;
+                                  "></div>
+
+                                  <iframe
+                                    onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
+                                    allow="autoplay; encrypted-media; fullscreen;"
+                                    style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
+                                    src="${questionMediaLinkStt}"
+                                    frameborder="0"
+                                    allowfullscreen
+                                  ></iframe>
+                                </div>
+                                `
+                          });
+                        } 
+                            
+                            else if (isAudioURL(questionMediaLinkStt)) {
                               console.log(questionMediaLinkStt);
                               questionText2 =
                                 questionText2 +
@@ -14215,114 +14127,7 @@ function cleanTextForAudio(text) {
                       }
                       if (questionMediaLinkStt) {
                         console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionMediaLinkStt.length > 0) {
-                          if (questionMediaLinkStt.includes("youtube.com")) {
-                            const videoId = questionMediaLinkStt.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("vimeo.com")
-                          ) {
-                            const videoId = questionMediaLinkStt
-                              .split("/")
-                              .pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("twitter.com")
-                          ) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-                          }
-                          if (embeddingUrl) {
-                            questionText2 = `▪ <b>Optional Enrichment Media</b><br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                          `;
-                          }
-                          const urlList = questionMediaLinkStt.split(",");
-                          console.log("list", urlList);
-                          if (urlList.length > 1) {
-                            urlList.forEach((element) => {
-                              element = element.trim();
-                              if (element.includes("docs.google.com")) {
-                                let url =
-                                  element.split("edit?")[0] +
-                                  "embed?start=true&loop=true&delayms=3000";
-                                console.log(url);
-                                appendMessage2(`<iframe src=${url}
-                                                frameborder="0"
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                                allowfullscreen="true"
-                                                mozallowfullscreen="true"
-                                                webkitallowfullscreen="true"
-                                                ></iframe>`);
-                              } else if (isAudioURL(element)) {
-                                console.log(element);
-                                appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                                  ? "width: 200px; max-width: 200px !important;"
-                                  : " min-width: 50vw !important;"
-                                  }" controls autoplay>
-                                <source src=${element} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`);
-                              } else {
-                                appendMessage2(`<a href="${element}" target="_blank"
-                                                style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                                                onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                                onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                                View Context
-                                              </a>`)
-                              }
-                            });
-                          } else {
-                            if (
-                              questionMediaLinkStt.includes("docs.google.com")
-                            ) {
-                              let url =
-                                questionMediaLinkStt.split("edit?")[0] +
-                                "embed?start=true&loop=true&delayms=3000";
-                              console.log(url);
-                              appendMessage2(`<iframe src=${url}
-                                              frameborder="0"
-                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                              allowfullscreen="true"
-                                              mozallowfullscreen="true"
-                                              webkitallowfullscreen="true"
-                                              ></iframe>`);
-                            } else if (
-                              questionMediaLinkStt.includes("guidejar.com")
-                            ) {
-                              const guidejarId = questionMediaLinkStt
-                                .split("/")
-                                .pop();
-                              appendMessage2(`
-                              <div style="width:640px">
-                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-                              ></div></div>
-                              `);
-                            } else if (isAudioURL(questionMediaLinkStt)) {
-                              console.log(questionMediaLinkStt);
-                              appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                                ? "width: 200px; max-width: 200px !important;"
-                                : " min-width: 50vw !important;"
-                                }" controls autoplay>
-                                <source src=${questionMediaLinkStt} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`);
-                            } else {
-                              appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
-                                                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                                                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                                  onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                                  View Context
-                                                </a>`)
-                            }
-                          }
-                        }
+                        handleMediaLinks(questionMediaLinkStt, "oem")
                       }
                       if (questionSnippetLinkStt) {
                         if (questionSnippetLinkStt.length > 0) {
@@ -14395,7 +14200,7 @@ function cleanTextForAudio(text) {
                           });
                           // questionText2 = questionText2 + imageDiv
                         } else {
-                          console.log("6quetext");
+                          console.log("6quetext", questionText2);
 
                           signals.onResponse({
                             html: questionText2,
