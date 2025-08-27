@@ -1,5 +1,7 @@
 import Navbar from "@/components/job-aid/navbar";
+import CommunicationCourse from "@/components/course/CourseFLow";
 import React from "react";
+import CoachbotsWidget from "@/components/course/courseWidget";
 
 
 const Page = async () => {
@@ -14,7 +16,9 @@ const Page = async () => {
         padding: "20px",
       }}
     >
-      <Navbar />
+      {/* <Navbar /> */}
+      <CommunicationCourse />
+      <CoachbotsWidget/>
     </div>
   );
 };
