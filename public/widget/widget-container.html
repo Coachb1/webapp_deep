@@ -37,7 +37,6 @@
         background: #f9f9f9; /* fallback background */
       }
 
-      /* Loader wrapper */
       #loader {
         position: fixed;
         top: 0;
@@ -45,10 +44,18 @@
         width: 100%;
         height: 100%;
         display: flex;
+        flex-direction: column; /* stack vertically */
         justify-content: center;
         align-items: center;
         background: #fff;
         z-index: 9999;
+      }
+
+      #loader_text {
+        margin-bottom: 30px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
       }
 
       /* Wave animation */
@@ -66,14 +73,26 @@
         animation: wave 1.2s ease-in-out infinite;
       }
 
-      .wave-loader span:nth-child(1) { animation-delay: 0s; }
-      .wave-loader span:nth-child(2) { animation-delay: 0.1s; }
-      .wave-loader span:nth-child(3) { animation-delay: 0.2s; }
-      .wave-loader span:nth-child(4) { animation-delay: 0.3s; }
-      .wave-loader span:nth-child(5) { animation-delay: 0.4s; }
+      .wave-loader span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .wave-loader span:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .wave-loader span:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .wave-loader span:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+      .wave-loader span:nth-child(5) {
+        animation-delay: 0.4s;
+      }
 
       @keyframes wave {
-        0%, 40%, 100% {
+        0%,
+        40%,
+        100% {
           transform: scaleY(0.3);
         }
         20% {
@@ -85,10 +104,12 @@
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       const pathname = window.location.origin;
-      const type = urlParams.get('type') || 'coach_bot'
+      const type = urlParams.get("type") || "coach_bot";
       const origin = urlParams.get("origin") || "external";
       const user = JSON.parse(urlParams.get("user"));
-      const botid = urlParams.get('botId') || 'avatar-bot-36f8d-emphasizing-luxury--confidence-the-radiance-edit'
+      const botid =
+        urlParams.get("botId") ||
+        "avatar-bot-36f8d-emphasizing-luxury--confidence-the-radiance-edit";
 
       console.log("decwindow", window.location);
       console.log("pathname from query:", pathname);
@@ -99,10 +120,9 @@
       script.defer = true;
       document.head.appendChild(script);
 
-      
-      if (type === 'coach_bot') window.botId = botid;
+      if (type === "coach_bot") window.botId = botid;
 
-      console.log('user', user)
+      console.log("user", user);
       window.user = user;
       window.origin = origin;
 
@@ -120,7 +140,9 @@
         const start = Date.now();
         setTimeout(() => {
           const elapsed = ((Date.now() - start) / 1000).toFixed(2);
-          console.log(`widgetReady ran after ${elapsed} seconds (no user case)`);
+          console.log(
+            `widgetReady ran after ${elapsed} seconds (no user case)`
+          );
           window.widgetReady();
         }, 5000);
       } else {
@@ -131,12 +153,13 @@
           window.widgetReady();
         }, 10000);
       }
-
-      
     </script>
   </head>
   <body>
     <div id="loader">
+      <div class="loader_text">
+        Initializing AI Coach...
+      </div>
       <div class="wave-loader">
         <span></span>
         <span></span>
