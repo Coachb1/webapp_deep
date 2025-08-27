@@ -512,6 +512,9 @@ let LLMOrder = {
 }
 let MindMapLinks;
 let AssessmentLinks;
+let ScoreConfigStt = {};
+let gameScoreVisbileStt = true;
+let gameExplanationVisibleStt = true;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -2236,6 +2239,41 @@ const getIdps = async (user_id) => {
     return false;
   }
 };
+
+
+function getFeedbackFromScoreConfigStt(score, total = 100) {
+  if (!ScoreConfigStt) return '';
+
+  // find config min & max
+  let minRange = Infinity;
+  let maxRange = -Infinity;
+
+  for (const key in ScoreConfigStt) {
+    const [min, max] = ScoreConfigStt[key].score.map(Number);
+    if (min < minRange) minRange = min;
+    if (max > maxRange) maxRange = max;
+  }
+
+  // check if config is on 0–10 scale (like earlier case)
+  const needsNormalization = maxRange <= 10;
+
+  // normalize if needed
+  const effectiveScore = needsNormalization
+    ? Math.round((score / total) * maxRange) // map 0–100 → 0–10
+    : score; // already 0–100
+
+  // find matching range
+  for (const key in ScoreConfigStt) {
+    const [min, max] = ScoreConfigStt[key].score.map(Number);
+    if (effectiveScore >= min && effectiveScore <= max) {
+      return ScoreConfigStt[key].feedback;
+    }
+  }
+
+  return '';
+}
+
+
 function showLoader(message = "Loading...") {
   const loader = document.createElement("div");
   loader.id = "bot-loader";
@@ -5537,6 +5575,13 @@ const handleGameTypeConversation = async () => {
         next_question_text =
           "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
       } else {
+        const scoreMatch = next_question_text.match(/achieved a score of (\d+) out of (\d+)/);
+        let score;
+        if (scoreMatch) {
+          score = parseInt(scoreMatch[1], 10);   // "70" → 70
+          const total = parseInt(scoreMatch[2], 10);   // "100" → 100
+          console.log("Score:", score, "Total:", total);
+        }
         next_question_text = JSON.parse(next_question_text);
 
         // Format incorrect answers nicely
@@ -5547,15 +5592,32 @@ const handleGameTypeConversation = async () => {
           .replace(/\n\s*Explanation:/g, "<br><b>Explanation:</b>")
           .replace(/\n/g, "<br>") + "</div>";
 
-        next_question_text = `
-          <div>
-            <b>${next_question_text.end_message}</b>
+        let finalMessage = "";
+
+        if (gameScoreVisbileStt) {
+          finalMessage += `<b>${next_question_text.end_message}</b><br>`;
+        }
+
+        if (gameExplanationVisibleStt) {
+          finalMessage += `
             <div style="margin-top:10px;">
               <h3>Feedback:</h3>
               <p>${formattedFeedback}</p>
-            </div>
-          </div>`;
+            </div>`;
+        }
+
+        // Add getFeedback() result or fallback
+        if (gameScoreVisbileStt || gameExplanationVisibleStt) {
+          finalMessage += `<br><b>${getFeedbackFromScoreConfigStt(score)}</b>`;
+          next_question_text = `
+            <div>
+              ${finalMessage}
+            </div>`;
+        } else {
+          next_question_text = `<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>`;
+        }
       }
+
     }
 
 
@@ -13118,6 +13180,11 @@ function cleanTextForAudio(text) {
                 emailCandidate2 = questionData2.results[0].email_candidate;
                 FeedbackVideoLinkStt = questionData2.results[0].feedback_script_video_link;
                 InstructinoMediaLinkStt = questionData2.results[0].instruction_media_link;
+                ScoreConfigStt = questionData2.results[0].score_config;
+                gameExplanationVisibleStt = questionData2.results[0].explanation_visible;
+                gameScoreVisbileStt = questionData2.results[0].score_visible;
+
+
                 console.log('InstructinoMediaLinkStt', InstructinoMediaLinkStt)
 
                 if (
