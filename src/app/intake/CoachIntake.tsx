@@ -663,7 +663,7 @@ const CoachIntake = ({ user }: any) => {
                     "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
-                    router.push("/");
+                    router.push("/network");
                     getAllDirectoryData();
                   }, 4000);
                 }
@@ -697,7 +697,7 @@ const CoachIntake = ({ user }: any) => {
                     "Your Feedback bot already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
-                    router.push("/");
+                    router.push("/network");
                   }, 4000);
                 }
               })
@@ -1289,7 +1289,7 @@ const CoachIntake = ({ user }: any) => {
                               resetAllStates();
                               getAllDirectoryData();
                               setTimeout(() => {
-                                router.push("/");
+                                router.push("/network");
                               }, 4000);
                             } else {
                               setCreateLoading(false);
@@ -1348,7 +1348,7 @@ const CoachIntake = ({ user }: any) => {
                   });
                   setTimeout(() => {
                     getAllDirectoryData();
-                    router.push("/");
+                    router.push("/network");
                   }, 4000);
                 }
               })
@@ -1917,7 +1917,7 @@ const CoachIntake = ({ user }: any) => {
                     setTimeout(() => {
                       // getFeedbackBotsData();
                       getAllDirectoryData();
-                      router.push("/");
+                      router.push("/network");
                     }, 10000);
                   }
                   resetAllStates();

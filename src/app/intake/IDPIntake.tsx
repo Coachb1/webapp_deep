@@ -99,7 +99,7 @@ const IDPIntake = ({ user }: any) => {
           );
         });
     } else {
-      router.push("/");
+      router.push("/network");
     }
   }, []);
 
@@ -187,7 +187,7 @@ const IDPIntake = ({ user }: any) => {
                   variant={"outline"}
                   className="h-8"
                   onClick={() => {
-                    router.push("/");
+                    router.push("/network");
                   }}
                 >
                   Return to home

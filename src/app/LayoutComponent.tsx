@@ -217,7 +217,7 @@ const LayoutComponent = ({
       if (coachtalk) {
         coachtalk.setAttribute("style", "display: none;");
       }
-    } else if (pathname === "/") {
+    } else if ( ["/network", "/"].includes(pathname)) {
       if (coachScribe && coachtalk) {
         coachtalk.setAttribute("style", "display: none;");
         coachScribe.setAttribute("style", "display: none;");

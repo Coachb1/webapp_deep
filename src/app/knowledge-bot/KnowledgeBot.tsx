@@ -221,7 +221,7 @@ const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
                 variant={"link"}
                 onClick={(event) => {
                   event.preventDefault();
-                  window.location.href = "/";
+                  window.location.href = "/network";
                 }}
               >
                 Home

@@ -325,7 +325,7 @@ const Coach = ({ user, renderType }: any) => {
                 variant={"link"}
                 onClick={(event) => {
                   event.preventDefault();
-                  window.location.href = "/";
+                  window.location.href = "/network";
                 }}
               >
                 Home
