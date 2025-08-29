@@ -10937,7 +10937,7 @@ loadExternalModule().then(() => {
 <div class="dropdown" >
   <button id="more-btn" 
     style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    ⋮
+    Mode
   </button>
 
   <div id="more-menu" class='dropdown-menu'
