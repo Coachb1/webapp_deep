@@ -1905,11 +1905,14 @@ function populateChatHistory(chatId) {
   });
 
   // Display chat footer
-  appendMessage2(
-  `<b>✅ End of chat:</b> <i title="${sessionData.summary || "No Summary"}">
-    ${sessionData.summary?.slice(0, 30) || "No Summary"}...
-  </i>`
+  const formattedSummary = (sessionData.summary || "No Summary")
+  .replace(/\n/g, "<br>");
+
+appendMessage2(
+  `<b>✅ End of Session Summary:</b><br>
+   <i>${formattedSummary}</i>`
 );
+
 
 
   // Disable the selected dropdown option
