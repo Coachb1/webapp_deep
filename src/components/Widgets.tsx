@@ -50,7 +50,7 @@ const Widgets = ({ from }: any) => {
                 </span>
               </p>
             </div> */}
-            {/* {subdomain === "temp-platform" || pathname === "/" ? null : (
+            {/* {subdomain === "temp-platform" || pathname === "/network" ? null : (
               <div className="fixed max-sm:left-[1.8rem] left-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%] max-sm:w-[30%] z-50">
                 <p className="text-xs text-left">
                   <span className="font-bold max-sm:text-[10px] max-sm:relative max-sm:-bottom-20 max-sm:p-1 rounded-lg max-sm:bg-[#35DDB8] w-fit">

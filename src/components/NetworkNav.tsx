@@ -77,7 +77,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
       <Link
         href={""}
         className={`pl-12 max-sm:pl-1  ${
-          scrolled || pathname !== "/" ? "visible" : "invisible"
+          scrolled || !["/network", "/"].includes(pathname) ? "visible" : "invisible"
         }`}
       >
         <div className="flex flex-row items-center justify-center">
@@ -139,11 +139,11 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             <Button
               variant={"outline"}
               className={` h-8 ${
-                pathname === "/" ? "border border-gray-500 shadow-md" : ""
+                pathname === "/network" ? "border border-gray-500 shadow-md" : ""
               } `}
               asChild
             >
-              <Link href={"/"}>Network</Link>
+              <Link href={"/network"}>Network</Link>
             </Button>
           )}
 
@@ -214,11 +214,11 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                   {!restrictedPages?.includes("Network Directory") && (
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
-                        pathname === "/" ? "bg-gray-200" : null
+                        pathname === "/network" ? "bg-gray-200" : null
                       }`}
                       asChild
                     >
-                      <Link href={"/"}>Network</Link>
+                      <Link href={"/network"}>Network</Link>
                     </DropdownMenuItem>
                   )}
                   {userRole === 'super_admin' &&(

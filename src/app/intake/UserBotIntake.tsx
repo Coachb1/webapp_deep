@@ -460,7 +460,7 @@ const UserBotIntake = ({
                   setTimeout(() => {
                     getBotsFn();
                     getAllKnowledgeBotData();
-                    router.push("/");
+                    router.push("/network");
                   }, 4000);
                 }
               }
