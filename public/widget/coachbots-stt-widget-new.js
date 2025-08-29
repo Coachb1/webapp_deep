@@ -267,7 +267,65 @@ style.textContent = `
   }
 </style>
 
+.dropdown {
+      position: relative;
+      display: inline-block;
+    }
 
+    .dropdown button {
+      padding: 3px 9px; 
+      border: 1px solid green; 
+      background: white; 
+      color: black; 
+      border-radius: 5px; 
+      font-size: 14px; 
+      cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background: #f9f9f9;
+      min-width: 220px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      border-radius: 6px;
+      padding: 6px 0;
+      z-index: 1000;
+    }
+
+    .dropdown-content .item {
+      padding: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .dropdown-content .item:hover {
+      background: #f1f1f1;
+    }
+
+    .sub-items {
+      display: none;
+      // padding-left: 15px;
+      background: #fafafa;
+    }
+
+    .sub-items div {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .sub-items div:hover {
+      background: #eee;
+    }
+
+    .caret {
+      float: right;
+      transition: transform 0.3s;
+    }
+
+    .caret.open {
+      transform: rotate(90deg);
+    }
 
 
 `;
@@ -2009,12 +2067,169 @@ async function populateChatHistoryOptions(refresh = false) {
   window.widgetReady();
 }
 
+async function toggleDropdown(event) {
+  event.stopPropagation();
+  const menu = document.getElementById("dropdownMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+
+  // Load sessions dynamically on first open
+  if (menu.style.display === "block" && menu.childElementCount === 0) {
+    await populateChatHistoryWrapper(menu);
+  }
+}
+
+async function populateChatHistoryWrapper(menu) {
+  // Fetch sessions if empty
+  if (previousChatHistory.length === 0) {
+    await getPreviousChats(userId2, botId, true);
+  }
+
+  // Filter completed sessions
+  const completed = previousChatHistory.filter(chat =>
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary")
+  );
+
+  if (completed.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.className = "item";
+    emptyMsg.textContent = "No completed sessions";
+    menu.appendChild(emptyMsg);
+    return;
+  }
+
+  // ✅ SAFE DATA STORAGE - No JSON in HTML attributes
+  if (!window.sessionDataStore) {
+    window.sessionDataStore = {};
+  }
+
+  completed.forEach((chat, index) => {
+    const item = document.createElement("div");
+    item.className = "item";
+    
+    // Create a safe ID for this chat session
+    const safeChatId = `session_${index}_${Date.now()}`;
+    window.sessionDataStore[safeChatId] = chat;
+
+    const truncated = chat.summary.length > 30
+      ? chat.summary.slice(0, 20) + "..."
+      : chat.summary;
+
+    // ✅ Use simple data attribute instead of JSON
+    item.innerHTML = `
+      ${truncated} <span class="caret">▸</span>
+      <div class="sub-items">
+        <div onclick="selectItem(event, this)" data-chat-ref="${safeChatId}" style="color:blue; cursor:pointer;">
+          🔄 Generate Simulation
+        </div>
+      </div>
+    `;
+
+    // Add click handler for the main item
+    item.addEventListener('click', function(e) {
+      toggleSub(e, this);
+    });
+
+    menu.appendChild(item);
+  });
+}
+
+function toggleSub(event, el) {
+  event.stopPropagation();
+  const sub = el.querySelector(".sub-items");
+  const caret = el.querySelector(".caret");
+  
+  if (!sub || !caret) {
+    console.error("Sub-items or caret not found");
+    return;
+  }
+  
+  const isOpen = sub.style.display === "block";
+
+  // Collapse all others first
+  document.querySelectorAll(".sub-items").forEach(s => s.style.display = "none");
+  document.querySelectorAll(".caret").forEach(c => c.classList.remove("open"));
+
+  if (!isOpen) {
+    sub.style.display = "block";
+    caret.classList.add("open");
+  }
+}
+
+function selectItem(event, el) {
+  event.stopPropagation();
+  
+  try {
+    // ✅ Get chat data safely from storage
+    const chatRef = el.getAttribute('data-chat-ref');
+    const chatData = window.sessionDataStore && window.sessionDataStore[chatRef];
+    
+    if (!chatData) {
+      console.error("Chat data not found for reference:", chatRef);
+      console.log("Available data store:", window.sessionDataStore);
+      return;
+    }
+    
+    console.log("✅ Generate Simulation clicked for:", chatData);
+
+    // Update dropdown button label
+    // const dropdownBtn = document.getElementById("dropdownBtn");
+    // if (dropdownBtn) {
+    //   dropdownBtn.textContent = (chatData.summary || "Selected") + " ▼";
+    // }
+
+    // Close dropdown
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (dropdownMenu) {
+      dropdownMenu.style.display = "none";
+    }
+
+    // ✅ Call appendMessage2 immediately when Generate Simulation is clicked
+    if (typeof appendMessage2 === "function") {
+      console.log("📞 Calling appendMessage2 with:", chatData.summary);
+      appendMessage2(chatData.summary);
+    } else {
+      console.error("❌ appendMessage2 function not found");
+    }
+
+    // ✅ Show only the test code
+    showTestCodeOnly(chatData.uid, chatData);
+    
+  } catch (error) {
+    console.error("❌ Error in selectItem:", error);
+  }
+}
+
+// ✅ Show only test code when Generate Simulation is clicked
+function showTestCodeOnly(sessionId, sessionData) {
+  console.log("🔄 Showing test code for:", sessionId);
+  
+  // Remove any existing containers
+  const sessionInfo = document.createElement("div");
+  sessionInfo.textContent = appendMessage2("QWE1F56"); // ← replace with real data
+  sessionInfo.style.cssText = `
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: green;
+    font-weight: bold;
+  `;
+
+  
+  // Insert after the dropdown
+  // const wrapper = document.querySelector(".dropdown");
+  // if (wrapper && wrapper.parentNode) {
+  //   wrapper.parentNode.insertBefore(testCodeContainer, wrapper.nextSibling);
+  //   console.log("✅ Test code display added to DOM");
+  // } else {
+  //   // Fallback
+  //   document.body.appendChild(testCodeContainer);
+  // }
+}
 
 
 
 async function getPreviousChats(participant_id, bot_id, refresh = false) {
   try {
-    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
+    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&filter_chat_history=true&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -9089,6 +9304,12 @@ loadExternalModule().then(() => {
   >
     <option value="">Previous Chats</option>
   </select>
+</div>
+<div class="dropdown">
+  <button id="dropdownBtn" onclick="toggleDropdown(event)">Session History ▼</button>
+  <div class="dropdown-content" id="dropdownMenu">
+    <!-- Dynamic chat sessions will be inserted here -->
+  </div>
 </div>
 <div id="response-style" style="position: relative; display: none">
 </div>
