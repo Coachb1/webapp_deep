@@ -772,7 +772,7 @@ const initialiseUserSTT = async () => {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("START -> ", data);
+      console.log("init START -> ", data);
       participantId2 = data.uid;
       userId2 = data.uid;
       userRole2 = data.role;
@@ -2393,7 +2393,7 @@ async function setupBotAndProceed() {
 
 const getMindmapandAssessment = async (user_id) => {
   try {
-    console.log('user id mindmap', user_id)
+    console.log('user id mindmap', user_id, userId2, participantId2)
     const response = await fetch(`${baseURL2}/accounts/get-mindmap-and-assessments-report/?user_id=${user_id}`, {
       method: "GET",
       headers: {
@@ -2485,6 +2485,25 @@ async function populateDropdown(menuId ) {
     });
 }
 
+function waitForUserIdForMindmapAssessment(maxAttempts = 20, delay = 100) {
+  let attempts = 0;
+  const interval = setInterval(() => {
+
+    if (userId2){
+      clearInterval(interval);
+      populateDropdown("mindmap-menu");
+      populateDropdown("assessment-menu");
+      return;
+    }
+
+    attempts++;
+    if (attempts >= maxAttempts) {
+      clearInterval(interval);
+      console.warn("Unable to find userId2");
+    }
+  }, delay);
+}
+
 const getBotDetails2 = async (botId) => {
   try {
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
@@ -2524,26 +2543,6 @@ const getBotDetails2 = async (botId) => {
     console.log('LLMOrder',LLMOrder,botDetails.data.llm_order);
     LLMOrder = botDetails.data.llm_order
 
-
-    if (window.user){
-      if( botType == 'user_bot'){
-            updateAudioAllowed(false, false)
-      } else {
-        updateAudioAllowed(true, true)
-      }
-
-      populateDropdown("mindmap-menu");
-      populateDropdown("assessment-menu");     
-    } else {
-      enableDisableMindAssessmentbuttons("assessment-btn", true);
-      enableDisableMindAssessmentbuttons("mindmap-btn", true);
-    }
-
-    // show the buttons if coaching bot.
-    const mindmapBtn = document.getElementById("mindmap-btn");
-    const assessmentBtn = document.getElementById("assessment-btn");
-    mindmapBtn.style.display = "block";
-    assessmentBtn.style.display = "block";
     
    
 
@@ -3012,7 +3011,24 @@ const getBotDetails2 = async (botId) => {
         { 
           populateChatHistoryOptions();   
         }
+
+      if( botType == 'user_bot'){
+            updateAudioAllowed(false, false)
+      } else {
+        updateAudioAllowed(true, true)
+      }
+      waitForUserIdForMindmapAssessment()
+    } else {
+      enableDisableMindAssessmentbuttons("assessment-btn", true);
+      enableDisableMindAssessmentbuttons("mindmap-btn", true);
     }
+
+      // show the buttons if coaching bot.
+      const mindmapBtn = document.getElementById("mindmap-btn");
+      const assessmentBtn = document.getElementById("assessment-btn");
+      mindmapBtn.style.display = "block";
+      assessmentBtn.style.display = "block";
+
     return botDetails;
   } catch (error) {
     console.error(`Error in getBotDetails: ${error}`);
