@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Loader } from "lucide-react";
+import { AlertTriangle, Loader, Star, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -19,6 +19,7 @@ import {
   basicAuth,
   capitalizeText,
   convertTextToCorrectFormat,
+  formatTimeWithAmPm,
   parseData,
 } from "@/lib/utils";
 import { toast } from "sonner";
@@ -26,6 +27,12 @@ import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Meteors } from "@/components/ui/meteors";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
+import { AnimatePresence, motion } from "framer-motion";
+import { Card } from "@/components/ui/card-hover-effect";
+import { ParticipantListItemCard } from "@/components/ui/ParticipantListItemCard";
+import { CoachesDataType } from "../Coaches";
+import { useUser } from "@/context/UserContext";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 
 const howItWorks = [
   {
@@ -72,7 +79,383 @@ const Coach = ({ user, renderType }: any) => {
   );
   const [botType, setBotType] = useState("");
   const [discussiionTopics, setDiscussionTopics] = useState<string[]>([]);
+  const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);
+  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const {
+      directoryProfiles,
+      userInfo: {
+        restrictedFeatures,
+        restrictedPages,
+        headings,
+        helpText: helpModeText,
+        clientDepartments,
+        clientExpertise,
+      },
+      userId,
+      coachId: coachID,
+      coacheeId: coacheeID,
+      joiningPrevileges: UserJoiningPreviledges,
+      userConnections: connections,
+      allCoaches,
+      feedbackBots,
+      getAllConnectionsData,
+    } = useUser();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const indexOfLastCoach = currentPage * itemsPerPage;
+  const indexOfFirstCoach = indexOfLastCoach - itemsPerPage;
+  const currentCoachesData = coachesData.slice(
+    indexOfFirstCoach,
+    indexOfLastCoach
+  );
+  const [coacheeId, setCoacheeId] = useState("");
+  const [coachId, setCoachId] = useState("");
 
+   const [savedCoachesData, setSavedCoachesData] = useState<CoachesDataType[]>(
+      []
+    );
+
+  const RequestionConnection = ({
+    coachId,
+    requestStatus,
+    stateCoachId,
+  }: {
+    coachId: string;
+    requestStatus: string;
+    stateCoachId: string;
+  }) => {
+    const [requestLoading, setRequestLoading] = useState(false);
+    const [status, setStatus] = useState(requestStatus);
+
+    const requestConnectHandler = () => {
+      console.log(coacheeId, coachId);
+      if (coacheeId.length > 0) {
+        setRequestLoading(true);
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", basicAuth);
+
+        var reqestionData = JSON.stringify({
+          coach_id: coachId,
+          coachee_id: coacheeId,
+        });
+
+        console.log(reqestionData);
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: reqestionData,
+        };
+
+        fetch(`${baseURL}/accounts/coach-coachee-connections/`, requestOptions)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+
+            if (data.error || data.non_field_errors) {
+              toast.error("Error while sending your request!");
+              throw new Error("Error while sending connection request!");
+            } else {
+              const updatedCoachesData = savedCoachesData.map((coach) =>
+                coach.profile_id === coachId
+                  ? { ...coach, status: "pending" }
+                  : coach
+              );
+              setStatus("pending");
+              console.log(updatedCoachesData);
+
+              setSavedCoachesData(updatedCoachesData);
+              setTimeout(() => {
+                getAllConnectionsData();
+              }, 5000);
+            }
+            setTimeout(() => {
+              setRequestLoading(false);
+            }, 1000);
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error("Error while sending your request!");
+            setRequestLoading(false);
+            throw new Error("Error while sending your request!");
+          });
+      } else {
+        toast.error(
+          "Only coachees who join the network can send connection requests."
+        );
+      }
+    };
+    return (
+      <>
+        <Button
+          disabled={
+            requestLoading || status === "pending" || status === "Requested"
+          }
+          variant={"outline"}
+          className="max-sm:w-full max-md:w-full max-lg:w-full border border-gray-300 max-sm:text-sm"
+          onClick={() => {
+            requestConnectHandler();
+          }}
+        >
+          {requestLoading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Requesting
+            </>
+          ) : (
+            <>
+              <>{!status && "Request Connection"}</>
+              <>{status === "pending" && "Requested"}</>
+              <>{status === "accepted" && "Accepted"}</>
+            </>
+          )}
+        </Button>
+      </>
+    );
+  };
+const LikeComponent = ({
+    profile_id,
+    likesInfo,
+  }: {
+    profile_id: string;
+    likesInfo: string[];
+  }) => {
+    const [saved, setSaved] = useState();
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [likeCount, setLikeCount] = useState<number>(0);
+
+    const [initaited, setInitiated] = useState(false);
+
+    useEffect(() => {
+      const userLiked = likesInfo.includes(userId);
+      setIsLiked(userLiked);
+      setLikeCount(likesInfo.length);
+    }, [likesInfo, profile_id]);
+
+    const LikeHandler = () => {
+      console.log(profile_id, userId);
+      setInitiated(true);
+      fetch(`${baseURL}/accounts/save-liked-profile/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          profile_id: profile_id,
+          user_id: userId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setIsLiked(true);
+          setLikeCount((prevCount) => prevCount + 1);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === profile_id
+              ? { ...coach, admirer_ids: [...coach.admirer_ids, userId] }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
+
+          setInitiated(false);
+        })
+        .catch((err) => {
+          console.error(err);
+
+          throw new Error("Error in likes");
+        });
+    };
+
+    const revertLikeHandler = () => {
+      setInitiated(true);
+      fetch(`${baseURL}/accounts/save-liked-profile/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          profile_id: profile_id,
+          user_id: userId,
+          is_revert: "true",
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setIsLiked(false);
+          setLikeCount((prevCount) => prevCount - 1);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === profile_id
+              ? {
+                  ...coach,
+                  admirer_ids: coach.admirer_ids.filter((id) => id !== userId),
+                }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
+
+          setInitiated(false);
+        })
+        .catch((err) => {
+          console.error(err);
+
+          throw new Error("Error in likes");
+        });
+    };
+
+    return (
+      <>
+        <Button
+          className="rounded-3xl px-6"
+          variant={"outline"}
+          disabled={initaited}
+          onClick={isLiked ? revertLikeHandler : LikeHandler}
+        >
+          <TooltipWrapper
+            className=""
+            tooltipName={isLiked ? "Unlike" : "Like"}
+            body={
+              <ThumbsUp
+                className={`h-5 w-5 ${
+                  isLiked ? "stroke-green-500" : "hover:fill-green-500"
+                }`}
+                strokeWidth={1}
+                stroke="#22c55e"
+                fill={isLiked ? "#22c55e" : "transparent"}
+              />
+            }
+          />
+          <span className="ml-2">{likeCount}</span>
+        </Button>
+      </>
+    );
+  };
+
+  interface ReviewComponentProps {
+    stars: number;
+    totalRatings: number;
+    coachId: string;
+    id?: string;
+  }
+
+  const ReviewComponent: React.FC<ReviewComponentProps> = ({
+    stars,
+    totalRatings,
+    coachId,
+    id,
+  }) => {
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [starCount, setStarCount] = useState<number>(stars);
+    const [totalReviews, setTotalRating] = useState<number>();
+
+    useEffect(() => {
+      setTotalRating(totalRatings);
+    }, []);
+    const handleStarMouseEnter = (starIndex: number) => {
+      setHoveredIndex(starIndex);
+    };
+
+    const handleStarMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const handleStarClick = (starIndex: number) => {
+      console.log(`Clicked on star ${starIndex}`);
+      fetch(`${baseURL}/accounts/coach-rating/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          coach_id: coachId,
+          coachee_id: coacheeId,
+          rating: starIndex,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          setStarCount(data.average_rating);
+          setTotalRating(data.total_ratings);
+          setHoveredIndex(null);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === coachId
+              ? {
+                  ...coach,
+                  total_rating: data.total_ratings,
+                  rating: data.average_rating,
+                }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
+        });
+    };
+
+    const renderStars = () => {
+      const stars = [];
+      for (let i = 0; i < 5; i++) {
+        stars.push(
+          <Star
+            key={i}
+            fill={
+              i < starCount
+                ? "#f59e0b"
+                : hoveredIndex !== null && i < hoveredIndex
+                ? "#f9ac04"
+                : "#CBD5E0"
+            }
+            color={
+              i < starCount
+                ? "#f59e0b"
+                : hoveredIndex !== null && i < hoveredIndex
+                ? "#f9ac04"
+                : "#CBD5E0"
+            }
+            className={`h-4 w-4 ${
+              coacheeId.length === 0 && "hover:cursor-not-allowed"
+            }`}
+            onClick={() => {
+              if (coacheeId.length > 0) {
+                handleStarClick(i + 1);
+              }
+            }}
+            style={{
+              cursor: coacheeId.length === 0 ? "not-allowed" : "pointer",
+            }}
+            onMouseEnter={() => handleStarMouseEnter(i + 1)}
+            onMouseLeave={() => handleStarMouseLeave()}
+          />
+        );
+      }
+      return stars;
+    };
+
+    return (
+      <div
+        id={id}
+        className={`flex flex-row items-center ${
+          coacheeId.length === 0 && "hover:cursor-not-allowed"
+        }`}
+      >
+        <div
+          className={`flex flex-row items-center gap-1 mr-1 max-sm:mt-2 ${
+            coacheeId.length === 0 && "hover:cursor-not-allowed"
+          }`}
+        >
+          {renderStars()}
+        </div>{" "}
+        <p className="text-[14px] max-sm:text-xs max-sm:pt-2">
+          ({totalReviews} Reviews)
+        </p>
+      </div>
+    );
+  };
   //
   const [botName, setBotName] = useState("");
   const [botAreaCoaching, setBotAreaCoaching] = useState("");
@@ -160,6 +543,8 @@ const Coach = ({ user, renderType }: any) => {
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setIsLoading(false);
+        setCoachId(coachID);
+        setCoacheeId(coacheeID);
         if (
           !data.data.is_sample_bot &&
           !data.data.is_system_bot &&
@@ -460,6 +845,116 @@ const Coach = ({ user, renderType }: any) => {
                   </BorderShadow>
                 </Div>
               </div>
+              {coachesData.length > 0 &&
+              currentCoachesData.map((coach, idx) => (
+                <div
+                  key={coach?.profile_id}
+                  className="relative group block p-2 h-full w-full"
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <AnimatePresence>
+                    {hoveredIndex === idx && (
+                      <motion.span
+                        className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-3xl"
+                        layoutId="hoverBackground"
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          opacity: 1,
+                          transition: { duration: 0.15 },
+                        }}
+                        exit={{
+                          opacity: 0,
+                          transition: { duration: 0.15, delay: 0.2 },
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
+                  <Card className="p-0">
+                    <ParticipantListItemCard
+                      schedullingLink={
+                        coach.meeting_availability?.scheduling_link || ""
+                      }
+                      meetTime={`${formatTimeWithAmPm(
+                        coach.meeting_availability?.from || ""
+                      )} -  ${formatTimeWithAmPm(
+                        coach.meeting_availability?.to || ""
+                      )}`}
+                      daysAvailable={
+                        coach.meeting_availability?.days_selected || ""
+                      }
+                      coacheeId={coacheeId}
+                      coachId={coachId}
+                      coach={coach}
+                      likeComponent={
+                        <div className="mt-4">
+                          <LikeComponent
+                            profile_id={coach.profile_id}
+                            likesInfo={coach.admirer_ids}
+                          />
+                        </div>
+                      }
+                      profilePicUrl={coach.profile_pic_url}
+                      reviewComponent={
+                        <>
+                          {" "}
+                          {coach.profile_type !== "coachee" &&
+                            coach.profile_type !== "mentee" &&
+                            !restrictedFeatures?.includes("Ratings") && (
+                              <ReviewComponent
+                                id={
+                                  coach.id_for_target_selection ===
+                                    "first_coach_profile" &&
+                                  coach.feedback_wall !== null
+                                    ? "review"
+                                    : undefined
+                                }
+                                stars={coach.rating}
+                                totalRatings={coach.total_rating}
+                                coachId={coach.profile_id}
+                              />
+                            )}
+                        </>
+                      }
+                      userId={userId}
+                      restrictedFeatures={restrictedFeatures}
+                      requestConnectionComponent={
+                        <>
+                          {coach.status === "accepted" ? (
+                            <Button
+                              disabled
+                              variant={"outline"}
+                              className="max-sm:text-sm max-md:w-full max-lg:w-full border border-green-300 bg-green-100"
+                            >
+                              Connected
+                            </Button>
+                          ) : (
+                            <>
+                              {(coach.profile_type === "coach" ||
+                                coach.profile_type === "mentor" ||
+                                coach.profile_type === "coach-mentor") && (
+                                <>
+                                  <>
+                                    {coacheeId.length > 0 && (
+                                      <>
+                                        <RequestionConnection
+                                          requestStatus={coach.status}
+                                          coachId={coach.profile_id}
+                                          stateCoachId={coachId}
+                                        />
+                                      </>
+                                    )}
+                                  </>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </>
+                      }
+                    />
+                  </Card>
+                </div>
+              ))}
               {discussiionTopics.length > 0 &&
                 botType !== "subject_specific_bot" && (
                   <div className="w-full flex flex-row justify-center">
