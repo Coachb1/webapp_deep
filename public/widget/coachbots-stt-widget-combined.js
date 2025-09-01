@@ -8576,8 +8576,8 @@ const snippetOrigin = () => {
   const pathname = window.location.pathname;
   console.log('check', baseURL2)
   if (window.origin){
-    if (window.botId)  botId=window.botId;
-    BotIDSTT = botId
+    // if (window.botId)  botId=window.botId;
+    // BotIDSTT = botId
     return window.origin
   }
 
@@ -10709,14 +10709,16 @@ loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
 
   if (snnipetConfigSTT.botId === undefined) showBotSwitchMode = false;
-
+  
   showBotSwitchMode = snnipetConfigSTT?.botSwitchButton ? 
                                         snnipetConfigSTT?.botSwitchButton =='true' 
                                         : showBotSwitchMode;
 
-                                        
+  console.log(showBotSwitchMode, 'showBotSwitchMode');                                     
 
   function InitializeBot (type_of_widget) {
+    console.log('initializing bot of type: ', type_of_widget);
+    console.log('snnipetConfigSTT: ', snnipetConfigSTT);
 
   if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt) {
     USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
