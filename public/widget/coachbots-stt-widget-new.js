@@ -2131,6 +2131,10 @@ async function populateChatHistoryWrapper(menu) {
 
     menu.appendChild(item);
   });
+  if (completed.length > 10) {
+    menu.style.maxHeight = "350px";  // ~10 items (adjust if your items are taller/shorter)
+    menu.style.overflowY = "auto";
+  }
 }
 
 function toggleSub(event, el) {
