@@ -200,6 +200,43 @@ style.textContent = `
         
     }
 
+    .switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #2DC092;
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
     <style>
   #bot-header-logo-2 {
     display: flex;
@@ -268,7 +305,82 @@ style.textContent = `
 </style>
 
 
+  .dropdown .arrow {
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
 
+  /* Dropdown menu */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 240px;
+    border-radius: 8px;
+    margin-top: 6px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-in-out;
+    border: 1px solid #ddd;
+  }
+
+  /* Main items */
+  .dropdown-content .item {
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dropdown-content .item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-content .item:hover {
+    background: #f5f5f5;
+  }
+
+  /* Sub-items */
+  .sub-items {
+    display: none;
+    background: #fff;
+    border-left: 3px solid #000;
+    margin-top: 4px;
+  }
+
+  .sub-items div {
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #000;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .sub-items div:hover {
+    background: #f0f0f0;
+  }
+
+  /* Caret */
+  .caret {
+    transition: transform 0.3s;
+    font-weight: bold;
+  }
+
+  .caret.open {
+    transform: rotate(90deg);
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-4px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
 
 `;
 document.head.appendChild(style);
@@ -286,6 +398,8 @@ const createLink = (url, text) => {
 // attatch the link to the body of the page
 document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
 let isFlatWidget = window.location.pathname.includes('widget-container');
+
+let showBotSwitchMode = true;
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -300,6 +414,8 @@ let questionIndex2 = 0;
 let audioRes;
 let wordLimit = 15;
 let botWordLimit = 10;
+let chatElementRef2;
+
 
 let clientAllowAudioInteraction2;
 let userAllowAudioInteraction2;
@@ -515,6 +631,7 @@ let AssessmentLinks;
 let ScoreConfigStt = {};
 let gameScoreVisbileStt = true;
 let gameExplanationVisibleStt = true;
+let BotIDSTT;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -772,7 +889,7 @@ const initialiseUserSTT = async () => {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("init START -> ", data);
+      console.log("START -> ", data);
       participantId2 = data.uid;
       userId2 = data.uid;
       userRole2 = data.role;
@@ -1194,10 +1311,6 @@ function isTestCode2(text) {
 function isDuplicateResponseStt(text) {
   return userResponses2.includes(text);
 }
-
-const capitalizeFirstLetterStt = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
 
 function getAnonymousEmail() {
   const user_name = "coachbots_anonyoususer";
@@ -1914,7 +2027,6 @@ appendMessage2(
 );
 
 
-
   // Disable the selected dropdown option
   // const dropdown = document.getElementById('chatHistoryDropdown');
   // if (dropdown) {
@@ -1950,7 +2062,7 @@ async function populateChatHistoryOptions(refresh = false) {
 
   // 3. Fetch chats if empty or refresh
   if (previousChatHistory.length === 0 || refresh) {
-    await getPreviousChats(userId2, botId, refresh);
+    previousChatHistory = await getPreviousChats(userId2, botId, refresh);
   }
 
   // 4. Create optgroups
@@ -2008,17 +2120,232 @@ async function populateChatHistoryOptions(refresh = false) {
     dropdown.selectedIndex = 0;
   }
   });
+  if (window.widgetReady) window.widgetReady();
+  hideLoader();
+}
 
- if (window.widgetReady) window.widgetReady();
+
+async function toggleDropdown(event) {
+  event.stopPropagation();
+  const menu = document.getElementById("dropdownMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+
+  // Load sessions dynamically on first open
+  if (menu.style.display === "block" && menu.childElementCount === 0) {
+    await populateChatHistoryWrapper(menu);
+  }
+}
+
+async function populateChatHistoryWrapper(menu) {
+  // Fetch sessions if empty
+  if (previousChatHistory.length === 0) {
+    const bot_id = document.querySelector(".coachbots-coachscribe").dataset.botId
+    previousChatHistory = await getPreviousChats(userId2, bot_id, true);
+  }
+
+  const data = previousChatHistory.filter(chat =>
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 10
+  );
+
+  if (data.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.className = "item";
+    emptyMsg.textContent = "No completed sessions";
+    menu.appendChild(emptyMsg);
+    return;
+  }
+
+  // ✅ SAFE DATA STORAGE - No JSON in HTML attributes
+  if (!window.sessionDataStore) {
+    window.sessionDataStore = {};
+  }
+
+  data.forEach((chat, index) => {
+    const item = document.createElement("div");
+    item.className = "item";
+    
+    // Create a safe ID for this chat session
+    const safeChatId = `session_${index}_${Date.now()}`;
+    window.sessionDataStore[safeChatId] = chat;
+
+    const truncated = chat.summary.length > 30
+      ? chat.summary.slice(0, 20) + "..."
+      : chat.summary;
+
+    // Escape quotes for safe attribute usage
+    const safeSummary = chat.summary.replace(/"/g, '&quot;').replace(/'/g, "&apos;");
+
+    item.innerHTML = `
+      <span title="${safeSummary}">${truncated}</span> <span class="caret">▸</span>
+      <div class="sub-items">
+        <div onclick="selectItem(event, this)" data-chat-ref="${safeChatId}" style="color:blue; cursor:pointer;">
+          🔄 Generate Simulation
+        </div>
+      </div>
+    `;
+
+
+    // Add click handler for the main item
+    item.addEventListener('click', function(e) {
+      toggleSub(e, this);
+    });
+
+    menu.appendChild(item);
+  });
+  if (data.length > 10) {
+    menu.style.maxHeight = "350px";  // ~10 items (adjust if your items are taller/shorter)
+    menu.style.overflowY = "auto";
+  }
+}
+
+function toggleSub(event, el) {
+  event.stopPropagation();
+  const sub = el.querySelector(".sub-items");
+  const caret = el.querySelector(".caret");
+  
+  if (!sub || !caret) {
+    console.error("Sub-items or caret not found");
+    return;
+  }
+  
+  const isOpen = sub.style.display === "block";
+
+  // Collapse all others first
+  document.querySelectorAll(".sub-items").forEach(s => s.style.display = "none");
+  document.querySelectorAll(".caret").forEach(c => c.classList.remove("open"));
+
+  if (!isOpen) {
+    sub.style.display = "block";
+    caret.classList.add("open");
+  }
+}
+
+function selectItem(event, el) {
+  event.stopPropagation();
+  
+  try {
+    // ✅ Get chat data safely from storage
+    const chatRef = el.getAttribute('data-chat-ref');
+    const chatData = window.sessionDataStore && window.sessionDataStore[chatRef];
+    
+    if (!chatData) {
+      console.error("Chat data not found for reference:", chatRef);
+      console.log("Available data store:", window.sessionDataStore);
+      return;
+    }
+    
+    console.log("✅ Generate Simulation clicked for:", chatData);
+
+    // Update dropdown button label
+    // const dropdownBtn = document.getElementById("dropdownBtn");
+    // if (dropdownBtn) {
+    //   dropdownBtn.textContent = (chatData.summary || "Selected") + " ▼";
+    // }
+
+    // Close dropdown
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (dropdownMenu) {
+      dropdownMenu.style.display = "none";
+    }
+
+    // ✅ Call appendMessage2 immediately when Generate Simulation is clicked
+    // if (typeof appendMessage2 === "function") {
+    //   console.log("📞 Calling appendMessage2 with:", chatData.summary);
+    //   appendMessage2(chatData.summary);
+    // } else {
+    //   console.error("❌ appendMessage2 function not found");
+    // }
+
+    // ✅ Show only the test code
+    generateScenario(chatData.uid, chatData.summary);
+    
+  } catch (error) {
+    console.error("❌ Error in selectItem:", error);
+  }
+}
+
+// ✅ Show only test code when Generate Simulation is clicked
+async function generateScenario(sessionId, summary, retry = false) {
+  console.log("🔄 Showing test code for:", sessionId);
+
+  let container;
+
+  if (retry) {
+    // If retry → reuse the old card
+    container = gShadowRoot2.getElementById("create-scenario-section");
+    if (container) {
+      container.innerHTML = `<p style="font-size: 14px; color:#666;">⏳ Generating new scenario...</p>`;
+    }
+  } else {
+    // First time → append a fresh placeholder card
+    const placeholder = `
+      <div id="create-scenario-section"
+           style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
+        <p style="font-size: 14px; color:#666;">⏳ Generating scenario...</p>
+      </div>
+    `;
+    appendMessage2(placeholder);
+    container = gShadowRoot2.getElementById("create-scenario-section");
+  }
+
+  try {
+    const data = await generateTestScenarioStt({
+      userId: userId2,
+      sessionId: null,
+      skills: null,
+      flavour: "normal_transcript_static",
+      isMicro: true,
+      information: summary,
+    });
+
+    console.log(data, "simulaitonchattest");
+
+    // Replace card content with scenario UI
+    container.innerHTML = `
+      <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
+        ${data.title}
+      </p>
+      <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
+        ${data.description}
+      </p>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <code style="background: #f4f4f4; padding: 6px; border-radius: 4px; font-size: 12px; color: green;">
+          ${data.test_code}
+        </code>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <button 
+          style="background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
+          onclick="handleAttemptScenaiosSTT('${data.title}', '${data.test_code}')">
+          ▶ Start
+        </button>
+        <button 
+          style="background:#f44336; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
+          onclick="generateScenario('${sessionId}', \`${summary}\`, true)">
+          🔄 Retry
+        </button>
+      </div>
+    `;
+
+  } catch (err) {
+    if (container) {
+      container.innerHTML = `<p style="color:red;">❌ Failed to generate scenario.</p>`;
+    } else {
+      appendMessage2("❌ Failed to generate scenario.");
+    }
+    console.error(err);
+  }
 }
 
 
 
 
-async function getPreviousChats(participant_id, bot_id, refresh = false) {
+async function getPreviousChats(participant_id, bot_id, refresh = false, filter=false) {
   try {
-    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
-
+    let url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
+    if (filter) {
+      url += `&filtered_history=${filter}`
+    }
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -2028,7 +2355,6 @@ async function getPreviousChats(participant_id, bot_id, refresh = false) {
 
     const botConv = await response.json();
     console.log("Previous chats", botConv);
-    previousChatHistory = botConv
 
     return botConv; // optional: if you want to use it elsewhere
   } catch (error) {
@@ -2287,13 +2613,15 @@ function showLoader(message = "Loading...") {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: rgba(255, 255, 255, 0.9);
+        background: white;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 9999;
         font-family: 'Segoe UI', Arial, sans-serif;
+        border-radius: 1rem 1rem 0rem 1rem; /* same as chat-container2 */
+        overflow: hidden;
       }
 
       .wave-text {
@@ -2353,23 +2681,22 @@ function showLoader(message = "Loading...") {
     </div>
   `;
 
-  const chatElement = document.getElementById("chat-element2");
-  if (chatElement?.shadowRoot) {
-    chatElement.shadowRoot.append(loader);
-  } else {
-    console.warn("chat-element2 or its shadowRoot not found");
-  }
+  const container = document.getElementById("chat-container2") || document.body;
+  container.appendChild(loader);
+  // const chatElement = document.getElementById("chat-element2");
+  // if (chatElement?.shadowRoot) {
+  //   console.log('loader.added')
+  //   chatElement.shadowRoot.append(loader);
+  // } else {
+  //   console.warn("chat-element2 or its shadowRoot not found");
+  // }
 }
 
 
 function hideLoader() {
-  const chatElement = document.getElementById("chat-element2");
-  if (chatElement?.shadowRoot) {
-    const loader = chatElement.shadowRoot.getElementById("bot-loader");
-    if (loader) loader.remove();
-  } else {
-    console.warn("chat-element2 or its shadowRoot not found");
-  }
+  console.log('loader.hide')
+  const loader = document.getElementById("bot-loader");
+  if (loader) loader.remove();
 }
 
 
@@ -2384,6 +2711,8 @@ async function setupBotAndProceed() {
 
     if (createdBotData.length > 0 && createdBotData[0]?.bot_id) {
       botId = createdBotData[0].bot_id;
+      BotIDSTT = createdBotData[0].bot_id;
+
     }
     hideLoader();
   }
@@ -2393,7 +2722,7 @@ async function setupBotAndProceed() {
 
 const getMindmapandAssessment = async (user_id) => {
   try {
-    console.log('user id mindmap', user_id, userId2, participantId2)
+    console.log('user id mindmap', user_id)
     const response = await fetch(`${baseURL2}/accounts/get-mindmap-and-assessments-report/?user_id=${user_id}`, {
       method: "GET",
       headers: {
@@ -2508,6 +2837,7 @@ const getBotDetails2 = async (botId) => {
   try {
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
       botId = await setupBotAndProceed();
+      BotIDSTT = botId
     }
     const response = await fetch(
       `${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`,
@@ -3017,17 +3347,21 @@ const getBotDetails2 = async (botId) => {
       } else {
         updateAudioAllowed(true, true)
       }
-      waitForUserIdForMindmapAssessment()
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+        waitForUserIdForMindmapAssessment()
+      }
     } else {
       enableDisableMindAssessmentbuttons("assessment-btn", true);
       enableDisableMindAssessmentbuttons("mindmap-btn", true);
     }
 
       // show the buttons if coaching bot.
-      const mindmapBtn = document.getElementById("mindmap-btn");
-      const assessmentBtn = document.getElementById("assessment-btn");
-      mindmapBtn.style.display = "block";
-      assessmentBtn.style.display = "block";
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+        const mindmapBtn = document.getElementById("mindmap-btn");
+        const assessmentBtn = document.getElementById("assessment-btn");
+        mindmapBtn.style.display = "block";
+        assessmentBtn.style.display = "block";
+      }
 
     return botDetails;
   } catch (error) {
@@ -4853,7 +5187,8 @@ const handleEndCoachingClick2 = async (randomId) => {
     console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
     if (['psychometric', 'game', 'interview'].includes(senarioCase2)
       || !clientuserInformationSTT.show_recommendations
-      || userScenarioRecommendationStt.total_recommendation >= 2) {
+      || userScenarioRecommendationStt.total_recommendation >= 2 
+    || isTranscriptOnlyStt) {
       appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
     } else {
 
@@ -7047,7 +7382,8 @@ async function setMcqVariablesStt() {
           console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
           if (['psychometric', 'game', 'interview'].includes(senarioCase2)
             || !clientuserInformationSTT.show_recommendations
-            || userScenarioRecommendationStt.total_recommendation >= 2) {
+            || userScenarioRecommendationStt.total_recommendation >= 2
+          ||isTranscriptOnlyStt) {
             appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
           } else {
 
@@ -7662,13 +7998,21 @@ async function createTestRecommendationStt(recommended_test_id, session_id, test
 }
 
 
-async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro }) {
+async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro, information }) {
   const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
+  let informationstt = ''
+  if (skills){
+    informationstt += `Targeted Skills: ${skills}\n`;
+  }
+  if (information){
+    informationstt += `${information}\n`;
+  }
+
   const params = {
     mode: "A",
     information: JSON.stringify({
       data: {
-        information: `Targeted Skills: ${skills}`,
+        information: informationstt,
       },
       title: "",
     }),
@@ -8536,6 +8880,7 @@ const snippetOrigin = () => {
   console.log('check', baseURL2)
   if (window.origin){
     if (window.botId)  botId=window.botId;
+    BotIDSTT = botId
     return window.origin
   }
 
@@ -8901,972 +9246,17 @@ async function updateResponseStyle(newValue) {
 }
 
 
-async function loadExternalModule() {
-  try {
-    const { DeepChat } = await import(
-      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
-      "https://storage.googleapis.com/coachbots-simulator/deepchat-bundle.js"
-    );
-    // const {DeepChat} = await import('./public/widget/coachbots-stt-widget-new.js');
-  } catch (error) {
-    console.error("Error loading external module:", error);
+async function toggleBotSwitch(type_of_bot){
+  const toggle = document.getElementById("bot-mode-switch");
+  if (type_of_bot == 'simulation'){
+    toggle.checked = true;
+  } else if (type_of_bot == 'coaching'){
+    toggle.checked = false;
   }
 }
 
-// Call the function to load and use the external module2
-loadExternalModule().then(() => {
-  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+// Apis and other functions
 
-  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt) {
-    USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
-  }
-  if (Object.keys(snnipetConfigSTT).length > 0) {
-    if (snnipetConfigSTT?.widgetHeight && snnipetConfigSTT?.widgetHeight.length > 0) {
-      widgetHeight = snnipetConfigSTT?.widgetHeight;
-    }
-    if (snnipetConfigSTT?.widgetWidth && snnipetConfigSTT?.widgetWidth.length > 0) {
-      widgetWidth = snnipetConfigSTT?.widgetWidth;
-    }
-    if (snnipetConfigSTT?.widgetImageLink && snnipetConfigSTT?.widgetImageLink.length > 0) {
-      widgetImageLink = snnipetConfigSTT?.widgetImageLink;
-    } else if (snnipetConfigSTT?.botId && snnipetConfigSTT?.botId.length > 0) {
-      widgetImageLink = 'https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575609/zmvwlpahzrxijcdkhs3r.jpg'
-    }
-  }
-
-
-
-  deepChatPocElement2 = document.getElementsByClassName(
-    "coachbots-coachscribe"
-  )?.[0];
-  deepChatPocElement2.innerHTML = `
-  <div class="chat-wrapper2">
-    <div
-      onclick="closeFromTop2()"
-      id="backdrop"
-      style="
-      display: none;
-      position: fixed;
-      top: 0; right: 0; bottom: 0; left: 0;
-      background: black;
-      opacity: 0.8;
-      z-index: 998;
-      "
-    ></div>
-    
-
-
-    <button
-      type="button"
-      onclick="openChatContainer2()"
-      class="chat-icon-container2"
-      id="chat-icon2"
-      style="
-        height: ${widgetHeight};
-        width: ${widgetWidth};
-        max-height: calc(100vh - 83px);
-        background-color:rgb(246, 250, 249);
-        box-shadow: 0px 0px 10px rgb(125, 125, 125);
-        display: flex;
-        justify-content: center;
-        padding:0;
-        align-items: center;
-        position: fixed;
-        right: 0.4rem;
-        bottom: 1rem;
-        cursor: pointer;
-        border-top-width: 0px;
-        border-right-width: 0px;
-        border-bottom-width: 0px;
-        border-left-width: 0px;
-        z-index: 999;
-      "
-    >
-      <img
-        class="chat-icon2"
-        style="
-        height: 100%; 
-        width: 100%; 
-        object-fit: cover;
-        display: block;
-        "
-        src= ${widgetImageLink}
-        alt="chat-bot-image"
-      />
-    </button>
-  </div>
-  
-  <div
-    class="chat-container2 " 
-    id="chat-container2"
-    style="
-      position: fixed;
-      scale: 0;
-      // bottom: 15vh;
-      top: 5vh;
-      bottom: auto;
-      width: 80vw;
-      right: 6rem; 
-      transition: 0.4s ease-in-out; 
-      transform-origin: right bottom;
-      padding-bottom: 0.8rem;
-      border-radius: 1rem 1rem 0rem 1rem;
-      box-shadow: 0px 0px 10px rgb(196, 196, 196);
-      background-color: white;
-      z-index: 1000 !important;
-      hight: 75vh;
-    "
-  >
-    <div 
-      style="
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: fit-content;
-      background-color: #f3f4f6;
-      border-radius: 1rem 1rem 0 0;
-      padding: ${snippetOrigin() === "internal" ? "0" : "0.4rem 0 0 0"};
-      overflow-x: auto;
-      overflow-y: hidden;
-    ">
-    <div 
-  id="bot-header-logo-2"
-  style="
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: fit-content;
-    padding: 2px 0 0 2px;
-    background-color: #f3f4f6;
-    border-radius: 1rem 1rem 0 0;
-    gap: 8px;
-  "
->
-  <h1 
-    id="logo-h1"
-    style="
-      margin: 0;
-      color: #2DC092;
-      border: 2px solid #2DC092;
-      padding: 4px 8px;
-      font-size: 16px;
-      line-height: 20px;
-      font-weight: 800;
-      align-items: center;
-      display: none
-    "
-  >
-    <span 
-      id="logo-span"
-      style="
-        background-color: #2DC092;
-        color: white;
-        font-size: 14px;
-        font-weight: 700;
-        margin-right: 2px;
-        padding: 2px;
-      "
-    >
-      COACH
-    </span>
-    BOT
-  </h1>
-
-  <div 
-    id="starting-faq-buttons-headers"
-    style="
-      display: none;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background-color: transparent;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none;  /* IE 10+ */
-    "
-  >
-    </div>
-
-   <div id="chat-history-wrapper" style="position: relative; display: none">
-  <select 
-    id="chatHistoryDropdown"
-    style="
-      font-size: 12px;
-      padding: 4px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      margin-left: 8px;
-      cursor: pointer;
-      vertical-align: middle;
-      min-width: 160px;
-    "
-  >
-    <option value="">Previous Chats</option>
-  </select>
-</div>
-<div id="response-style" style="position: relative; display: none">
-</div>
-<div id="audio-interaction" class="audio-interaction">
-  <p class="label" style="margin:0px;">🔊</p>
-  <div class="toggle-wrapper">
-    <span class="toggle-text">No</span>
-    <label class="switch">
-      <input type="checkbox" id="bot-audio-interaction-switch" />
-      <span class="slider"></span>
-    </label>
-    <span class="toggle-text">Yes</span>
-  </div>
-</div>
-<!-- Mindmap Button + Dropdown -->
-<div class="dropdown">
-    <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
-        Mindmap
-    </button>
-    <div id="mindmap-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
-        <!-- Items will be injected dynamically -->
-    </div>
-</div>
-
-<!-- Assessment Button + Dropdown -->
-<div class="dropdown">
-    <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
-        Assessment
-    </button>
-    <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
-        <!-- Items will be injected dynamically -->
-    </div>
-</div>
-
-</div>
-
-<div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
-    
-    <p id="warning-banner-stt">
-    </p>
-    
-  <div id="timerContainer" style="
-    display: none;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: 1.5px solid #4CAF50;
-    border-radius: 6px;
-    background: #f9fff9;
-    color: #2b2b2b;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    z-index: 1000;
-    width: 80px;
-    text-align: center;
-  ">
-    ⏱ <span id="countdown">00:00</span>
-  </div>
-
-
-
-
-</div>
-    <div 
-      id="close-top2" 
-      onmouseover="this.style.cursor ='pointer'"
-      onclick="closeFromTop2()"
-      style="
-        width : 50px;
-        position: absolute;
-        left : 1rem;
-      "
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" stroke="10" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-      </svg>
-    </div>
-    </div>
-    <deep-chat
-      avatars="true"
-      id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${isFlatWidget? "84vh" : snippetOrigin() === "internal" ? "68vh" : "64vh"
-    }; border: none;"
-      messageStyles='{
-        "default": {
-          "shared": {"bubble": {"maxWidth": ${JSON.stringify(
-      messageBubbleMaxWidth
-    )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
-          "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)"}},
-          "user" : {"bubble": {"backgroundColor": "#2DC092"}}
-        },
-        "loading": {
-          "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
-        }
-      }'
-      displayLoadingBubble = "true";
-      demo="true"
-      style="border: none"
-      textInput='{
-        "styles": {
-          "text": {"color": "black", "fontSize" : ${JSON.stringify(
-      chatInputFontSize
-    )}},
-          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
-          "focus": {"border": "1px solid #9ca3af"}
-        },
-        "placeholder": {"text": "Welcome, Please follow provided instructions."}
-      }'
-      submitButtonStyles='{
-        "submit": {
-          "container": {
-            "default": {"padding" : "4px" },
-            "hover": {"backgroundColor": "#c6e1ff",  "padding" : "4px" },
-            "click": {"backgroundColor": "#acd3ff",  "padding" : "4px" }
-          },
-          "svg": {
-            "styles": {
-              "default": {
-                "height" : "24px", "width" : "24px", "paddingBottom" : "16px"
-              }
-            }
-          }
-        },
-        "alwaysEnabled": true,
-        "position": "inside-right"
-      }'
-      speechToText='{"webSpeech": false,
-        "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
-
-        "button": {
-          "position" : "outside-left",
-          "default": {
-            "container": {
-              "default": {
-                "padding": "4px",
-                "display": "${USE_CUSTOM_STT ? "none" : "block"}"
-              },
-              "hover": {"backgroundColor": "#7fbded69", "padding" : "4px"},
-              "click": {"backgroundColor": "#4babf669", "padding" : "4px"}
-            },
-             "svg": {
-              "styles": {
-                "default": {
-                  "filter":
-                    "brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(826%) hue-rotate(52deg) brightness(95%) contrast(93%)"
-                }
-              },
-                "content" : ${JSON.stringify(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
-    )}
-          }
-          },
-          "active": {
-            "container": {
-              "default" : {"padding" : "4px"},
-              "hover": {"backgroundColor": "#fee2e2", "padding" : "4px" },
-              "click": {"backgroundColor": "#ecb85c70"}
-            },
-            "svg": {
-              "styles": {
-                "default": {
-                  "filter":
-                    "brightness(0) saturate(100%) invert(17%) sepia(98%) saturate(7277%) hue-rotate(359deg) brightness(99%) contrast(112%)"
-                }
-              },
-               "content" : ${JSON.stringify(
-      '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
-    )}
-          }
-        }
-      }}'
-      errorMessages='{
-        "overrides": {
-          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
-        }
-      }'
-      auxiliaryStyle="
-        ::-webkit-scrollbar {
-          width: 6px;
-          height: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-          background-color: #9ca3af;
-          border-radius: 5px;
-        }"
-      >
-
-    </deep-chat>
-    ${USE_CUSTOM_STT ?
-      `<button id="startMicBtn" style="
-      position: absolute; 
-      /* These will be set dynamically by JavaScript */
-      left: 0; 
-      bottom: 0; 
-      height: 0;
-      width: 0;
-      
-      padding: 6px;
-      border: none;
-      border-radius: 50%;
-      background-color: #00c080;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    ">
-      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="white">
-        <path d="M12 14q-1.25 0-2.125-.875T9 11V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v6q0 1.25-.875 2.125T12 14Zm-1 7v-3.1q-2.875-.35-4.738-2.437Q4.4 13.375 4.4 10.4H6q0 2.275 1.613 3.938Q9.225 16 12 16q2.775 0 4.388-1.662Q18 12.675 18 10.4h1.6q0 2.975-1.862 5.062Q15.875 17.55 13 17.9V21Z"/>
-      </svg>
-    </button>`
-      : ""
-    }
-
-    <div 
-      id="starting-faq-buttons"
-      style=" 
-        position: absolute; 
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: ${window.innerWidth < 768 ? "13vh" : "5rem"};
-        max-width: calc(100% - 4rem);
-        overflow-x: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none;  /* Internet Explorer 10+ */
-        height: 36px; 
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 8px;
-        border-radius: 6px;
-        display: none;
-        z-index: 0;
-        background-color: white;
-      "
-    >
-    </div>
-    <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
-    };  text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
-      <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
-        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
-          Instructions
-        </button>
-      </span> 
-      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px"
-    }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
-        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
-              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-              <li><strong>3. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
-              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
-              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
-              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-          </ul>
-        </div>
-
-
-        <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-          </svg>
-        </span>
-      </div> 
-    </p> 
-  </div>
-  `;
-
-function adjustHeaderLayout() {
-  const header = document.getElementById("bot-header-logo-2");
-  if (window.innerWidth < 768) {
-    header.style.flexDirection = "column";
-    header.style.alignItems = "center";
-  } else {
-    header.style.flexDirection = "row";
-  }
-}
-
-window.addEventListener("load", adjustHeaderLayout);
-window.addEventListener("resize", adjustHeaderLayout);
-
-document.getElementById('bot-audio-interaction-switch')?.addEventListener('change', function (event) {
-    allowAudioInteraction = event.target.checked;
-    isImmersiveStt = allowAudioInteraction;
-    console.log("Audio toggle changed:", allowAudioInteraction);
-});
-
-document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
-  selectedChatId = this.value != 'new-chat' ? this.value: null;
-  if (selectedChatId) {
-    populateChatHistory(selectedChatId);
-  }
-});
-
-const customMicButton = document.getElementById("startMicBtn");
-  function updateMicButtonPosition() {
-    const startMicBtn = document.getElementById('startMicBtn');
-    if (!startMicBtn) return; // Exit if button not found
-
-    const windowWidth = window.innerWidth;
-    const isMobile = windowWidth < 768; // Define your mobile breakpoint
-
-    // Calculate button size
-    let buttonSize = isMobile ? 40 : 36; // px
-    // You can also use a more fluid calculation:
-    // buttonSize = Math.max(36, Math.min(60, windowWidth * 0.05)); // Min 36px, Max 60px, fluid up to 5% of width
-
-    // Calculate left position
-    let leftPosition = isMobile ? '1rem' : '1.5rem'; // Use rem for positioning
-    // If you want more fluid, use vw:
-    // leftPosition = `${isMobile ? 1 : 1.5}vw`;
-
-
-    // Calculate bottom position
-    let bottomPosition;
-    if (isMobile) {
-      bottomPosition = '13vh';
-    } else {
-      bottomPosition = '3.15rem'; // Use rem for desktop
-      // Or use vh:
-      // bottomPosition = '3.15vh';
-    }
-
-    // Apply styles to the button
-    startMicBtn.style.left = leftPosition;
-    startMicBtn.style.bottom = bottomPosition;
-    startMicBtn.style.height = `${buttonSize}px`;
-    startMicBtn.style.width = `${buttonSize}px`;
-
-    // Adjust SVG size relative to button size
-    const svg = startMicBtn.querySelector('svg');
-    if (svg) {
-      // SVG size can be a percentage of the button's size
-      const svgSize = buttonSize * 0.5; // Example: SVG is 50% of button width/height
-      svg.style.height = `${svgSize}px`;
-      svg.style.width = `${svgSize}px`;
-    }
-  }
-
-  console.log('custommic', customMicButton);
-  if (customMicButton) {
-    updateMicButtonPosition();
-    customMicButton.addEventListener("click", handleCustomStt);
-    customMicButton.addEventListener('resize', updateMicButtonPosition);
-
-  }
-
-  const readMoreButton = document.getElementById("read-more-button");
-  const instructionsPane = document.getElementById("instructions-pane");
-  const closeInstructionsPane = document.getElementById(
-    "close-intructions-pane"
-  );
-  const instructionsPaneList = document.getElementById("instructions-list");
-  const botFooterXyz = document.getElementById("bot-footer");
-  const headerText = document.getElementById("header-text");
-
-  if (snippetOrigin() === "external") {
-    if (botFooterXyz) {
-      if (!swipeHeader) {
-        botFooterXyz.style.margin = "0";
-      } else {
-        botFooterXyz.style.width = "100%";
-        botFooterXyz.style.fontSize = "16px";
-
-        const footerText = document.getElementById("footer-text");
-        if (footerText) {
-          footerText.style.fontSize = "14px";
-          footerText.style.fontWeight = "600";
-        }
-        instructionsPaneList.style.fontSize = "14px";
-        instructionsPaneList.style.fontWeight = "600";
-        instructionsPaneList.style.lineHeight = "normal";
-      }
-    }
-    if (headerText) {
-      headerText.style.display = "none";
-    }
-  }
-
-  readMoreButton.addEventListener("click", () => {
-    instructionsPane.style.display = "flex";
-  });
-
-  closeInstructionsPane.addEventListener("click", () => {
-    instructionsPane.style.display = "none";
-  });
-
-  const chatContainer2 = document.getElementById("chat-container2");
-  const chatElementRef2 = document.getElementById("chat-element2");
-  const chatIconContainer2 = document.getElementById("chat-icon2");
-  const chatbotHeading2 = document.getElementById("chatbot-heading2");
-  const closeFromTopp2 = document.getElementById("close-top2");
-  botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
-  sttWidgetClientId = document.querySelector(".coachbots-coachscribe").dataset
-    .clientId;
-  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
-  console.log(
-    "widgetInfo: ",
-    document.querySelector(".coachbots-coachscribe").dataset
-  );
-  console.log("stt widget ClientID :", sttWidgetClientId);
-  console.log("stt widget botID :", botId);
-
-  if (chatContainer2) {
-    if (snippetOrigin() === "external") {
-      chatContainer2.style.paddingBottom = "0";
-    }
-  }
-
-  if (botId === undefined && snippetOrigin() === "internal") {
-    const pathname = window.location.pathname;
-    botId = pathname.split("/")[2];
-  }
-  console.log(botId, 'botid')
-  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
-    const _ = getBotDetails2(botId); 
-  } else {
-    if (Object.keys(snnipetConfigSTT).length > 0) {
-      if (snnipetConfigSTT?.isReportButtons === 'true') {
-        console.log('showing report buttons');
-        const _ = addReportButtons();
-      }
-    } else {
-      const _ = addReportButtons();
-    }
-    if(window.user){
-      updateAudioAllowed(true, true)
-    }
-  }
-
-  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
-    const list = getDefaultInstractionsStt("bot")
-    console.log('botinstruction: ', list)
-    instructionsPane.innerHTML = list;
-    const footerText = document.getElementById("footer-text");
-    footerText.innerHTML = `Available only on Google Chrome 🌐.`
-  } else {
-    const list = getDefaultInstractionsStt("system", 'simulations')
-    instructionsPaneList.innerHTML = list;
-  }
-
-  if (!user2) {
-    if (window.location.href.includes("engagement-survey")) {
-      instructionsPane.innerHTML = `
-        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list">
-              <li><strong>1. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
-              <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
-          </ul>
-        </div>
-      `;
-    }
-
-    if (window.location.href.includes("feedback")) {
-      instructionsPane.innerHTML = `
-      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-         <ul id="instructions-list">
-              <li><strong>1. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
-             <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
-         </ul>
-       </div>
-     `;
-    }
-  }
-
-  if (window.location.href.includes("knowledge-bot")) {
-    instructionsPane.innerHTML = `
-      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">System Instructions</b>
-        <ul id="instructions-list">
-            <li><strong>1. Provide Full Context:</strong> Please provide the full context of your questions for optimum results.</li>
-            <li><strong>2. Ask Relevant Questions:</strong> Please ask relevant questions only, related to the topic.</li>
-        </ul>
-    </div>
-
-    <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
-        <ul id="instructions-list">
-            <li><strong>1. Purpose:</strong> This AI Knowledge Agent is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
-            <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
-            <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
-        </ul>
-    </div>
-
-    <span id="close-intructions-pane-kbot" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-          </svg>
-    </span>
-`;
-  }
-
-  if (window.innerWidth < 600) {
-    chatContainer2.style.borderRadius = "0";
-    chatContainer2.style.width = "100vw";
-    chatContainer2.style.right = "0";
-    chatContainer2.style.top = "0";
-    chatContainer2.style.height = "100vh";
-    chatContainer2.style.bottom = "0";
-    chatElementRef2.style.height = "80vh";
-    chatElementRef2.style.fontSize = "12px";
-    chatElementRef2.style.width = "100vw";
-    // chatIconContainer2.style.position = "fixed";
-    // chatIconContainer2.style.width = "3rem";
-    // chatIconContainer2.style.height = "3rem";
-    chatContainer2.style.position = "fixed";
-    closeFromTopp2.style.width = "30px";
-    closeFromTopp2.style.left = "0.3rem";
-    closeFromTopp2.style.top = "1rem";
-  }
-
-  let credentialsForm2;
-  if (window.innerWidth > 868) {
-    console.log("using des Form");
-    credentialsForm2 = `
-      <div style="min-width: 730px;">
-      <b>For obtaining your report, please submit the following details.</b>
-      <div
-        id="input-form2"
-        style="
-        display: flex;
-        flex-direction: row;
-        min-width: 100%;
-        gap: 1rem;
-        align-items: center;
-      "
-      >
-        <div style="display: flex; flex-direction: column; width: 45%;">
-          <label for="name" style="margin: 12px 0 4px 0">Name</label>
-          <input
-            type="text"
-            id="input-name2"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <div style="display: flex; flex-direction: column; width: 45%;">
-          <label for="email" style="margin: 12px 0 4px 0">Email</label>
-          <input
-            id="input-email2"
-            type="email"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <button
-          style="
-            height: fit-content;
-            width: fit-content;
-            padding: 8px;
-            margin-bottom: -1.3rem;
-            border: 1px solid rgb(188, 188, 188);
-            border-radius: 20px;
-            color: white;
-            background-color: #1984ff;
-          "
-          id="submit-btn2"
-          onclick="submitEmailAndName2()"
-        >
-          Submit
-        </button>
-      </div>
-    </div>`;
-  } else {
-    credentialsForm2 = `
-      <div>
-      <b>For obtaining your report, please submit the following details.</b>
-      <div
-        id="input-form2"
-        style="
-        display: flex;
-        flex-direction: column;
-        min-width: 100%;
-        gap: 1rem;
-        align-items: flex-start;
-      "
-      >
-        <div style="display: flex; flex-direction: column; width: 100%;">
-          <label for="name" style="margin: 12px 0 4px 0">Name</label>
-          <input
-            type="text"
-            id="input-name2"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <div style="display: flex; flex-direction: column; width: 100%;">
-          <label for="email" style="margin: 12px 0 4px 0">Email</label>
-          <input
-            id="input-email2"
-            type="email"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <button
-          style="
-            height: fit-content;
-            width: fit-content;
-            padding: 8px;
-            border: 1px solid rgb(188, 188, 188);
-            border-radius: 20px;
-            color: white;
-            background-color: #1984ff;
-          "
-          id="submit-btn2"
-          onclick="submitEmailAndName2()"
-        >
-          Submit
-        </button>
-      </div>
-    </div>`;
-  }
-  // if botid is null or notdefined show other message
-  console.log(botId == undefined, snnipetConfigSTT?.createBotSheetUrl == undefined)
-  if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
-    if (Object.keys(snnipetConfigSTT).length > 0) {
-        let welcomeMessage;
-        if (snnipetConfigSTT["psychometric"] === "true") {
-          welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
-        } else{
-          welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
-        }
-        if (snnipetConfigSTT?.["welcomeMessage"]) {
-          welcomeMessage = snnipetConfigSTT["welcomeMessage"];
-        }
-        console.log(welcomeMessage, 'welcome')
-        const indivisualPageUserEmail = localStorage.getItem("userEmail");
-        if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
-          const userName = indivisualPageUserEmail.split('@')[0];
-          createUserSTT(userName, indivisualPageUserEmail);
-          chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          }]
-        } else {
-        isEmailFormstt = true;
-        formFieldsstt = ["email", "name"];
-        console.log(
-          "### formFieldsstt : ",
-          formFieldsstt,
-          "other data: ",
-          `Please enter your ${formFieldsstt[0]}`
-        );
-        chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          },
-          {
-            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
-            role: "ai",
-          },
-        ];
-      }
-    } else {
-      if (!window.user){
-
-        const welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
-        isEmailFormstt = true;
-        formFieldsstt = ["email", "name"];
-        console.log(
-          "### formFieldsstt : ",
-          formFieldsstt,
-          "other data: ",
-          `Please enter your ${formFieldsstt[0]}`
-        );
-        chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          },
-          {
-            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
-            role: "ai",
-          },
-        ];
-      } else {
-chatElementRef2.initialMessages = [
-        {
-          html: `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`,
-          role: "ai",
-        },
-      ];
-      }
-      
-      // chatElementRef2.initialMessages.push({
-      //   html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
-      //       <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-      //   role: "user",
-      // });
-    }
-  } else {
-    // faqs = Object.keys(globalBotDetails.data.faqs)
-    // console.log("Bot details",Object.keys(globalBotDetails.data.faqs))
-    // let buttons = ''
-    // faqs.forEach(title => {
-    //     buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
-    // })
-    // console.log("buttons : ",buttons)
-    // let htmlData = `<div id="option-button-container" >
-    //                 ${buttons}
-    //                 </div>`
-    // chatElementRef2.initialMessages.push(
-    //   {
-    //     html:htmlData,
-    //     role: "user",
-    //   }
-    // );
-  }
-
-  chatElementRef2.htmlClassUtilities = {
-    ["deep-chat-temporary-message"]: {
-      styles: {
-        default: {},
-      },
-    },
-    ["button2"]: {
-      styles: {
-        default: {
-          backgroundColor: "transparent",
-        },
-        hover: {
-          backgroundColor: "white",
-        },
-      },
-    },
-  };
-  displayBrowserWarning();
 
   function excludeSpecialCharacters(inputString) {
     return inputString.replace(/[*#]+/g, "");
@@ -11603,10 +10993,1072 @@ function cleanTextForAudio(text) {
     }
   };
 
+
+
+async function loadExternalModule() {
+  try {
+    const { DeepChat } = await import(
+      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      "https://storage.googleapis.com/coachbots-simulator/deepchat-bundle.js"
+    );
+    // const {DeepChat} = await import('./public/widget/coachbots-stt-widget-new.js');
+  } catch (error) {
+    console.error("Error loading external module:", error);
+  }
+}
+
+// Call the function to load and use the external module2
+loadExternalModule().then(() => {
+  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+
+  if (snnipetConfigSTT.botId === undefined) showBotSwitchMode = false;
+
+  showBotSwitchMode = snnipetConfigSTT?.botSwitchButton ? 
+                                        snnipetConfigSTT?.botSwitchButton =='true' 
+                                        : showBotSwitchMode;
+
+                                        
+
+  function InitializeBot (type_of_widget) {
+
+  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt) {
+    USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
+  }
+  if (Object.keys(snnipetConfigSTT).length > 0) {
+    if (snnipetConfigSTT?.widgetHeight && snnipetConfigSTT?.widgetHeight.length > 0) {
+      widgetHeight = snnipetConfigSTT?.widgetHeight;
+    }
+    if (snnipetConfigSTT?.widgetWidth && snnipetConfigSTT?.widgetWidth.length > 0) {
+      widgetWidth = snnipetConfigSTT?.widgetWidth;
+    }
+    if (snnipetConfigSTT?.widgetImageLink && snnipetConfigSTT?.widgetImageLink.length > 0) {
+      widgetImageLink = snnipetConfigSTT?.widgetImageLink;
+    } else if (snnipetConfigSTT?.botId && snnipetConfigSTT?.botId.length > 0) {
+      widgetImageLink = 'https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575609/zmvwlpahzrxijcdkhs3r.jpg'
+    }
+  }
+
+
+
+  deepChatPocElement2 = document.getElementsByClassName(
+    "coachbots-coachscribe"
+  )?.[0];
+  deepChatPocElement2.innerHTML = `
+  <div class="chat-wrapper2">
+    <div
+      onclick="closeFromTop2()"
+      id="backdrop"
+      style="
+      display: none;
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: black;
+      opacity: 0.8;
+      z-index: 998;
+      "
+    ></div>
+    
+
+
+    <button
+      type="button"
+      onclick="openChatContainer2()"
+      class="chat-icon-container2"
+      id="chat-icon2"
+      style="
+        height: ${widgetHeight};
+        width: ${widgetWidth};
+        max-height: calc(100vh - 83px);
+        background-color:rgb(246, 250, 249);
+        box-shadow: 0px 0px 10px rgb(125, 125, 125);
+        display: flex;
+        justify-content: center;
+        padding:0;
+        align-items: center;
+        position: fixed;
+        right: 0.4rem;
+        bottom: 1rem;
+        cursor: pointer;
+        border-top-width: 0px;
+        border-right-width: 0px;
+        border-bottom-width: 0px;
+        border-left-width: 0px;
+        z-index: 999;
+      "
+    >
+      <img
+        class="chat-icon2"
+        style="
+        height: 100%; 
+        width: 100%; 
+        object-fit: cover;
+        display: block;
+        "
+        src= ${widgetImageLink}
+        alt="chat-bot-image"
+      />
+    </button>
+  </div>
+  
+  <div
+    class="chat-container2 " 
+    id="chat-container2"
+    style="
+      position: fixed;
+      scale: 0;
+      // bottom: 15vh;
+      top: 5vh;
+      bottom: auto;
+      width: 80vw;
+      right: 6rem; 
+      transition: 0.4s ease-in-out; 
+      transform-origin: right bottom;
+      padding-bottom: 0.8rem;
+      border-radius: 1rem 1rem 0rem 1rem;
+      box-shadow: 0px 0px 10px rgb(196, 196, 196);
+      background-color: white;
+      z-index: 1000 !important;
+      hight: 75vh;
+    "
+  >
+    <div 
+      style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: fit-content;
+      background-color: #f3f4f6;
+      border-radius: 1rem 1rem 0 0;
+      padding: ${snippetOrigin() === "internal" ? "0" : "0.4rem 0 0 0"};
+      overflow-x: auto;
+      overflow-y: hidden;
+      
+    ">
+    <div 
+  id="bot-header-logo-2"
+  style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: fit-content;
+    padding: 2px 0 0 2px;
+    background-color: #f3f4f6;
+    border-radius: 1rem 1rem 0 0;
+    gap: 8px;
+  "
+>
+  <h1 
+    id="logo-h1"
+    style="
+      margin: 0;
+      color: #2DC092;
+      border: 2px solid #2DC092;
+      padding: 4px 8px;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 800;
+      align-items: center;
+      display: none
+    "
+  >
+    <span 
+      id="logo-span"
+      style="
+        background-color: #2DC092;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        margin-right: 2px;
+        padding: 2px;
+      "
+    >
+      COACH
+    </span>
+    BOT
+  </h1>
+
+  <div 
+    id="starting-faq-buttons-headers"
+    style="
+      display: none;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background-color: transparent;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+    "
+  >
+    </div>
+
+   <div id="chat-history-wrapper" style="position: relative; display: none">
+  <select 
+    id="chatHistoryDropdown"
+    style="
+      font-size: 12px;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-left: 8px;
+      cursor: pointer;
+      vertical-align: middle;
+      min-width: 160px;
+    "
+  >
+    <option value="">Previous Chats</option>
+  </select>
+</div>
+<div class="dropdown" id="simulation-chat-history" style="display: none;">
+  <button id="dropdownBtn" onclick="toggleDropdown(event)" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Session History
+  </button>
+  <div class="dropdown-content" id="dropdownMenu">
+    <!-- Dynamic chat sessions will be inserted here -->
+  </div>
+</div>
+<div id="response-style" style="position: relative; display: none">
+</div>
+
+<!-- Mindmap Button + Dropdown -->
+<div class="dropdown">
+    <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
+        Mindmap
+    </button>
+    <div id="mindmap-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
+    </div>
+</div>
+
+<!-- Assessment Button + Dropdown -->
+<div class="dropdown">
+    <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
+        Assessment
+    </button>
+    <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
+    </div>
+</div>
+
+<div class="dropdown" >
+  <button id="more-btn" 
+    style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Mode
+  </button>
+
+  <div id="more-menu" class='dropdown-menu'
+    style="dispaly: none; max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+    
+    <!-- Mode Toggle inside dropdown -->
+    <div id="more-section" style="display:${showBotSwitchMode? "flex": 'none'}; align-items:center; gap:10px;">
+      <div class="toggle-wrapper">
+        <span class="toggle-text">Coach</span>
+        <label class="switch">
+          <input type="checkbox" id="bot-mode-switch" />
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-text">Sim</span>
+      </div>
+    </div>
+    <div id="audio-interaction" class="audio-interaction">
+  <p class="label" style="margin:0px;">🔊</p>
+  <div class="toggle-wrapper">
+    <span class="toggle-text">No</span>
+    <label class="switch">
+      <input type="checkbox" id="bot-audio-interaction-switch" />
+      <span class="slider"></span>
+    </label>
+    <span class="toggle-text">Yes</span>
+  </div>
+</div>
+  </div>
+
+  
+</div>
+
+</div>
+
+<div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+    
+    <p id="warning-banner-stt">
+    </p>
+    
+  <div id="timerContainer" style="
+    display: none;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border: 1.5px solid #4CAF50;
+    border-radius: 6px;
+    background: #f9fff9;
+    color: #2b2b2b;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    z-index: 1000;
+    width: 80px;
+    text-align: center;
+  ">
+    ⏱ <span id="countdown">00:00</span>
+  </div>
+
+
+</div>
+    <div 
+      id="close-top2" 
+      onmouseover="this.style.cursor ='pointer'"
+      onclick="closeFromTop2()"
+      style="
+        width : 50px;
+        position: absolute;
+        left : 1rem;
+      "
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" stroke="10" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>
+    </div>
+    </div>
+    <deep-chat
+      avatars="true"
+      id="chat-element2"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${isFlatWidget? "84vh" : snippetOrigin() === "internal" ? "68vh" : "64vh"
+    }; border: none;"
+      messageStyles='{
+        "default": {
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(
+      messageBubbleMaxWidth
+    )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)"}},
+          "user" : {"bubble": {"backgroundColor": "#2DC092"}}
+        },
+        "loading": {
+          "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
+        }
+      }'
+      displayLoadingBubble = "true";
+      demo="true"
+      style="border: none"
+      textInput='{
+        "styles": {
+          "text": {"color": "black", "fontSize" : ${JSON.stringify(
+      chatInputFontSize
+    )}},
+          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
+          "focus": {"border": "1px solid #9ca3af"}
+        },
+        "placeholder": {"text": "Welcome, Please follow provided instructions."}
+      }'
+      submitButtonStyles='{
+        "submit": {
+          "container": {
+            "default": {"padding" : "4px" },
+            "hover": {"backgroundColor": "#c6e1ff",  "padding" : "4px" },
+            "click": {"backgroundColor": "#acd3ff",  "padding" : "4px" }
+          },
+          "svg": {
+            "styles": {
+              "default": {
+                "height" : "24px", "width" : "24px", "paddingBottom" : "16px"
+              }
+            }
+          }
+        },
+        "alwaysEnabled": true,
+        "position": "inside-right"
+      }'
+      speechToText='{"webSpeech": false,
+        "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
+
+        "button": {
+          "position" : "outside-left",
+          "default": {
+            "container": {
+              "default": {
+                "padding": "4px",
+                "display": "${USE_CUSTOM_STT ? "none" : "block"}"
+              },
+              "hover": {"backgroundColor": "#7fbded69", "padding" : "4px"},
+              "click": {"backgroundColor": "#4babf669", "padding" : "4px"}
+            },
+             "svg": {
+              "styles": {
+                "default": {
+                  "filter":
+                    "brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(826%) hue-rotate(52deg) brightness(95%) contrast(93%)"
+                }
+              },
+                "content" : ${JSON.stringify(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
+    )}
+          }
+          },
+          "active": {
+            "container": {
+              "default" : {"padding" : "4px"},
+              "hover": {"backgroundColor": "#fee2e2", "padding" : "4px" },
+              "click": {"backgroundColor": "#ecb85c70"}
+            },
+            "svg": {
+              "styles": {
+                "default": {
+                  "filter":
+                    "brightness(0) saturate(100%) invert(17%) sepia(98%) saturate(7277%) hue-rotate(359deg) brightness(99%) contrast(112%)"
+                }
+              },
+               "content" : ${JSON.stringify(
+      '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
+    )}
+          }
+        }
+      }}'
+      errorMessages='{
+        "overrides": {
+          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
+        }
+      }'
+      auxiliaryStyle="
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #9ca3af;
+          border-radius: 5px;
+        }"
+      >
+
+    </deep-chat>
+    ${USE_CUSTOM_STT ?
+      `<button id="startMicBtn" style="
+      position: absolute; 
+      /* These will be set dynamically by JavaScript */
+      left: 0; 
+      bottom: 0; 
+      height: 0;
+      width: 0;
+      
+      padding: 6px;
+      border: none;
+      border-radius: 50%;
+      background-color: #00c080;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    ">
+      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="white">
+        <path d="M12 14q-1.25 0-2.125-.875T9 11V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v6q0 1.25-.875 2.125T12 14Zm-1 7v-3.1q-2.875-.35-4.738-2.437Q4.4 13.375 4.4 10.4H6q0 2.275 1.613 3.938Q9.225 16 12 16q2.775 0 4.388-1.662Q18 12.675 18 10.4h1.6q0 2.975-1.862 5.062Q15.875 17.55 13 17.9V21Z"/>
+      </svg>
+    </button>`
+      : ""
+    }
+
+    <div 
+      id="starting-faq-buttons"
+      style=" 
+        position: absolute; 
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: ${window.innerWidth < 768 ? "13vh" : "5rem"};
+        max-width: calc(100% - 4rem);
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        height: 36px; 
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        display: none;
+        z-index: 0;
+        background-color: white;
+      "
+    >
+    </div>
+    <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
+    };  text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
+      <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
+          Instructions
+        </button>
+      </span> 
+      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px"
+    }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
+              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+              <li><strong>3. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
+              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
+          </ul>
+        </div>
+
+
+        <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </span>
+      </div> 
+    </p> 
+  </div>
+  `;
+
+
+  toggleBotSwitch(type_of_widget);
+
+function adjustHeaderLayout() {
+  const header = document.getElementById("bot-header-logo-2");
+  if (window.innerWidth < 768) {
+    header.style.flexDirection = "column";
+    header.style.alignItems = "center";
+  } else {
+    header.style.flexDirection = "row";
+  }
+}
+
+window.addEventListener("load", adjustHeaderLayout);
+window.addEventListener("resize", adjustHeaderLayout);
+
+document.getElementById('bot-audio-interaction-switch')?.addEventListener('change', function (event) {
+    allowAudioInteraction = event.target.checked;
+    isImmersiveStt = allowAudioInteraction;
+    console.log("Audio toggle changed:", allowAudioInteraction);
+});
+
+document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
+  selectedChatId = this.value != 'new-chat' ? this.value: null;
+  if (selectedChatId) {
+    populateChatHistory(selectedChatId);
+  }
+});
+
+document.getElementById("more-btn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    const menu = document.getElementById("more-menu");
+    menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", function(event) {
+    const moreBtn = document.getElementById("more-btn");
+    const moreMenu = document.getElementById("more-menu");
+    if (!moreBtn.contains(event.target) && !moreMenu.contains(event.target)) {
+      moreMenu.style.display = "none";
+    }
+  });
+
+  // Handle toggle
+  document.getElementById("bot-mode-switch").addEventListener("change", function(e) {
+    if (e.target.checked) {
+      console.log("✅ Switched to Simulation Bot");
+      // 👉 Your Simulation bot logic
+      snnipetConfigSTT = {}
+      
+      InitializeBot('simulation')
+      document.getElementById('simulation-chat-history').style.display = 'block';
+
+    } else {
+      console.log("✅ Switched to Coaching Bot");
+      // 👉 Your Coaching bot logic
+      snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+      InitializeBot('coaching')
+      document.getElementById('simulation-chat-history').style.display = 'none';
+
+    }
+      window.openChatContainer2();
+      showLoader()
+      setTimeout(() => {
+        hideLoader()
+      }, 2000);
+
+
+  });
+
+const customMicButton = document.getElementById("startMicBtn");
+  function updateMicButtonPosition() {
+    const startMicBtn = document.getElementById('startMicBtn');
+    if (!startMicBtn) return; // Exit if button not found
+
+    const windowWidth = window.innerWidth;
+    const isMobile = windowWidth < 768; // Define your mobile breakpoint
+
+    // Calculate button size
+    let buttonSize = isMobile ? 40 : 36; // px
+    // You can also use a more fluid calculation:
+    // buttonSize = Math.max(36, Math.min(60, windowWidth * 0.05)); // Min 36px, Max 60px, fluid up to 5% of width
+
+    // Calculate left position
+    let leftPosition = isMobile ? '1rem' : '1.5rem'; // Use rem for positioning
+    // If you want more fluid, use vw:
+    // leftPosition = `${isMobile ? 1 : 1.5}vw`;
+
+
+    // Calculate bottom position
+    let bottomPosition;
+    if (isMobile) {
+      bottomPosition = '13vh';
+    } else {
+      bottomPosition = '3.15rem'; // Use rem for desktop
+      // Or use vh:
+      // bottomPosition = '3.15vh';
+    }
+
+    // Apply styles to the button
+    startMicBtn.style.left = leftPosition;
+    startMicBtn.style.bottom = bottomPosition;
+    startMicBtn.style.height = `${buttonSize}px`;
+    startMicBtn.style.width = `${buttonSize}px`;
+
+    // Adjust SVG size relative to button size
+    const svg = startMicBtn.querySelector('svg');
+    if (svg) {
+      // SVG size can be a percentage of the button's size
+      const svgSize = buttonSize * 0.5; // Example: SVG is 50% of button width/height
+      svg.style.height = `${svgSize}px`;
+      svg.style.width = `${svgSize}px`;
+    }
+  }
+
+  console.log('custommic', customMicButton);
+  if (customMicButton) {
+    updateMicButtonPosition();
+    customMicButton.addEventListener("click", handleCustomStt);
+    customMicButton.addEventListener('resize', updateMicButtonPosition);
+
+  }
+
+  const readMoreButton = document.getElementById("read-more-button");
+  const instructionsPane = document.getElementById("instructions-pane");
+  const closeInstructionsPane = document.getElementById(
+    "close-intructions-pane"
+  );
+  const instructionsPaneList = document.getElementById("instructions-list");
+  const botFooterXyz = document.getElementById("bot-footer");
+  const headerText = document.getElementById("header-text");
+
+  if (snippetOrigin() === "external") {
+    if (botFooterXyz) {
+      if (!swipeHeader) {
+        botFooterXyz.style.margin = "0";
+      } else {
+        botFooterXyz.style.width = "100%";
+        botFooterXyz.style.fontSize = "16px";
+
+        const footerText = document.getElementById("footer-text");
+        if (footerText) {
+          footerText.style.fontSize = "14px";
+          footerText.style.fontWeight = "600";
+        }
+        instructionsPaneList.style.fontSize = "14px";
+        instructionsPaneList.style.fontWeight = "600";
+        instructionsPaneList.style.lineHeight = "normal";
+      }
+    }
+    if (headerText) {
+      headerText.style.display = "none";
+    }
+  }
+
+  readMoreButton.addEventListener("click", () => {
+    instructionsPane.style.display = "flex";
+  });
+
+  closeInstructionsPane.addEventListener("click", () => {
+    instructionsPane.style.display = "none";
+  });
+
+  const chatContainer2 = document.getElementById("chat-container2");
+  chatElementRef2 = document.getElementById("chat-element2");
+  const chatIconContainer2 = document.getElementById("chat-icon2");
+  const chatbotHeading2 = document.getElementById("chatbot-heading2");
+  const closeFromTopp2 = document.getElementById("close-top2");
+  botId = snnipetConfigSTT.botId;
+  BotIDSTT = botId
+  sttWidgetClientId = snnipetConfigSTT
+    .clientId;
+  console.log(
+    "widgetInfo: ",
+    snnipetConfigSTT
+  );
+  console.log("stt widget ClientID :", sttWidgetClientId);
+  console.log("stt widget botID :", botId);
+
+  if (chatContainer2) {
+    if (snippetOrigin() === "external") {
+      chatContainer2.style.paddingBottom = "0";
+    }
+  }
+
+  if (botId === undefined && snippetOrigin() === "internal") {
+    const pathname = window.location.pathname;
+    botId = pathname.split("/")[2];
+    BotIDSTT = botId
+  }
+  console.log(botId, 'botid')
+
+  console.log('bot widget botId2', botId)
+  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
+    const _ = getBotDetails2(botId); 
+    toggleBotSwitch('coaching')
+  } else {
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+      if (snnipetConfigSTT?.isReportButtons === 'true') {
+        console.log('showing report buttons');
+        const _ = addReportButtons();
+      }
+    } else {
+      const _ = addReportButtons();
+    }
+    if(window.user){
+      updateAudioAllowed(true, true)
+    }
+  }
+
+  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
+    const list = getDefaultInstractionsStt("bot")
+    console.log('botinstruction: ', list)
+    instructionsPane.innerHTML = list;
+    const footerText = document.getElementById("footer-text");
+    footerText.innerHTML = `Available only on Google Chrome 🌐.`
+  } else {
+    const list = getDefaultInstractionsStt("system", 'simulations')
+    instructionsPaneList.innerHTML = list;
+  }
+
+  if (!user2) {
+    if (window.location.href.includes("engagement-survey")) {
+      instructionsPane.innerHTML = `
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ul id="instructions-list">
+              <li><strong>1. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+          </ul>
+        </div>
+      `;
+    }
+
+    if (window.location.href.includes("feedback")) {
+      instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+         <ul id="instructions-list">
+              <li><strong>1. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+             <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+         </ul>
+       </div>
+     `;
+    }
+  }
+
+  if (window.location.href.includes("knowledge-bot")) {
+    instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">System Instructions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Provide Full Context:</strong> Please provide the full context of your questions for optimum results.</li>
+            <li><strong>2. Ask Relevant Questions:</strong> Please ask relevant questions only, related to the topic.</li>
+        </ul>
+    </div>
+
+    <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Purpose:</strong> This AI Knowledge Agent is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
+            <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
+            <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
+        </ul>
+    </div>
+
+    <span id="close-intructions-pane-kbot" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+    </span>
+`;
+  }
+
+  if (window.innerWidth < 600) {
+    chatContainer2.style.borderRadius = "0";
+    chatContainer2.style.width = "100vw";
+    chatContainer2.style.right = "0";
+    chatContainer2.style.top = "0";
+    chatContainer2.style.height = "100vh";
+    chatContainer2.style.bottom = "0";
+    chatElementRef2.style.height = "80vh";
+    chatElementRef2.style.fontSize = "12px";
+    chatElementRef2.style.width = "100vw";
+    // chatIconContainer2.style.position = "fixed";
+    // chatIconContainer2.style.width = "3rem";
+    // chatIconContainer2.style.height = "3rem";
+    chatContainer2.style.position = "fixed";
+    closeFromTopp2.style.width = "30px";
+    closeFromTopp2.style.left = "0.3rem";
+    closeFromTopp2.style.top = "1rem";
+  }
+
+  let credentialsForm2;
+  if (window.innerWidth > 868) {
+    console.log("using des Form");
+    credentialsForm2 = `
+      <div style="min-width: 730px;">
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: row;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: center;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1.3rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  } else {
+    credentialsForm2 = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: column;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  }
+  // if botid is null or notdefined show other message
+  console.log(botId, snnipetConfigSTT?.createBotSheetUrl, 'snnipet')
+  if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+        let welcomeMessage;
+        if (snnipetConfigSTT["psychometric"] === "true") {
+          welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
+        } else{
+          welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+        }
+        if (snnipetConfigSTT?.["welcomeMessage"]) {
+          welcomeMessage = snnipetConfigSTT["welcomeMessage"];
+        }
+        console.log(welcomeMessage, 'welcome')
+        const indivisualPageUserEmail = localStorage.getItem("userEmail");
+        if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
+          const userName = indivisualPageUserEmail.split('@')[0];
+          createUserSTT(userName, indivisualPageUserEmail);
+          chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          }]
+        } else {
+        isEmailFormstt = true;
+        formFieldsstt = ["email", "name"];
+        console.log(
+          "### formFieldsstt : ",
+          formFieldsstt,
+          "other data: ",
+          `Please enter your ${formFieldsstt[0]}`
+        );
+        chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          },
+          {
+            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
+            role: "ai",
+          },
+        ];
+      }
+    } else {
+      if (!window.user){
+
+        const welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        isEmailFormstt = true;
+        formFieldsstt = ["email", "name"];
+        console.log(
+          "### formFieldsstt : ",
+          formFieldsstt,
+          "other data: ",
+          `Please enter your ${formFieldsstt[0]}`
+        );
+        chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          },
+          {
+            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
+            role: "ai",
+          },
+        ];
+      } else {
+chatElementRef2.initialMessages = [
+        {
+          html: `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`,
+          role: "ai",
+        },
+      ];
+      }
+      
+      // chatElementRef2.initialMessages.push({
+      //   html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+      //       <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
+      //   role: "user",
+      // });
+    }
+  } else {
+    // faqs = Object.keys(globalBotDetails.data.faqs)
+    // console.log("Bot details",Object.keys(globalBotDetails.data.faqs))
+    // let buttons = ''
+    // faqs.forEach(title => {
+    //     buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
+    // })
+    // console.log("buttons : ",buttons)
+    // let htmlData = `<div id="option-button-container" >
+    //                 ${buttons}
+    //                 </div>`
+    // chatElementRef2.initialMessages.push(
+    //   {
+    //     html:htmlData,
+    //     role: "user",
+    //   }
+    // );
+  }
+
+  chatElementRef2.htmlClassUtilities = {
+    ["deep-chat-temporary-message"]: {
+      styles: {
+        default: {},
+      },
+    },
+    ["button2"]: {
+      styles: {
+        default: {
+          backgroundColor: "transparent",
+        },
+        hover: {
+          backgroundColor: "white",
+        },
+      },
+    },
+  };
+  displayBrowserWarning();
+
   //No condition STT pending
   chatElementRef2.request = {
     handler: async (body, signals) => {
       try {
+        console.log('geeting here..')
         if (body instanceof FormData) {
         } else {
           //
@@ -11754,13 +12206,21 @@ function cleanTextForAudio(text) {
                 console.log(data);
 
                 const testCodeMessage = `
-                  <div id='create-scenario-section'>
-                          <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; "margin-top : 10px"">
-                            <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${data.title}</p>
-                            <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${data.description}</p>
-                          </div>
+                  <div id="create-scenario-section"
+                      style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
+                    <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
+                      ${data.title}
+                    </p>
+                    <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
+                      ${data.description}
+                    </p>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <code style="background: #f4f4f4; padding: 6px; border-radius: 4px; font-size: 12px; color: green;">
+                        ${data.test_code}
+                      </code>
+                    </div>
                   </div>
-                  `;
+                `;
 
                 signals.onResponse({
                   html: testCodeMessage,
@@ -12106,7 +12566,8 @@ function cleanTextForAudio(text) {
                 console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                 if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                   || !clientuserInformationSTT.show_recommendations
-                  || userScenarioRecommendationStt.total_recommendation >= 2) {
+                  || userScenarioRecommendationStt.total_recommendation >= 2 ||
+                isTranscriptOnlyStt) {
                   signals.onResponse({
                     html: "<b>Please enter another interaction code to start a new interaction.</b>",
                   });
@@ -14769,7 +15230,9 @@ function cleanTextForAudio(text) {
                       console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                       if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                         || !clientuserInformationSTT.show_recommendations
-                        || userScenarioRecommendationStt.total_recommendation >= 2) {
+                        || userScenarioRecommendationStt.total_recommendation >= 2
+                        || isTranscriptOnlyStt
+                      ) {
                         signals.onResponse({
                           html: "<b>Please enter another interaction code to start a new interaction.</b>",
                         });
@@ -14821,7 +15284,8 @@ function cleanTextForAudio(text) {
                     console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                     if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                       || !clientuserInformationSTT.show_recommendations
-                      || userScenarioRecommendationStt.total_recommendation >= 2) {
+                      || userScenarioRecommendationStt.total_recommendation >= 2
+                      || isTranscriptOnlyStt) {
 
                       signals.onResponse({
                         html: "<b>Please enter another interaction code to start a new interaction.</b>",
@@ -14952,6 +15416,10 @@ function cleanTextForAudio(text) {
       }
     },
   };
+
+  }
+
+  InitializeBot()
 });
 
 const openChatContainer2 = () => {
@@ -15003,7 +15471,8 @@ const openChatContainer2 = () => {
     chatContainer2.style["transform-origin"] = "100% 50%";
 
     //to close other bot
-    botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
+    botId = snnipetConfigSTT.botId;
+    BotIDSTT = botId
     // botId = 'stress-management-0032'
 
     // if (!botId) {

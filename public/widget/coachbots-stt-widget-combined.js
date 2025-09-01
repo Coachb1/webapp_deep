@@ -305,7 +305,82 @@ input:checked + .slider:before {
 </style>
 
 
+  .dropdown .arrow {
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
 
+  /* Dropdown menu */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 240px;
+    border-radius: 8px;
+    margin-top: 6px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-in-out;
+    border: 1px solid #ddd;
+  }
+
+  /* Main items */
+  .dropdown-content .item {
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dropdown-content .item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-content .item:hover {
+    background: #f5f5f5;
+  }
+
+  /* Sub-items */
+  .sub-items {
+    display: none;
+    background: #fff;
+    border-left: 3px solid #000;
+    margin-top: 4px;
+  }
+
+  .sub-items div {
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #000;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .sub-items div:hover {
+    background: #f0f0f0;
+  }
+
+  /* Caret */
+  .caret {
+    transition: transform 0.3s;
+    font-weight: bold;
+  }
+
+  .caret.open {
+    transform: rotate(90deg);
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-4px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
 
 `;
 document.head.appendChild(style);
@@ -1987,7 +2062,7 @@ async function populateChatHistoryOptions(refresh = false) {
 
   // 3. Fetch chats if empty or refresh
   if (previousChatHistory.length === 0 || refresh) {
-    await getPreviousChats(userId2, botId, refresh);
+    previousChatHistory = await getPreviousChats(userId2, botId, refresh);
   }
 
   // 4. Create optgroups
@@ -2050,12 +2125,227 @@ async function populateChatHistoryOptions(refresh = false) {
 }
 
 
+async function toggleDropdown(event) {
+  event.stopPropagation();
+  const menu = document.getElementById("dropdownMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+
+  // Load sessions dynamically on first open
+  if (menu.style.display === "block" && menu.childElementCount === 0) {
+    await populateChatHistoryWrapper(menu);
+  }
+}
+
+async function populateChatHistoryWrapper(menu) {
+  // Fetch sessions if empty
+  if (previousChatHistory.length === 0) {
+    const bot_id = document.querySelector(".coachbots-coachscribe").dataset.botId
+    previousChatHistory = await getPreviousChats(userId2, bot_id, true);
+  }
+
+  const data = previousChatHistory.filter(chat =>
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 10
+  );
+
+  if (data.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.className = "item";
+    emptyMsg.textContent = "No completed sessions";
+    menu.appendChild(emptyMsg);
+    return;
+  }
+
+  // ✅ SAFE DATA STORAGE - No JSON in HTML attributes
+  if (!window.sessionDataStore) {
+    window.sessionDataStore = {};
+  }
+
+  data.forEach((chat, index) => {
+    const item = document.createElement("div");
+    item.className = "item";
+    
+    // Create a safe ID for this chat session
+    const safeChatId = `session_${index}_${Date.now()}`;
+    window.sessionDataStore[safeChatId] = chat;
+
+    const truncated = chat.summary.length > 30
+      ? chat.summary.slice(0, 20) + "..."
+      : chat.summary;
+
+    // Escape quotes for safe attribute usage
+    const safeSummary = chat.summary.replace(/"/g, '&quot;').replace(/'/g, "&apos;");
+
+    item.innerHTML = `
+      <span title="${safeSummary}">${truncated}</span> <span class="caret">▸</span>
+      <div class="sub-items">
+        <div onclick="selectItem(event, this)" data-chat-ref="${safeChatId}" style="color:blue; cursor:pointer;">
+          🔄 Generate Simulation
+        </div>
+      </div>
+    `;
 
 
-async function getPreviousChats(participant_id, bot_id, refresh = false) {
+    // Add click handler for the main item
+    item.addEventListener('click', function(e) {
+      toggleSub(e, this);
+    });
+
+    menu.appendChild(item);
+  });
+  if (data.length > 10) {
+    menu.style.maxHeight = "350px";  // ~10 items (adjust if your items are taller/shorter)
+    menu.style.overflowY = "auto";
+  }
+}
+
+function toggleSub(event, el) {
+  event.stopPropagation();
+  const sub = el.querySelector(".sub-items");
+  const caret = el.querySelector(".caret");
+  
+  if (!sub || !caret) {
+    console.error("Sub-items or caret not found");
+    return;
+  }
+  
+  const isOpen = sub.style.display === "block";
+
+  // Collapse all others first
+  document.querySelectorAll(".sub-items").forEach(s => s.style.display = "none");
+  document.querySelectorAll(".caret").forEach(c => c.classList.remove("open"));
+
+  if (!isOpen) {
+    sub.style.display = "block";
+    caret.classList.add("open");
+  }
+}
+
+function selectItem(event, el) {
+  event.stopPropagation();
+  
   try {
-    const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
+    // ✅ Get chat data safely from storage
+    const chatRef = el.getAttribute('data-chat-ref');
+    const chatData = window.sessionDataStore && window.sessionDataStore[chatRef];
+    
+    if (!chatData) {
+      console.error("Chat data not found for reference:", chatRef);
+      console.log("Available data store:", window.sessionDataStore);
+      return;
+    }
+    
+    console.log("✅ Generate Simulation clicked for:", chatData);
 
+    // Update dropdown button label
+    // const dropdownBtn = document.getElementById("dropdownBtn");
+    // if (dropdownBtn) {
+    //   dropdownBtn.textContent = (chatData.summary || "Selected") + " ▼";
+    // }
+
+    // Close dropdown
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (dropdownMenu) {
+      dropdownMenu.style.display = "none";
+    }
+
+    // ✅ Call appendMessage2 immediately when Generate Simulation is clicked
+    // if (typeof appendMessage2 === "function") {
+    //   console.log("📞 Calling appendMessage2 with:", chatData.summary);
+    //   appendMessage2(chatData.summary);
+    // } else {
+    //   console.error("❌ appendMessage2 function not found");
+    // }
+
+    // ✅ Show only the test code
+    generateScenario(chatData.uid, chatData.summary);
+    
+  } catch (error) {
+    console.error("❌ Error in selectItem:", error);
+  }
+}
+
+// ✅ Show only test code when Generate Simulation is clicked
+async function generateScenario(sessionId, summary, retry = false) {
+  console.log("🔄 Showing test code for:", sessionId);
+
+  let container;
+
+  if (retry) {
+    // If retry → reuse the old card
+    container = gShadowRoot2.getElementById("create-scenario-section");
+    if (container) {
+      container.innerHTML = `<p style="font-size: 14px; color:#666;">⏳ Generating new scenario...</p>`;
+    }
+  } else {
+    // First time → append a fresh placeholder card
+    const placeholder = `
+      <div id="create-scenario-section"
+           style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
+        <p style="font-size: 14px; color:#666;">⏳ Generating scenario...</p>
+      </div>
+    `;
+    appendMessage2(placeholder);
+    container = gShadowRoot2.getElementById("create-scenario-section");
+  }
+
+  try {
+    const data = await generateTestScenarioStt({
+      userId: userId2,
+      sessionId: null,
+      skills: null,
+      flavour: "normal_transcript_static",
+      isMicro: true,
+      information: summary,
+    });
+
+    console.log(data, "simulaitonchattest");
+
+    // Replace card content with scenario UI
+    container.innerHTML = `
+      <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
+        ${data.title}
+      </p>
+      <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
+        ${data.description}
+      </p>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <code style="background: #f4f4f4; padding: 6px; border-radius: 4px; font-size: 12px; color: green;">
+          ${data.test_code}
+        </code>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <button 
+          style="background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
+          onclick="handleAttemptScenaiosSTT('${data.title}', '${data.test_code}')">
+          ▶ Start
+        </button>
+        <button 
+          style="background:#f44336; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
+          onclick="generateScenario('${sessionId}', \`${summary}\`, true)">
+          🔄 Retry
+        </button>
+      </div>
+    `;
+
+  } catch (err) {
+    if (container) {
+      container.innerHTML = `<p style="color:red;">❌ Failed to generate scenario.</p>`;
+    } else {
+      appendMessage2("❌ Failed to generate scenario.");
+    }
+    console.error(err);
+  }
+}
+
+
+
+
+async function getPreviousChats(participant_id, bot_id, refresh = false, filter=false) {
+  try {
+    let url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
+    if (filter) {
+      url += `&filtered_history=${filter}`
+    }
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -2065,7 +2355,6 @@ async function getPreviousChats(participant_id, bot_id, refresh = false) {
 
     const botConv = await response.json();
     console.log("Previous chats", botConv);
-    previousChatHistory = botConv
 
     return botConv; // optional: if you want to use it elsewhere
   } catch (error) {
@@ -3058,17 +3347,21 @@ const getBotDetails2 = async (botId) => {
       } else {
         updateAudioAllowed(true, true)
       }
-      waitForUserIdForMindmapAssessment()
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+        waitForUserIdForMindmapAssessment()
+      }
     } else {
       enableDisableMindAssessmentbuttons("assessment-btn", true);
       enableDisableMindAssessmentbuttons("mindmap-btn", true);
     }
 
       // show the buttons if coaching bot.
-      const mindmapBtn = document.getElementById("mindmap-btn");
-      const assessmentBtn = document.getElementById("assessment-btn");
-      mindmapBtn.style.display = "block";
-      assessmentBtn.style.display = "block";
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+        const mindmapBtn = document.getElementById("mindmap-btn");
+        const assessmentBtn = document.getElementById("assessment-btn");
+        mindmapBtn.style.display = "block";
+        assessmentBtn.style.display = "block";
+      }
 
     return botDetails;
   } catch (error) {
@@ -4894,7 +5187,8 @@ const handleEndCoachingClick2 = async (randomId) => {
     console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
     if (['psychometric', 'game', 'interview'].includes(senarioCase2)
       || !clientuserInformationSTT.show_recommendations
-      || userScenarioRecommendationStt.total_recommendation >= 2) {
+      || userScenarioRecommendationStt.total_recommendation >= 2 
+    || isTranscriptOnlyStt) {
       appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
     } else {
 
@@ -7088,7 +7382,8 @@ async function setMcqVariablesStt() {
           console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
           if (['psychometric', 'game', 'interview'].includes(senarioCase2)
             || !clientuserInformationSTT.show_recommendations
-            || userScenarioRecommendationStt.total_recommendation >= 2) {
+            || userScenarioRecommendationStt.total_recommendation >= 2
+          ||isTranscriptOnlyStt) {
             appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
           } else {
 
@@ -7703,13 +7998,21 @@ async function createTestRecommendationStt(recommended_test_id, session_id, test
 }
 
 
-async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro }) {
+async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro, information }) {
   const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
+  let informationstt = ''
+  if (skills){
+    informationstt += `Targeted Skills: ${skills}\n`;
+  }
+  if (information){
+    informationstt += `${information}\n`;
+  }
+
   const params = {
     mode: "A",
     information: JSON.stringify({
       data: {
-        information: `Targeted Skills: ${skills}`,
+        information: informationstt,
       },
       title: "",
     }),
@@ -10911,6 +11214,14 @@ loadExternalModule().then(() => {
     <option value="">Previous Chats</option>
   </select>
 </div>
+<div class="dropdown" id="simulation-chat-history" style="display: none;">
+  <button id="dropdownBtn" onclick="toggleDropdown(event)" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Session History
+  </button>
+  <div class="dropdown-content" id="dropdownMenu">
+    <!-- Dynamic chat sessions will be inserted here -->
+  </div>
+</div>
 <div id="response-style" style="position: relative; display: none">
 </div>
 
@@ -11264,11 +11575,14 @@ document.getElementById("more-btn").addEventListener("click", function(e) {
       snnipetConfigSTT = {}
       
       InitializeBot('simulation')
+      document.getElementById('simulation-chat-history').style.display = 'block';
+
     } else {
       console.log("✅ Switched to Coaching Bot");
       // 👉 Your Coaching bot logic
       snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
       InitializeBot('coaching')
+      document.getElementById('simulation-chat-history').style.display = 'none';
 
     }
       window.openChatContainer2();
@@ -11892,13 +12206,21 @@ chatElementRef2.initialMessages = [
                 console.log(data);
 
                 const testCodeMessage = `
-                  <div id='create-scenario-section'>
-                          <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; "margin-top : 10px"">
-                            <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${data.title}</p>
-                            <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${data.description}</p>
-                          </div>
+                  <div id="create-scenario-section"
+                      style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
+                    <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
+                      ${data.title}
+                    </p>
+                    <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
+                      ${data.description}
+                    </p>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <code style="background: #f4f4f4; padding: 6px; border-radius: 4px; font-size: 12px; color: green;">
+                        ${data.test_code}
+                      </code>
+                    </div>
                   </div>
-                  `;
+                `;
 
                 signals.onResponse({
                   html: testCodeMessage,
@@ -12244,7 +12566,8 @@ chatElementRef2.initialMessages = [
                 console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                 if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                   || !clientuserInformationSTT.show_recommendations
-                  || userScenarioRecommendationStt.total_recommendation >= 2) {
+                  || userScenarioRecommendationStt.total_recommendation >= 2 ||
+                isTranscriptOnlyStt) {
                   signals.onResponse({
                     html: "<b>Please enter another interaction code to start a new interaction.</b>",
                   });
@@ -14907,7 +15230,9 @@ chatElementRef2.initialMessages = [
                       console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                       if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                         || !clientuserInformationSTT.show_recommendations
-                        || userScenarioRecommendationStt.total_recommendation >= 2) {
+                        || userScenarioRecommendationStt.total_recommendation >= 2
+                        || isTranscriptOnlyStt
+                      ) {
                         signals.onResponse({
                           html: "<b>Please enter another interaction code to start a new interaction.</b>",
                         });
@@ -14959,7 +15284,8 @@ chatElementRef2.initialMessages = [
                     console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                     if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                       || !clientuserInformationSTT.show_recommendations
-                      || userScenarioRecommendationStt.total_recommendation >= 2) {
+                      || userScenarioRecommendationStt.total_recommendation >= 2
+                      || isTranscriptOnlyStt) {
 
                       signals.onResponse({
                         html: "<b>Please enter another interaction code to start a new interaction.</b>",
