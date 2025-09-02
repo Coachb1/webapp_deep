@@ -2125,22 +2125,15 @@ async function populateChatHistoryOptions(refresh = false) {
 }
 
 
-async function toggleDropdown(event) {
-  event.stopPropagation();
-  const menu = document.getElementById("dropdownMenu");
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-
-  // Load sessions dynamically on first open
-  if (menu.style.display === "block" && menu.childElementCount === 0) {
-    await populateChatHistoryWrapper(menu);
-  }
+function IsSimulationChatHistory() {
+  return document.getElementById('simulation-chat-history').style.display === 'block'
 }
 
-async function populateChatHistoryWrapper(menu) {
+async function populateChatHistoryWrapper(refresh=false) {
   // Fetch sessions if empty
-  if (previousChatHistory.length === 0) {
-    const bot_id = document.querySelector(".coachbots-coachscribe").dataset.botId
-    previousChatHistory = await getPreviousChats(userId2, bot_id, true);
+  const menu = document.getElementById("dropdownMenu");
+  if (previousChatHistory.length === 0 || refresh) {
+    previousChatHistory = await getPreviousChats(userId2, BotIDSTT, true);
   }
 
   const data = previousChatHistory.filter(chat =>
@@ -2237,9 +2230,9 @@ function selectItem(event, el) {
     console.log("✅ Generate Simulation clicked for:", chatData);
 
     // Update dropdown button label
-    // const dropdownBtn = document.getElementById("dropdownBtn");
-    // if (dropdownBtn) {
-    //   dropdownBtn.textContent = (chatData.summary || "Selected") + " ▼";
+    // const SimulationHistorybtn = document.getElementById("SimulationHistorybtn");
+    // if (SimulationHistorybtn) {
+    //   SimulationHistorybtn.textContent = (chatData.summary || "Selected") + " ▼";
     // }
 
     // Close dropdown
@@ -2711,7 +2704,6 @@ async function setupBotAndProceed() {
 
     if (createdBotData.length > 0 && createdBotData[0]?.bot_id) {
       botId = createdBotData[0].bot_id;
-      BotIDSTT = createdBotData[0].bot_id;
 
     }
     hideLoader();
@@ -2837,7 +2829,6 @@ const getBotDetails2 = async (botId) => {
   try {
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
       botId = await setupBotAndProceed();
-      BotIDSTT = botId
     }
     const response = await fetch(
       `${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`,
@@ -8877,11 +8868,9 @@ if (window.innerWidth < 768) {
 const snippetOrigin = () => {
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
-  console.log('check', baseURL2)
-  if (window.origin){
-    if (window.botId)  botId=window.botId;
-    BotIDSTT = botId
-    return window.origin
+  console.log('check', pathname,)
+  if (isFlatWidget){
+    return 'external'
   }
 
   const isInternalHost = 
@@ -11214,14 +11203,7 @@ loadExternalModule().then(() => {
     <option value="">Previous Chats</option>
   </select>
 </div>
-<div class="dropdown" id="simulation-chat-history" style="display: none;">
-  <button id="dropdownBtn" onclick="toggleDropdown(event)" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    Session History
-  </button>
-  <div class="dropdown-content" id="dropdownMenu">
-    <!-- Dynamic chat sessions will be inserted here -->
-  </div>
-</div>
+
 <div id="response-style" style="position: relative; display: none">
 </div>
 
@@ -11243,6 +11225,15 @@ loadExternalModule().then(() => {
     <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
         <!-- Items will be injected dynamically -->
     </div>
+</div>
+
+<div class="dropdown" id="simulation-chat-history" style="display: none;">
+  <button id="SimulationHistorybtn" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Session History
+  </button>
+  <div class="dropdown-content dropdown-menu" id="dropdownMenu">
+    <!-- Dynamic chat sessions will be inserted here -->
+  </div>
 </div>
 
 <div class="dropdown" >
@@ -11552,40 +11543,29 @@ document.getElementById('chatHistoryDropdown')?.addEventListener('change', funct
   }
 });
 
-document.getElementById("more-btn").addEventListener("click", function(e) {
-    e.stopPropagation();
-    const menu = document.getElementById("more-menu");
-    menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function(event) {
-    const moreBtn = document.getElementById("more-btn");
-    const moreMenu = document.getElementById("more-menu");
-    if (!moreBtn.contains(event.target) && !moreMenu.contains(event.target)) {
-      moreMenu.style.display = "none";
-    }
-  });
 
   // Handle toggle
   document.getElementById("bot-mode-switch").addEventListener("change", function(e) {
     if (e.target.checked) {
       console.log("✅ Switched to Simulation Bot");
       // 👉 Your Simulation bot logic
-      snnipetConfigSTT = {}
+      BotIDSTT = botId
+      delete snnipetConfigSTT.botId
       
       InitializeBot('simulation')
       document.getElementById('simulation-chat-history').style.display = 'block';
+      if (window.user) populateChatHistoryWrapper();
 
     } else {
       console.log("✅ Switched to Coaching Bot");
       // 👉 Your Coaching bot logic
-      snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+      snnipetConfigSTT.botId = BotIDSTT;
       InitializeBot('coaching')
       document.getElementById('simulation-chat-history').style.display = 'none';
 
     }
-      window.openChatContainer2();
+      if (!isFlatWidget) window.openChatContainer2();
+
       showLoader()
       setTimeout(() => {
         hideLoader()
@@ -11693,7 +11673,6 @@ const customMicButton = document.getElementById("startMicBtn");
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
   botId = snnipetConfigSTT.botId;
-  BotIDSTT = botId
   sttWidgetClientId = snnipetConfigSTT
     .clientId;
   console.log(
@@ -11712,7 +11691,6 @@ const customMicButton = document.getElementById("startMicBtn");
   if (botId === undefined && snippetOrigin() === "internal") {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
-    BotIDSTT = botId
   }
   console.log(botId, 'botid')
 
@@ -11950,35 +11928,45 @@ const customMicButton = document.getElementById("startMicBtn");
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
         }
         console.log(welcomeMessage, 'welcome')
-        const indivisualPageUserEmail = localStorage.getItem("userEmail");
-        if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
-          const userName = indivisualPageUserEmail.split('@')[0];
-          createUserSTT(userName, indivisualPageUserEmail);
-          chatElementRef2.initialMessages = [
+        if (window.user){
+            chatElementRef2.initialMessages = [
           {
             html: welcomeMessage,
-            role: "ai",
-          }]
-        } else {
-        isEmailFormstt = true;
-        formFieldsstt = ["email", "name"];
-        console.log(
-          "### formFieldsstt : ",
-          formFieldsstt,
-          "other data: ",
-          `Please enter your ${formFieldsstt[0]}`
-        );
-        chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          },
-          {
-            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
             role: "ai",
           },
         ];
-      }
+
+        } else {
+          const indivisualPageUserEmail = localStorage.getItem("userEmail");
+          if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
+            const userName = indivisualPageUserEmail.split('@')[0];
+            createUserSTT(userName, indivisualPageUserEmail);
+            chatElementRef2.initialMessages = [
+            {
+              html: welcomeMessage,
+              role: "ai",
+            }]
+          } else {
+          isEmailFormstt = true;
+          formFieldsstt = ["email", "name"];
+          console.log(
+            "### formFieldsstt : ",
+            formFieldsstt,
+            "other data: ",
+            `Please enter your ${formFieldsstt[0]}`
+          );
+          chatElementRef2.initialMessages = [
+            {
+              html: welcomeMessage,
+              role: "ai",
+            },
+            {
+              html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
+              role: "ai",
+            },
+          ];
+          }
+        }
     } else {
       if (!window.user){
 
@@ -12503,6 +12491,10 @@ chatElementRef2.initialMessages = [
                   );
 
                   updateAudioAllowed(true, true)
+
+                  if (IsSimulationChatHistory()){
+                    populateChatHistoryWrapper();
+                  }
 
                   
                   if (!clientuserInformationSTT) {
@@ -15472,7 +15464,6 @@ const openChatContainer2 = () => {
 
     //to close other bot
     botId = snnipetConfigSTT.botId;
-    BotIDSTT = botId
     // botId = 'stress-management-0032'
 
     // if (!botId) {
@@ -15567,17 +15558,41 @@ window.openChatContainer2 = openChatContainer2;
 document.addEventListener("click", function (event) {
     const mindmapMenu = document.getElementById("mindmap-menu");
     const assessmentMenu = document.getElementById("assessment-menu");
+    const simulationhistoryMenu = document.getElementById('dropdownMenu');
+    const moreMenu = document.getElementById('more-menu');
 
     if (event.target.closest("#mindmap-btn")) {
         mindmapMenu.style.display = mindmapMenu.style.display === "block" ? "none" : "block";
         assessmentMenu.style.display = "none";
+        simulationhistoryMenu.style.display = 'none';
+        moreMenu.style.display = 'none'
+
     }
     else if (event.target.closest("#assessment-btn")) {
         assessmentMenu.style.display = assessmentMenu.style.display === "block" ? "none" : "block";
         mindmapMenu.style.display = "none";
+        simulationhistoryMenu.style.display = 'none';
+        moreMenu.style.display = 'none'
+
+
+    } else if (event.target.closest("#SimulationHistorybtn")) {
+        simulationhistoryMenu.style.display = simulationhistoryMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
+        moreMenu.style.display = 'none'
+
+
+    } else if (event.target.closest("#more-btn")) {
+        moreMenu.style.display = moreMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
+        simulationhistoryMenu.style.display = "none";
     }
+
     else if (!event.target.closest(".dropdown-menu")) {
         mindmapMenu.style.display = "none";
         assessmentMenu.style.display = "none";
+        simulationhistoryMenu.style.display = "none"
+        moreMenu.style.display = 'none'
     }
 });
