@@ -101,11 +101,27 @@
       }
     </style>
 
+    
+  </head>
+  <body>
+    <div id="loader">
+      <div class="loader_text">
+        Initializing AI Coach...
+      </div>
+      <div class="wave-loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <div id="chat" class="coachbots-coachscribe" data-bot-switch-button="true"></div>
+
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       const pathname = window.location.origin;
       const type = urlParams.get("type") || "coach_bot";
-      const origin = urlParams.get("origin") || "external";
       const user = JSON.parse(urlParams.get("user"));
       const botid =
         urlParams.get("botId") ||
@@ -120,11 +136,12 @@
       script.defer = true;
       document.head.appendChild(script);
 
-      if (type === "coach_bot") window.botId = botid;
+      if (type === "coach_bot"){
+        document.getElementById('chat').setAttribute('data-bot-id', botid);
+      }
 
       console.log("user", user);
       window.user = user;
-      window.origin = origin;
 
       // Function to be called when widget is ready
       window.widgetReady = function () {
@@ -154,20 +171,5 @@
         }, 10000);
       }
     </script>
-  </head>
-  <body>
-    <div id="loader">
-      <div class="loader_text">
-        Initializing AI Coach...
-      </div>
-      <div class="wave-loader">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-    <div id="chat" class="coachbots-coachscribe"></div>
   </body>
 </html>
