@@ -2351,7 +2351,7 @@ async function generateScenario(sessionId, summary, retry = false) {
 
 async function getPreviousChats(participant_id, bot_id, refresh = false, filter=false) {
   try {
-    let url = `http://127.0.0.1:8000/api/v1/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
+    let url = `${baseURL2}/api/v1/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
     if (filter) {
       url += `&filtered_history=${filter}`
     }
