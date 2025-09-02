@@ -1995,7 +1995,7 @@ function populateChatHistory(chatId) {
   console.log('Loading previous chat history:', chatId, conversations);
 
   // Display chat header
-  appendMessage2(`<b>🔄 Loading previous chat:</b> <i>${sessionData.summary?.slice(0, 30) || "No Summary"}...</i>`);
+  appendMessage2(`<b>🔄 Starting New Session:</b> ( Short Summary text:<i>${sessionData.summary?.slice(0, 30) || "No Summary"}...</i>)`);
 
   conversations.forEach((entry, index) => {
     const coachMessage = entry.coach_message_text?.trim();
@@ -2137,7 +2137,7 @@ async function populateChatHistoryWrapper(refresh=false) {
   }
 
   const data = previousChatHistory.filter(chat =>
-    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 10
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 3
   );
 
   if (data.length === 0) {
@@ -2815,14 +2815,24 @@ async function populateDropdown(menuId ) {
     });
 }
 
-function waitForUserIdForMindmapAssessment(maxAttempts = 20, delay = 100) {
+function intializeBotsetup(maxAttempts = 99, delay = 1000) {
   let attempts = 0;
   const interval = setInterval(() => {
 
     if (userId2){
       clearInterval(interval);
-      populateDropdown("mindmap-menu");
-      populateDropdown("assessment-menu");
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)){ 
+          populateChatHistoryOptions();   
+        }
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+            populateDropdown("mindmap-menu");
+            populateDropdown("assessment-menu");
+            }
+      if( botType == 'user_bot'){
+        updateAudioAllowed(false, false)
+      } else {
+        updateAudioAllowed(true, true)
+      }
       return;
     }
 
@@ -3337,19 +3347,8 @@ const getBotDetails2 = async (botId) => {
     //   populateBotConversation(window.userIdFromWebApp);
     // }
     if(window.user) {
-      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) 
-        { 
-          populateChatHistoryOptions();   
-        }
-
-      if( botType == 'user_bot'){
-            updateAudioAllowed(false, false)
-      } else {
-        updateAudioAllowed(true, true)
-      }
-      if (['icons_by_ai'].includes(botScenarioCase)) {
-        waitForUserIdForMindmapAssessment()
-      }
+      intializeBotsetup()
+      
     } else {
       enableDisableMindAssessmentbuttons("assessment-btn", true);
       enableDisableMindAssessmentbuttons("mindmap-btn", true);
@@ -11238,7 +11237,7 @@ loadExternalModule().then(() => {
 
 <div class="dropdown" id="simulation-chat-history" style="display: none;">
   <button id="SimulationHistorybtn" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    Session History
+    Session & Simulation
   </button>
   <div class="dropdown-content dropdown-menu" id="dropdownMenu">
     <!-- Dynamic chat sessions will be inserted here -->
@@ -11697,7 +11696,7 @@ const customMicButton = document.getElementById("startMicBtn");
     }
   }
 
-  if (botId === undefined && snippetOrigin() === "internal") {
+  if (botId === undefined && snippetOrigin() === "internal" && ['coaching', undefined].includes(type_of_widget)) {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
   }
@@ -11708,6 +11707,8 @@ const customMicButton = document.getElementById("startMicBtn");
     const _ = getBotDetails2(botId); 
     toggleBotSwitch('coaching')
   } else {
+    if (isFlatWidget) addReportButtons();
+
     if (Object.keys(snnipetConfigSTT).length > 0) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
         console.log('showing report buttons');
