@@ -2259,7 +2259,7 @@ function selectItem(event, el) {
     // }
 
     // ✅ Show only the test code
-    generateScenario(chatData.uid, chatData.summary);
+    generateScenario(chatData.uid, chatData.summary.replaceAll('"', ""));
     
   } catch (error) {
     console.error("❌ Error in selectItem:", error);
@@ -11932,7 +11932,7 @@ const customMicButton = document.getElementById("startMicBtn");
         if (snnipetConfigSTT["psychometric"] === "true") {
           welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
         } else{
-          welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed.</p>`
         }
         if (snnipetConfigSTT?.["welcomeMessage"]) {
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
