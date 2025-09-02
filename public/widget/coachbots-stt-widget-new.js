@@ -2164,15 +2164,24 @@ async function populateChatHistoryWrapper(refresh=false) {
     const truncated = chat.summary.length > 30
       ? chat.summary.slice(0, 20) + "..."
       : chat.summary;
+    
+    const d = new Date(chat.attempt_datetime);
+
+    const formatted =
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ` +
+      `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
+
+    console.log(formatted);
+
 
     // Escape quotes for safe attribute usage
     const safeSummary = chat.summary.replace(/"/g, '&quot;').replace(/'/g, "&apos;");
 
     item.innerHTML = `
-      <span title="${safeSummary}">${truncated}</span> <span class="caret">▸</span>
+      <span title="${safeSummary}">${truncated}-${formatted}</span> <span class="caret">▸</span>
       <div class="sub-items">
         <div onclick="selectItem(event, this)" data-chat-ref="${safeChatId}" style="color:blue; cursor:pointer;">
-          🔄 Generate Simulation
+          🔄 Practice
         </div>
       </div>
     `;
