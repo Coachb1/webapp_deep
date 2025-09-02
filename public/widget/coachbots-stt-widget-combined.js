@@ -11216,7 +11216,7 @@ loadExternalModule().then(() => {
 </div>
 <div class="dropdown" id="simulation-chat-history" style="display: none;">
   <button id="dropdownBtn" onclick="toggleDropdown(event)" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    Session History
+    Sessions & Simulations
   </button>
   <div class="dropdown-content" id="dropdownMenu">
     <!-- Dynamic chat sessions will be inserted here -->

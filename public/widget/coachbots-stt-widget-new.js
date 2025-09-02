@@ -2171,15 +2171,24 @@ async function populateChatHistoryWrapper(menu) {
     const truncated = chat.summary.length > 30
       ? chat.summary.slice(0, 20) + "..."
       : chat.summary;
+    
+    const d = new Date(chat.attempt_datetime);
+
+    const formatted =
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ` +
+      `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
+
+    console.log(formatted);
+
 
     // Escape quotes for safe attribute usage
     const safeSummary = chat.summary.replace(/"/g, '&quot;').replace(/'/g, "&apos;");
 
     item.innerHTML = `
-      <span title="${safeSummary}">${truncated}</span> <span class="caret">▸</span>
+      <span title="${safeSummary}">${truncated}-${formatted}</span> <span class="caret">▸</span>
       <div class="sub-items">
         <div onclick="selectItem(event, this)" data-chat-ref="${safeChatId}" style="color:blue; cursor:pointer;">
-          🔄 Generate Simulation
+          🔄 Practice
         </div>
       </div>
     `;
@@ -11216,7 +11225,7 @@ loadExternalModule().then(() => {
 </div>
 <div class="dropdown" id="simulation-chat-history" style="display: none;">
   <button id="dropdownBtn" onclick="toggleDropdown(event)" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
-    Session History
+    Sessions & Simulations
   </button>
   <div class="dropdown-content" id="dropdownMenu">
     <!-- Dynamic chat sessions will be inserted here -->
