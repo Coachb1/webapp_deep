@@ -2268,8 +2268,8 @@ function selectItem(event, el) {
 
 // ✅ Show only test code when Generate Simulation is clicked
 async function generateScenario(sessionId, summary, retry = false) {
-  console.log("🔄 Showing test code for:", sessionId);
-
+  console.log("🔄 generating test code for:", sessionId, summary);
+  summary = decodeURIComponent(summary)
   let container;
 
   if (retry) {
@@ -2323,7 +2323,7 @@ async function generateScenario(sessionId, summary, retry = false) {
         </button>
         <button 
           style="background:#f44336; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
-          onclick="generateScenario('${sessionId}', \`${summary}\`, true)">
+          onclick="generateScenario('${sessionId}', '${encodeURIComponent(summary)}', true)">
           🔄 Retry
         </button>
       </div>
@@ -11936,6 +11936,10 @@ const customMicButton = document.getElementById("startMicBtn");
         }
         if (snnipetConfigSTT?.["welcomeMessage"]) {
           welcomeMessage = snnipetConfigSTT["welcomeMessage"];
+        }
+
+        if (type_of_widget === 'simulation'){
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed.</p>`
         }
         console.log(welcomeMessage, 'welcome')
         if (window.user){
