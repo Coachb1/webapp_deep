@@ -196,7 +196,7 @@ const CreateYourOwn = ({
         flavour: scenarioType,
         is_micro: simulationType === "short",
         available_case_list: scenarioType,
-        use_anthropic: false
+        llm_order: 'gemini, anthropic, gpt'
       };
 
       console.log(add_prompt_list[numOfTries], scenarioType, numOfTries, "numoftries");
