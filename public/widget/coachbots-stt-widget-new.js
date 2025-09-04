@@ -2273,7 +2273,7 @@ function selectItem(event, el) {
 }
 
 
-function handleStartScenario(el) {
+async function handleStartScenario(el) {
   const sessionId = el.dataset.sessionId;
   let title = decodeURIComponent(el.dataset.title);
   const testCode = el.dataset.testCode;
@@ -2303,6 +2303,11 @@ function handleStartScenario(el) {
   // 🔒 Lock this session permanently
   if (!scenarioCache[sessionId]) scenarioCache[sessionId] = {};
   scenarioCache[sessionId].locked = true;
+
+  //check if already in session
+  if (isSessionActiveStt){
+    await StopSession("<b>The previous session has been terminated. A new session will now begin.</b>");
+  }
 
   handleAttemptScenaiosSTT(title, testCode);
 }
@@ -2335,6 +2340,19 @@ async function generateScenario(sessionId, retry = false, fromMore = false) {
     appendMessage2(placeholder);
     container = gShadowRoot2.getElementById(contId);
   }
+
+
+
+    const startBtn = gShadowRoot2.getElementById(`start-btn-${sessionId}`)
+    console.log('xyz', startBtn)
+    if (startBtn) {
+      startBtn.disabled = false;        // re-enable
+      startBtn.style.opacity = "1";     // normal opacity
+      startBtn.style.cursor = "pointer"; // restore pointer
+    }
+    console.log('xyz', startBtn)
+
+  
 
   try {
     const cache = scenarioCache[sessionId] || { results: [], index: 0, moreEnabled: false, loadingMore: false };
@@ -2451,11 +2469,7 @@ function copyCode(btn, text) {
         </svg>`;
       setTimeout(() => {
         // revert back to copy icon
-        btn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M10 1.5A1.5 1.5 0 0 1 11.5 3v9A1.5 1.5 0 0 1 10 13.5H4A1.5 1.5 0 0 1 2.5 12V3A1.5 1.5 0 0 1 4 1.5h6zm1 0H4A2.5 2.5 0 0 0 1.5 4v9A2.5 2.5 0 0 0 4 15.5h7A2.5 2.5 0 0 0 13.5 13V4A2.5 2.5 0 0 0 11 1.5z"/>
-            <path d="M3.5 0A1.5 1.5 0 0 0 2 1.5v10A1.5 1.5 0 0 0 3.5 13H5v-1H3.5a.5.5 0 0 1-.5-.5v-10A.5.5 0 0 1 3.5 1H5V0H3.5z"/>
-          </svg>`;
+        btn.innerHTML = `Copy For Later`;
       }, 1200);
     });
 }
@@ -2492,13 +2506,10 @@ function renderScenario(container, sessionId,data, summary ,version, total, more
           ${data.test_code}
         </code>
         <button 
+          title='Copy for later use'
           onclick="copyCode(this, '${data.test_code}')"
           style="background:#e0e0e0; border:none; padding:4px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-          <!-- Copy icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M10 1.5A1.5 1.5 0 0 1 11.5 3v9A1.5 1.5 0 0 1 10 13.5H4A1.5 1.5 0 0 1 2.5 12V3A1.5 1.5 0 0 1 4 1.5h6zm1 0H4A2.5 2.5 0 0 0 1.5 4v9A2.5 2.5 0 0 0 4 15.5h7A2.5 2.5 0 0 0 13.5 13V4A2.5 2.5 0 0 0 11 1.5z"/>
-            <path d="M3.5 0A1.5 1.5 0 0 0 2 1.5v10A1.5 1.5 0 0 0 3.5 13H5v-1H3.5a.5.5 0 0 1-.5-.5v-10A.5.5 0 0 1 3.5 1H5V0H3.5z"/>
-          </svg>
+          Copy For Later
         </button>
       </div>
       <div style="display:flex; gap:10px; margin-top:8px;">
@@ -2508,25 +2519,23 @@ function renderScenario(container, sessionId,data, summary ,version, total, more
           data-session-id="${sessionId}"
           data-title="${title}"
           data-test-code="${data.test_code}"
-          ${isLocked ? "disabled" : ""}
-          style="background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; 
-                 cursor:${isLocked ? "not-allowed" : "pointer"};
-                 opacity:${isLocked ? "0.6" : "1"};
-                 font-size:13px; font-weight:500;"
-          ${!isLocked ? `
-            onmouseover="this.style.background='#45A049'" 
-            onmouseout="this.style.background='#4CAF50'"
-            onclick="handleStartScenario(this)"
-          ` : ""}
+          style="background:white; color:black; border:1px solid #000; padding:6px 12px; border-radius:6px; 
+                cursor:"pointer";
+                opacity:"1";
+                font-size:13px; font-weight:500;"
+          onmouseover="this.style.background='black'; this.style.color='white'"
+          onmouseout="this.style.background='white'; this.style.color='black'"
+          onclick="handleStartScenario(this)"
+          }
         >          
           ▶ Start
         </button>
 
         <!-- Next button -->
         <button 
-          style="background:#FF9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500;"
-          onmouseover="this.style.background='#F57C00'"
-          onmouseout="this.style.background='#FF9800'"
+          style="background:white; color:black; border:1px solid #000; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500;"
+          onmouseover="this.style.background='black'; this.style.color='white'"
+          onmouseout="this.style.background='white'; this.style.color='black'"
           onclick="generateScenario('${sessionId}', true)">
           🔄 Next
         </button>
@@ -2535,18 +2544,18 @@ function renderScenario(container, sessionId,data, summary ,version, total, more
         <button 
           id="more-btn-${sessionId}"
           ${isLocked ? "disabled" : ""}
-          style="background:${moreEnabled ? '#2196F3' : '#90CAF9'}; 
-                 color:white; 
-                 border:none; 
-                 padding:6px 12px; 
-                 border-radius:6px; 
-                 cursor:${isLocked ? "not-allowed" : (moreEnabled ? "pointer" : "not-allowed")};
-                 font-size:13px; 
-                 font-weight:500;
-                 opacity:${isLocked ? "0.6" : (moreEnabled ? "1" : "0.7")};"
+          style="background:white; 
+                color:black; 
+                border:1px solid #000;
+                padding:6px 12px; 
+                border-radius:6px; 
+                cursor:${isLocked ? "not-allowed" : (moreEnabled ? "pointer" : "not-allowed")};
+                font-size:13px; 
+                font-weight:500;
+                opacity:${isLocked ? "0.6" : (moreEnabled ? "1" : "0.7")};"
           ${(!isLocked && moreEnabled) ? `
-            onmouseover="this.style.background='#1976D2'" 
-            onmouseout="this.style.background='#2196F3'" 
+            onmouseover="this.style.background='black'; this.style.color='white'" 
+            onmouseout="this.style.background='white'; this.style.color='black'" 
             onclick="generateScenario('${sessionId}', false, true)" 
           ` : ""}
         >
@@ -9212,7 +9221,8 @@ document.addEventListener("click", function (event) {
     }
 });
 
-const StopSession = async() =>{
+const StopSession = async(msg='<b>Your session is terminated. You can restart again!</b>') =>{
+  console.log('[stopsession]', msg)
   await window.cancelTestStt(participantId2); // cancelling session
   if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
     const shadowRoot =
@@ -9242,11 +9252,13 @@ const StopSession = async() =>{
   // });
   resetAllVariablesStt().then(() => {
     console.log("Your session is terminated. You can restart again!");
-    if (Object.keys(snnipetConfigSTT).length > 0) {
-      appendMessage2('<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>')
-    } else {
-      appendMessage2('<b>Your session is terminated. You can restart again!</b>');
-    }
+    // if (Object.keys(snnipetConfigSTT).length > 0 ) {
+    //   appendMessage2('<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>')
+    // } else {
+      if (msg){
+        appendMessage2(msg);
+      }
+    // }
 
     //Enable Copy Paste
     var chatElementRef2 = document.getElementById("chat-element2");
@@ -10044,7 +10056,7 @@ async function toggleBotSwitch(type_of_bot){
             });
 
           responseSavedCount += 1;
-          if (responseSavedCount >= 2 && endSessionButton) {
+          if (responseSavedCount >= 1 && endSessionButton) {
             enableEndSessionButton();
           }
           return;
@@ -10945,7 +10957,7 @@ function cleanTextForAudio(text) {
             });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
           responseSavedCount += 1;
-          if (responseSavedCount >= 2 && endSessionButton) {
+          if (responseSavedCount >= 1 && endSessionButton) {
             enableEndSessionButton();
           }
           return Promise.resolve();
@@ -11138,7 +11150,7 @@ function cleanTextForAudio(text) {
           botPreviousConversationHistory.push(messageText.innerText);
 
           responseSavedCount += 1;
-          if (responseSavedCount >= 2 && endSessionButton) {
+          if (responseSavedCount >= 1 && endSessionButton) {
             enableEndSessionButton();
           }
 
