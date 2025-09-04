@@ -2263,8 +2263,8 @@ function selectItem(event, el) {
     if (isSessionActiveStt){
       appendMessage2("<p style='font-size: 14px;color: #991b1b;'>You are in middle of a session either \"STOP\" it or complete it.</p>");
       return;
-    }else {
-      generateScenario(chatData.uid, chatData.summary, false, false);
+    } else {
+      generateScenario(chatData.uid,false, false);
     }
     
   } catch (error) {
@@ -2272,81 +2272,15 @@ function selectItem(event, el) {
   }
 }
 
-// ✅ Show only test code when Generate Simulation is clicked
-// async function generateScenario(sessionId, summary, retry = false) {
-//   console.log("🔄 generating test code for:", sessionId, summary);
-//   summary = decodeURIComponent(summary)
-//   let container;
 
-//   if (retry) {
-//     // If retry → reuse the old card
-//     container = gShadowRoot2.getElementById("create-scenario-section");
-//     if (container) {
-//       container.innerHTML = `<p style="font-size: 14px; color:#666;">⏳ Generating new scenario...</p>`;
-//     }
-//   } else {
-//     // First time → append a fresh placeholder card
-//     const placeholder = `
-//       <div id="create-scenario-section"
-//            style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
-//         <p style="font-size: 14px; color:#666;">⏳ Generating scenario...</p>
-//       </div>
-//     `;
-//     appendMessage2(placeholder);
-//     container = gShadowRoot2.getElementById("create-scenario-section");
-//   }
+function handleStartScenario(el) {
+  const sessionId = el.dataset.sessionId;
+  let title = decodeURIComponent(el.dataset.title);
+  const testCode = el.dataset.testCode;
 
-//   try {
-//     const data = await generateTestScenarioStt({
-//       userId: userId2,
-//       sessionId: null,
-//       skills: null,
-//       flavour: "normal_transcript_static",
-//       isMicro: true,
-//       information: summary,
-//     });
-
-//     console.log(data, "simulaitonchattest");
-
-//     // Replace card content with scenario UI
-//     container.innerHTML = `
-//       <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
-//         ${data.title}
-//       </p>
-//       <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
-//         ${data.description}
-//       </p>
-//       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-//         <code style="background: #f4f4f4; padding: 6px; border-radius: 4px; font-size: 12px; color: green;">
-//           ${data.test_code}
-//         </code>
-//       </div>
-//       <div style="display:flex; gap:10px; margin-top:8px;">
-//         <button 
-//           style="background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
-//           onclick="handleAttemptScenaiosSTT('${data.title}', '${data.test_code}')">
-//           ▶ Start
-//         </button>
-//         <button 
-//           style="background:#f44336; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;"
-//           onclick="generateScenario('${sessionId}', '${encodeURIComponent(summary)}', true)">
-//           🔄 Retry
-//         </button>
-//       </div>
-//     `;
-
-//   } catch (err) {
-//     if (container) {
-//       container.innerHTML = `<p style="color:red;">❌ Failed to generate scenario.</p>`;
-//     } else {
-//       appendMessage2("❌ Failed to generate scenario.");
-//     }
-//     console.error(err);
-//   }
-// }
-
-function handleStartScenario(sessionId, title, testCode) {
   console.log("🚀 Start clicked for:", sessionId, title);
+
+  title = decodeURIComponent(title)
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   const section = gShadowRoot2.getElementById(`create-scenario-section-${sessionId}`);
@@ -2379,8 +2313,16 @@ function handleStartScenario(sessionId, title, testCode) {
 // Cache format: { results: [], index: 0, moreEnabled: false, loadingMore: false }
 const scenarioCache = {};
 
-async function generateScenario(sessionId, summary, retry = false, fromMore = false) {
+async function generateScenario(sessionId, retry = false, fromMore = false) {
   console.log("🔄 generateScenario | session:", sessionId, "| retry:", retry, "| fromMore:", fromMore);
+  const results = previousChatHistory.filter(session => session.uid === sessionId);
+  if (results.length === 0) {
+    console.warn("No chat history found for session:", sessionId);
+    return;
+  }
+
+  const summary = results[0].summary
+
   const contId = `create-scenario-section-${sessionId}`
   let container = gShadowRoot2.getElementById(contId);
   if (!container) {
@@ -2419,10 +2361,16 @@ async function generateScenario(sessionId, summary, retry = false, fromMore = fa
       console.log(fromMore ? "➕ Fetching More scenarios..." : "⚡ First batch of scenarios...");
 
       let llmOrders = [
-        ["anthropic", "gemini", "gpt"],
-        ["gemini", "anthropic", "gpt"],
-        ["gpt", "anthropic", "gemini"],
+        ["anthropic"],
+        ["gemini"],
+        ["gpt"],
       ];
+      let modelOrder = {
+        'gpt': 'gpt-4.1-mini',
+        'gemini': 'gemini-2.5-flash-lite',
+        'anthropic': 'claude-sonnet-4-20250514'
+      }
+      
 
       const promises = llmOrders.map((order) =>
         generateTestScenarioStt({
@@ -2433,6 +2381,7 @@ async function generateScenario(sessionId, summary, retry = false, fromMore = fa
           isMicro: true,
           information: summary,
           llmOrder: order.join(", "),
+          modelOrder: modelOrder
         }).then((res) => {
           console.log(`✅ LLM [${order.join(" > ")}] →`, res.title);
           return res;
@@ -2492,6 +2441,7 @@ async function generateScenario(sessionId, summary, retry = false, fromMore = fa
     console.error("💥 Error in generateScenario:", err);
   }
 }
+
 function copyCode(btn, text) {
     navigator.clipboard.writeText(text).then(() => {
       // swap icon → checkmark
@@ -2510,15 +2460,24 @@ function copyCode(btn, text) {
     });
 }
 
-function renderScenario(container, sessionId, data, summary, version, total, moreEnabled = false) {
+function renderScenario(container, sessionId,data, summary ,version, total, moreEnabled = false) {
   console.log(`🎨 Rendering scenario [${version}/${total}] for session ${sessionId}`);
-  summary = decodeURIComponent(summary);
+  // const results = previousChatHistory.filter(session => session.uid === sessionId);
+  // if (results.length === 0) {
+  //   console.warn("No chat history found for session:", sessionId);
+  //   return;
+  // }
+
+  // const summary = results[0].summary
 
   const cache = scenarioCache[sessionId] || {};
   const isLocked = cache.locked === true; // 🔒
 
   container.style.opacity = "0";
   container.style.transition = "opacity 0.4s ease";
+
+  const title = encodeURIComponent(data.title)
+  console.log('generateScenario', summary)
 
   container.innerHTML = `
     <div class="scenario-card" style="animation: fadeIn 0.4s ease;">
@@ -2546,6 +2505,9 @@ function renderScenario(container, sessionId, data, summary, version, total, mor
         <!-- Start button -->
         <button 
           id="start-btn-${sessionId}"
+          data-session-id="${sessionId}"
+          data-title="${title}"
+          data-test-code="${data.test_code}"
           ${isLocked ? "disabled" : ""}
           style="background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; 
                  cursor:${isLocked ? "not-allowed" : "pointer"};
@@ -2554,7 +2516,7 @@ function renderScenario(container, sessionId, data, summary, version, total, mor
           ${!isLocked ? `
             onmouseover="this.style.background='#45A049'" 
             onmouseout="this.style.background='#4CAF50'"
-            onclick="handleStartScenario('${sessionId}', '${data.title}', '${data.test_code}')"
+            onclick="handleStartScenario(this)"
           ` : ""}
         >          
           ▶ Start
@@ -2565,7 +2527,7 @@ function renderScenario(container, sessionId, data, summary, version, total, mor
           style="background:#FF9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500;"
           onmouseover="this.style.background='#F57C00'"
           onmouseout="this.style.background='#FF9800'"
-          onclick="generateScenario('${sessionId}', '${encodeURIComponent(summary)}', true)">
+          onclick="generateScenario('${sessionId}', true)">
           🔄 Next
         </button>
 
@@ -2585,7 +2547,7 @@ function renderScenario(container, sessionId, data, summary, version, total, mor
           ${(!isLocked && moreEnabled) ? `
             onmouseover="this.style.background='#1976D2'" 
             onmouseout="this.style.background='#2196F3'" 
-            onclick="generateScenario('${sessionId}', '${encodeURIComponent(summary)}', false, true)" 
+            onclick="generateScenario('${sessionId}', false, true)" 
           ` : ""}
         >
           ➕ More
@@ -8259,7 +8221,7 @@ async function createTestRecommendationStt(recommended_test_id, session_id, test
 }
 
 
-async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro, information, llmOrder='anthropic, gemini, gpt' }) {
+async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro, information, llmOrder='anthropic, gemini, gpt', modelOrder=null }) {
   const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
   let informationstt = ''
   if (skills){
@@ -8284,7 +8246,8 @@ async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isM
     flavour: flavour,
     is_micro: isMicro,
     previous_session_id: sessionId,
-    llm_order: llmOrder
+    llm_order: llmOrder,
+    model_order: JSON.stringify(modelOrder)
   };
 
   try {
