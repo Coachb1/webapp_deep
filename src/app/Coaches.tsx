@@ -352,9 +352,9 @@ const Coaches = ({
         filterName: "Profile Type",
         filterOptions: [
           "coach",
-          // "mentor",
-          "coachee",
-          "mentee",
+          "mentor",
+          // "coachee",
+          // "mentee",
           "icons_by_ai",
           "accepted",
           "feedback_bot",
