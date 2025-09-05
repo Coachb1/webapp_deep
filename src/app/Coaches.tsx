@@ -649,6 +649,9 @@ const Coaches = ({
       );
       console.log(filteredData);
       setCoachesData(filteredData);
+    } else if (newValues.includes("coach") && newValues.includes("mentor")) {
+      // if both coach & mentor are selected -> no results
+      setCoachesData([]);
     } else if (newValues.includes("mentor")) {
       const filteredData = filterData(
         newValues.includes("Connected")
