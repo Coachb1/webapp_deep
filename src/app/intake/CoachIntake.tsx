@@ -3395,12 +3395,12 @@ const CoachIntake = ({ user }: any) => {
                                 <textarea
                                   rows={4}
                                   disabled={checkIfView === null ? false : true}
-                                  required={
-                                    !checkIfEdit ||
-                                    mediaData?.extracted_from_youtube.filter(
-                                      (file) => !file.isDeleted
-                                    ).length === 0
-                                  }
+                                  // required={
+                                  //   !checkIfEdit ||
+                                  //   mediaData?.extracted_from_youtube.filter(
+                                  //     (file) => !file.isDeleted
+                                  //   ).length === 0
+                                  // }
                                   value={linksReflectingWVpersonal}
                                   onChange={(e) => {
                                     setDataModified(true);
@@ -3511,12 +3511,12 @@ const CoachIntake = ({ user }: any) => {
                               <div>
                                 <textarea
                                   rows={4}
-                                  required={
-                                    !checkIfEdit ||
-                                    mediaData?.extracted_from_article.filter(
-                                      (file) => !file.isDeleted
-                                    ).length === 0
-                                  }
+                                  // required={
+                                  //   !checkIfEdit ||
+                                  //   mediaData?.extracted_from_article.filter(
+                                  //     (file) => !file.isDeleted
+                                  //   ).length === 0
+                                  // }
                                   disabled={checkIfView === null ? false : true}
                                   value={linksReflectyouWished}
                                   onChange={(e) => {
@@ -3628,12 +3628,12 @@ const CoachIntake = ({ user }: any) => {
                             <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                               <input
                                 disabled={checkIfView === null ? false : true}
-                                required={
-                                  !checkIfEdit ||
-                                  mediaData?.extracted_from_pdf.filter(
-                                    (file) => !file.isDeleted
-                                  ).length === 0
-                                }
+                                // required={
+                                //   !checkIfEdit ||
+                                //   mediaData?.extracted_from_pdf.filter(
+                                //     (file) => !file.isDeleted
+                                //   ).length === 0
+                                // }
                                 type="file"
                                 className="w-full text-xs my-2"
                                 multiple
@@ -3917,7 +3917,7 @@ const CoachIntake = ({ user }: any) => {
                                 <textarea
                                   rows={4}
                                   disabled={checkIfView === null ? false : true}
-                                  required
+                                  // required
                                   value={discussInCARformat}
                                   onChange={(e) => {
                                     const inputValue = e.target.value;
@@ -4002,7 +4002,7 @@ const CoachIntake = ({ user }: any) => {
                               <div>
                                 <textarea
                                   rows={4}
-                                  required
+                                  // required
                                   value={povProgramParticipants}
                                   disabled={checkIfView === null ? false : true}
                                   onChange={(e) => {
@@ -4039,7 +4039,7 @@ const CoachIntake = ({ user }: any) => {
                               <div>
                                 <textarea
                                   rows={4}
-                                  required
+                                  // required
                                   disabled={checkIfView === null ? false : true}
                                   value={problemSolvingApproach}
                                   onChange={(e) => {
@@ -4082,7 +4082,7 @@ const CoachIntake = ({ user }: any) => {
                               <div>
                                 <textarea
                                   rows={4}
-                                  required
+                                  // required
                                   disabled={checkIfView === null ? false : true}
                                   onChange={(e) => {
                                     const inputValue = e.target.value;
@@ -4123,7 +4123,7 @@ const CoachIntake = ({ user }: any) => {
                                 <textarea
                                   rows={4}
                                   disabled={checkIfView === null ? false : true}
-                                  required
+                                  // required
                                   onChange={(e) => {
                                     const inputValue = e.target.value;
 
@@ -4146,7 +4146,7 @@ const CoachIntake = ({ user }: any) => {
                               </p>
                               <div>
                                 <input
-                                  required
+                                  // required
                                   disabled={checkIfView === null ? false : true}
                                   onChange={(e) => {
                                     setLeaderNames(e.target.value);
@@ -4230,12 +4230,12 @@ const CoachIntake = ({ user }: any) => {
                                 <textarea
                                   rows={4}
                                   disabled={checkIfView === null ? false : true}
-                                  required={
-                                    !checkIfEdit ||
-                                    mediaData?.extracted_from_youtube.filter(
-                                      (file) => !file.isDeleted
-                                    ).length === 0
-                                  }
+                                  // required={
+                                  //   !checkIfEdit ||
+                                  //   mediaData?.extracted_from_youtube.filter(
+                                  //     (file) => !file.isDeleted
+                                  //   ).length === 0
+                                  // }
                                   value={linksReflectingWVpersonal}
                                   onChange={(e) => {
                                     setDataModified(true);
@@ -4463,12 +4463,12 @@ const CoachIntake = ({ user }: any) => {
                             <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                               <input
                                 disabled={checkIfView === null ? false : true}
-                                required={
-                                  !checkIfEdit ||
-                                  mediaData?.extracted_from_pdf.filter(
-                                    (file) => !file.isDeleted
-                                  ).length === 0
-                                }
+                                // required={
+                                //   !checkIfEdit ||
+                                //   mediaData?.extracted_from_pdf.filter(
+                                //     (file) => !file.isDeleted
+                                //   ).length === 0
+                                // }
                                 type="file"
                                 className="w-full text-xs my-2"
                                 multiple
@@ -4804,7 +4804,7 @@ const CoachIntake = ({ user }: any) => {
                                         checkIfView === null ? false : true
                                       }
                                       rows={4}
-                                      required
+                                      // required
                                       value={foundationalValues}
                                       onChange={(e) => {
                                         setFoundationalValues(e.target.value);
@@ -4842,7 +4842,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={developmentFramewrok}
                                       onChange={(e) => {
                                         setDevelopmentFrameworks(
@@ -4880,7 +4880,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={coachingProcessOverview}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -4921,7 +4921,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={handlingSituations}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -4958,7 +4958,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={integratingLessons}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -4997,7 +4997,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={guidanceOnCoachingProcess}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5048,7 +5048,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={differentCareerPath}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5086,7 +5086,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={problemSolvingApproachInDomain}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5144,7 +5144,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={overviewofMentoring}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5182,7 +5182,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={opportunitiesOfGrowth}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5225,7 +5225,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={commonChallengesOrObstacles}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5270,7 +5270,7 @@ const CoachIntake = ({ user }: any) => {
                                       disabled={
                                         checkIfView === null ? false : true
                                       }
-                                      required
+                                      // required
                                       value={opinionsAboutKeyQualities}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
@@ -5337,7 +5337,7 @@ const CoachIntake = ({ user }: any) => {
                               </p>
                               <div className="my-2 mb-3">
                                 <RadioGroup
-                                  required
+                                  // required
                                   disabled={checkIfView === null ? false : true}
                                   value={participantLevel}
                                   onValueChange={(value) => {
@@ -5382,7 +5382,7 @@ const CoachIntake = ({ user }: any) => {
                               <div className="my-2 mb-3">
                                 <RadioGroup
                                   disabled={checkIfView === null ? false : true}
-                                  required
+                                  // required
                                   value={coachMentInSameDep}
                                   onValueChange={(value) => {
                                     setDataModified(true);
@@ -5425,7 +5425,7 @@ const CoachIntake = ({ user }: any) => {
                                 <RadioGroup
                                   disabled={checkIfView === null ? false : true}
                                   value={outcomeSupported}
-                                  required
+                                  // required
                                   onValueChange={(value) => {
                                     setDataModified(true);
                                     setOutcomeSupported(value);
