@@ -13916,7 +13916,8 @@ chatElementRef2.initialMessages = [
                 if (
                   clientuserInformationSTT?.report_on &&
                   clientuserInformationSTT?.report_on != null &&
-                  senarioCase2 !== "assessment"
+                  senarioCase2 !== "assessment" &&
+                  emailCandidate2 === true
                 ) {
                   emailCandidate2 = clientuserInformationSTT.report_on;
                 }
