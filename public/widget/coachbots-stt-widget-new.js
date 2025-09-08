@@ -645,6 +645,10 @@ let ScoreConfigStt = {};
 let gameScoreVisbileStt = true;
 let gameExplanationVisibleStt = true;
 let BotIDSTT;
+let showMindmapButtonStt = true;
+let showAssessmentButtonStt = true;
+let showModeButtonStt = true;
+
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -925,11 +929,14 @@ const initialiseUserSTT = async () => {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log("get-client-information : ", data);
+          console.log("get-client-information [init]: ", data, user_email2);
 
           if (!data.data.user_info[0].msg) {
             clientuserInformationSTT = data.data.user_info[0];
-
+            if (!user_email2.includes('coachbots_anonyoususer')){
+              console.log('calling getbuttoncontrolls')
+              getButtonControls();
+            }
             allowPastingAtClientLevelStt =
               data.data.user_info[0].ui_information.allow_paste_answer;
 
@@ -987,6 +994,11 @@ const createUserSTT = async (user_name, user_email) => {
   user_email2 = user_email;
   console.log("newuser_name2", user_name2);
   console.log("newuser_email2", user_email2);
+
+  if (!askAccessBotCodeSTT){
+    console.log(snnipetConfigSTT.clientId, user_email)
+    await updateClientInfoSTT(snnipetConfigSTT.clientId, user_email, null);
+  }
   const response = await fetch(`${baseURL2}/accounts/`, {
     method: "POST",
     headers: {
@@ -1041,10 +1053,12 @@ const createUserSTT = async (user_name, user_email) => {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log("get-client-information : ", data);
+          console.log("get-client-information [createUserstt]: ", data);
 
           if (!data.data.user_info[0].msg) {
             clientuserInformationSTT = data.data.user_info[0];
+            getButtonControls();
+
             allowPastingAtClientLevelStt =
               data.data.user_info[0].ui_information.allow_paste_answer;
 
@@ -9292,6 +9306,62 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
+async function getButtonControls(){
+  // first we check client one then snnipet one, snnipet one override client one
+  if (clientuserInformationSTT?.button_controlls){
+    const ButtonControls = clientuserInformationSTT?.button_controlls
+
+    console.log('butttoncontroll', ButtonControls)
+    if (ButtonControls?.mindmap_button) {
+      showMindmapButtonStt = ButtonControls?.mindmap_button?.show === true
+    }
+    if (ButtonControls?.assessment_button) {
+      showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
+    }
+
+    if (ButtonControls?.mode_button) {
+      showModeButtonStt = ButtonControls?.mode_button?.show === true
+    }
+  }
+
+
+  // now checking snnipetconfigstt
+  if (snnipetConfigSTT.mindmapBtn) {
+    showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
+  }
+  if (snnipetConfigSTT.assessmentBtn ) {
+    showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
+  }
+  if (snnipetConfigSTT.modeBtn) {
+    showModeButtonStt = snnipetConfigSTT.modeBtn === 'true';
+  }
+
+  console.log(
+    showMindmapButtonStt,
+    showAssessmentButtonStt,
+    showModeButtonStt
+    )
+
+  const mindmap_button = document.getElementById("mindmap_button");
+  const assessment_button = document.getElementById("assessment_button");
+
+  const mode_button = document.getElementById("mode_button");
+
+  if (mindmap_button){
+    mindmap_button.style.display = showMindmapButtonStt ? 'block': 'none'
+  }
+
+  if (assessment_button){
+    assessment_button.style.display = showAssessmentButtonStt ? 'block': 'none'
+  }
+
+  if (mode_button){
+    mode_button.style.display = showModeButtonStt ? 'block': 'none'
+  }
+
+  
+}
+
 function startModernTimer(seconds, onComplete) {
   const container = document.getElementById("timerContainer");
   const countdownEl = document.getElementById("countdown");
@@ -11288,7 +11358,7 @@ loadExternalModule().then(() => {
                                         snnipetConfigSTT?.botSwitchButton =='true' 
                                         : showBotSwitchMode;
 
-                                        
+           
 
   function InitializeBot (type_of_widget) {
 
@@ -11490,7 +11560,7 @@ loadExternalModule().then(() => {
 </div>
 
 <!-- Mindmap Button + Dropdown -->
-<div class="dropdown">
+<div class="dropdown" id="mindmap_button" style="display: none;">
     <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Mindmap
     </button>
@@ -11500,7 +11570,7 @@ loadExternalModule().then(() => {
 </div>
 
 <!-- Assessment Button + Dropdown -->
-<div class="dropdown">
+<div class="dropdown" id="assessment_button" style="display: none;">
     <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Assessment
     </button>
@@ -11518,7 +11588,7 @@ loadExternalModule().then(() => {
   </div>
 </div>
 
-<div class="dropdown" >
+<div class="dropdown" id="mode_button" style="display: none;">
   <button id="more-btn" 
     style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
     Mode
@@ -14017,6 +14087,7 @@ chatElementRef2.initialMessages = [
                   if (snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true') {
                     emailCandidate2 = false;
                   }
+                  
                 }
                 updateAudioAllowed(true,true)
                 console.log("isImmersive", isImmersiveStt);
@@ -15885,3 +15956,24 @@ document.addEventListener("click", function (event) {
         moreMenu.style.display = 'none'
     }
 });
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   setTimeout(() => {
+//     const rootDiv = document.querySelector(".coachbots-coachscribe");
+
+//     if (rootDiv) {
+//       const mindmapAllowed   = rootDiv.getAttribute("data-mindmapBtn") !== "false";
+//       const assessmentAllowed = rootDiv.getAttribute("data-assessmentBtn") !== "false";
+//       const modeAllowed      = rootDiv.getAttribute("data-mode") !== "false";
+
+//       const mindmapBtn = document.getElementById("mindmap-btn");   
+//       const assessmentBtn = document.getElementById("assessment-btn"); 
+//       const modeBtn = document.getElementById("more-btn");        
+
+//       if (mindmapBtn && !mindmapAllowed) mindmapBtn.style.display = "none";
+//       if (assessmentBtn && !assessmentAllowed) assessmentBtn.style.display = "none";
+//       if (modeBtn && !modeAllowed) modeBtn.style.display = "none";
+//     }
+//   }, 500);
+// });
+
