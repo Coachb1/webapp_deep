@@ -626,6 +626,19 @@ let LLMOrder = {
     ]
   }
 }
+
+let BotGenerationLLMOrder = {
+  providers : [
+        ["anthropic"],
+        ["gemini"],
+        ["gpt"],
+      ],
+  models: {
+        'gpt': 'gpt-4.1-mini',
+        'gemini': 'gemini-2.5-flash-lite',
+        'anthropic': 'claude-sonnet-4-20250514'
+      }
+};
 let MindMapLinks;
 let AssessmentLinks;
 let ScoreConfigStt = {};
@@ -2135,6 +2148,8 @@ async function populateChatHistoryWrapper(refresh=false) {
   if (previousChatHistory.length === 0 || refresh) {
     previousChatHistory = await getPreviousChats(userId2, BotIDSTT, true);
   }
+  
+  await getLLMOrderSTT(null, 'scenario_generation');
 
   const data = previousChatHistory.filter(chat =>
     chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 3
@@ -2377,17 +2392,9 @@ async function generateScenario(sessionId, retry = false, fromMore = false) {
       }
 
       console.log(fromMore ? "➕ Fetching More scenarios..." : "⚡ First batch of scenarios...");
-
-      let llmOrders = [
-        ["anthropic"],
-        ["gemini"],
-        ["gpt"],
-      ];
-      let modelOrder = {
-        'gpt': 'gpt-4.1-mini',
-        'gemini': 'gemini-2.5-flash-lite',
-        'anthropic': 'claude-sonnet-4-20250514'
-      }
+      console.log('llm order for scenario generattion', BotGenerationLLMOrder)
+      let llmOrders = BotGenerationLLMOrder.providers
+      let modelOrder = BotGenerationLLMOrder.models
       
 
       const promises = llmOrders.map((order) =>
@@ -2398,10 +2405,10 @@ async function generateScenario(sessionId, retry = false, fromMore = false) {
           flavour: "normal_transcript_static",
           isMicro: true,
           information: summary,
-          llmOrder: order.join(", "),
+          llmOrder: Array.isArray(order) ? order.join(", ") : order ?? "",          
           modelOrder: modelOrder
         }).then((res) => {
-          console.log(`✅ LLM [${order.join(" > ")}] →`, res.title);
+          console.log(`✅ LLM [${Array.isArray(order) ? order.join(" >") : order ?? ""}] →`, res.title);
           return res;
         })
       );
@@ -9574,6 +9581,33 @@ async function toggleBotSwitch(type_of_bot){
   };
 
   window.cancelTestStt = cancelTestStt;
+
+    // get session status
+  const getLLMOrderSTT = async (bot_type, feature_type) => {
+    const url = `${baseURL2}/accounts/get-llm-order/?bot_type=${bot_type}&feature_type=${feature_type}`;
+
+    try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          },
+        });
+
+        if (response.ok) {
+
+        const responseJson = await response.json();
+        console.log('[getLLMOrderSTT] - api response',responseJson);
+        BotGenerationLLMOrder = responseJson.data
+        } else {
+          console.error(`Error in getLLMOrderSTT: ${responseJson}`);
+        }
+
+   
+    } catch (error) {
+      console.error(`Error in getLLMOrderSTT: ${error}`);
+    }
+  };
 
   // get session status
   const getSessionStatusStt = async (session_id) => {
