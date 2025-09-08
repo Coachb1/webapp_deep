@@ -13983,6 +13983,15 @@ chatElementRef2.initialMessages = [
                   if (snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true') {
                     emailCandidate2 = false;
                   }
+                  if (snnipetConfigSTT.mindmapBtn && snnipetConfigSTT.mindmapBtn === 'true') {
+                    allowMindmapStt = true;
+                  }
+                  if (snnipetConfigSTT.assessmentBtn && snnipetConfigSTT.assessmentBtn === 'true') {
+                    allowAssessmentStt = true;
+                  }
+                  if (snnipetConfigSTT.modeBtn && snnipetConfigSTT.modeBtn === 'true') {
+                    allowMoreStt = true;
+                  }
                 }
                 updateAudioAllowed(true,true)
                 console.log("isImmersive", isImmersiveStt);
@@ -15850,4 +15859,45 @@ document.addEventListener("click", function (event) {
         simulationhistoryMenu.style.display = "none"
         moreMenu.style.display = 'none'
     }
+});
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   setTimeout(() => {
+//     const rootDiv = document.querySelector(".coachbots-coachscribe");
+
+//     if (rootDiv) {
+//       const mindmapAllowed   = rootDiv.getAttribute("data-mindmapBtn") !== "false";
+//       const assessmentAllowed = rootDiv.getAttribute("data-assessmentBtn") !== "false";
+//       const modeAllowed      = rootDiv.getAttribute("data-mode") !== "false";
+
+//       const mindmapBtn = document.getElementById("mindmap-btn");   
+//       const assessmentBtn = document.getElementById("assessment-btn"); 
+//       const modeBtn = document.getElementById("more-btn");        
+
+//       if (mindmapBtn && !mindmapAllowed) mindmapBtn.style.display = "none";
+//       if (assessmentBtn && !assessmentAllowed) assessmentBtn.style.display = "none";
+//       if (modeBtn && !modeAllowed) modeBtn.style.display = "none";
+//     }
+//   }, 500);
+// });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const rootDiv = document.querySelector(".coachbots-coachscribe");
+  if (!rootDiv) return;
+
+  const mindmapAllowed   = rootDiv.getAttribute("data-mindmapBtn") !== "false";
+  const assessmentAllowed = rootDiv.getAttribute("data-assessment") !== "false";
+  const modeAllowed      = rootDiv.getAttribute("data-mode") !== "false";
+
+  const observer = new MutationObserver(() => {
+    const mindmapBtn = document.getElementById("mindmap-btn");
+    const assessmentBtn = document.getElementById("assessment-btn");
+    const modeBtn = document.getElementById("more-btn");
+
+    if (mindmapBtn && !mindmapAllowed) mindmapBtn.style.display = "none";
+    if (assessmentBtn && !assessmentAllowed) assessmentBtn.style.display = "none";
+    if (modeBtn && !modeAllowed) modeBtn.style.display = "none";
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
 });
