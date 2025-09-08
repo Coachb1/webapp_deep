@@ -906,7 +906,7 @@ const initialiseUserSTT = async () => {
       console.log("user_info : ", clientAllowAudioInteraction2, userAllowAudioInteraction2, prioritiseUserAllowInteraction2);
 
       fetch(
-        `${baseURL2}/api/v1/accounts/get-client-information/?for=user_info&email=${user_email2}`,
+        `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
         {
           method: "GET",
           headers: {
