@@ -2995,7 +2995,7 @@ function applyStyle(btn, styles) {
     Object.entries(styles).forEach(([k, v]) => (btn.style[k] = v));
   }
 
-function enableDisableMindAssessmentbuttons(buttonId, disabled=true) {
+function enableDisablebuttons(buttonId, disabled=true) {
   const DEFAULT_STYLE = {
     padding: '3px 9px',
     border: '1px solid green',
@@ -3035,10 +3035,10 @@ async function populateDropdown(menuId ) {
     let items = [];
     if (menuId === "mindmap-menu") {
       items = MindMapLinks || [];
-      enableDisableMindAssessmentbuttons("mindmap-btn", items.length === 0);
+      enableDisablebuttons("mindmap-btn", items.length === 0);
     } else if (menuId === "assessment-menu") {
       items = AssessmentLinks || [];
-      enableDisableMindAssessmentbuttons("assessment-btn", items.length === 0);
+      enableDisablebuttons("assessment-btn", items.length === 0);
     }
 
     items.forEach(item => {
@@ -3597,8 +3597,8 @@ const getBotDetails2 = async (botId) => {
       intializeBotsetup()
       
     } else {
-      enableDisableMindAssessmentbuttons("assessment-btn", true);
-      enableDisableMindAssessmentbuttons("mindmap-btn", true);
+      enableDisablebuttons("assessment-btn", true);
+      enableDisablebuttons("mindmap-btn", true);
     }
 
       // show the buttons if coaching bot.
@@ -11526,7 +11526,7 @@ loadExternalModule().then(() => {
 </div>
 
 <!-- Mindmap Button + Dropdown -->
-<div class="dropdown" id="mindmap_button" style="display: none;">
+<div class="dropdown" id="mindmap_button" style="display: ${window.user ? 'none': 'block'};">
     <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Mindmap
     </button>
@@ -11536,7 +11536,7 @@ loadExternalModule().then(() => {
 </div>
 
 <!-- Assessment Button + Dropdown -->
-<div class="dropdown" id="assessment_button" style="display: none;">
+<div class="dropdown" id="assessment_button" style="display: ${window.user ? 'none': 'block'};">
     <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Assessment
     </button>
@@ -11554,7 +11554,7 @@ loadExternalModule().then(() => {
   </div>
 </div>
 
-<div class="dropdown" id="mode_button" style="display: none;">
+<div class="dropdown" id="mode_button" style="display: ${window.user ? 'none': 'block'};">
   <button id="more-btn" 
     style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
     Mode
@@ -11843,6 +11843,9 @@ function adjustHeaderLayout() {
   } else {
     header.style.flexDirection = "row";
   }
+}
+if (!window.user){
+  enableDisablebuttons('more-btn', true)
 }
 
 window.addEventListener("load", adjustHeaderLayout);
@@ -12722,6 +12725,7 @@ chatElementRef2.initialMessages = [
               });
             } else {
               isEmailFormstt = false;
+              enableDisablebuttons('more-btn', false)
               if (botId != undefined && botType === "deep_dive") {
                 const userEmail = emailNameformJsonstt["email"];
                 if (!isEmailSTT(userEmail)) {
