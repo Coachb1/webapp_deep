@@ -2857,13 +2857,13 @@ const CoachIntake = ({ user }: any) => {
                           value: "no-co-pilot",
                         },
                         {
-                          label: "Co-pilot Level 1 (10 mins)",
+                          label: "Intake Copilot",
                           value: "subject-copilot",
                         },
-                        {
-                          label: "Co-pilot Level 2 (25 Mins)",
-                          value: "coaching-copilot",
-                        },
+                        // {
+                        //   label: "Co-pilot Level 2 (25 Mins)",
+                        //   value: "coaching-copilot",
+                        // },
                       ]}
                       onChange={(e) => {
                         const value = e.target.value;

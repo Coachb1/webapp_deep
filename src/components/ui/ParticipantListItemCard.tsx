@@ -192,7 +192,7 @@ export function ParticipantListItemCard({
                       : coach.subject_specific_bot_id?.includes("subject")
                       ? `${convertTextToCorrectFormat(
                           coach.profile_type
-                        )} - Co-pilot Level 1`
+                        )} - Intake Copilot`
                       : coach.avatar_bot_id?.includes("avatar")
                       ? `${convertTextToCorrectFormat(
                           coach.profile_type
@@ -318,7 +318,7 @@ export function ParticipantListItemCard({
                               : coach.subject_specific_bot_id?.includes(
                                   "subject"
                                 )
-                              ? "Co-pilot Level 1"
+                              ? "Intake Copilot"
                               : coach.profile_type === "icons_by_ai"
                               ? "AI Coaching Agent"
                               : "AI Copilot"}{" "}
