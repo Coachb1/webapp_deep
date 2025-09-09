@@ -3137,10 +3137,12 @@ const getBotDetails2 = async (botId) => {
     console.log('LLMOrder',LLMOrder,botDetails.data.llm_order);
     LLMOrder = botDetails.data.llm_order
 
-    
-   
-
-
+    if (botType === 'subject_specific_bot'){
+      const mode_switch_button = document.getElementById('more-section')
+      if (mode_switch_button){
+        mode_switch_button.style.display = 'none'
+      }
+    }
     if (botType === "user_bot") {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
