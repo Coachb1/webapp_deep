@@ -2094,6 +2094,15 @@ async function populateChatHistoryOptions(refresh = false) {
 
   // 4. Create optgroups
   if (previousChatHistory.length > 0) {
+    const mode_switch_button = document.getElementById('bot-mode-switch');
+    const data = previousChatHistory.filter(chat =>
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 3
+  );
+    if (mode_switch_button && data.length > 0){
+      enableDisablebuttons('bot-mode-switch', false);
+    } else {
+      enableDisablebuttons('bot-mode-switch', true);
+    }
     const completedOptGroup = document.createElement("optgroup");
     completedOptGroup.label = "Completed Sessions";
 
@@ -2126,6 +2135,11 @@ async function populateChatHistoryOptions(refresh = false) {
 
     if (completedOptGroup.children.length > 0) dropdown.appendChild(completedOptGroup);
     if (incompleteOptGroup.children.length > 0) dropdown.appendChild(incompleteOptGroup);
+  } else{
+    const mode_switch_button = document.getElementById('bot-mode-switch');
+    if (mode_switch_button){
+      enableDisablebuttons('bot-mode-switch', true);
+    }
   }
 
   // 5. Show the dropdown wrapper
@@ -11562,7 +11576,7 @@ loadExternalModule().then(() => {
 </div>
 
 <!-- Mindmap Button + Dropdown -->
-<div class="dropdown" id="mindmap_button" style="display: ${window.user ? 'none': 'block'};">
+<div class="dropdown" id="mindmap_button" >
     <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Mindmap
     </button>
@@ -11572,7 +11586,7 @@ loadExternalModule().then(() => {
 </div>
 
 <!-- Assessment Button + Dropdown -->
-<div class="dropdown" id="assessment_button" style="display: ${window.user ? 'none': 'block'};">
+<div class="dropdown" id="assessment_button" >
     <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
         Assessment
     </button>
@@ -11590,7 +11604,7 @@ loadExternalModule().then(() => {
   </div>
 </div>
 
-<div class="dropdown" id="mode_button" style="display: ${window.user ? 'none': 'block'};">
+<div class="dropdown" id="mode_button" >
   <button id="more-btn" 
     style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
     Mode
@@ -11870,6 +11884,9 @@ loadExternalModule().then(() => {
 
 
   toggleBotSwitch(type_of_widget);
+  if (type_of_widget){
+    getButtonControls();
+  }
 
 function adjustHeaderLayout() {
   const header = document.getElementById("bot-header-logo-2");
@@ -12288,7 +12305,7 @@ const customMicButton = document.getElementById("startMicBtn");
         }
 
         if (type_of_widget === 'simulation'){
-          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed.</p>`
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed. If you have a simulation code you can also use that instead.</p>`
         }
         console.log(welcomeMessage, 'welcome')
         if (window.user){

@@ -763,7 +763,7 @@ const CoachIntake = ({ user }: any) => {
       switchState
     );
     try {
-      if (characteristicsRateHigh && characteristicsRateLows) {
+      // if (characteristicsRateHigh && characteristicsRateLows) {
         if (user) {
           setCreateLoading(true);
           var myHeaders = new Headers();
@@ -1809,9 +1809,9 @@ const CoachIntake = ({ user }: any) => {
               });
           }
         }
-      } else {
-        toast.warning("Please select the high and low skills");
-      }
+      // } else {
+      //   toast.warning("Please select the high and low skills");
+      // }
     } catch (error) {
       console.log(error);
       toast.error("Error creating your coach profile. Please try again.");
@@ -1821,7 +1821,7 @@ const CoachIntake = ({ user }: any) => {
 
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (characteristicsRateHigh && characteristicsRateLows) {
+    // if (characteristicsRateHigh && characteristicsRateLows) {
       if (user) {
         console.log("user feedback", user);
         setFeedbackCreateLoading(true);
@@ -1953,9 +1953,9 @@ const CoachIntake = ({ user }: any) => {
               });
           });
       }
-    } else {
-      toast.warning("Please select the high and low skills");
-    }
+    // } else {
+    //   toast.warning("Please select the high and low skills");
+    // }
   };
 
   const onCharacteristicsSelectLow = (val: string) => {
@@ -2491,8 +2491,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows },
-        { HighCompetency: characteristicsRateHigh },
+        // { LowCompetency: characteristicsRateLows },
+        // { HighCompetency: characteristicsRateHigh },
       ];
     } else if (formVersion === "2") {
       console.log("here");
@@ -2502,8 +2502,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows },
-        { HighCompetency: characteristicsRateHigh },
+        // { LowCompetency: characteristicsRateLows },
+        // { HighCompetency: characteristicsRateHigh },
       ];
     } else {
       coachFields = [
@@ -2517,8 +2517,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows },
-        { HighCompetency: characteristicsRateHigh },
+        // { LowCompetency: characteristicsRateLows },
+        // { HighCompetency: characteristicsRateHigh },
       ];
     }
 
@@ -3949,9 +3949,9 @@ const CoachIntake = ({ user }: any) => {
                           <p className="text-sm my-1">
                             Please rate the characteristics/skills on which you
                             will rate yourself near the lows.{" "}
-                            <span className="text-xl font-bold text-red-500">
+                            {/* <span className="text-xl font-bold text-red-500">
                               *
-                            </span>
+                            </span> */}
                           </p>
                           <CharactericticsSelect
                             disabled={checkIfView === null ? false : true}
@@ -3969,9 +3969,9 @@ const CoachIntake = ({ user }: any) => {
                           <p className="text-sm my-1">
                             Please rate the characteristics/skills on which you
                             will rate yourself highly.{" "}
-                            <span className="text-xl font-bold text-red-500">
+                            {/* <span className="text-xl font-bold text-red-500">
                               *
-                            </span>
+                            </span> */}
                           </p>
                           <CharactericticsSelect
                             disabled={checkIfView === null ? false : true}
@@ -5766,7 +5766,7 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
                       rate yourself near the lows.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
+                      {/* <span className="text-xl font-bold text-red-500">*</span> */}
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -5784,7 +5784,7 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
                       rate yourself highly.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
+                      {/* <span className="text-xl font-bold text-red-500">*</span> */}
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -6321,7 +6321,7 @@ const CoachIntake = ({ user }: any) => {
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
                     rate yourself near the lows.{" "}
-                    <span className="text-xl font-bold text-red-500">*</span>
+                    {/* <span className="text-xl font-bold text-red-500">*</span> */}
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
@@ -6339,7 +6339,7 @@ const CoachIntake = ({ user }: any) => {
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
                     rate yourself highly.{" "}
-                    <span className="text-xl font-bold text-red-500">*</span>
+                    {/* <span className="text-xl font-bold text-red-500">*</span> */}
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
