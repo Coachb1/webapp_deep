@@ -141,7 +141,8 @@ const ModuleFlow: React.FC<ModuleFlowProps> = ({ module, onComplete }) => {
                   <video
                     ref={assessmentVideoRef}
                     controls
-                    src={module.video_url}
+                    // src={module.video_url}
+                    src = "video/observation2_QMT0H94.mp4"
                     className="w-full h-full"
                     onTimeUpdate={handleAssessmentVideoTimeUpdate}
                     onLoadedMetadata={handleAssessmentVideoLoadedMetadata}
@@ -150,27 +151,27 @@ const ModuleFlow: React.FC<ModuleFlowProps> = ({ module, onComplete }) => {
                 
                 {/* Assessment Video Progress Bar */}
                 <div className="mt-3 mb-4">
-                  <div className="flex justify-between items-center mb-2">
+                  {/* <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">
                       Video Progress: {Math.round(assessmentVideoProgress * 100)}%
                     </span>
                     <span className="text-sm text-gray-500">
                       {assessmentCanProceed ? "✓ Ready to continue" : `Watch ${Math.round(REQUIRED_PROGRESS * 100)}% to continue`}
                     </span>
-                  </div>
+                  </div> */}
                   
                   {/* Progress Bar */}
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  {/* <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
                         assessmentCanProceed ? 'bg-emerald-500' : 'bg-blue-500'
                       }`}
                       style={{ width: `${Math.min(assessmentVideoProgress * 100, 100)}%` }}
                     />
-                  </div>
+                  </div> */}
                   
                   {/* Required progress marker */}
-                  <div className="relative w-full mt-1">
+                  {/* <div className="relative w-full mt-1">
                     <div 
                       className="absolute top-0 w-0.5 h-2 bg-emerald-600"
                       style={{ left: `${REQUIRED_PROGRESS * 100}%` }}
@@ -181,7 +182,7 @@ const ModuleFlow: React.FC<ModuleFlowProps> = ({ module, onComplete }) => {
                     >
                       70%
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
@@ -424,7 +425,7 @@ const ModuleFlow: React.FC<ModuleFlowProps> = ({ module, onComplete }) => {
 
   // For all other types, return with wrapper
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8 mt-8 border border-green-300 max-w-4xl mx-auto w-full">
+    <div className="bg-white rounded-2xl shadow-xl p-8 mt-8 border border-green-300 max-w-6xl mx-auto w-full">
       {/* Title */}
       <h1 className="text-3xl font-extrabold text-gray-900 mb-3">{module.title}</h1>
 

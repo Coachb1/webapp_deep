@@ -86,7 +86,7 @@ const CommunicationCourse = () => {
       if (clientName) params.append('client_name', clientName)
       if (courseUid) params.append('course_uid', courseUid)
       
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/courses/fetch-courses?${params.toString()}`, {
+      const response = await fetch(`http://127.0.0.1:8001/api/v1/courses/fetch-courses?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -253,7 +253,7 @@ const CommunicationCourse = () => {
     const progress = getProgressInfo()
     
     return (
-      <div className="bg-white rounded-2xl  p-8 mt-8 max-w-4xl mx-auto w-full">
+      <div className="bg-white rounded-2xl  p-8 mt-8 max-w-6xl mx-auto w-full">
         {/* Progress Header */}
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
           <div className="flex justify-between items-center mb-2">
