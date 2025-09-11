@@ -45,6 +45,16 @@ const MainLayoutComponent = ({
     );
   }
 
+  if (pathname.startsWith("/course")) {
+    return (
+      <html lang="en" className="bg-white">
+        <body className={font.className}>
+          <div className="z-[999]">{children}</div>
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="en" className="bg-white">
       {/* <head>
