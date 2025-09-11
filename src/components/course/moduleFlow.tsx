@@ -141,8 +141,7 @@ const ModuleFlow: React.FC<ModuleFlowProps> = ({ module, onComplete }) => {
                   <video
                     ref={assessmentVideoRef}
                     controls
-                    // src={module.video_url}
-                    src = "video/observation2_QMT0H94.mp4"
+                    src={module.video_url}
                     className="w-full h-full"
                     onTimeUpdate={handleAssessmentVideoTimeUpdate}
                     onLoadedMetadata={handleAssessmentVideoLoadedMetadata}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Div } from '../ui/moving-border'
 import ModuleFlow from "./moduleFlow";
+import { baseURL } from '@/lib/utils';
 
 interface Section {
   id: string
@@ -86,7 +87,7 @@ const CommunicationCourse = () => {
       if (clientName) params.append('client_name', clientName)
       if (courseUid) params.append('course_uid', courseUid)
       
-      const response = await fetch(`http://127.0.0.1:8001/api/v1/courses/fetch-courses?${params.toString()}`, {
+      const response = await fetch(`${baseURL}/courses/fetch-courses?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
