@@ -563,7 +563,7 @@ img{max-width:100%;display:block}
 }
 
 /* Play button styles */
-.play-button {
+/* .play-button {
   background-color: rgb(254, 254, 253);
   border: 2px solid #00c193;
   border-radius: 50%;
@@ -582,6 +582,17 @@ img{max-width:100%;display:block}
 
 .play-button:hover {
   background-color:#00c19482;
+} */
+.card-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:28px;
+  margin-top:50px;
+  height: 650px;
+  margin-left: 200px;
+  margin-right: 200px;
+
+  
 }
 
 /* Button container */

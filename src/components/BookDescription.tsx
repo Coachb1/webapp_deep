@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/buttonn";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Book {
   title: string;
@@ -21,113 +22,52 @@ const BookDescription = ({ book, onClose }: BookDescriptionProps) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative"
+        className="bg-white rounded-2xl shadow-xl p-6 max-w-2xl w-full relative transform transition-all scale-95 animate-in fade-in-50 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
+        {/* Close Button */}
+        <button
           onClick={onClose}
-          className="absolute top-3 right-3"
-          variant="destructive"
+          className="absolute top-3 right-3 text-gray-500 hover:text-red-500 transition"
         >
-          Close
-        </Button>
+          <X className="h-6 w-6" />
+        </button>
 
-        <img
-          src={book.img}
-          alt={book.title}
-          className="w-40 h-auto rounded-md mb-4"
-        />
+        {/* Content */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Book Image */}
+          <img
+            src={book.img}
+            alt={book.title}
+            className="w-40 h-56 object-cover rounded-lg shadow-md mx-auto md:mx-0"
+          />
 
-        <h2 className="text-xl font-bold mb-2">{book.title}</h2>
-        <h4 className="text-gray-600 mb-2">{book.author}</h4>
-        <p className="text-sm text-gray-500 mb-2">
-          <strong>Category:</strong> {book.tag.join(", ")}
-        </p>
-        <p className="text-gray-700">{book.desc}</p>
+          {/* Book Details */}
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">{book.title}</h2>
+            <h4 className="text-gray-600 text-lg mb-2">by {book.author}</h4>
+
+            <p className="text-sm text-gray-500 mb-3">
+              <span className="font-semibold">Category:</span>{" "}
+              {book.tag.join(", ")}
+            </p>
+
+            <p className="text-gray-700 text-sm leading-relaxed mb-4">
+              {book.desc}
+            </p>
+
+            {/* <Button className="bg-green-600 hover:bg-green-700 text-white self-start rounded-full px-5">
+              Start Reading
+            </Button> */}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
 export default BookDescription;
-
-// "use client";
-
-// import { useState } from "react";
-// import { Button } from "@/components/ui/buttonn";
-// import { books, Book } from "@/components/data/books"; // named imports
-
-// export default function BookLibrary() {
-//   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-
-//   return (
-//     <div className="p-4">
-//       {/* Books Grid */}
-//       <div className="grid grid-cols-2 gap-4">
-//         {books.map((book: Book) => (
-//           <div
-//             key={book.id}
-//             className="border rounded-lg p-3 hover:shadow-md flex flex-col items-center"
-//           >
-//             <img
-//               src={book.img}
-//               alt={book.title}
-//               className="w-full h-40 object-cover rounded"
-//             />
-//             <h3 className="font-semibold mt-2">{book.title}</h3>
-//             <p className="text-sm text-gray-600">{book.author}</p>
-
-//             {/* More button */}
-//             <Button
-//               className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
-//               onClick={() => setSelectedBook(book)}
-//             >
-//               More
-//             </Button>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* Description Modal */}
-//       {selectedBook && (
-//         <div
-//           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-//           onClick={() => setSelectedBook(null)} // close on background click
-//         >
-//           <div
-//             className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative"
-//             onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
-//           >
-//             {/* Close Button */}
-//             <Button
-//               onClick={() => setSelectedBook(null)}
-//               className="absolute top-3 right-3"
-//               variant="destructive"
-//             >
-//               Close
-//             </Button>
-
-//             {/* Book Info */}
-//             <img
-//               src={selectedBook.img}
-//               alt={selectedBook.title}
-//               className="w-40 h-auto rounded-md mb-4 mx-auto"
-//             />
-
-//             <h2 className="text-xl font-bold mb-2 text-center">
-//               {selectedBook.title}
-//             </h2>
-//             <h4 className="text-gray-600 mb-2 text-center">
-//               {selectedBook.author}
-//             </h4>
-//             <p className="text-gray-700">{selectedBook.desc}</p>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }

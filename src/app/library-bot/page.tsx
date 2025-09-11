@@ -9,19 +9,14 @@ import Hero from '@/components/Hero';
 import SearchFilter from '@/components/SearchFilter';
 import CTA from '@/components/CTA';
 import ChatBot from '@/components/ChatBot';
-// import AudioPlayer from '@/components/AudioPlayer';
+
 import { books } from '@/components/data/books';
 import BookDescription from '@/components/BookDescription';
-// import Pagination from '@/components/ui/Pagenation';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
+
+import Pagination from '@/components/ui/Pagenation';
+
 import AudioPlayer from '@/components/ui/AudioPlayer';
+
 
 
 
@@ -174,58 +169,12 @@ const Index = () => {
                 </div>
               ))}
             </div>
-            <div className="flex justify-center items-center mt-6 gap-2">
-
-              {/* Previous Button */}
-              <button
-                className="page-btn"
-                onClick={() => showSlide(currentSlide - 1)}
-                disabled={currentSlide === 0}
-              >
-                Prev
-              </button>
-
-              {/* Page Numbers */}
-              {Array.from({ length: totalSlides }).map((_, index) => {
-                // Show first 2 pages, last 1 page, and 2 around current
-                if (
-                  index < 2 ||
-                  index === totalSlides - 1 ||
-                  (index >= currentSlide - 1 && index <= currentSlide + 1)
-                ) {
-                  return (
-                    <button
-                      key={index}
-                      className={`page-btn ${index === currentSlide ? 'active' : ''}`}
-                      onClick={() => showSlide(index)}
-                    >
-                      {index + 1}
-                    </button>
-                  );
-                }
-
-                // Render ellipsis after first pages
-                if (index === 2 && currentSlide > 3) {
-                  return <span key="start-ellipsis">...</span>;
-                }
-
-                // Render ellipsis before last page
-                if (index === totalSlides - 2 && currentSlide < totalSlides - 4) {
-                  return <span key="end-ellipsis">...</span>;
-                }
-
-                return null;
-              })}
-
-              {/* Next Button */}
-              <button
-                className="page-btn"
-                onClick={() => showSlide(currentSlide + 1)}
-                disabled={currentSlide === totalSlides - 1}
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              totalSlides={totalSlides}
+              currentSlide={currentSlide}
+              onPageChange={showSlide}
+            />
+            
           </div>
           <br /><br />
           <CTA />

@@ -62,7 +62,6 @@ const AudioPlayer = ({
 
           if (!stored[userId]) stored[userId] = [];
 
-          // ✅ prevent duplicate same book
           const alreadyExists = stored[userId].some(
             (b: any) => b.bookName === book.title
           );
@@ -75,9 +74,7 @@ const AudioPlayer = ({
             });
 
             localStorage.setItem("completedBooks", JSON.stringify(stored));
-            console.log("✅ Stored 70% completion:", userId, book.title, stored);
-          } else {
-            console.log("⚠️ Already stored:", book.title);
+            console.log("✅ Stored progress:", userId, book.title, stored);
           }
         } catch (err) {
           console.error("❌ Error storing to localStorage:", err);
@@ -98,19 +95,27 @@ const AudioPlayer = ({
     };
   }, [book, duration, marked70, onNext, userId]);
 
-  // Reset when new book is loaded
+  // ✅ Reset when new book or popup opens
   useEffect(() => {
-    if (book && audioRef.current) {
-      audioRef.current.src = book.audio;
-      audioRef.current.load();
+    if (book && show && audioRef.current) {
+      const audio = audioRef.current;
+      audio.src = book.audio;
+      audio.load();
+
+      // Reset all states
       setIsPlaying(false);
+      setIsMuted(false);     // 👈 FIX: reset mute button
       setCurrentTime(0);
       setDuration(0);
       setMarked70(false);
-    }
-  }, [book]);
+      setPlaybackRate(1);
 
-  // Close on outside click or Esc
+      audio.muted = false;   // 👈 ensure audio unmuted
+      audio.playbackRate = 1;
+    }
+  }, [book, show]);
+
+  // ✅ Close on outside click or Esc
   useEffect(() => {
     if (!show) return;
 
@@ -138,7 +143,7 @@ const AudioPlayer = ({
     };
   }, [show, onClose]);
 
-  // Controls
+  // ✅ Controls
   const togglePlayPause = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -237,7 +242,7 @@ const AudioPlayer = ({
               {playbackRate}x
             </Button>
             <Button className="control-btn" onClick={skipBackward}>
-               <span>&#9664;&#9664;</span>
+              <span>&#9664;&#9664;</span>
             </Button>
             <Button className="control-btn" onClick={togglePlayPause}>
               {isPlaying ? "⏸" : "▶"}
