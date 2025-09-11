@@ -4,6 +4,7 @@ import '@/index.css';
 import '@/app.css';
 
 import { useEffect, useState } from 'react';
+import Script from "next/script";
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import SearchFilter from '@/components/SearchFilter';
@@ -201,6 +202,12 @@ const Index = () => {
         book={selectedBook}
         onClose={handleCloseDescription}
       />
+      <Script
+  src="https://cdn.tinytalk.ai/latest/tiny-talk-sdk.min.umd.js"
+  data-tiny-bot-id="b0a8b8ba-72b6-43a2-a59f-ee20b6f29c8d"
+  strategy="afterInteractive"
+/>
+
 
     </>
   );

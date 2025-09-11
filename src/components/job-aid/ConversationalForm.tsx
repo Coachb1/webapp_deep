@@ -17,10 +17,18 @@ type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
 interface ConversationalFormProps {
   job_aid_id: string;
+  isEmailSection?: boolean;
+  inputName?: string;
+  inputEmail?: string;
+  redirectURL?: string;
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
   job_aid_id,
+  isEmailSection,
+  inputName,
+  inputEmail,
+  redirectURL
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -29,7 +37,11 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
-
+  console.log("redirectURL:", redirectURL);
+  console.log("isEmailSection:", isEmailSection);
+  console.log("inputName:", inputName);
+  console.log("inputEmail:", inputEmail);
+  console.log("job_aid_id:", job_aid_id);
   const [questionErrors, setQuestionErrors] = useState<
     Record<string, string>
   >({});
@@ -121,12 +133,17 @@ useEffect(() => {
     };
 
     setAnswers(updatedAnswers);
-    if (currentQ.question_type === "dropdown") {
+    if (currentQ.question_type === "dropdown" || !isJobAid) {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
       } else {
         console.log("All questions answered, validating final answers", answers);
+        if (isEmailSection) {
         setCurrentStep("email");
+        } else {
+          await handleValidation(answers, email, name);
+          setCurrentStep("completed");
+        }
       }
       return;
     }
@@ -204,7 +221,12 @@ useEffect(() => {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       console.log("All questions answered, validating final answers", answers);
-      setCurrentStep("email");
+      if (isEmailSection) {
+        setCurrentStep("email");
+        } else {
+          await handleValidation(answers, email, name);
+          setCurrentStep("completed");
+        }
     }
   };
 
@@ -214,16 +236,16 @@ useEffect(() => {
     setSuggestions({});
 
     try {
-      if (isJobAid){
+      // if (isJobAid){
         const reportResult: ReportResponse = await generateReport(
                 answers,
-                email,
-                name,
+                email || inputEmail || "undefined@gmail.com",
+                name || inputName || "sample",
                 job_aid_id
               );
               console.log("Report generated:", reportResult);
         setReportUrl(reportResult.report_url);
-      } 
+      // }
 
       setCurrentStep("completed");
 
@@ -271,8 +293,8 @@ useEffect(() => {
       </div>
     );
   }
-
-  if (currentStep === "email") {
+  
+  if (currentStep === "email" && isEmailSection) {
     return (
       <div className="pt-24 flex flex-col items-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
@@ -372,12 +394,21 @@ useEffect(() => {
         </div>
       )}
 
-      <button
-        onClick={handleRestart}
-        className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
-      >
-        Start Over
-      </button>
+      {redirectURL != null ? (
+        <button
+          onClick={() => window.location.href = redirectURL}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+        >
+          Home
+        </button>
+      ) : (
+        <button
+          onClick={handleRestart}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+        >
+          Start Over
+        </button>
+      )}
     </div>
   );
 }
@@ -388,3 +419,5 @@ useEffect(() => {
 };
 
 export default ConversationalForm;
+
+
