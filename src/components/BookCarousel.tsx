@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import BookCard from './BookCard';
 
-import { Button } from '@/components/ui/buttonn';
-import BookDescription from './BookDescription';
+import { Button } from '@/components/liberey_bot _ui/ui/buttonn';
+import BookDescription from './liberey_bot _ui/BookDescription';
 
 interface Book {
   title: string;

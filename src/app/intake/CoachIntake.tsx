@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
 import { useSearchParams, useRouter } from "next/navigation";
 import mammoth from "mammoth";
@@ -44,7 +44,7 @@ import {
 } from "@/lib/types";
 import { Radio, Select, Tooltip } from "antd";
 import UserBotIntake from "./UserBotIntake";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/liberey_bot _ui/ui/checkbox";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Link from "next/link";
 import { NavProfileWoProfile } from "@/components/NavProfile";

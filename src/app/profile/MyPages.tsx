@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/liberey_bot _ui/ui/dialog";
 import { useEffect, useState } from "react";
 import CopyToClipboard from "../../components/CopyToClipboard";
 import Link from "next/link";

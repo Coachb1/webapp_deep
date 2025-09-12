@@ -36,7 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { scrollToView } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 
 import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";

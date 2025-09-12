@@ -40,7 +40,7 @@ import { UseHelpMode } from "@/lib/helpmodeContext";
 import CreateYourDeepDive from "@/components/CreateYourDeepDive";
 import TeamConnect from "@/components/TeamConnect";
 import { ClientUserTeamType } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import { GoogleGeminiEffectLibrary } from "@/components/ui/GoogleGeminiEffect";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";

@@ -1,7 +1,7 @@
 "use client";
 
 import CopyToClipboard from "@/components/CopyToClipboard";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogClose,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/liberey_bot _ui/ui/dialog";
 import {
   baseURL,
   basicAuth,

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/buttonn';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/liberey_bot _ui/ui/buttonn';
+import { Input } from '@/components/liberey_bot _ui/ui/input';
 
 interface SearchFilterProps {
   onSearch: (term: string) => void;

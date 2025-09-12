@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";

@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Link2 } from "lucide-react";
 import HelpMode from "@/components/HelpMode";
 import { reportsLinksSelector } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import DataIntegration from "./client-admin/DataIntegration";
 
 const AdminReports = ({ user, clientName }: any) => {

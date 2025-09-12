@@ -1,7 +1,7 @@
 "use client";
 
 import { TooltipWrapper } from "@/components/TooltipWrapper";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { connectionType } from "@/lib/types";

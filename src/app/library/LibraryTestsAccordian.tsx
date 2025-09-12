@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import { AtSign, Mic } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tooltip } from "antd";

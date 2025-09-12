@@ -5,18 +5,18 @@ import '@/app.css';
 
 import { useEffect, useState } from 'react';
 import Script from "next/script";
-import Header from '@/components/Header';
-import Hero from '@/components/Hero';
-import SearchFilter from '@/components/SearchFilter';
-import CTA from '@/components/CTA';
-import ChatBot from '@/components/ChatBot';
+import Header from '@/components/liberey_bot _ui/Header';
+import Hero from '@/components/liberey_bot _ui/Hero';
+import SearchFilter from '@/components/liberey_bot _ui/SearchFilter';
+import CTA from '@/components/liberey_bot _ui/CTA';
+import ChatBot from '@/components/liberey_bot _ui/ChatBot';
 
 import { books } from '@/components/data/books';
-import BookDescription from '@/components/BookDescription';
+import BookDescription from '@/components/liberey_bot _ui/BookDescription';
 
 import Pagination from '@/components/ui/Pagenation';
 
-import AudioPlayer from '@/components/ui/AudioPlayer';
+import AudioPlayer from '@/components/liberey_bot _ui/AudioPlayer';
 import ConversationalForm from "@/components/job-aid/ConversationalForm";
 
 

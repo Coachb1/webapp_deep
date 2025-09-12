@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ConversationChat, { FeedbackConversationChat } from "./ConversationChat";
 import { Info, Loader } from "lucide-react";
 import { baseURL, basicAuth, convertJsonToExpectedFormat } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/liberey_bot _ui/ui/badge";
 import { ConvertedConversation, FeedbackConversationType } from "@/lib/types";
 import { useUser } from "@/context/UserContext";
 

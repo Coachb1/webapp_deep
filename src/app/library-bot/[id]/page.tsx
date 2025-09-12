@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Header from '@/components/Header';
+import Header from '@/components/liberey_bot _ui/Header';
 import AudioPlayer from '@/components/AudioPlayer';
 import { books, Book } from '@/components/data/books';
 import Link from 'next/link';

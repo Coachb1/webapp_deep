@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialogg";
-import { Button } from "@/components/ui/buttonn";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/liberey_bot _ui/ui/dialogg";
+import { Button } from "@/components/liberey_bot _ui/ui/buttonn";
+import { Input } from "@/components/liberey_bot _ui/ui/input";
 
 const Header = () => {
   const [showReportDialog, setShowReportDialog] = useState(false);
@@ -69,7 +69,6 @@ const Header = () => {
 
             {/* ✅ Leader Board button (with password dialog) */}
             <Button
-              onClick={() => window.open("http://localhost:3001/bookReport", "_blank")}
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
               Leader Board

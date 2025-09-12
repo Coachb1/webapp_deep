@@ -13,7 +13,7 @@ import NavProfile, { NavProfileWoProfile } from "./NavProfile";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UseHelpMode } from "@/lib/helpmodeContext";
-import { Switch } from "./ui/switch";
+import { Switch } from "./liberey_bot _ui/ui/switch";
 import { useUser } from "@/context/UserContext";
 
 interface CustomWindow extends Window {
