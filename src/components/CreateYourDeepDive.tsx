@@ -8,7 +8,7 @@ import Link from "next/link";
 import { baseURL, basicAuth, getUserAccount, subdomain } from "@/lib/utils";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/liberey_bot _ui/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,

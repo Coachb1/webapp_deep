@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/liberey_bot _ui/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   baseURL,
   basicAuth,
@@ -32,7 +32,7 @@ import React, {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/liberey_bot _ui/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { MediaData } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { useUser } from "@/context/UserContext";

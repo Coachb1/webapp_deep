@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/liberey_bot _ui/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { getUserAccount, parseData } from "@/lib/utils";
 import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import { usePathname } from "next/navigation";

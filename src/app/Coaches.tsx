@@ -2,7 +2,7 @@
 
 import FilterDropDown from "@/components/FilterDropDown";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Badge } from "@/components/liberey_bot _ui/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import {

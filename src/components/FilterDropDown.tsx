@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Checkbox } from "./liberey_bot _ui/ui/checkbox";
+import { Checkbox } from "./ui/checkbox";
 import { ChevronDownIcon, X } from "lucide-react";
 import { convertTextToCorrectFormat } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";

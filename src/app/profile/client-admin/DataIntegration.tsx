@@ -1,13 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/liberey_bot _ui/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Input, Modal } from "antd";
 import { Database, Loader } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/liberey_bot _ui/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const DataIntegration = ({ clientName, user }: any) => {
   const [modalOpen, setModalOpen] = useState(false);

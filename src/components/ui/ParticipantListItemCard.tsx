@@ -10,7 +10,7 @@ import {
   hasPassed5Days,
 } from "@/lib/utils";
 import { Button } from "./button";
-import { Badge } from "../liberey_bot _ui/ui/badge";
+import { Badge } from "./badge";
 import {
   ChevronDownCircle,
   ExternalLink,

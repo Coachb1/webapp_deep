@@ -1,4 +1,4 @@
-import { Badge } from "./liberey_bot _ui/ui/badge";
+import { Badge } from "./ui/badge";
 
 const WhereToUse = () => {
   return (

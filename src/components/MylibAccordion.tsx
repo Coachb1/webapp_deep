@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import CopyToClipboard from "./CopyToClipboard";
-import { Badge } from "./liberey_bot _ui/ui/badge";
+import { Badge } from "./ui/badge";
 import { Test } from "@/lib/test";
 
 interface testTypes {

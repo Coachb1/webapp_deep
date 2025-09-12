@@ -3,7 +3,7 @@
 import { ClientUserType } from "@/lib/types";
 import { ReactNode, useEffect, useState } from "react";
 import { Separator } from "./separator";
-import { Switch } from "@/components/liberey_bot _ui/ui/switch";
+import { Switch } from "@/components/ui/switch";
 
 import { Popover } from "antd";
 import { baseURL, basicAuth } from "@/lib/utils";

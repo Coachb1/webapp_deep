@@ -7,7 +7,7 @@ import { baseURL, basicAuth } from "@/lib/utils";
 import { Loader, PenBox, PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "antd";
-import { Checkbox } from "@/components/liberey_bot _ui/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface OptionType {
   value: string;
