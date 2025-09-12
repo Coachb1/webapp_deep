@@ -37,11 +37,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
-  console.log("redirectURL:", redirectURL);
-  console.log("isEmailSection:", isEmailSection);
-  console.log("inputName:", inputName);
-  console.log("inputEmail:", inputEmail);
-  console.log("job_aid_id:", job_aid_id);
+  const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
+
   const [questionErrors, setQuestionErrors] = useState<
     Record<string, string>
   >({});
@@ -68,7 +65,9 @@ useEffect(() => {
         id: String(q.id),
       }));
       setQuestions(normalizedQuestions);
-      setIsJobAid(data?.job_aid_type === 'job_aid' || false); // Set isJobAid based on the fetched data
+      setIsJobAid(data?.job_aid_type === 'job_aid'); // Set isJobAid based on the fetched data
+      console.log('validatioan',data?.is_validation )
+      setIsValidation(data?.is_validation)
     } catch (err: any) {
       setError(err.message ?? "Failed to fetch job aid.");
     } finally {
@@ -87,7 +86,6 @@ useEffect(() => {
       setError("Please enter a valid email address.");
       return;
     }
-
     setCurrentStep("loading");
 
     await handleValidation(answers, email, name);
@@ -133,7 +131,7 @@ useEffect(() => {
     };
 
     setAnswers(updatedAnswers);
-    if (currentQ.question_type === "dropdown" || !isJobAid) {
+    if (currentQ.question_type === "dropdown" || !isValidation) {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
       } else {
@@ -236,7 +234,6 @@ useEffect(() => {
     setSuggestions({});
 
     try {
-      // if (isJobAid){
         const reportResult: ReportResponse = await generateReport(
                 answers,
                 email || inputEmail || "undefined@gmail.com",
@@ -245,7 +242,6 @@ useEffect(() => {
               );
               console.log("Report generated:", reportResult);
         setReportUrl(reportResult.report_url);
-      // }
 
       setCurrentStep("completed");
 
@@ -334,17 +330,17 @@ useEffect(() => {
     );
   }
 
-  if (currentStep === "loading" && isJobAid) {
+  if (currentStep === "loading" ) {
   return (
     <div className="pt-24 flex flex-col items-center">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        ⏳ Generating Your Report...
+        {(isJobAid || isValidation) ? "⏳ Generating Your Report..." : "⏳ Submitting..."}
       </h2>
       <div className="flex justify-center">
         <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
       <p className="text-gray-600 mt-4 text-lg text-center">
-        Please wait while we prepare your personalized Management Action Planner.
+        {(isJobAid || isValidation) ? "Please wait while we prepare your personalized Management Action Planner." : "Please wait while we submit your form"}
       </p>
     </div>
   );
@@ -361,7 +357,7 @@ useEffect(() => {
         You have completed all the questions in your Management Action Planner.
       </p>
 
-      {isJobAid ? (
+      {(isJobAid || isValidation ) && reportUrl? (
         // ✅ Job Aid → Show report
         reportUrl && (
           <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center">
@@ -389,7 +385,7 @@ useEffect(() => {
           </h3>
           <p className="text-gray-600">
             Thank you for completing the process.  
-            We’ll connect with you later for the next steps.
+            We'll connect with you later for the next steps.
           </p>
         </div>
       )}
