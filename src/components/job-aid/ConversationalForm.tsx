@@ -121,7 +121,7 @@ useEffect(() => {
     };
 
     setAnswers(updatedAnswers);
-    if (currentQ.question_type === "dropdown") {
+    if (currentQ.question_type === "dropdown" || jobAid?.is_validation === false) {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
       } else {
@@ -214,7 +214,7 @@ useEffect(() => {
     setSuggestions({});
 
     try {
-      if (isJobAid){
+      // if (isJobAid){
         const reportResult: ReportResponse = await generateReport(
                 answers,
                 email,
@@ -223,7 +223,7 @@ useEffect(() => {
               );
               console.log("Report generated:", reportResult);
         setReportUrl(reportResult.report_url);
-      } 
+      // } 
 
       setCurrentStep("completed");
 
