@@ -141,3 +141,10 @@
   opacity: 0.8;
   z-index: -1;
 }
+
+.disable_seek::-webkit-media-controls-timeline {
+  pointer-events: none; /* Chrome, Safari, Edge */
+}
+.disable_seek::-moz-media-controls-seekbar {
+  pointer-events: none; /* Firefox */
+}
