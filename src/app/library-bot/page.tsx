@@ -17,6 +17,7 @@ import BookDescription from '@/components/BookDescription';
 import Pagination from '@/components/ui/Pagenation';
 
 import AudioPlayer from '@/components/ui/AudioPlayer';
+import ConversationalForm from "@/components/job-aid/ConversationalForm";
 
 
 
@@ -179,7 +180,10 @@ const Index = () => {
           </div>
           <br /><br />
           <CTA />
-          <ChatBot />
+          {/* <ChatBot /> */}
+          <div className='text-center jobaid-background'>
+            <ConversationalForm job_aid_id="e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2" isEmailSection={false} />
+          </div>
           <br />
         </section>
       </main>

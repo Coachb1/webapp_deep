@@ -279,7 +279,7 @@ useEffect(() => {
 
   if (currentStep === "questions" && questions.length > 0) {
     return (
-      <div className="pt-4 flex flex-col items-center w-full max-w-5xl">
+      <div className="pt-4 flex flex-col items-center w-full max-w-5xl text-center px-4">
           <QuestionFlow
             question={questions[currentQuestionIndex]}
             questionNumber={currentQuestionIndex + 1}

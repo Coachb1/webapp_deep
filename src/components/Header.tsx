@@ -7,9 +7,11 @@ const Header = () => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [password, setPassword] = useState("");
 
+  // ✅ Leader Board login check
   const handlePasswordSubmit = () => {
     if (password === "bookdemo#12345") {
-      window.open("bookreport.html", "_blank");
+      // Open Leader Report after successful login
+      window.open("http://localhost:3001/leaderReport", "_blank");
       setShowReportDialog(false);
       setPassword("");
     } else {
@@ -18,34 +20,32 @@ const Header = () => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      e.preventDefault(); // prevents accidental form submit
       handlePasswordSubmit();
     }
   };
-  // for Idea Board  button{ like api call and then open new page}
+
+  // ✅ Idea Board button → API + redirect
   const handleIdeaBoardClick = async () => {
-  try {
-    // Call your API
-    const res = await fetch("/api/idea-board", { method: "GET" });
-    if (!res.ok) throw new Error("Failed to fetch Idea Board data");
+    try {
+      const res = await fetch("/api/idea-board", { method: "GET" });
+      if (!res.ok) throw new Error("Failed to fetch Idea Board data");
 
-    const data = await res.json();
+      const data = await res.json();
+      console.log("Idea Board API Response:", data);
 
-    // ✅ Do something with the API data
-    console.log("Idea Board API Response:", data);
+      // Navigate (same tab)
+      window.location.href = "/components/app/library-bot/job-aid";
 
-    // Option 1: Navigate inside your app (Next.js way)
-    window.location.href = "/components/app/library-bot/job-aid";
-
-    // Option 2: Open in new tab
-    // window.open("/components/app/library-bot/job-aid", "_blank");
-  } catch (err) {
-    console.error("Error loading Idea Board:", err);
-    alert("⚠️ Could not load Idea Board, please try again later.");
-  }
-};
-
+      // OR open new tab:
+      // window.open("/components/app/library-bot/job-aid", "_blank");
+    } catch (err) {
+      console.error("Error loading Idea Board:", err);
+      alert("⚠️ Could not load Idea Board, please try again later.");
+    }
+  };
 
   return (
     <>
@@ -59,25 +59,17 @@ const Header = () => {
             />
           </div>
           <div className="flex gap-2">
-            {/* Report → requires password */}
+            {/* ✅ Idea Board button (with API) */}
             <Button
               onClick={() => setShowReportDialog(true)}
-              className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
-            >
-              Report
-            </Button>
-
-            {/* Idea Board → open directly */}
-            <Button
-              onClick={() => window.open("/library-bot/job-aid/e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2", "_blank")}
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
               Idea Board
             </Button>
 
-            {/* Leader Board → open directly */}
+            {/* ✅ Leader Board button (with password dialog) */}
             <Button
-              onClick={() => window.open("leaderboard.html", "_blank")}
+              onClick={() => window.open("http://localhost:3001/bookReport", "_blank")}
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
               Leader Board
@@ -86,7 +78,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Password Dialog → ONLY for Report */}
+      {/* ✅ Password Dialog for Leader Board */}
       <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
         <DialogContent className="email-box">
           <DialogHeader>
