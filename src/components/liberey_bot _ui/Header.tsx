@@ -7,11 +7,11 @@ const Header = () => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [password, setPassword] = useState("");
 
-  // ✅ Leader Board login check
+  // ✅ idea Board login check
   const handlePasswordSubmit = () => {
     if (password === "bookdemo#12345") {
-      // Open Leader Report after successful login
-      window.open("http://localhost:3001/leaderReport", "_blank");
+      // Open Idea Report after successful login
+      window.open("http://localhost:3001/ideaReport", "_blank");
       setShowReportDialog(false);
       setPassword("");
     } else {
@@ -27,7 +27,7 @@ const Header = () => {
     }
   };
 
-  // ✅ Idea Board button → API + redirect
+  // ✅ Leader Board button → API + redirect
   const handleIdeaBoardClick = async () => {
     try {
       const res = await fetch("/api/idea-board", { method: "GET" });
@@ -69,6 +69,7 @@ const Header = () => {
 
             {/* ✅ Leader Board button (with password dialog) */}
             <Button
+              onClick={() => window.open("http://localhost:3001/leaderReport", "_blank")}
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
               Leader Board
@@ -77,7 +78,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* ✅ Password Dialog for Leader Board */}
+      {/* ✅ Password Dialog for Idea Board */}
       <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
         <DialogContent className="email-box">
           <DialogHeader>

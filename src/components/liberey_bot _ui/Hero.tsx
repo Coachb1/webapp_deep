@@ -10,12 +10,12 @@ const Hero = () => {
     <section className="hero">
       <div className="container hero-grid">
         <div className="hero-text">
-          <h1>Business Book Insights</h1>
-          <p className="meta">
-            Engaging conversations, deep dives, takeaways, and coaching around the best business books.
+          <h1>AI Agents decode books</h1>
+          <p className="meta mb-4">
+            Engaging  Ai conversations, deep dives, takeaways, and coaching around the best business books.
           </p>
           <button className="btn" onClick={scrollToSection}>
-            View Catalog
+            View Library
           </button>
         </div>
         <div className="hero-art">

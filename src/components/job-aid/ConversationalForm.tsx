@@ -350,12 +350,12 @@ useEffect(() => {
  if (currentStep === "completed") {
   return (
     <div className="pt-24 flex flex-col items-center">
-      <h2 className="text-3xl font-bold text-gray-800 mb-4">
+      {/* <h2 className="text-3xl font-bold text-gray-800 mb-4">
         🎉 Congratulations!
-      </h2>
-      <p className="text-gray-600 text-lg mb-6">
+      </h2> */}
+      {/* <p className="text-gray-600 text-lg mb-6">
         You have completed all the questions in your Management Action Planner.
-      </p>
+      </p> */}
 
       {(isJobAid || isValidation ) && reportUrl? (
         // ✅ Job Aid → Show report
@@ -384,8 +384,7 @@ useEffect(() => {
             ✅ Completed!
           </h3>
           <p className="text-gray-600">
-            Thank you for completing the process.  
-            We'll connect with you later for the next steps.
+            We have captured your intake data and will be processed shortly. Thanks!
           </p>
         </div>
       )}

@@ -176,11 +176,11 @@ img{max-width:100%;display:block}
     width: 100%;
 }
 
-.email-box button:hover {
+/* .email-box button:hover {
     background: #00a884;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 193, 147, 0.3);
-}
+} */
 
 .email-box button:active {
     transform: translateY(0);
@@ -323,12 +323,19 @@ img{max-width:100%;display:block}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:40px}
 .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
 .eyebrow .dot{width:14px;height:14px;background:var(--accent);border-radius:3px;display:inline-block}
-.hero h1{font-family:"Playfair Display",serif;font-size:54px;margin:.2em 0 .3em}
-.meta{color:#ffff}
+.hero h1{
+  font-family:"Playfair Display",
+  serif;font-size:54px;
+  margin:0}
+.meta{
+  color:#ffff
+  
+}
 .btn{
   display:inline-block;
   background:whitesmoke;
   color:#00c193;
+  margin-bottom: 16px;
   padding:12px 18px;
   border-radius:8px;
   text-decoration:none;
@@ -373,7 +380,7 @@ img{max-width:100%;display:block}
   border:1px solid #6d7674;
   border-radius:10px;
   padding:14px;
-  height: 620px;
+  height: 680px;
 }
 .book-card img{
   border-radius:8px;
@@ -556,16 +563,22 @@ img{max-width:100%;display:block}
   .hero-grid, .cta-grid{grid-template-columns:1fr}
   .book-hero{margin-inline:auto}
   .blob{right:auto;left:40px}
-  .card-row{grid-template-columns:repeat(2,1fr)}
+  .card-row{
+    grid-template-columns:repeat(2,1fr)
+  }
   .footer-grid{grid-template-columns:repeat(2,1fr)}
   .menu{display:none;position:absolute;right:0;top:56px;background:#fff;padding:16px;border:1px solid #edf0f2;border-radius:8px;flex-direction:column}
   .nav-toggle{display:block}
   .menu.open{display:flex}
 }
 @media (max-width: 520px){
-  .card-row{grid-template-columns:1fr}
+  .card-row{
+    grid-template-columns:1fr
+  }
   .cta-art img{max-width:260px}
-  .hero h1{font-size:42px}
+  .hero h1{
+    font-size:42px
+  }
 }
 
 /* Audio styles */
@@ -938,7 +951,7 @@ img{max-width:100%;display:block}
 }
 
 .carousel-container{
-  height: 700px;
+  height: 2100px;
   flex: 1;
 }
 
@@ -992,3 +1005,20 @@ img{max-width:100%;display:block}
     @apply bg-background text-foreground;
   }
 }
+
+/* Force TinyTalk launcher position */
+/* Base launcher position */
+.tiny-talk-launcher {
+  position: fixed !important;
+  bottom: 2rem !important; /* default bottom */
+  right: 1rem !important;
+  z-index: 99999 !important;
+  transition: bottom 0.4s ease-in-out; /* smooth slide */
+}
+
+/* When audio player is active */
+.tiny-talk-launcher.up {
+  bottom: 6rem !important; /* move it further up */
+}
+
+
