@@ -35,7 +35,7 @@ export default function IdeaBoardReport() {
 
   const params = new URLSearchParams(window.location.search);
   const jobaid = params.get("jobaid");
-  const userEmail = window.user?.email // replace with real logged-in user email
+  const userEmail = params.get('email') // replace with real logged-in user email
 
   // Pagination
   const rowsPerPage = 5;

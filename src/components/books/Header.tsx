@@ -11,7 +11,7 @@ const Header = () => {
   const handlePasswordSubmit = () => {
     if (password === "bookdemo#12345") {
       // Open Leader Report after successful login
-      window.open("http://localhost:3001/leaderReport", "_blank");
+      window.open(`/library-bot/bookReport/?course_id=025e4c6f-fa9a-4ea6-8117-b8e671984b5c`, "_blank");
       setShowReportDialog(false);
       setPassword("");
     } else {
@@ -74,7 +74,7 @@ const Header = () => {
             {/* ✅ Leader Board button (with password dialog) */}
             <Button
               onClick={() =>
-                window.open("http://localhost:3001/bookReport", "_blank")
+                window.open(`/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${window.user?.email}`, "_blank")
               }
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
