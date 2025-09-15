@@ -1,5 +1,17 @@
-import { CategoryMap } from "./test";
 
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  tag: string[];
+  desc: string;
+  img: string;
+  audio: string;
+  course_id: string;
+  course_details: Record<string, any>;
+  package_detail: Record<string, any>;
+
+}
 interface Recommendation {
   title: string;
   test_code: string;
