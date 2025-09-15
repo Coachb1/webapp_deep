@@ -3,10 +3,10 @@
 import React from "react";
 import ConversationalForm from "@/components/job-aid/ConversationalForm";
 import BookCarousel from "./BookCarousel";
-import { Book } from "../data/books";
 import { usePathname } from "next/navigation";
 import SearchFilter from "./SearchFilter";
 import CTA from "./CTA";
+import { Book } from "@/lib/types";
 
 interface BookSectionProps {
   books: Book[];
