@@ -17,7 +17,12 @@ export interface RowData {
   liked: boolean;
 }
 
-export default function IdeaBoardReport() {
+interface IdeaboardPageProps {
+  jobaid: string;
+  userEmail: string;
+}
+
+export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmail }) => {
   const [rows, setRows] = useState<RowData[]>([]);
   const [qnaKeys, setQnaKeys] = useState<string[]>([]);
   const [currentDate, setCurrentDate] = useState("");
@@ -27,8 +32,6 @@ export default function IdeaBoardReport() {
   const [error, setError] = useState<string | null>(null);
   const [loadingLike, setLoadingLike] = useState<number | null>(null);
 
-  const [jobaid, setJobaid] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   // Pagination
   const rowsPerPage = 5;
@@ -45,14 +48,6 @@ export default function IdeaBoardReport() {
     );
   }, []);
 
-  // Get query params safely
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      setJobaid(params.get("jobaid"));
-      setUserEmail(params.get("email"));
-    }
-  }, []);
 
   // Fetch data
   useEffect(() => {
