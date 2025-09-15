@@ -16,9 +16,9 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading, title, desc
 
   if (!isContentLoaded) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+      // <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
         <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-[#00c193]"></div>
-      </div>
+      // </div>
     );
   }
   

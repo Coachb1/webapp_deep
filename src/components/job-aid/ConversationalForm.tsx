@@ -17,10 +17,18 @@ type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
 interface ConversationalFormProps {
   job_aid_id: string;
+  isEmailSection?: boolean;
+  inputName?: string;
+  inputEmail?: string;
+  redirectURL?: string;
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
   job_aid_id,
+  isEmailSection,
+  inputName,
+  inputEmail,
+  redirectURL
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -128,7 +136,12 @@ useEffect(() => {
         setCurrentQuestionIndex((prev) => prev + 1);
       } else {
         console.log("All questions answered, validating final answers", answers);
+        if (isEmailSection) {
         setCurrentStep("email");
+        } else {
+          await handleValidation(answers, email, name);
+          setCurrentStep("completed");
+        }
       }
       return;
     }
@@ -206,7 +219,12 @@ useEffect(() => {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       console.log("All questions answered, validating final answers", answers);
-      setCurrentStep("email");
+      if (isEmailSection) {
+        setCurrentStep("email");
+        } else {
+          await handleValidation(answers, email, name);
+          setCurrentStep("completed");
+        }
     }
   };
 
@@ -216,14 +234,14 @@ useEffect(() => {
     setSuggestions({});
 
     try {
-      const reportResult: ReportResponse = await generateReport(
-              answers,
-              email,
-              name,
-              job_aid_id
-            );
-            console.log("Report generated:", reportResult, reportResult.report_url);
-      setReportUrl(reportResult.report_url);
+        const reportResult: ReportResponse = await generateReport(
+                answers,
+                email || inputEmail || "undefined@gmail.com",
+                name || inputName || "sample",
+                job_aid_id
+              );
+              console.log("Report generated:", reportResult);
+        setReportUrl(reportResult.report_url);
 
       setCurrentStep("completed");
 
@@ -257,7 +275,7 @@ useEffect(() => {
 
   if (currentStep === "questions" && questions.length > 0) {
     return (
-      <div className="pt-4 flex flex-col items-center w-full max-w-5xl">
+      <div className="pt-4 flex flex-col items-center w-full max-w-5xl text-center px-4">
           <QuestionFlow
             question={questions[currentQuestionIndex]}
             questionNumber={currentQuestionIndex + 1}
@@ -271,8 +289,8 @@ useEffect(() => {
       </div>
     );
   }
-
-  if (currentStep === "email") {
+  
+  if (currentStep === "email" && isEmailSection) {
     return (
       <div className="pt-24 flex flex-col items-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
@@ -372,12 +390,21 @@ useEffect(() => {
         </div>
       )}
 
-      <button
-        onClick={handleRestart}
-        className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
-      >
-        Start Over
-      </button>
+      {redirectURL != null ? (
+        <button
+          onClick={() => window.location.href = redirectURL}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+        >
+          Home
+        </button>
+      ) : (
+        <button
+          onClick={handleRestart}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+        >
+          Start Over
+        </button>
+      )}
     </div>
   );
 }
@@ -388,3 +415,5 @@ useEffect(() => {
 };
 
 export default ConversationalForm;
+
+

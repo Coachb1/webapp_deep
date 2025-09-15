@@ -1,0 +1,161 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Script from "next/script";
+import BookSection from "@/components/books/BookSection";
+import { Book } from "@/lib/types";
+import { fetchBooks } from "@/lib/api";
+import BookDescription from "@/components/books/BookDescription";
+import Header from "@/components/books/Header";
+import Hero from "@/components/books/Hero";
+import AudioPlayer from "@/components/books/AudioPlayer";
+
+interface BookPageClientProps {
+  id: string;
+}
+
+export default function BookPageClient({ id }: BookPageClientProps) {
+  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [title, setTitle] = useState<string>("Business Book Insights");
+  const [subTitle, setSubTitle] = useState<string>(
+    "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
+  );
+  const [courseId, setCourseId] = useState<string>(''); 
+  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [currentBook, setCurrentBook] = useState<Book | null>(null);
+  const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showDescription, setShowDescription] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+
+  // Load books
+  useEffect(() => {
+    const loadBooks = async () => {
+      try {
+        const data: Book[] = await fetchBooks(id);
+        console.log("[fetchBooks] Books:", data[0].course_details);
+        setTitle(data[0].course_details.title)
+        setSubTitle(data[0].course_details.desc)
+        setCourseId(data[0].course_id);
+
+        setAllBooks(data);
+        setFilteredBooks(data);
+      } catch (err) {
+        console.error("Error fetching books:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBooks();
+  }, [id]);
+
+  const handleSearch = (searchTerm: string) => {
+    const filtered = allBooks.filter((book) => {
+      const title = book.title.toLowerCase();
+      const author = book.author.toLowerCase();
+      const tagsMatch = book.tag?.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      return (
+        title.includes(searchTerm.toLowerCase()) ||
+        author.includes(searchTerm.toLowerCase()) ||
+        tagsMatch
+      );
+    });
+    setFilteredBooks(filtered);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    const filtered = allBooks.filter((book) =>
+      book.tag?.some((tag) => tag.toLowerCase().includes(filter.toLowerCase()))
+    );
+    setFilteredBooks(filtered);
+  };
+
+  const handlePlayBook = (book: Book, index: number) => {
+    setCurrentBook(book);
+    setCurrentBookIndex(index);
+    setShowAudioPlayer(true);
+  };
+
+  const handleClosePlayer = () => {
+    setShowAudioPlayer(false);
+    setCurrentBook(null);
+  };
+
+  const handleNextBook = () => {
+    const nextIndex = (currentBookIndex + 1) % filteredBooks.length;
+    setCurrentBook(filteredBooks[nextIndex]);
+    setCurrentBookIndex(nextIndex);
+  };
+
+  const handlePrevBook = () => {
+    const prevIndex =
+      (currentBookIndex - 1 + filteredBooks.length) % filteredBooks.length;
+    setCurrentBook(filteredBooks[prevIndex]);
+    setCurrentBookIndex(prevIndex);
+  };
+
+  const handleOpenDescription = (book: Book) => {
+    setSelectedBook(book);
+    setShowDescription(true);
+  };
+
+  const handleCloseDescription = () => {
+    setShowDescription(false);
+    setSelectedBook(null);
+  };
+
+  return (
+    <>
+      <Header />
+      <main id="top">
+        <Hero title={title} subTitle={subTitle} />
+
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-[#00c193]"></div>
+          </div>
+        ) : (
+          <BookSection
+            books={filteredBooks}
+            currentSlide={currentSlide}
+            onSlideChange={setCurrentSlide}
+            onSearch={handleSearch}
+            onFilterChange={handleFilterChange}
+            onPlayBook={handlePlayBook}
+            onOpenDescription={handleOpenDescription}
+          />
+        )}
+      </main>
+
+      <footer className="bg-gray-900 text-gray-300 text-center py-6 mt-12">
+        <p className="text-sm">
+          © {new Date().getFullYear()} CoachBoT. All rights reserved.
+          <br />
+          Copyright for all books belongs to their respective authors and
+          publishers. We encourage you to buy and read actual books.
+        </p>
+      </footer>
+
+      <AudioPlayer
+        show={showAudioPlayer}
+        book={currentBook}
+        onClose={handleClosePlayer}
+        onNext={handleNextBook}
+        onPrev={handlePrevBook}
+        courseId={courseId}
+      />
+
+      <BookDescription book={selectedBook} onClose={handleCloseDescription} />
+
+      <Script
+        src="https://cdn.tinytalk.ai/latest/tiny-talk-sdk.min.umd.js"
+        data-tiny-bot-id="b0a8b8ba-72b6-43a2-a59f-ee20b6f29c8d"
+        strategy="afterInteractive"
+      />
+    </>
+  );
+}

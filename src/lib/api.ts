@@ -26,7 +26,9 @@ import {
   TestsType,
   UserInfoType,
   knowledgeBotJson,
+  Book
 } from "./types";
+import { books } from "@/components/data/books";
 
 export const getClientUserInfo = async (
   userEmail: string | null | undefined,
@@ -738,5 +740,114 @@ export const getIDPs = async (userId: string) => {
     return sortByDateDescending(responseData);
   } else {
     return [];
+  }
+};
+
+export const getCoursePackage = async (coursePackageId: string) => {
+  const response = await fetch(
+    `${baseURL}/courses/course-package/?package_id=${coursePackageId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log('[getCoursePackage]',responseData);
+    return responseData
+  } else {
+    console.error('failed [getcoursepackage]', response)
+    return [];
+  }
+};
+
+
+export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
+  try {
+    const data = await getCoursePackage(coursePackageId);
+
+    if (!data?.courses) return [];
+    
+    // Flatten all courses → modules → books
+    const books: Book[] = data.courses.flatMap((course: any) =>
+      course.modules
+        .filter((m: any) => m.chapter_type === "BOOK")
+        .map((m: any) => ({
+          id: m.uid,
+          title: m.title,
+          author: m.author,
+          tag: m.tag? m.tag?.split(',') : [],
+          desc: m.description,
+          audio: m.audio_link,
+          img: m.image_link,
+          course_id: course.uid,
+          course_details: {
+            'title': course.title,
+            'desc': course.sub_title,
+            'image_link': course.image_link,
+          },
+          package_detail: {
+            'package_id': data.uid,
+            'package_name': data.title,
+            'package_description': data.description,
+            'image_link': data.image_link,
+          }
+        }))
+    );
+    console.log('[fetchBooks] Books:', books);
+    return books;
+  } catch (err) {
+    console.error("Error fetching books:", err);
+    return [];
+  }
+};
+
+export const updateCourseProgress = async (
+  courseId: string,
+  userId: string,
+  moduleId: string,
+  status: string,
+  trackingData: number
+) => {
+  try {
+
+    if (!courseId || !userId || !moduleId || !status) {
+      console.error("[updateCourseProgress] Missing required parameters");
+      return null;
+    }
+    const data = JSON.stringify({
+      course_id: courseId,
+      user_uid: userId,
+      module: {
+        module_id: moduleId,
+        status: status,
+        completed_in_percentage: trackingData,
+      },
+    });
+    console.log("[updateCourseProgress] Data:", data);
+
+    const response = await fetch(`${baseURL}/courses/course-progress/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: data
+    });
+
+    if (!response.ok) {
+      console.error("[updateCourseProgress] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[updateCourseProgress] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[updateCourseProgress] Error:", error);
+    return null;
   }
 };
