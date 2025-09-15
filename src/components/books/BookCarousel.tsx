@@ -3,7 +3,7 @@
 import React from "react";
 import Pagination from "@/components/ui/Pagenation";
 import BookCard from "./BookCard";
-import { Book } from "../data/books";
+import { Book } from "@/lib/types";
 
 interface BookCarouselProps {
   books: Book[];

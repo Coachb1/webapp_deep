@@ -1,7 +1,7 @@
 "use client";
 
+import { Book } from "@/lib/types";
 import React from "react";
-import { Book } from "../data/books";
 
 interface BookCardProps {
   book: Book;
