@@ -1,5 +1,10 @@
-import IdeaBoardReport from "@/components/books/leaderboard/ideaboardReport";
+import { IdeaBoardReport } from "@/components/books/leaderboard/ideaboardReport";
 
-export default function IdeaBoardPage() {
-  return <IdeaBoardReport />;
+interface IdeaboardPageProps {
+  searchParams: { email: string, 
+    jobaid:string };
+}
+
+export default function Page({ searchParams }: IdeaboardPageProps) {
+  return <IdeaBoardReport userEmail={searchParams.email} jobaid={searchParams.jobaid} />;
 }
