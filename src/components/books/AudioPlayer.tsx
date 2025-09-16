@@ -13,9 +13,10 @@ interface AudioPlayerProps {
   onNext: () => void;
   onPrev: () => void;
   courseId: string;
+  userId: string;
 }
 
-const AudioPlayer = ({ show, book, onClose, onNext, onPrev, courseId}: AudioPlayerProps) => {
+const AudioPlayer = ({ show, book, onClose, onNext, onPrev, courseId, userId }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -24,7 +25,6 @@ const AudioPlayer = ({ show, book, onClose, onNext, onPrev, courseId}: AudioPlay
   const [playbackRate, setPlaybackRate] = useState(1);
   const [marked70, setMarked70] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
-  const [userId, setUserId] = useState<string>("guest");
   const [startFromPercentage, setStartFromPercentage] = useState<number>(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -36,12 +36,6 @@ const AudioPlayer = ({ show, book, onClose, onNext, onPrev, courseId}: AudioPlay
     currentTimeRef.current = currentTime;
   }, [currentTime]);
 
-  // Get user ID
-  useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).user?.user_data?.uid) {
-      setUserId((window as any).user.user_data.uid);
-    }
-  }, []);
 
 const mmssToSeconds = (time: string): number => {
   const [min, sec] = time.split(":").map(Number);

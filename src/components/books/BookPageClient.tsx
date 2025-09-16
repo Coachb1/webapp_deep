@@ -29,11 +29,15 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-
+  const [userId, setUserId] = useState<string>("");
+  const [userData, setUserData] = useState<any>(null);
+  
   // Load books
   useEffect(() => {
+
     const loadBooks = async () => {
       try {
+        
         const data: Book[] = await fetchBooks(id);
         console.log("[fetchBooks] Books:", data[0].course_details);
         setTitle(data[0].course_details.title)
@@ -49,7 +53,16 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       }
     };
     loadBooks();
+    
   }, [id]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).user && (window as any).user.user_data && (window as any).user.user_data.uid) {
+      setUserId((window as any).user.user_data.uid);
+      setUserData((window as any).user);
+    }
+    console.log("User ID:", userId, userData);
+  }, [userId, userData]);
 
   const handleSearch = (searchTerm: string) => {
     const filtered = allBooks.filter((book) => {
@@ -127,6 +140,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             onFilterChange={handleFilterChange}
             onPlayBook={handlePlayBook}
             onOpenDescription={handleOpenDescription}
+            name={userData?.user_data?.name}
+            email={userData?.user_data?.email}
           />
         )}
       </main>
@@ -147,6 +162,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         onNext={handleNextBook}
         onPrev={handlePrevBook}
         courseId={courseId}
+        userId={userId}
       />
 
       <BookDescription book={selectedBook} onClose={handleCloseDescription} />
