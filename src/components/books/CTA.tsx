@@ -9,7 +9,7 @@ const CTA = () => {
           </p>
         </div>
         <div className="cta-art">
-          <img src="images/Charecter-1.png" alt="Reader illustration" />
+          <img src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1758006047/qv7wtviy89dy26pg2w2p.png" alt="Reader illustration" />
         </div>
       </div>
     </section>

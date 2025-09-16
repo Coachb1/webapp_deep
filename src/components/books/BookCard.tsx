@@ -1,41 +1,54 @@
 "use client";
 
 import { Book } from "@/lib/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
+import { addModuleLater, addModuleLike } from "@/lib/api";
 
 interface BookCardProps {
   book: Book;
   onPlay: () => void;
   onMore: () => void;
+  setViewMode: (item: string) => void;
+  setLikedBooks: React.Dispatch<React.SetStateAction<Book[]>>;
+  setLaterBooks: React.Dispatch<React.SetStateAction<Book[]>>;
+  laterBooks: Book[];
+  likedBooks: Book[];
 }
 
 
-const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore }) => {
-  const [likedBooks, setLikedBooks] = useState<Book[]>([]);
-  const [laterBooks, setLaterBooks] = useState<Book[]>([]);
-  const [viewMode, setViewMode] = useState<'all' | 'liked' | 'later'>('all');
+const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, setLikedBooks, setLaterBooks, likedBooks, laterBooks }) => {
+  const [userId, setUserId] = useState<string | null>(null);
 
-    const handleToggleLike = (book: Book) => {
-    setLikedBooks(prev => {
-      const isLiked = prev.find(b => b.title === book.title);
+  useEffect(() => {
+    const user_id = (window as any)?.user?.user_data?.uid || null;
+    setUserId(user_id);
+    console.log("User IDs:", user_id);
+  }, []);
 
+  const handleToggleLike = (book: Book) => {
+    console.log("handleToggleLike called for book:", book.title);
+    setLikedBooks((prev: Book[]) => {
+      const isLiked: Book | undefined = prev.find((b: Book) => b.title === book.title);
       if (isLiked) {
-        // If already liked, remove it
-        const updated = prev.filter(b => b.title !== book.title);
+      // If already liked, remove it
 
-        // If no liked books left, reset to "all"
-        if (updated.length === 0) {
-          setViewMode("all");
-        }
+      const updated: Book[] = prev.filter((b: Book) => b.title !== book.title);
 
-        return updated;
+      // If no liked books left, reset to "all"
+      if (updated.length === 0) {
+        setViewMode("all");
+      }
+
+      return updated;
       } else {
-        // If not liked yet, add it
-        return [...prev, book];
+      // If not liked yet, add it
+      return [...prev, book];
       }
     });
+    const user_id = (window as any)?.user?.user_data?.uid;
+    addModuleLike(book.id, user_id!)
   };
 
 
@@ -58,7 +71,11 @@ const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore }) => {
         // If not saved yet, add it
         return [...prev, book];
       }
+
+      
     });
+    const user_id = (window as any)?.user?.user_data?.uid || null;
+    addModuleLater(book.id, user_id!)
   };
 
   return (

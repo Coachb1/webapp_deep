@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import SearchFilter from "./SearchFilter";
 import CTA from "./CTA";
 import { Book } from "@/lib/types";
+import { getcourseModuleLikesAndSaveLater } from "@/lib/api"; // 👈 make sure this is imported
+import Carousel from "./CarouselSlider";
 
 interface BookSectionProps {
   books: Book[];
@@ -16,6 +18,8 @@ interface BookSectionProps {
   onFilterChange: (filter: string) => void;
   onPlayBook: (book: Book, index: number) => void;
   onOpenDescription: (book: Book) => void;
+  setFilteredBooks: (books: Book[]) => void;
+  setCurrentSlide: (index: number) => void;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -26,97 +30,88 @@ const BookSection: React.FC<BookSectionProps> = ({
   onFilterChange,
   onPlayBook,
   onOpenDescription,
+  setFilteredBooks,
+  setCurrentSlide
 }) => {
   const pathname = usePathname();
-  
+  const userId = (window as any)?.user?.user_data?.uid || null;
 
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>(books);
-  const [viewMode, setViewMode] = useState<'all' | 'liked' | 'later'>('all');
-  
+  const [viewMode, setViewMode] = useState<string>("all");
   const [likedBooks, setLikedBooks] = useState<Book[]>([]);
   const [laterBooks, setLaterBooks] = useState<Book[]>([]);
-  const handleToggleLike = (book: Book) => {
-    setLikedBooks(prev => {
-      const isLiked = prev.find(b => b.title === book.title);
-
-      if (isLiked) {
-        // If already liked, remove it
-        const updated = prev.filter(b => b.title !== book.title);
-
-        // If no liked books left, reset to "all"
-        if (updated.length === 0) {
-          setViewMode("all");
-        }
-
-        return updated;
-      } else {
-        // If not liked yet, add it
-        return [...prev, book];
-      }
-    });
-  };
 
 
 
-  const handleToggleLater = (book: Book) => {
-    setLaterBooks(prev => {
-      const isLater = prev.find(b => b.title === book.title);
 
-      if (isLater) {
-        // If already saved for later, remove it
-        const updated = prev.filter(b => b.title !== book.title);
-
-        // If no "later" books left, reset to "all"
-        if (updated.length === 0) {
-          setViewMode("all");
-        }
-
-        return updated;
-      } else {
-        // If not saved yet, add it
-        return [...prev, book];
-      }
-    });
-  };  
+  // ✅ One effect to handle filtering
   useEffect(() => {
-    if (viewMode === 'liked') {
+    if (viewMode === "liked") {
       setFilteredBooks(likedBooks);
-    } else if (viewMode === 'later') {
+    } else if (viewMode === "later") {
       setFilteredBooks(laterBooks);
     } else {
       setFilteredBooks(books);
     }
     setCurrentSlide(0);
-  }, [viewMode, books ]);
+  }, [viewMode, books, likedBooks, laterBooks, setFilteredBooks, setCurrentSlide]);
 
+  // ✅ Fetch liked/later books once
   useEffect(() => {
-  if (viewMode === 'liked') {
-    setFilteredBooks(likedBooks);
-  } else if (viewMode === 'later') {
-    setFilteredBooks(laterBooks);
-  }
-}, [likedBooks, laterBooks]);
+    if (!userId || books.length === 0) return;
 
+    const fetchLikesAndLater = async () => {
+      try {
+        // use the first book's course_id (assuming all belong to the same course)
+        const courseId = books[0].course_id;
+        const result = await getcourseModuleLikesAndSaveLater(courseId, userId);
+        const likedIds = result.liked.map((like: any) => like.module_uid);
+        const liked = books.filter(book => likedIds.includes(book.id));
+
+        const laterIds = result.later.map((later: any) => later.module_uid);
+        const later = books.filter(book => laterIds.includes(book.id));
+
+        setLikedBooks(liked || []);
+        setLaterBooks(later || []);
+
+        console.log("Fetched liked books:", liked, likedBooks);
+        console.log("Fetched later books:", later, laterBooks);
+      } catch (err) {
+        console.error("Failed to fetch likes/later:", err);
+      }
+    };
+
+    fetchLikesAndLater();
+  }, [userId, books]);
 
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
-        {" "}
-        {/* 👈 add spacing */}
-        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange}
-          onShowLiked={() => setViewMode('liked')}
-          onShowLater={() => setViewMode('later')} />
+        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} />
+
+        <h1 className="absolute left-48 text-sm font-bold uppercase tracking-wide text-blue-600">
+          Our List
+        </h1>
+        <br />
+        <Carousel onFilterChange={onFilterChange} books={books} />
       </div>
+
       <BookCarousel
         books={books}
         currentSlide={currentSlide}
         onSlideChange={onSlideChange}
         onPlayBook={onPlayBook}
         onOpenDescription={onOpenDescription}
+        setLaterBooks={setLaterBooks}
+        setLikedBooks={setLikedBooks}
+        likedBooks={likedBooks}
+        laterBooks={laterBooks}
+        setViewMode={setViewMode}
       />
+
       <br />
       <br />
       <CTA />
+
       <div className="text-center jobaid-background">
         <ConversationalForm
           job_aid_id="e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2"

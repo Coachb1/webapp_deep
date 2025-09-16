@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/books/ui/buttonn';
 import { Input } from '@/components/books/ui/input';
+import { Book } from '@/lib/types';
 
 interface SearchFilterProps {
   onSearch: (term: string) => void;
   onFilterChange: (filter: string) => void;
-  onShowLiked: () => void;
-  onShowLater: () => void;
+  setViewMode: (index: string) => void;
+  books: Book[];
 }
 
-const SearchFilter = ({ onSearch, onFilterChange, onShowLiked, onShowLater }: SearchFilterProps) => {
+const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books }: SearchFilterProps) => {
   const [activeButton, setActiveButton] = useState<'like' | 'later' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -21,10 +22,11 @@ const SearchFilter = ({ onSearch, onFilterChange, onShowLiked, onShowLater }: Se
       // 🔹 second click → disable and return to old stage
       setActiveButton(null);
       onSearch(''); // show all again
+      setViewMode('all')
     } else {
       // 🔹 first click → activate and show liked
       setActiveButton('like');
-      onShowLiked();
+      setViewMode('liked')
     }
   };
 
@@ -33,13 +35,15 @@ const SearchFilter = ({ onSearch, onFilterChange, onShowLiked, onShowLater }: Se
       // 🔹 second click → disable and return to old stage
       setActiveButton(null);
       onSearch(''); // show all again
+      setViewMode('all')
     } else {
       // 🔹 first click → activate and show later
       setActiveButton('later');
-      onShowLater();
+      setViewMode('later')
     }
   };
-  const categories = ['Leadership', 'Innovation', 'Productivity', 'Strategy', 'Finance', 'Marketing', 'Impact'];
+  // Extract unique categories from book.tag
+  const categories = Array.from(new Set(books.flatMap(book => book.tag)));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

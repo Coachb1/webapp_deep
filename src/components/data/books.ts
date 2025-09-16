@@ -15,7 +15,8 @@ export const books: Book[] = [
     "audio": "audio/Crucial Conversations – Kerry Patterson et al..mp3",
     "course_id": 'xyz',
     "course_details": {},
-    "package_detail": {}
+    "package_detail": {},
+    "list_name": ""
 
   }
 ];

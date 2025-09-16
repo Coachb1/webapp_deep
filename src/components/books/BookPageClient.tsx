@@ -127,6 +127,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             onFilterChange={handleFilterChange}
             onPlayBook={handlePlayBook}
             onOpenDescription={handleOpenDescription}
+            setFilteredBooks={setFilteredBooks}
+            setCurrentSlide={setCurrentSlide}
           />
         )}
       </main>

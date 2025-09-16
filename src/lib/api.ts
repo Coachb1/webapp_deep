@@ -794,7 +794,8 @@ export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
             'package_name': data.title,
             'package_description': data.description,
             'image_link': data.image_link,
-          }
+          },
+          list_name: m.list_name || ''
         }))
     );
     console.log('[fetchBooks] Books:', books);
@@ -851,3 +852,143 @@ export const updateCourseProgress = async (
     return null;
   }
 };
+
+
+export const getModuleCompletion = async (
+  userId: string,
+  moduleId: string,
+) => {
+  try {
+
+    if (  !userId || !moduleId) {
+      console.error("[getModuleCompletion] Missing required parameters");
+      return null;
+    }
+
+
+    const response = await fetch(`${baseURL}/courses/module-user-data/?module_id=${moduleId}&user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[getModuleCompletion] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[getModuleCompletion] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[getModuleCompletion] Error:", error);
+    return null;
+  }
+};
+
+
+export const addModuleLike = async (moduleId: string, userId: string) => {
+  try {
+    if (!userId || !moduleId) {
+      console.error("[addModuleLike] Missing required parameters");
+      return null;
+    }
+
+    console.log("[addModuleLike] Module ID:", moduleId, userId);
+
+    const response = await fetch(`${baseURL}/courses/modules/${moduleId}/like/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    console.log(response.statusText)
+    if (!response.ok) {
+      console.error("[addModuleLike] Failed:", response.statusText);
+      return null;
+    }
+
+    // ✅ Check if response has content
+    const responseData = await response.json();
+    console.log("[addModuleLike] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[addModuleLike] Error:", error);
+    return null;
+  }
+};
+
+export const addModuleLater = async (moduleId: string, userId: string) => {
+  try {
+    if (!userId || !moduleId) {
+      console.error("[addModuleLater] Missing required parameters");
+      return null;
+    }
+
+    const response = await fetch(`${baseURL}/courses/modules/${moduleId}/later/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+
+    if (!response.ok) {
+      console.error("[addModuleLater] Failed:", response.statusText);
+      return null;
+    }
+
+    // Check for empty body (e.g. 204 response)
+    const text = await response.text();
+    if (!text) {
+      console.log("[addModuleLater] Success: no content (probably removed)");
+      return { success: true, removed: true }; // 👈 easier for frontend
+    }
+
+    const responseData = JSON.parse(text);
+    console.log("[addModuleLater] Success:", responseData);
+    return { success: true, removed: false, data: responseData };
+  } catch (error) {
+    console.error("[addModuleLater] Error:", error);
+    return null;
+  }
+};
+
+
+
+export const getcourseModuleLikesAndSaveLater = async(courseId:string, userId:string) => {
+  try {
+    
+    if (  !userId || !courseId) {
+      console.error("[getcourseModuleLikesAndSaveLater] Missing required parameters");
+      return null;
+    }
+
+    const response = await fetch(`${baseURL}/courses/get-liked-and-for-later-modules/?course_id=${courseId}&user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[getcourseModuleLikesAndSaveLater] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[getcourseModuleLikesAndSaveLater] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[getcourseModuleLikesAndSaveLater] Error:", error);
+    return null;
+  }
+};
+
+
