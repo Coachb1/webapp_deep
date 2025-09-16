@@ -20,6 +20,8 @@ interface BookSectionProps {
   onOpenDescription: (book: Book) => void;
   setFilteredBooks: (books: Book[]) => void;
   setCurrentSlide: (index: number) => void;
+  name: string;
+  email: string;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -31,8 +33,14 @@ const BookSection: React.FC<BookSectionProps> = ({
   onPlayBook,
   onOpenDescription,
   setFilteredBooks,
-  setCurrentSlide
+  setCurrentSlide,
+  name,
+  email
 }) => {
+  console.log("BookSection rendered with books:", books);
+  console.log("Current slide:", currentSlide);
+  console.log("Name:", name);
+  console.log("Email:", email);
   const pathname = usePathname();
   const userId = (window as any)?.user?.user_data?.uid || null;
 
@@ -116,9 +124,8 @@ const BookSection: React.FC<BookSectionProps> = ({
         <ConversationalForm
           job_aid_id="e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2"
           isEmailSection={false}
-          inputEmail="undefined@gmail.com"
-          inputName="User"
-          redirectURL={pathname}
+          inputEmail={email || "undefined@gmail.com"}
+          inputName={name || "User"}
         />
       </div>
     </section>

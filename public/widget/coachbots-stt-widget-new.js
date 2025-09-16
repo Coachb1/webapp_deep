@@ -2162,6 +2162,7 @@ async function populateChatHistoryOptions(refresh = false) {
   }
   });
   if (window.widgetReady) window.widgetReady();
+  hideHeaderLoader();
   hideLoader();
 }
 
@@ -2969,6 +2970,52 @@ function hideLoader() {
   if (loader) loader.remove();
 }
 
+function showHeaderLoader(message = "Loading...") {
+  const header = document.getElementById("bot-header-logo-2");
+  if (!header) return;
+
+  // header.style.display = "none";
+
+  // // Clear header temporarily
+  // header.innerHTML = "";
+
+  // Create loader
+  const loader = document.createElement("div");
+  loader.id = "header-loader";
+  loader.innerHTML = `
+  <style>
+    .circle-loader {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(87, 223, 160, 0.2);
+      border-top: 3px solid rgb(87, 223, 160);
+      border-radius: 50%;
+      animation: spin 0.8s ease-in-out infinite;
+      margin: 4px auto;
+      box-shadow: 0 0 8px rgba(87, 223, 160, 0.4);
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  <div class="circle-loader"></div>
+`;
+
+
+  header.appendChild(loader);
+}
+
+function hideHeaderLoader() {
+  const loader = document.getElementById("header-loader");
+  if (loader) loader.remove();
+  // const header = document.getElementById("bot-header-logo-2");
+  // if (!header) return;
+
+  // header.style.display = "flex";
+}
+
 
 async function setupBotAndProceed() {
   if (snnipetConfigSTT?.createBotSheetUrl) {
@@ -3114,6 +3161,9 @@ function intializeBotsetup(maxAttempts = 99, delay = 1000) {
 
 const getBotDetails2 = async (botId) => {
   try {
+    if (window.user) {
+     showHeaderLoader();
+    }
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
       botId = await setupBotAndProceed();
     }
@@ -3174,7 +3224,8 @@ const getBotDetails2 = async (botId) => {
             • What's on your mind that you'd like to explore today?
           `
           :
-                    `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
+                    // `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
+                    `Welcome to our Multi-Modal AI Coaching Agent. Let's get started!`
             )
     : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
@@ -12824,10 +12875,12 @@ chatElementRef2.initialMessages = [
                   });
                   return;
                 }
+                showHeaderLoader();
                 await createUserSTT(
                   emailNameformJsonstt["name"],
                   emailNameformJsonstt["email"]
                 );
+                                
                 setBeginSessionEnabled(true)
                 if(window.user) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
