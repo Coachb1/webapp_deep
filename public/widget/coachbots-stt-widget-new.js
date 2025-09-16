@@ -3174,7 +3174,8 @@ const getBotDetails2 = async (botId) => {
             • What's on your mind that you'd like to explore today?
           `
           :
-                    `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
+                    // `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
+                    `Welcome to our Multi-Modal AI Coaching Agent. Let's get started!`
             )
     : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;

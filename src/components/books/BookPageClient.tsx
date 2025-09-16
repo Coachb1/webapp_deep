@@ -63,6 +63,23 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     }
     console.log("User ID:", userId, userData);
   }, [userId, userData]);
+  
+  useEffect(() => {
+    const disableContext = (e: MouseEvent) => e.preventDefault();
+    const disableKeys = (e: KeyboardEvent) => {
+      if (e.key === "F12" || e.ctrlKey || e.shiftKey) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("contextmenu", disableContext);
+    document.addEventListener("keydown", disableKeys);
+
+    return () => {
+      document.removeEventListener("contextmenu", disableContext);
+      document.removeEventListener("keydown", disableKeys);
+    };
+  }, []);
 
   const handleSearch = (searchTerm: string) => {
     const filtered = allBooks.filter((book) => {
