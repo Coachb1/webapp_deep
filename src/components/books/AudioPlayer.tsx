@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/books/ui/slider";
 import { Book } from "@/lib/types";
-import { updateCourseProgress } from "@/lib/api";
+import { getModuleCompletion, updateCourseProgress } from "@/lib/api";
 
 interface AudioPlayerProps {
   show: boolean;
@@ -137,49 +137,62 @@ const getCompletionPercent = (
   }, [book, userId, courseId, duration]);
 
   // Reset on new book or popup open
-  useEffect(() => {
-    if (book && show && audioRef.current) {
-      // await getModuleCompletion(moduleId, userId);
-      setStartFromPercentage(0);
-      const audio = audioRef.current;
-      audio.src = book.audio;
-      audio.load();
+ useEffect(() => {
+  if (book && show && audioRef.current) {
+    const audio = audioRef.current;
 
-      // Reset states
-      setIsPlaying(false);
-      setIsMuted(false);
-      setCurrentTime(0);
-      setDuration(0);
-      setMarked70(false);
-      setPlaybackRate(1);
-      setAutoplayBlocked(false);
+    const initAudio = async () => {
+      try {
+        // ✅ use book.id instead of moduleId
+        const moduleCompletion = await getModuleCompletion(userId, book.id);
+        const percent = moduleCompletion?.completed_in_percentage || 0;
+        console.log(percent, "Completion percentage from API");
+        setStartFromPercentage(percent);
 
-      audio.muted = false;
-      audio.playbackRate = 1;
+        audio.src = book.audio;
+        audio.load();
 
-      // When metadata is loaded, set start time if startFromPercentage > 0
-      const handleLoadedMetadata = () => {
-        if (startFromPercentage && startFromPercentage > 0 && audio.duration) {
-          const startTime = (startFromPercentage / 100) * audio.duration;
-          audio.currentTime = startTime;
-          setCurrentTime(startTime);
-        }
+        // Reset states
+        setIsPlaying(false);
+        setIsMuted(false);
+        setCurrentTime(0);
+        setDuration(0);
+        setMarked70(false);
+        setPlaybackRate(1);
+        setAutoplayBlocked(false);
 
-        audio.play()
-          .then(() => setIsPlaying(true))
-          .catch(() => {
-            setIsPlaying(false);
-            setAutoplayBlocked(true);
-          });
-      };
+        audio.muted = false;
+        audio.playbackRate = 1;
 
-      audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+        const handleLoadedMetadata = () => {
+          if (percent > 0 && audio.duration) {
+            const startTime = (percent / 100) * audio.duration;
+            audio.currentTime = startTime;
+            setCurrentTime(startTime);
+          }
 
-      return () => {
-        audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      };
-    }
-  }, [book, show, startFromPercentage]);
+          audio
+            .play()
+            .then(() => setIsPlaying(true))
+            .catch(() => {
+              setIsPlaying(false);
+              setAutoplayBlocked(true);
+            });
+        };
+
+        audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+        return () => {
+          audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        };
+      } catch (err) {
+        console.error("Error initializing audio:", err);
+      }
+    };
+
+    initAudio();
+  }
+}, [book, show, userId]);
 
 
   // Close on outside click or Esc

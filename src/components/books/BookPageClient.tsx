@@ -157,6 +157,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             onFilterChange={handleFilterChange}
             onPlayBook={handlePlayBook}
             onOpenDescription={handleOpenDescription}
+            setFilteredBooks={setFilteredBooks}
+            setCurrentSlide={setCurrentSlide}
             name={userData?.user_data?.name}
             email={userData?.user_data?.email}
           />

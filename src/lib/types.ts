@@ -10,6 +10,7 @@ export interface Book {
   course_id: string;
   course_details: Record<string, any>;
   package_detail: Record<string, any>;
+  list_name: string;
 
 }
 interface Recommendation {

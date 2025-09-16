@@ -11,6 +11,11 @@ interface BookCarouselProps {
   onSlideChange: (index: number) => void;
   onPlayBook: (book: Book, index: number) => void;
   onOpenDescription: (book: Book) => void;
+  setViewMode: (item: string) => void;
+  setLikedBooks: React.Dispatch<React.SetStateAction<Book[]>>;
+  setLaterBooks: React.Dispatch<React.SetStateAction<Book[]>>;
+  laterBooks: Book[];
+  likedBooks: Book[];
 }
 
 const booksPerSlide = 4;
@@ -21,6 +26,11 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   onSlideChange,
   onPlayBook,
   onOpenDescription,
+  setLikedBooks, 
+  setLaterBooks, 
+  likedBooks, 
+  laterBooks,
+  setViewMode
 }) => {
   const totalSlides = Math.ceil(books.length / booksPerSlide);
 
@@ -44,6 +54,11 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
                   book={book}
                   onPlay={() => onPlayBook(book, index)}
                   onMore={() => onOpenDescription(book)}
+                  setLaterBooks={setLaterBooks}
+                  setLikedBooks={setLikedBooks}
+                  likedBooks={likedBooks}
+                  laterBooks={laterBooks}
+                  setViewMode={setViewMode}
                 />
               ))}
             </div>
