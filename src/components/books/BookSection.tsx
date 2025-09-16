@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ConversationalForm from "@/components/job-aid/ConversationalForm";
 import BookCarousel from "./BookCarousel";
 import { usePathname } from "next/navigation";
@@ -28,12 +28,84 @@ const BookSection: React.FC<BookSectionProps> = ({
   onOpenDescription,
 }) => {
   const pathname = usePathname();
+  
+
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>(books);
+  const [viewMode, setViewMode] = useState<'all' | 'liked' | 'later'>('all');
+  
+  const [likedBooks, setLikedBooks] = useState<Book[]>([]);
+  const [laterBooks, setLaterBooks] = useState<Book[]>([]);
+  const handleToggleLike = (book: Book) => {
+    setLikedBooks(prev => {
+      const isLiked = prev.find(b => b.title === book.title);
+
+      if (isLiked) {
+        // If already liked, remove it
+        const updated = prev.filter(b => b.title !== book.title);
+
+        // If no liked books left, reset to "all"
+        if (updated.length === 0) {
+          setViewMode("all");
+        }
+
+        return updated;
+      } else {
+        // If not liked yet, add it
+        return [...prev, book];
+      }
+    });
+  };
+
+
+
+  const handleToggleLater = (book: Book) => {
+    setLaterBooks(prev => {
+      const isLater = prev.find(b => b.title === book.title);
+
+      if (isLater) {
+        // If already saved for later, remove it
+        const updated = prev.filter(b => b.title !== book.title);
+
+        // If no "later" books left, reset to "all"
+        if (updated.length === 0) {
+          setViewMode("all");
+        }
+
+        return updated;
+      } else {
+        // If not saved yet, add it
+        return [...prev, book];
+      }
+    });
+  };  
+  useEffect(() => {
+    if (viewMode === 'liked') {
+      setFilteredBooks(likedBooks);
+    } else if (viewMode === 'later') {
+      setFilteredBooks(laterBooks);
+    } else {
+      setFilteredBooks(books);
+    }
+    setCurrentSlide(0);
+  }, [viewMode, books ]);
+
+  useEffect(() => {
+  if (viewMode === 'liked') {
+    setFilteredBooks(likedBooks);
+  } else if (viewMode === 'later') {
+    setFilteredBooks(laterBooks);
+  }
+}, [likedBooks, laterBooks]);
+
+
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
         {" "}
         {/* 👈 add spacing */}
-        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} />
+        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange}
+          onShowLiked={() => setViewMode('liked')}
+          onShowLater={() => setViewMode('later')} />
       </div>
       <BookCarousel
         books={books}

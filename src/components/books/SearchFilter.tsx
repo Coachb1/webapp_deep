@@ -5,14 +5,40 @@ import { Input } from '@/components/books/ui/input';
 interface SearchFilterProps {
   onSearch: (term: string) => void;
   onFilterChange: (filter: string) => void;
+  onShowLiked: () => void;
+  onShowLater: () => void;
 }
 
-const SearchFilter = ({ onSearch, onFilterChange }: SearchFilterProps) => {
+const SearchFilter = ({ onSearch, onFilterChange, onShowLiked, onShowLater }: SearchFilterProps) => {
+  const [activeButton, setActiveButton] = useState<'like' | 'later' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('Filter');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const handleLikeClick = () => {
+    if (activeButton === 'like') {
+      // 🔹 second click → disable and return to old stage
+      setActiveButton(null);
+      onSearch(''); // show all again
+    } else {
+      // 🔹 first click → activate and show liked
+      setActiveButton('like');
+      onShowLiked();
+    }
+  };
+
+  const handleLaterClick = () => {
+    if (activeButton === 'later') {
+      // 🔹 second click → disable and return to old stage
+      setActiveButton(null);
+      onSearch(''); // show all again
+    } else {
+      // 🔹 first click → activate and show later
+      setActiveButton('later');
+      onShowLater();
+    }
+  };
   const categories = ['Leadership', 'Innovation', 'Productivity', 'Strategy', 'Finance', 'Marketing', 'Impact'];
 
   useEffect(() => {
@@ -47,52 +73,131 @@ const SearchFilter = ({ onSearch, onFilterChange }: SearchFilterProps) => {
     onFilterChange(category);
     onSearch(category);
   };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
-    <div className="search-container" id="search-container">
-      <div className="search-bar-wrapper">
-        <Input
-          type="text"
-          placeholder="What are you looking for?"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleKeyPress}
-          className="search-input"
-        />
-        <Button onClick={handleSearch} className="search-button" aria-label="Search">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </Button>
-      </div>
-      <div className="dropdown" ref={dropdownRef}>
-        <Button
-          variant="ghost"
-          onClick={() => setShowDropdown(!showDropdown)}
-          className="dropdown-button"
-        >
-          {selectedFilter}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
-        </Button>
-        {showDropdown && (
-          <ul className="dropdown-menu">
-            {categories.map((category) => (
-              <li
-                key={category}
-                className="dropdown-item"
-                onClick={() => handleCategorySelect(category)}
-              >
-                {category}
-              </li>
-            ))}
-          </ul>
-        )}
+    <div className="search-container flex flex-col gap-3" id="search-container">
+      {/* Search Bar */}
+      <div className='flex justify-center w-full'>
+        <div className="search-bar-wrapper flex gap-2 items-center">
+          <Input
+            type="text"
+            placeholder="What are you looking for?"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyPress} // ✅ changed from onKeyPress
+            className="search-input"
+          />
+          <Button
+            onClick={handleSearch}
+            className="search-button"
+            aria-label="Search"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </Button>
+        </div>
+
+        {/* Filter + Extra Buttons */}
+        <div className="flex gap-2 items-center relative " ref={dropdownRef}>
+          {/* Filter Button */}
+          <Button
+            variant="ghost"
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="dropdown-button flex items-center gap-1"
+          >
+            {selectedFilter}
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </Button>
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <ul className="dropdown-menu absolute mt-12 bg-white shadow-md rounded-md p-2 z-20">
+              {categories.map((category) => (
+                <li
+                  key={category}
+                  className="dropdown-item px-3 py-1 cursor-pointer hover:bg-gray-200 rounded-md"
+                  onClick={() => handleCategorySelect(category)}
+                >
+                  {category}
+                </li>
+              ))}
+            </ul>
+          )}
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <ul className="dropdown-menu absolute mt-12 bg-white shadow-md rounded-md p-2 z-20">
+              {categories.map((category) => (
+                <li
+                  key={category}
+                  className="dropdown-item px-3 py-1 cursor-pointer hover:bg-gray-200 rounded-md"
+                  onClick={() => handleCategorySelect(category)}
+                >
+                  {category}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Like Button */}
+          <div className="flex gap-2 items-center">
+            {/* Like Button */}
+            <Button
+              onClick={handleLikeClick}
+              className={`like-button px-6 py-2 rounded-2xl shadow-md 
+          ${activeButton === 'like' ? 'bg-green-600 text-white' : 'bg-[#00c193] text-white hover:bg-green-600'}`}
+            >
+              Like
+            </Button>
+
+            {/* Later Button */}
+            <Button
+              onClick={handleLaterClick}
+              className={`later-button px-6 py-2 rounded-2xl shadow-md 
+          ${activeButton === 'later' ? 'bg-green-600 text-white' : 'bg-[#00c193] text-white hover:bg-green-600'}`}
+            >
+             Listen Later
+            </Button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
 
 export default SearchFilter;
+

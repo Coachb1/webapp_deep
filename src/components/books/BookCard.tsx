@@ -1,7 +1,9 @@
 "use client";
 
 import { Book } from "@/lib/types";
-import React from "react";
+import React, { useState } from "react";
+import WatchLaterButton from "./ui/watchLaterButton";
+import HeartButton from "./ui/heartbutton";
 
 interface BookCardProps {
   book: Book;
@@ -9,10 +11,74 @@ interface BookCardProps {
   onMore: () => void;
 }
 
+
 const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore }) => {
+  const [likedBooks, setLikedBooks] = useState<Book[]>([]);
+  const [laterBooks, setLaterBooks] = useState<Book[]>([]);
+  const [viewMode, setViewMode] = useState<'all' | 'liked' | 'later'>('all');
+
+    const handleToggleLike = (book: Book) => {
+    setLikedBooks(prev => {
+      const isLiked = prev.find(b => b.title === book.title);
+
+      if (isLiked) {
+        // If already liked, remove it
+        const updated = prev.filter(b => b.title !== book.title);
+
+        // If no liked books left, reset to "all"
+        if (updated.length === 0) {
+          setViewMode("all");
+        }
+
+        return updated;
+      } else {
+        // If not liked yet, add it
+        return [...prev, book];
+      }
+    });
+  };
+
+
+
+  const handleToggleLater = (book: Book) => {
+    setLaterBooks(prev => {
+      const isLater = prev.find(b => b.title === book.title);
+
+      if (isLater) {
+        // If already saved for later, remove it
+        const updated = prev.filter(b => b.title !== book.title);
+
+        // If no "later" books left, reset to "all"
+        if (updated.length === 0) {
+          setViewMode("all");
+        }
+
+        return updated;
+      } else {
+        // If not saved yet, add it
+        return [...prev, book];
+      }
+    });
+  };
+
   return (
     <article className="book-card shadow-md rounded-lg bg-white p-4 flex flex-col justify-between">
       <img src={book.img} alt={book.title} className="rounded-md mb-4 shadow-sm" />
+      {/* heart and watch later button */}
+      <div className="flex gap-8">
+        <button onClick={() => handleToggleLater(book)}>
+          <WatchLaterButton
+            isActive={laterBooks.some(b => b.title === book.title)}
+            onToggle={() => handleToggleLater(book)}
+          />
+        </button>
+        <button onClick={() => handleToggleLike(book)}>
+          <HeartButton
+            isActive={likedBooks.some(b => b.title === book.title)}
+            onToggle={() => handleToggleLike(book)}
+          />
+        </button>
+      </div>
       <div>
         <h4 className="font-bold text-lg mb-1">{book.title}</h4>
         <p className="text-gray-600 mb-2">{book.author}</p>
