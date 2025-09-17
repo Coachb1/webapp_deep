@@ -2984,6 +2984,22 @@ function showHeaderLoader(message = "Loading...") {
   loader.id = "header-loader";
   loader.innerHTML = `
   <style>
+    .loader-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: Arial, sans-serif;
+    }
+
+    .loader-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgb(87, 223, 160);
+      text-align: center;
+    }
+
     .circle-loader {
       width: 32px;
       height: 32px;
@@ -2991,7 +3007,6 @@ function showHeaderLoader(message = "Loading...") {
       border-top: 3px solid rgb(87, 223, 160);
       border-radius: 50%;
       animation: spin 0.8s ease-in-out infinite;
-      margin: 4px auto;
       box-shadow: 0 0 8px rgba(87, 223, 160, 0.4);
     }
 
@@ -3000,7 +3015,11 @@ function showHeaderLoader(message = "Loading...") {
       100% { transform: rotate(360deg); }
     }
   </style>
-  <div class="circle-loader"></div>
+
+  <div class="loader-wrapper">
+    <div class="loader-text">Loading...</div>
+    <div class="circle-loader"></div>
+  </div>
 `;
 
 
@@ -9130,6 +9149,7 @@ function waitForMessagesElement(maxAttempts = 20, delay = 100) {
 
 
 const addReportButtons = async () => {
+  showHeaderLoader();
   let faqButtonsWrapper;
   const faqButtonsWrapperBottom = document.getElementById("starting-faq-buttons");
   const faqButtonsWrappertop= document.getElementById("starting-faq-buttons-headers");
@@ -9189,6 +9209,7 @@ const addReportButtons = async () => {
   waitForMessagesElement();
 
   console.log('BotId', faqButtonsWrapper, buttonsWrapper)
+  hideHeaderLoader();
 }
 
 
