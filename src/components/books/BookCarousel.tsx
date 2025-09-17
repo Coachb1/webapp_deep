@@ -26,11 +26,11 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   onSlideChange,
   onPlayBook,
   onOpenDescription,
-  setLikedBooks, 
-  setLaterBooks, 
-  likedBooks, 
+  setLikedBooks,
+  setLaterBooks,
+  likedBooks,
   laterBooks,
-  setViewMode
+  setViewMode,
 }) => {
   const totalSlides = Math.ceil(books.length / booksPerSlide);
 
@@ -40,8 +40,9 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   };
 
   return (
-    <div className="carousel-container">
-      <div className="carousel-slides">
+    <div className="carousel-container w-[95%] sm:w-[90%] max-w-[1400px] mx-2 sm:mx-4 lg:mx-8 min-h-[600px]">
+      {" "}
+      <div className="flex flex-col items-center">
         {Array.from({ length: totalSlides }).map((_, slideIndex) => (
           <div
             key={slideIndex}

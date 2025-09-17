@@ -816,7 +816,7 @@ export const updateCourseProgress = async (
   try {
 
     if (!courseId || !userId || !moduleId || !status) {
-      console.error("[updateCourseProgress] Missing required parameters");
+      console.error("[updateCourseProgress] Missing required parameters : ", courseId, userId, moduleId, status);
       return null;
     }
     const data = JSON.stringify({
@@ -861,7 +861,7 @@ export const getModuleCompletion = async (
   try {
 
     if (  !userId || !moduleId) {
-      console.error("[getModuleCompletion] Missing required parameters");
+      console.error("[getModuleCompletion] Missing required parameters", userId, moduleId);
       return null;
     }
 
@@ -892,7 +892,7 @@ export const getModuleCompletion = async (
 export const addModuleLike = async (moduleId: string, userId: string) => {
   try {
     if (!userId || !moduleId) {
-      console.error("[addModuleLike] Missing required parameters");
+      console.error("[addModuleLike] Missing required parameters : ", userId, moduleId);
       return null;
     }
 
@@ -925,7 +925,7 @@ export const addModuleLike = async (moduleId: string, userId: string) => {
 export const addModuleLater = async (moduleId: string, userId: string) => {
   try {
     if (!userId || !moduleId) {
-      console.error("[addModuleLater] Missing required parameters");
+      console.error("[addModuleLater] Missing required parameters : ", userId, moduleId);
       return null;
     }
 
@@ -965,7 +965,7 @@ export const getcourseModuleLikesAndSaveLater = async(courseId:string, userId:st
   try {
     
     if (  !userId || !courseId) {
-      console.error("[getcourseModuleLikesAndSaveLater] Missing required parameters");
+      console.error("[getcourseModuleLikesAndSaveLater] Missing required parameters : ", userId, courseId);
       return null;
     }
 

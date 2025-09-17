@@ -1,6 +1,6 @@
 const CTA = () => {
   return (
-    <section className="cta">
+    <section className="cta mt-4">
       <div className="container cta-grid">
         <div className="cta-text">
           <h2>Got questions on featured books?</h2>

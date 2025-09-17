@@ -104,7 +104,6 @@ All colors MUST be HSL.
   box-sizing:border-box
 }
 html,body{
-  margin-top:  20px;
   padding:0;
   font-family:Inter,
   system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0c1b21}
@@ -323,7 +322,7 @@ img{max-width:100%;display:block}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:40px}
 .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
 .eyebrow .dot{width:14px;height:14px;background:var(--accent);border-radius:3px;display:inline-block}
-.hero h1{font-family:"Playfair Display",serif;font-size:54px;margin:.2em 0 .3em}
+.hero h1{font-family:"Playfair Display",serif;font-size:47px;}
 .meta{color:#ffff}
 .btn{
   display:inline-block;

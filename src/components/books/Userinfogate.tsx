@@ -2,6 +2,7 @@
 
 import { getUserAccount } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useUser } from "./context/UserContext";
 
 interface User {
   given_name: string;
@@ -21,7 +22,9 @@ interface UserInfoGateProps {
 }
 
 const UserInfoGate = ({ children }: UserInfoGateProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const {setUser} = useUser();
+
+  const [user, setUserData] = useState<User | null>(null);
   const [tempName, setTempName] = useState("");
   const [tempEmail, setTempEmail] = useState("");
   const [loading, setLoading] = useState(false); // submitting user
@@ -34,9 +37,13 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         window.user = parsed;
-        setUser(parsed);
+        setUserData(parsed);
+        setUser(parsed)
+
       } else if (window.user && window.user.email && window.user.given_name) {
-        setUser(window.user);
+        setUserData(window.user);
+        setUser(window.user)
+
       }
     }
     setChecking(false); // ✅ done checking
@@ -60,7 +67,8 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
 
       (window as any).user = fullUser;
         localStorage.setItem("user", JSON.stringify(fullUser));
-        setUser(fullUser);
+        setUserData(fullUser);
+        setUser(fullUser)
       })
       .catch((error) => {
         console.error("❌ Error creating user:", error);

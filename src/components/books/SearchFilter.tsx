@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Button } from '@/components/books/ui/buttonn';
 import { Input } from '@/components/books/ui/input';
 import { Book } from '@/lib/types';
@@ -8,9 +8,10 @@ interface SearchFilterProps {
   onFilterChange: (filter: string) => void;
   setViewMode: (index: string) => void;
   books: Book[];
+  viewMode: string;
 }
 
-const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books }: SearchFilterProps) => {
+const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }: SearchFilterProps) => {
   const [activeButton, setActiveButton] = useState<'like' | 'later' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -30,6 +31,29 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books }: SearchFi
     }
   };
 
+  useEffect(() => {
+    // if viewmode is all then reset like and later button
+    if (viewMode.includes('reset-')) {
+      setActiveButton(null);
+      onSearch(''); 
+      setSearchTerm('');
+      setSelectedFilter('Filter');
+      setShowDropdown(false);
+      onFilterChange('');
+      setViewMode('all');
+    }
+  }, [viewMode]);
+
+  // Log state changes after reset for debugging
+  useEffect(() => {
+    console.log('searchfilter state changed:', {
+      viewMode,
+      searchTerm,
+      selectedFilter,
+      activeButton
+    });
+  }, [viewMode, searchTerm, selectedFilter, activeButton]);
+
   const handleLaterClick = () => {
     if (activeButton === 'later') {
       // 🔹 second click → disable and return to old stage
@@ -43,7 +67,9 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books }: SearchFi
     }
   };
   // Extract unique categories from book.tag
-  const categories = Array.from(new Set(books.flatMap(book => book.tag)));
+  const categories = useMemo(() => {
+    return Array.from(new Set(books.flatMap(book => book.tag)));
+  }, []);  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

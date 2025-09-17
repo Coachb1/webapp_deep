@@ -6,7 +6,7 @@ interface Props {
   rows: RowData[];
   loadingLike: number | null;
   onLike: (row: RowData) => void;
-  onSelectRow: (row: RowData | null) => void;
+  onSelectRow: (row: object | null) => void;
 }
 
 export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onSelectRow }: Props) {
@@ -48,7 +48,7 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
                     <>
                       {row.qna[key].slice(0, 80)}...
                       <button
-                        onClick={() => onSelectRow(row)}
+                        onClick={() => onSelectRow({[key]: row.qna[key]})}
                         className="ml-2 text-[#00c193] underline text-sm"
                       >
                         More

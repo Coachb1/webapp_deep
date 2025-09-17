@@ -31,6 +31,8 @@ const fetchBookReportData = async (backend:string, courseId:string): Promise<Use
     const res = await fetch(`${backend}/courses/course-report/?course_id=${courseId}`);
     const data = await res.json();
 
+    console.log('Fetched Book Report Data:', data)
+
     return data.results.map((user: any) => ({
       name: user.name,
       email: user.email,

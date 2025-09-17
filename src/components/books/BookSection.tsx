@@ -9,6 +9,7 @@ import CTA from "./CTA";
 import { Book } from "@/lib/types";
 import { getcourseModuleLikesAndSaveLater } from "@/lib/api"; // 👈 make sure this is imported
 import Carousel from "./CarouselSlider";
+import PageRefresh from "./PageRefreshProp";
 
 interface BookSectionProps {
   books: Book[];
@@ -22,6 +23,7 @@ interface BookSectionProps {
   setCurrentSlide: (index: number) => void;
   name: string;
   email: string;
+  all_books: Book[];
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -35,7 +37,8 @@ const BookSection: React.FC<BookSectionProps> = ({
   setFilteredBooks,
   setCurrentSlide,
   name,
-  email
+  email,
+  all_books
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
@@ -48,6 +51,13 @@ const BookSection: React.FC<BookSectionProps> = ({
   const [likedBooks, setLikedBooks] = useState<Book[]>([]);
   const [laterBooks, setLaterBooks] = useState<Book[]>([]);
 
+  const handleResetLibrary = () => {
+    const randomId = Math.random().toString(36).substring(2, 10);
+    console.log(randomId);
+    setFilteredBooks(all_books);
+    setViewMode(`reset-${randomId}`);
+    onSearch('');
+  };
 
 
 
@@ -60,7 +70,7 @@ const BookSection: React.FC<BookSectionProps> = ({
     } else {
       setFilteredBooks(books);
     }
-    setCurrentSlide(0);
+    // setCurrentSlide(0);
   }, [viewMode, books, likedBooks, laterBooks, setFilteredBooks, setCurrentSlide]);
 
   // ✅ Fetch liked/later books once
@@ -89,12 +99,12 @@ const BookSection: React.FC<BookSectionProps> = ({
     };
 
     fetchLikesAndLater();
-  }, [userId, books]);
+  }, []);
 
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
-        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} />
+        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} viewMode={viewMode} />
 
         <h1 className="absolute left-48 text-sm font-bold uppercase tracking-wide text-blue-600">
           Our List
@@ -102,7 +112,7 @@ const BookSection: React.FC<BookSectionProps> = ({
         <br />
         <Carousel onFilterChange={onFilterChange} books={books} />
       </div>
-
+        <PageRefresh onReset={handleResetLibrary}  />
       <BookCarousel
         books={books}
         currentSlide={currentSlide}

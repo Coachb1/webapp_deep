@@ -26,7 +26,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
   const [rows, setRows] = useState<RowData[]>([]);
   const [qnaKeys, setQnaKeys] = useState<string[]>([]);
   const [currentDate, setCurrentDate] = useState("");
-  const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
+  const [selectedRow, setSelectedRow] = useState<object | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,20 +88,24 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       uid: item.uid || item.session_id,
       qna: item.qna || {},
       risks: item.generated_report_data?.["2_behavioral_map"]?.["1_fear_or_risk"] || "-",
-      likes: item.like_count ?? 0,
-      liked: !!item.liked_by,
+      likes:  item.like_count ?? 0,
+      liked:  item.liked_by.includes(userEmail) 
+
     }));
   };
 
-  // Like handler
+  // Like handler  // Like handler
   const handleLike = async (row: RowData) => {
     const { id, uid, liked } = row;
     const newLikeStatus = !liked;
     const likeChange = newLikeStatus ? 1 : -1;
 
+    // Optimistic update (with clamp at 0)
     setRows((prevRows) =>
       prevRows.map((r) =>
-        r.id === id ? { ...r, liked: newLikeStatus, likes: r.likes + likeChange } : r
+        r.id === id
+          ? { ...r, liked: newLikeStatus, likes: Math.max(0, r.likes + likeChange) }
+          : r
       )
     );
     setLoadingLike(id);
@@ -118,18 +122,32 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       });
 
       if (!res.ok) throw new Error("Failed to update like");
+      console.log(await res.json());
+      // ✅ Refetch the latest like count from API
+      const updatedRes = await fetch(
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+      );
+      if (!updatedRes.ok) throw new Error("Failed to refresh data");
+      const updatedData = await updatedRes.json();
+
+      // Re-map API data to rows
+      const mapped = mapApiToRows(updatedData);
+      setRows(mapped);
     } catch (err) {
       console.error("Like API failed:", err);
-      // rollback
+      // rollback if API fails
       setRows((prevRows) =>
         prevRows.map((r) =>
-          r.id === id ? { ...r, liked, likes: r.likes - likeChange } : r
+          r.id === id
+            ? { ...r, liked, likes: Math.max(0, r.likes - likeChange) }
+            : r
         )
       );
     } finally {
       setLoadingLike(null);
     }
   };
+
 
   // Pagination helpers
   const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
