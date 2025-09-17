@@ -9091,9 +9091,9 @@ function enableReportButtons() {
   } else {
     faqButtonsWrapper = faqButtonsWrapperBottom;
   }
-  if (faqButtonsWrapper) {
-    faqButtonsWrapper.style.display = window.user ? "flex" : "none";
-  }
+  // if (faqButtonsWrapper) {
+  //   faqButtonsWrapper.style.display = window.user ? "flex" : "none";
+  // }
   const wrapper = document.getElementById(`report-buttons-stt-${effectiveButtonPosition}`);
   if (wrapper) {
     wrapper.querySelectorAll("button").forEach((btn) => {
@@ -9168,7 +9168,7 @@ const addReportButtons = async () => {
       border-color: green;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
-      display: ${window.user ? 'inline-block' : 'none'};
+      display: 'inline-block';
     `;
 
     button.onmouseover = () => (button.style.backgroundColor = '#e5e7eb');
@@ -9183,7 +9183,7 @@ const addReportButtons = async () => {
   faqButtonsGenerator('report-test', "Interaction Report");
   faqButtonsGenerator('report-leaderboard', "Leaderboard Rank");
 
-  faqButtonsWrapper.style.display = window.user ? "flex" : "none";
+  // faqButtonsWrapper.style.display = window.user ? "flex" : "none";
   faqButtonsWrapper.appendChild(buttonsWrapper);
 
   waitForMessagesElement();
@@ -11589,7 +11589,7 @@ loadExternalModule().then(() => {
   <div 
     id="starting-faq-buttons-headers"
     style="
-      display: none;
+      display: flex;
       flex-direction: row;
       justify-content: flex-start;
       align-items: center;
@@ -12401,7 +12401,10 @@ const customMicButton = document.getElementById("startMicBtn");
     } else {
       if (!window.user){
 
-        const welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        let welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        if (type_of_widget === 'simulation'){
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed. If you have a simulation code you can also use that instead.</p>`
+        }
         isEmailFormstt = true;
         formFieldsstt = ["email", "name"];
         console.log(
@@ -12421,12 +12424,16 @@ const customMicButton = document.getElementById("startMicBtn");
           },
         ];
       } else {
-chatElementRef2.initialMessages = [
-        {
-          html: `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`,
-          role: "ai",
-        },
-      ];
+        let welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        if (type_of_widget === 'simulation'){
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed. If you have a simulation code you can also use that instead.</p>`
+        }
+        chatElementRef2.initialMessages = [
+                {
+                  html: welcomeMessage,
+                  role: "ai",
+                },
+              ];
       }
       
       // chatElementRef2.initialMessages.push({
