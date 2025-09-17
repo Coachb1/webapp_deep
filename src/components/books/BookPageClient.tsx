@@ -9,6 +9,7 @@ import BookDescription from "@/components/books/BookDescription";
 import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
 import AudioPlayer from "@/components/books/AudioPlayer";
+import TinyTalkWidget from "./TinyTalk";
 
 interface BookPageClientProps {
   id: string;
@@ -56,13 +57,6 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     
   }, [id]);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).user && (window as any).user.user_data && (window as any).user.user_data.uid) {
-      setUserId((window as any).user.user_data.uid);
-      setUserData((window as any).user);
-    }
-    console.log("User ID:", userId, userData);
-  }, [userId, userData]);
   
   // useEffect(() => {
   //   const disableContext = (e: MouseEvent) => e.preventDefault();
@@ -140,8 +134,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
 
   return (
     <>
-      <Header />
       <main id="top">
+        <Header />
         <Hero title={title} subTitle={subTitle} />
 
         {loading ? (
@@ -161,11 +155,12 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             setCurrentSlide={setCurrentSlide}
             name={userData?.user_data?.name}
             email={userData?.user_data?.email}
+            all_books={allBooks}
           />
         )}
       </main>
 
-      <footer className="bg-gray-900 text-gray-300 text-center py-6 mt-12">
+      <footer className="bg-white text-black text-center py-4 mt-8">
         <p className="text-sm">
           © {new Date().getFullYear()} CoachBoT. All rights reserved.
           <br />
@@ -174,23 +169,18 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         </p>
       </footer>
 
-      <AudioPlayer
-        show={showAudioPlayer}
-        book={currentBook}
-        onClose={handleClosePlayer}
-        onNext={handleNextBook}
-        onPrev={handlePrevBook}
-        courseId={courseId}
-        userId={userId}
-      />
+        <AudioPlayer
+          show={showAudioPlayer}
+          book={currentBook}
+          onClose={handleClosePlayer}
+          onNext={handleNextBook}
+          onPrev={handlePrevBook}
+          courseId={courseId}
+        />
 
       <BookDescription book={selectedBook} onClose={handleCloseDescription} />
 
-      <Script
-        src="https://cdn.tinytalk.ai/latest/tiny-talk-sdk.min.umd.js"
-        data-tiny-bot-id="b0a8b8ba-72b6-43a2-a59f-ee20b6f29c8d"
-        strategy="afterInteractive"
-      />
+      <TinyTalkWidget up={showAudioPlayer} />
     </>
   );
 }

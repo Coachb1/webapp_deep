@@ -68,7 +68,7 @@ const Header = () => {
               onClick={() => setShowReportDialog(true)}
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
-              Idea Board
+              Leader Board
             </Button>
 
             {/* ✅ Leader Board button (with password dialog) */}
@@ -78,7 +78,7 @@ const Header = () => {
               }
               className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
             >
-              Leader Board
+              Idea Board
             </Button>
           </div>
         </div>

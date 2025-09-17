@@ -19,8 +19,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
           <p className="meta">
             {subTitle}
           </p>
-          <button className="btn" onClick={scrollToSection}>
-            View Catalog
+          <button className="btn mt-2" onClick={scrollToSection}>
+            View Library
           </button>
         </div>
         <div className="hero-art">

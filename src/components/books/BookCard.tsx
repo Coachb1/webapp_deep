@@ -17,7 +17,6 @@ interface BookCardProps {
   likedBooks: Book[];
 }
 
-
 const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, setLikedBooks, setLaterBooks, likedBooks, laterBooks }) => {
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -32,34 +31,32 @@ const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, 
     setLikedBooks((prev: Book[]) => {
       const isLiked: Book | undefined = prev.find((b: Book) => b.title === book.title);
       if (isLiked) {
-      // If already liked, remove it
+        // If already liked, remove it
 
-      const updated: Book[] = prev.filter((b: Book) => b.title !== book.title);
+        const updated: Book[] = prev.filter((b: Book) => b.title !== book.title);
 
-      // If no liked books left, reset to "all"
-      if (updated.length === 0) {
-        setViewMode("all");
-      }
+        // If no liked books left, reset to "all"
+        if (updated.length === 0) {
+          setViewMode("all");
+        }
 
-      return updated;
+        return updated;
       } else {
-      // If not liked yet, add it
-      return [...prev, book];
+        // If not liked yet, add it
+        return [...prev, book];
       }
     });
     const user_id = (window as any)?.user?.user_data?.uid;
-    addModuleLike(book.id, user_id!)
+    addModuleLike(book.id, user_id!);
   };
 
-
-
   const handleToggleLater = (book: Book) => {
-    setLaterBooks(prev => {
-      const isLater = prev.find(b => b.title === book.title);
+    setLaterBooks((prev) => {
+      const isLater = prev.find((b) => b.title === book.title);
 
       if (isLater) {
         // If already saved for later, remove it
-        const updated = prev.filter(b => b.title !== book.title);
+        const updated = prev.filter((b) => b.title !== book.title);
 
         // If no "later" books left, reset to "all"
         if (updated.length === 0) {
@@ -71,11 +68,9 @@ const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, 
         // If not saved yet, add it
         return [...prev, book];
       }
-
-      
     });
     const user_id = (window as any)?.user?.user_data?.uid || null;
-    addModuleLater(book.id, user_id!)
+    addModuleLater(book.id, user_id!);
   };
 
   return (
@@ -85,14 +80,14 @@ const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, 
       <div className="flex gap-8">
         <button onClick={() => handleToggleLater(book)}>
           <WatchLaterButton
-            isActive={laterBooks.some(b => b.title === book.title)}
-            onToggle={() => handleToggleLater(book)}
+            isActive={laterBooks.some((b) => b.title === book.title)}
+            onToggle={() => {}}
           />
         </button>
         <button onClick={() => handleToggleLike(book)}>
           <HeartButton
             isActive={likedBooks.some(b => b.title === book.title)}
-            onToggle={() => handleToggleLike(book)}
+            onToggle={() => {}} // Pass a no-op to satisfy prop requirement
           />
         </button>
       </div>

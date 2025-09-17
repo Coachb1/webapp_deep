@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/books/ui/slider";
 import { Book } from "@/lib/types";
 import { getModuleCompletion, updateCourseProgress } from "@/lib/api";
+import { useUser } from "./context/UserContext";
 
 interface AudioPlayerProps {
   show: boolean;
@@ -13,10 +14,11 @@ interface AudioPlayerProps {
   onNext: () => void;
   onPrev: () => void;
   courseId: string;
-  userId: string;
 }
 
-const AudioPlayer = ({ show, book, onClose, onNext, onPrev, courseId, userId }: AudioPlayerProps) => {
+const AudioPlayer = ({ show, book, onClose, onNext, onPrev, courseId }: AudioPlayerProps) => {
+  const user = useUser();
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -62,6 +64,7 @@ const getCompletionPercent = (
 
   // Track 70% completion & timeupdate
   useEffect(() => {
+    const userId = user?.user?.user_data?.uid || '';
     const audio = audioRef.current;
     if (!audio || !book) return;
 
@@ -93,10 +96,12 @@ const getCompletionPercent = (
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", onNext);
     };
-  }, [book, marked70, userId, courseId, onNext]);
+  }, [book, marked70, courseId, onNext]);
 
   // Save progress on pause & beforeunload
   useEffect(() => {
+    const userId = user?.user?.user_data?.uid || '';
+
     const audio = audioRef.current;
     if (!audio || !book) return;
 
@@ -121,10 +126,12 @@ const getCompletionPercent = (
       audio.removeEventListener("pause", handlePause);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [book, userId, courseId, duration]);
+  }, [book, courseId, duration]);
 
   // Optional throttled progress save every 15s
   useEffect(() => {
+    const userId = user?.user?.user_data?.uid || '';
+
     const interval = setInterval(() => {
       if (!audioRef.current || !book) return;
       const progress = getCompletion();
@@ -134,10 +141,13 @@ const getCompletionPercent = (
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [book, userId, courseId, duration]);
+  }, [book, courseId, duration]);
 
   // Reset on new book or popup open
  useEffect(() => {
+    console.log('audio user', user)
+    const userId = user?.user?.user_data?.uid || '';
+
   if (book && show && audioRef.current) {
     const audio = audioRef.current;
 
@@ -192,7 +202,7 @@ const getCompletionPercent = (
 
     initAudio();
   }
-}, [book, show, userId]);
+}, [book, show]);
 
 
   // Close on outside click or Esc
