@@ -1,7 +1,5 @@
 
 export interface Book {
-  later: unknown;
-  liked: unknown;
   id: string;
   title: string;
   author: string;
