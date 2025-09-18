@@ -11,11 +11,34 @@ interface CarouselProps {
 
 export default function Carousel({ onFilterChange, books }: CarouselProps) {
   // Generate buttons from books' tags and group only once
-  const buttons = useMemo(() => (
-    books
-      .filter(book => book.list_name && book.tag && book.tag.length > 0)
-      .map(book => ({ label: book.list_name, filter: book.tag }))
-  ), []);
+  const capitalizeWords = (str: string) =>
+  str
+    .trim()
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+const buttons = useMemo(() => {
+  const seen = new Set<string>();
+  return books
+    .filter(book => book.list_name && book.tag && book.tag.length > 0)
+    .map(book => {
+      const key = book.list_name.trim().toLowerCase();
+      return { key, book };
+    })
+    .filter(({ key }) => {
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map(({ book }) => ({
+      label: capitalizeWords(book.list_name),
+      filter: book.tag,
+    }));
+}, []);
+
+
 
   // in a line how many items you want to show per slide
   const itemsPerPage = 4;
@@ -53,7 +76,7 @@ export default function Carousel({ onFilterChange, books }: CarouselProps) {
           {buttons.map((btn, i) => (
             <div key={i} className="flex-shrink-0">
               <button
-                onClick={() => onFilterChange(btn.filter.join(','))}
+                onClick={() => onFilterChange(btn.label)}
                 className="text-[#00c193] 
               font-bold text-sm px-4 py-2 rounded-lg bg-green-200 text-green-700
               cursor-pointer transition-colors duration-300

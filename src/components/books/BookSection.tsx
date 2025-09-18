@@ -54,9 +54,8 @@ const BookSection: React.FC<BookSectionProps> = ({
   const handleResetLibrary = () => {
     const randomId = Math.random().toString(36).substring(2, 10);
     console.log(randomId);
-    setFilteredBooks(all_books);
     setViewMode(`reset-${randomId}`);
-    onSearch('');
+    setFilteredBooks(all_books);
   };
 
 

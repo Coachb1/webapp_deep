@@ -3,15 +3,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/b
 import { Button } from "@/components/books/ui/buttonn";
 import { Input } from "@/components/books/ui/input";
 
-const Header = () => {
+const Header = ({packageCourseId}: {packageCourseId: string}) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [password, setPassword] = useState("");
 
   // ✅ Leader Board login check
-  const handlePasswordSubmit = () => {
+  const handlePasswordSubmit = (packageCourseId: string) => {
     if (password === "bookdemo#12345") {
       // Open Leader Report after successful login
-      window.open(`/library-bot/bookReport/?course_id=025e4c6f-fa9a-4ea6-8117-b8e671984b5c`, "_blank");
+      window.open(`/library-bot/bookReport/?package_course_id=${packageCourseId}`, "_blank");
       setShowReportDialog(false);
       setPassword("");
     } else {
@@ -23,7 +23,7 @@ const Header = () => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault(); // prevents accidental form submit
-      handlePasswordSubmit();
+      handlePasswordSubmit(packageCourseId);
     }
   };
 
@@ -99,7 +99,7 @@ const Header = () => {
               placeholder="Enter your password..."
               className="w-full"
             />
-            <Button onClick={handlePasswordSubmit} className="w-full">
+            <Button onClick={() => handlePasswordSubmit(packageCourseId)} className="w-full">
               Enter
             </Button>
           </div>

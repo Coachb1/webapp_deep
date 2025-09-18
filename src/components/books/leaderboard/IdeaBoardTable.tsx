@@ -18,16 +18,13 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
             {qnaKeys.map((key) => (
               <th
                 key={key}
-                className={`px-6 py-3 text-center ${
-                  key.toLowerCase().includes("details")
-                    ? "min-w-[250px] max-w-[400px] text-left"
-                    : "min-w-[120px]"
-                }`}
+                className={`px-6 py-3 text-center 
+                    min-w-[120px]
+                `}
               >
                 {key}
               </th>
             ))}
-            <th className="px-6 py-3 text-center min-w-[150px]">Risks</th>
             <th className="px-6 py-3 text-center w-[100px]">Vote</th>
           </tr>
         </thead>
@@ -38,15 +35,11 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
               {qnaKeys.map((key) => (
                 <td
                   key={key}
-                  className={`px-6 py-4 ${
-                    key.toLowerCase().includes("details")
-                      ? "text-left text-gray-600 align-top"
-                      : "text-center text-gray-600"
-                  }`}
+                  className={`px-6 py-4 text-center text-gray-600`}
                 >
                   {row.qna[key] && row.qna[key].length > 80 ? (
                     <>
-                      {row.qna[key].slice(0, 80)}...
+                      {row.qna[key].slice(0, 80)}...{key}
                       <button
                         onClick={() => onSelectRow({[key]: row.qna[key]})}
                         className="ml-2 text-[#00c193] underline text-sm"
@@ -60,7 +53,6 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
                 </td>
               ))}
 
-              <td className="px-6 py-4 text-center text-gray-600">{row.risks}</td>
 
               <td className="px-6 py-4 text-center">
                 <button
