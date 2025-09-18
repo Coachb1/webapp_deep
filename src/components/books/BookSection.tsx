@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ConversationalForm from "@/components/job-aid/ConversationalForm";
 import BookCarousel from "./BookCarousel";
 import { usePathname } from "next/navigation";
@@ -59,18 +59,22 @@ const BookSection: React.FC<BookSectionProps> = ({
   };
 
 
+ const filteredBooks = useMemo(() => {
+    let list = books;
 
-  // ✅ One effect to handle filtering
-  useEffect(() => {
     if (viewMode === "liked") {
-      setFilteredBooks(likedBooks);
+      list = likedBooks;
     } else if (viewMode === "later") {
-      setFilteredBooks(laterBooks);
-    } else {
-      setFilteredBooks(books);
+      list = laterBooks;
     }
-    // setCurrentSlide(0);
-  }, [viewMode, books, likedBooks, laterBooks, setFilteredBooks, setCurrentSlide]);
+    return list;
+  }, [books, viewMode, likedBooks, laterBooks]);
+  
+
+ useEffect(() => {
+    setFilteredBooks(filteredBooks);
+    setCurrentSlide(0);
+  }, [filteredBooks, setFilteredBooks, setCurrentSlide]);
 
   // ✅ Fetch liked/later books once
   useEffect(() => {
@@ -78,20 +82,13 @@ const BookSection: React.FC<BookSectionProps> = ({
 
     const fetchLikesAndLater = async () => {
       try {
-        // use the first book's course_id (assuming all belong to the same course)
         const courseId = books[0].course_id;
         const result = await getcourseModuleLikesAndSaveLater(courseId, userId);
         const likedIds = result.liked.map((like: any) => like.module_uid);
-        const liked = books.filter(book => likedIds.includes(book.id));
-
         const laterIds = result.later.map((later: any) => later.module_uid);
-        const later = books.filter(book => laterIds.includes(book.id));
 
-        setLikedBooks(liked || []);
-        setLaterBooks(later || []);
-
-        console.log("Fetched liked books:", liked, likedBooks);
-        console.log("Fetched later books:", later, laterBooks);
+        setLikedBooks(books.filter((b) => likedIds.includes(b.id)));
+        setLaterBooks(books.filter((b) => laterIds.includes(b.id)));
       } catch (err) {
         console.error("Failed to fetch likes/later:", err);
       }
@@ -141,4 +138,6 @@ const BookSection: React.FC<BookSectionProps> = ({
   );
 };
 
+/* setSearchTerm is now handled by useState above */
 export default BookSection;
+
