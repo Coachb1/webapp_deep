@@ -23,7 +23,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [subTitle, setSubTitle] = useState<string>(
     "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
   );
-  const [courseId, setCourseId] = useState<string>(''); 
+  const [courseId, setCourseId] = useState<string>('');
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [currentBook, setCurrentBook] = useState<Book | null>(null);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
@@ -32,13 +32,13 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [userId, setUserId] = useState<string>("");
   const [userData, setUserData] = useState<any>(null);
-  
+
   // Load books
   useEffect(() => {
 
     const loadBooks = async () => {
       try {
-        
+
         const data: Book[] = await fetchBooks(id);
         console.log("[fetchBooks] Books:", data[0].course_details);
         setTitle(data[0].course_details.title)
@@ -54,10 +54,10 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       }
     };
     loadBooks();
-    
+
   }, [id]);
 
-  
+
   // useEffect(() => {
   //   const disableContext = (e: MouseEvent) => e.preventDefault();
   //   const disableKeys = (e: KeyboardEvent) => {
@@ -160,23 +160,27 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         )}
       </main>
 
-      <footer className="bg-white text-black text-center py-4 mt-8">
-        <p className="text-sm">
-          © {new Date().getFullYear()} CoachBoT. All rights reserved.
-          <br />
-          Copyright for all books belongs to their respective authors and
-          publishers. We encourage you to buy and read actual books.
-        </p>
+      <footer className="bg-white text-black py-6 mt-8 border-t">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm sm:text-base leading-relaxed">
+            © {new Date().getFullYear()} <span className="font-semibold">CoachBoT</span>. All rights reserved.
+          </p>
+          <p className="text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
+            Copyright for all books belongs to their respective authors and
+            publishers. We encourage you to buy and read actual books.
+          </p>
+        </div>
       </footer>
 
-        <AudioPlayer
-          show={showAudioPlayer}
-          book={currentBook}
-          onClose={handleClosePlayer}
-          onNext={handleNextBook}
-          onPrev={handlePrevBook}
-          courseId={courseId}
-        />
+
+      <AudioPlayer
+        show={showAudioPlayer}
+        book={currentBook}
+        onClose={handleClosePlayer}
+        onNext={handleNextBook}
+        onPrev={handlePrevBook}
+        courseId={courseId}
+      />
 
       <BookDescription book={selectedBook} onClose={handleCloseDescription} />
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/books/ui/dialogg";
+import { Dialog,DialogContent,DialogHeader,DialogTitle,}
+from "@/components/books/ui/dialogg";
 import { Button } from "@/components/books/ui/buttonn";
 import { Input } from "@/components/books/ui/input";
 
@@ -10,8 +11,10 @@ const Header = () => {
   // ✅ Leader Board login check
   const handlePasswordSubmit = () => {
     if (password === "bookdemo#12345") {
-      // Open Leader Report after successful login
-      window.open(`/library-bot/bookReport/?course_id=025e4c6f-fa9a-4ea6-8117-b8e671984b5c`, "_blank");
+      window.open(
+        `/library-bot/bookReport/?course_id=025e4c6f-fa9a-4ea6-8117-b8e671984b5c`,
+        "_blank"
+      );
       setShowReportDialog(false);
       setPassword("");
     } else {
@@ -22,7 +25,7 @@ const Header = () => {
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // prevents accidental form submit
+      e.preventDefault();
       handlePasswordSubmit();
     }
   };
@@ -36,11 +39,7 @@ const Header = () => {
       const data = await res.json();
       console.log("Idea Board API Response:", data);
 
-      // Navigate (same tab)
       window.location.href = "/components/app/library-bot/job-aid";
-
-      // OR open new tab:
-      // window.open("/components/app/library-bot/job-aid", "_blank");
     } catch (err) {
       console.error("Error loading Idea Board:", err);
       alert("⚠️ Could not load Idea Board, please try again later.");
@@ -49,34 +48,39 @@ const Header = () => {
 
   return (
     <>
-      <header className="site-header">
-        <div className="container nav">
-          <div className="brand">
-            <h1
-              id="heading"
-              className="w-fit border-2 border-[#2DC092] p-[3px] text-xl max-sm:text-[12px] font-extrabold text-[#2DC092] z-10"
-            >
-              <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg max-sm:text-[12px] font-bold text-white">
-                COACH
-              </span>
-              BOT
-            </h1>
-          </div>
-          <div className="flex gap-2">
-            {/* ✅ Idea Board button (with API) */}
+      {/* ✅ Header */}
+      <header className="w-full border-b border-gray-200 bg-white">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-3 sm:flex-row sm:gap-0">
+          {/* Brand Logo */}
+          <h1
+            id="heading"
+            className="w-fit border-2 border-[#2DC092] px-2 py-1 text-lg font-extrabold text-[#2DC092] sm:text-xl"
+          >
+            <span className="mr-1 bg-[#2DC092] px-2 py-1 text-base font-bold text-white sm:text-lg">
+              COACH
+            </span>
+            BOT
+          </h1>
+
+          {/* Buttons Section */}
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+            {/* Leader Board Button (with password dialog) */}
             <Button
               onClick={() => setShowReportDialog(true)}
-              className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
+              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
               Leader Board
             </Button>
 
-            {/* ✅ Leader Board button (with password dialog) */}
+            {/* Idea Board Button */}
             <Button
               onClick={() =>
-                window.open(`/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${window.user?.email}`, "_blank")
+                window.open(
+                  `/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${window.user?.email}`,
+                  "_blank"
+                )
               }
-              className="bg-[#00c193] hover:bg-[#069473] border-none rounded-lg px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300"
+              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
               Idea Board
             </Button>
@@ -84,11 +88,14 @@ const Header = () => {
         </div>
       </header>
 
-      {/* ✅ Password Dialog for Leader Board */}
+      {/* ✅ Password Dialog */}
       <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
-        <DialogContent className="email-box">
+        {/* <DialogContent className="email-box w-[90%] max-w-sm"> */}
+         <DialogContent className=" w-[90%] max-w-sm">
           <DialogHeader>
-            <DialogTitle>Please enter your admin password</DialogTitle>
+            <DialogTitle className="text-center text-lg font-semibold">
+              Please enter your admin password
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Input

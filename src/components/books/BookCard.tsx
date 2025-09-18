@@ -77,20 +77,24 @@ const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, 
     <article className="book-card shadow-md rounded-lg bg-white p-4 flex flex-col justify-between">
       <img src={book.img} alt={book.title} className="rounded-md mb-4 shadow-sm" />
       {/* heart and watch later button */}
-      <div className="flex gap-8">
+      <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-10 lg:gap-14">
+        {/* Watch Later */}
         <button onClick={() => handleToggleLater(book)}>
           <WatchLaterButton
             isActive={laterBooks.some((b) => b.title === book.title)}
-            onToggle={() => {}}
+            onToggle={() => { }}
           />
         </button>
+
+        {/* Like */}
         <button onClick={() => handleToggleLike(book)}>
           <HeartButton
-            isActive={likedBooks.some(b => b.title === book.title)}
-            onToggle={() => {}} // Pass a no-op to satisfy prop requirement
+            isActive={likedBooks.some((b) => b.title === book.title)}
+            onToggle={() => { }} // no-op to satisfy prop requirement
           />
         </button>
       </div>
+
       <div>
         <h4 className="font-bold text-lg mb-1">{book.title}</h4>
         <p className="text-gray-600 mb-2">{book.author}</p>
@@ -103,21 +107,30 @@ const BookCard: React.FC<BookCardProps> = ({ book, onPlay, onMore, setViewMode, 
         <p className="dec text-gray-700 text-sm mb-4 line-clamp-3">{book.desc}</p>
       </div>
 
-      <div className="button-container flex items-center gap-4">
+      <div className="button-container flex flex-wrap items-center gap-4 sm:gap-8 md:gap-16 lg:gap-32">
+        {/* ▶ Play Button */}
         <button
-          className="play-button rounded-full border border-green-500 text-green-500 w-10 h-10 flex items-center justify-center hover:bg-green-100 transition"
+          className="play-button rounded-full border border-green-500 text-green-500 
+               w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center 
+               hover:bg-green-100 transition"
           aria-label="Play audio"
           onClick={onPlay}
         >
           ▶
         </button>
+
+        {/* More Button */}
         <button
-          className="more-button bg-green-600 text-white rounded-full px-4 py-2 hover:bg-green-700 transition"
+          className="more-button bg-green-600 text-white rounded-full 
+               px-3 py-1.5 sm:px-4 sm:py-2 
+               text-xs sm:text-sm md:text-base 
+               hover:bg-green-700 transition"
           onClick={onMore}
         >
           More
         </button>
       </div>
+
     </article>
   );
 };
