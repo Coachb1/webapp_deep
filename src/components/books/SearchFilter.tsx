@@ -68,8 +68,13 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }
   };
   // Extract unique categories from book.tag
   const categories = useMemo(() => {
-    return Array.from(new Set(books.flatMap(book => book.tag)));
-  }, []);  
+    const normalized = books.flatMap(book => book.tag?.map((t: string) => t.toLowerCase().trim()) ?? []);
+    const unique = Array.from(new Set(normalized));
+    const capitalized = unique.map(t => t.charAt(0).toUpperCase() + t.slice(1));
+    console.log("Categories:", capitalized);
+    return capitalized;
+  }, []);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

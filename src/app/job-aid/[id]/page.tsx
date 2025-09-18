@@ -19,7 +19,9 @@ const Page = async ({ params, searchParams }: JobAidPageProps) => {
       }}
     >
       <Navbar />
-      <ConversationalForm job_aid_id={params.id}/>
+      <ConversationalForm job_aid_id={params.id} 
+      isEmailSection={true}
+      />
     </div>
   );
 };

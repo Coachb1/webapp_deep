@@ -138,7 +138,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         if (isEmailSection) {
           setCurrentStep("email");
         } else {
-          await handleValidation(answers, email, name);
+          await handleValidation(updatedAnswers, email, name);
           setCurrentStep("completed");
         }
       }

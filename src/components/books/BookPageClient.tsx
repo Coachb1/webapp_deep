@@ -10,12 +10,14 @@ import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
 import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
+import { useUser } from "./context/UserContext";
 
 interface BookPageClientProps {
   id: string;
 }
 
 export default function BookPageClient({ id }: BookPageClientProps) {
+  const {user} = useUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,8 +32,6 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [userId, setUserId] = useState<string>("");
-  const [userData, setUserData] = useState<any>(null);
   
   // Load books
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   return (
     <>
       <main id="top">
-        <Header />
+        <Header packageCourseId={id} />
         <Hero title={title} subTitle={subTitle} />
 
         {loading ? (
@@ -153,8 +153,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             onOpenDescription={handleOpenDescription}
             setFilteredBooks={setFilteredBooks}
             setCurrentSlide={setCurrentSlide}
-            name={userData?.user_data?.name}
-            email={userData?.user_data?.email}
+            name={user?.user_data?.name}
+            email={user?.user_data?.email}
             all_books={allBooks}
           />
         )}
