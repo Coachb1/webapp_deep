@@ -10,12 +10,14 @@ import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
 import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
+import { useUser } from "./context/UserContext";
 
 interface BookPageClientProps {
   id: string;
 }
 
 export default function BookPageClient({ id }: BookPageClientProps) {
+  const { user } = useUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,25 +26,22 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
   );
   const [courseId, setCourseId] = useState<string>('');
+  const [courseId, setCourseId] = useState<string>("");
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [currentBook, setCurrentBook] = useState<Book | null>(null);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [userId, setUserId] = useState<string>("");
-  const [userData, setUserData] = useState<any>(null);
 
   // Load books
   useEffect(() => {
-
     const loadBooks = async () => {
       try {
-
         const data: Book[] = await fetchBooks(id);
         console.log("[fetchBooks] Books:", data[0].course_details);
-        setTitle(data[0].course_details.title)
-        setSubTitle(data[0].course_details.desc)
+        setTitle(data[0].course_details.title);
+        setSubTitle(data[0].course_details.desc);
         setCourseId(data[0].course_id);
 
         setAllBooks(data);
@@ -76,25 +75,74 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   // }, []);
 
   const handleSearch = (searchTerm: string) => {
+    const queryStr = searchTerm.trim();
+
+    // If empty, show all books
+    if (!queryStr) {
+      setFilteredBooks(allBooks);
+      return;
+    }
+
+    // Split by comma and trim each term
+    const queries = queryStr
+      .split(",")
+      .map((q) => q.trim().toLowerCase())
+      .filter((q) => q.length > 0);
+
     const filtered = allBooks.filter((book) => {
-      const title = book.title.toLowerCase();
-      const author = book.author.toLowerCase();
-      const tagsMatch = book.tag?.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      return (
-        title.includes(searchTerm.toLowerCase()) ||
-        author.includes(searchTerm.toLowerCase()) ||
-        tagsMatch
+      const title = book.title?.toLowerCase() || "";
+      const author = book.author?.toLowerCase() || "";
+      const listName = book.list_name?.toLowerCase() || "";
+      const tags = book.tag?.map((t) => t.toLowerCase()) || [];
+
+      // return true if any query matches any field
+      return queries.some(
+        (query) =>
+          title.includes(query) ||
+          author === query ||
+          listName === query ||
+          tags.some((tag) => tag === query)
       );
     });
+
     setFilteredBooks(filtered);
   };
 
   const handleFilterChange = (filter: string) => {
-    const filtered = allBooks.filter((book) =>
-      book.tag?.some((tag) => tag.toLowerCase().includes(filter.toLowerCase()))
-    );
+    const normalizedFilter = filter.trim().toLowerCase();
+
+    // If empty or "filter", show all books
+    if (!normalizedFilter || normalizedFilter === "filter") {
+      setFilteredBooks(allBooks);
+      return;
+    }
+
+    // Split filter by commas and normalize
+    const filters = normalizedFilter
+      .split(",")
+      .map((f) => f.trim().toLowerCase())
+      .filter((f) => f.length > 0);
+
+    const filtered = allBooks.filter((book) => {
+      const listName = book.list_name?.toLowerCase() || "";
+      const tags = book.tag?.map((tag) => tag.toLowerCase()) || [];
+
+      const filteredList = filters.some(
+        (f) => listName === f || tags.some((tag) => tag === f)
+      );
+
+      if (filteredList) {
+        console.log(
+          "handleFilterChange",
+          filteredList,
+          book.list_name,
+          book.tag
+        );
+      }
+
+      return filteredList;
+    });
+
     setFilteredBooks(filtered);
   };
 
@@ -135,7 +183,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   return (
     <>
       <main id="top">
-        <Header />
+        <Header packageCourseId={id} />
         <Hero title={title} subTitle={subTitle} />
 
         {loading ? (
@@ -153,8 +201,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             onOpenDescription={handleOpenDescription}
             setFilteredBooks={setFilteredBooks}
             setCurrentSlide={setCurrentSlide}
-            name={userData?.user_data?.name}
-            email={userData?.user_data?.email}
+            name={user?.user_data?.name}
+            email={user?.user_data?.email}
             all_books={allBooks}
           />
         )}
@@ -171,7 +219,6 @@ export default function BookPageClient({ id }: BookPageClientProps) {
           </p>
         </div>
       </footer>
-
 
       <AudioPlayer
         show={showAudioPlayer}

@@ -16,7 +16,10 @@ const Page = async () => {
       }}
     >
       <Navbar />
-      <ConversationalForm job_aid_id="54cb0812-742a-4768-b7fa-599ded50604e" />
+      <ConversationalForm 
+      job_aid_id="54cb0812-742a-4768-b7fa-599ded50604e"
+      isEmailSection={true}
+       />
     </div>
   );
 };

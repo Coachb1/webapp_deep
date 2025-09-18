@@ -26,9 +26,9 @@ interface UserReport {
 
 
 // 🔹 Fetch API Data
-const fetchBookReportData = async (backend:string, courseId:string): Promise<UserReport[]> => {
+const fetchBookReportData = async (backend:string, packageCourseID:string): Promise<UserReport[]> => {
   try {
-    const res = await fetch(`${backend}/courses/course-report/?course_id=${courseId}`);
+    const res = await fetch(`${backend}/courses/course-report/?package_course_id=${packageCourseID}`);
     const data = await res.json();
 
     console.log('Fetched Book Report Data:', data)
@@ -50,10 +50,10 @@ const fetchBookReportData = async (backend:string, courseId:string): Promise<Use
 };
 
 interface BookReportProps {
-  courseId: string;
+  packageCourseId: string;
 }
 
-const BookReport: React.FC<BookReportProps> = ({ courseId }) => {
+const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
   const [data, setData] = useState<UserReport[]>([]);
   const [date, setDate] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserReport | null>(null);
@@ -73,7 +73,7 @@ const BookReport: React.FC<BookReportProps> = ({ courseId }) => {
 
   const loadData = async () => {
     setLoading(true);
-    const response = await fetchBookReportData(baseURL , courseId);
+    const response = await fetchBookReportData(baseURL , packageCourseId);
 
     setData(response);
     setLoading(false);

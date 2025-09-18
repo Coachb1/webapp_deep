@@ -72,6 +72,7 @@ const getCompletionPercent = (
       setCurrentTime(audio.currentTime);
 
       const progress = (audio.currentTime / audio.duration) * 100;
+      console.log('tracking', marked70, progress)
       if (!marked70 && progress >= 70) {
         setMarked70(true);
         updateCourseProgress(courseId, userId, book.id, "completed", 70).then(() =>
@@ -89,7 +90,7 @@ const getCompletionPercent = (
     return () => {
       const completion = getCompletion();
       if (completion > 0) {
-        updateCourseProgress(courseId, userId, book.id, "in_progress", completion);
+        updateCourseProgress(courseId, userId, book.id, completion > 70 ? "completed":"in_progress", completion);
       }
 
       audio.removeEventListener("timeupdate", updateTime);
@@ -108,14 +109,14 @@ const getCompletionPercent = (
     const handlePause = () => {
       const progress = getCompletion();
       if (progress > 0) {
-        updateCourseProgress(courseId, userId, book.id, "in_progress", progress);
+        updateCourseProgress(courseId, userId, book.id, progress > 70 ? "completed":"in_progress", progress);
       }
     };
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       const progress = getCompletion();
       if (progress > 0) {
-        updateCourseProgress(courseId, userId, book.id, "in_progress", progress);
+        updateCourseProgress(courseId, userId, book.id, progress > 70 ? "completed":"in_progress", progress);
       }
     };
 
@@ -136,7 +137,7 @@ const getCompletionPercent = (
       if (!audioRef.current || !book) return;
       const progress = getCompletion();
       if (progress > 0) {
-        updateCourseProgress(courseId, userId, book.id, "in_progress", progress);
+        updateCourseProgress(courseId, userId, book.id, progress > 70 ? "completed":"in_progress", progress);
       }
     }, 15000);
 

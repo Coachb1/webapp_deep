@@ -12,7 +12,6 @@ export interface RowData {
   id: number;
   uid: string;
   qna: Record<string, string>;
-  risks: string;
   likes: number;
   liked: boolean;
 }
@@ -62,14 +61,20 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
           `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
         );
         if (!res.ok) throw new Error("Failed to fetch report data");
-
         const data = await res.json();
+        console.log("Fetched report data:", data);
         const mapped = mapApiToRows(data);
         setRows(mapped);
 
-        if (data.length > 0) {
-          setQnaKeys(Object.keys(data[0].qna || {}));
-        }
+       if (data.length > 0) {
+        const allKeys = new Set<string>();
+
+        data.forEach((item: any) => {
+          Object.keys(item.qna || {}).forEach(key => allKeys.add(key));
+        });
+
+        setQnaKeys(Array.from(allKeys));
+      }
       } catch (err: any) {
         console.error("Error fetching data:", err);
         setError(err.message || "Something went wrong");
@@ -89,7 +94,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       qna: item.qna || {},
       risks: item.generated_report_data?.["2_behavioral_map"]?.["1_fear_or_risk"] || "-",
       likes:  item.like_count ?? 0,
-      liked:  item.liked_by.includes(userEmail) 
+      liked:  item.like_by ? item.liked_by.includes(userEmail) : false
 
     }));
   };
