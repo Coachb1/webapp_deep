@@ -1,6 +1,3 @@
-
-
-
 import { motion } from "framer-motion";
 
 interface HeartButtonProps {

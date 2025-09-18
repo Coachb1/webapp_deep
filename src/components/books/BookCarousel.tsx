@@ -18,9 +18,11 @@ interface BookCarouselProps {
   likedBooks: Book[];
 }
 
-const booksPerSlide = 4;
+
+const booksPerSlide = 12; // 3 rows × 4 books
 
 const BookCarousel: React.FC<BookCarouselProps> = ({
+  
   books,
   currentSlide,
   onSlideChange,
@@ -32,6 +34,7 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   laterBooks,
   setViewMode,
 }) => {
+  
   const totalSlides = Math.ceil(books.length / booksPerSlide);
 
   const getBooksForSlide = (slideIndex: number) => {
@@ -40,15 +43,16 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   };
 
   return (
-    <div className="carousel-container w-[95%] sm:w-[90%] max-w-[1400px] mx-2 sm:mx-4 lg:mx-8 min-h-[600px]">
+    <>
+    <div className="carousel-container w-[95%] sm:w-[90%] max-w-[1400px] mx-auto">
       {" "}
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center justify-center">
         {Array.from({ length: totalSlides }).map((_, slideIndex) => (
           <div
             key={slideIndex}
-            className={`slide ${slideIndex === currentSlide ? "active" : ""}`}
+            className={`slide ${slideIndex === currentSlide ? "active" : "hidden"} w-full`}
           >
-            <div className="card-row">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {getBooksForSlide(slideIndex).map((book, index) => (
                 <BookCard
                   key={index}
@@ -66,13 +70,18 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
           </div>
         ))}
       </div>
-      <Pagination
+    </div>
+    <Pagination
         totalSlides={totalSlides}
         currentSlide={currentSlide}
         onPageChange={onSlideChange}
       />
-    </div>
+      
+      </>
+    
   );
 };
+
+
 
 export default BookCarousel;

@@ -123,17 +123,17 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }
   }, []);
 
   return (
-    <div className="search-container flex flex-col gap-3" id="search-container">
+    <div className="search-container w-full max-w-6xl mx-auto px-2 sm:px-4 flex flex-col gap-3" id="search-container">
       {/* Search Bar */}
-      <div className='flex justify-center w-full'>
-        <div className="search-bar-wrapper flex gap-2 items-center">
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-2 w-full">
+        <div className="search-bar-wrapper flex gap-2 items-center w-full sm:w-auto">
           <Input
             type="text"
             placeholder="What are you looking for?"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyPress} // ✅ changed from onKeyPress
-            className="search-input"
+            className="search-input w-full sm:w-80"
           />
           <Button
             onClick={handleSearch}
@@ -157,7 +157,7 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }
         </div>
 
         {/* Filter + Extra Buttons */}
-        <div className="flex gap-2 items-center relative " ref={dropdownRef}>
+        <div className="flex  flex-wrap gap-2 items-center relative " ref={dropdownRef}>
           {/* Filter Button */}
           <Button
             variant="ghost"
@@ -192,6 +192,7 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }
               ))}
             </ul>
           )}
+          
           {/* Dropdown Menu */}
           {showDropdown && (
             <ul className="dropdown-menu absolute mt-12 bg-white shadow-md rounded-md p-2 z-20">
@@ -212,7 +213,7 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }
             {/* Like Button */}
             <Button
               onClick={handleLikeClick}
-              className={`like-button px-6 py-2 rounded-2xl shadow-md 
+              className={`like-button px-6 sm:py-4 text-sm sm:text-base rounded-2xl shadow-md 
           ${activeButton === 'like' ? 'bg-green-600 text-white' : 'bg-[#00c193] text-white hover:bg-green-600'}`}
             >
               Like

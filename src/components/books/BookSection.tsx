@@ -101,15 +101,15 @@ const BookSection: React.FC<BookSectionProps> = ({
     <section className="other-reads" id="section">
       <div className="mt-12">
         <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} viewMode={viewMode} />
-
-        <h1 className="absolute left-48 text-sm font-bold uppercase tracking-wide text-blue-600">
-          Our List
-        </h1>
         <br />
         <Carousel onFilterChange={onFilterChange} books={books} />
+
       </div>
-        <PageRefresh onReset={handleResetLibrary}  />
+        {/* <PageRefresh onReset={handleResetLibrary}  /> */}
+        <br />
+        <br />
       <BookCarousel
+        
         books={books}
         currentSlide={currentSlide}
         onSlideChange={onSlideChange}
