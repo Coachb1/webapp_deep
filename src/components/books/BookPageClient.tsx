@@ -26,7 +26,6 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
   );
   const [courseId, setCourseId] = useState<string>('');
-  const [courseId, setCourseId] = useState<string>("");
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [currentBook, setCurrentBook] = useState<Book | null>(null);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);

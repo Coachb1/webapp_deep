@@ -100,7 +100,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
-        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} viewMode={viewMode} />
+        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} viewMode={viewMode} handleResetLibrary={handleResetLibrary}/>
         <br />
         <Carousel onFilterChange={onFilterChange} books={books} />
 

@@ -9,9 +9,10 @@ interface SearchFilterProps {
   setViewMode: (index: string) => void;
   books: Book[];
   viewMode: string;
+  handleResetLibrary: () => void;
 }
 
-const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }: SearchFilterProps) => {
+const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode, handleResetLibrary }: SearchFilterProps) => {
   const [activeButton, setActiveButton] = useState<'like' | 'later' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -126,6 +127,9 @@ const SearchFilter = ({ onSearch, onFilterChange, setViewMode, books, viewMode }
     <div className="search-container w-full max-w-6xl mx-auto px-2 sm:px-4 flex flex-col gap-3" id="search-container">
       {/* Search Bar */}
       <div className="flex flex-col sm:flex-row justify-center items-center gap-2 w-full">
+        <Button onClick={handleResetLibrary} className="like-button px-6 sm:py-4 text-sm sm:text-base rounded-2xl shadow-md bg-[#00c193] text-white">
+          Reset
+        </Button>
         <div className="search-bar-wrapper flex gap-2 items-center w-full sm:w-auto">
           <Input
             type="text"
