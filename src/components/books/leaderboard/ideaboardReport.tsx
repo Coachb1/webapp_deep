@@ -94,7 +94,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       qna: item.qna || {},
       risks: item.generated_report_data?.["2_behavioral_map"]?.["1_fear_or_risk"] || "-",
       likes:  item.like_count ?? 0,
-      liked:  item.like_by ? item.liked_by.includes(userEmail) : false
+      liked:  item.liked_by ? item.liked_by.includes(userEmail) : false
 
     }));
   };

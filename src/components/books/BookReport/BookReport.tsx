@@ -204,7 +204,7 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
               {selectedUser.books.map((book, idx) => (
                 <div key={idx} className="p-3 border rounded-lg flex justify-between items-center">
                   <span className="text-gray-800">{book}</span>
-                  <span className="text-gray-500 text-sm">{selectedUser.dates[idx]}</span>
+                  {/* <span className="text-gray-500 text-sm">{selectedUser.dates[idx]}</span> */}
                 </div>
               ))}
             </div>
