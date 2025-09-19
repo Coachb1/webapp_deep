@@ -258,8 +258,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("Business Book Insights");
-  const [subTitle, setSubTitle] = useState(
+  const [title, setTitle] = useState<string>("Business Book Insights");
+  const [subTitle, setSubTitle] = useState<string>(
     "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
   );
   const [courseId, setCourseId] = useState("");
@@ -274,7 +274,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        const data = await fetchBooks(id);
+        const data: Book[] = await fetchBooks(id);
+        console.log("[fetchBooks] Books:", data[0].course_details);
         if (!data || !data.length) return;
 
         setTitle(data[0].course_details.title);
@@ -303,7 +304,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     const queries = queryStr
       .split(",")
       .map((q) => q.trim().toLowerCase())
-      .filter(Boolean);
+      .filter((f) => f.length > 0);
 
     const filtered = allBooks.filter((book) => {
       const title = book.title?.toLowerCase() || "";
@@ -316,7 +317,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
           title.includes(query) ||
           author === query ||
           listName === query ||
-          tags.includes(query)
+          tags.some((tag) => tag === query)
       );
     });
 
@@ -334,13 +335,14 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     const filters = normalized
       .split(",")
       .map((f) => f.trim().toLowerCase())
-      .filter(Boolean);
+      .filter((f) => f.length > 0);
 
     const filtered = allBooks.filter((book) => {
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
-
-      return filters.some((f) => listName === f || tags.includes(f));
+      return filters.some(
+        (f) => listName === f || tags.some((tag) => tag === f)
+      );
     });
 
     setFilteredBooks(filtered);

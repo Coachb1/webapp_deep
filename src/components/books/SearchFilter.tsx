@@ -316,7 +316,7 @@ const SearchFilter = ({
       (t) => t.charAt(0).toUpperCase() + t.slice(1)
     );
     return capitalized;
-  }, [books]);
+  }, []);
 
   // Dropdown close on outside click
   useEffect(() => {
