@@ -14,6 +14,7 @@ import {
   FaClock,
   FaTrophy,
   FaTimes,
+  FaLock,
 } from "react-icons/fa";
 
 
@@ -23,6 +24,9 @@ interface UserReport {
   books: string[];
   dates: string[];
 }
+
+const PASSWORD = "demobook#12345";
+const EXPIRY_HOURS = 24;
 
 const fetchBookReportData = async (
   backend: string,
@@ -42,12 +46,12 @@ const fetchBookReportData = async (
         : [],
       dates: user.last_activity
         ? [
-          new Date(user.last_activity).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
-        ]
+            new Date(user.last_activity).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          ]
         : [],
     }));
   } catch (err) {
@@ -66,20 +70,58 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
   const [selectedUser, setSelectedUser] = useState<UserReport | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Password state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
   useEffect(() => {
-    loadData();
-    setDate(
-      new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    );
+    checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadData();
+      setDate(
+        new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      );
+    }
+  }, [isAuthenticated]);
+
+  const checkAuth = () => {
+    const stored = localStorage.getItem("reportAuth");
+    if (stored) {
+      const { expiresAt } = JSON.parse(stored);
+      if (new Date().getTime() < expiresAt) {
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem("reportAuth");
+      }
+    }
+  };
+
+  const handleLogin = () => {
+    if (password === PASSWORD) {
+      const expiresAt =
+        new Date().getTime() + EXPIRY_HOURS * 60 * 60 * 1000; // 24 hrs
+      localStorage.setItem(
+        "reportAuth",
+        JSON.stringify({ expiresAt: expiresAt })
+      );
+      setIsAuthenticated(true);
+      setError("");
+    } else {
+      setError("Incorrect password. Try again.");
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -99,6 +141,33 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
   const totalPages = Math.ceil(groupedData.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const currentRows = groupedData.slice(startIndex, startIndex + rowsPerPage);
+
+  // If not authenticated, show password modal
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
+          <FaLock className="mx-auto text-5xl text-gray-700 mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Protected Report</h2>
+          <p className="text-gray-600 mb-4">Enter the access password:</p>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-[#00c193]"
+            placeholder="Enter password"
+          />
+          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+          <button
+            onClick={handleLogin}
+            className="w-full bg-[#00c193] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#00a87f] transition"
+          >
+            Unlock
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 min-h-screen bg-white font-inter">
@@ -203,10 +272,11 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
               <button
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-full font-bold ${currentPage === 1
+                className={`px-4 py-2 rounded-full font-bold ${
+                  currentPage === 1
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                     : "bg-[#00c193] text-white hover:brightness-95"
-                  }`}
+                }`}
               >
                 Prev
               </button>
@@ -217,9 +287,11 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
                   className={`w-9 h-9 flex items-center justify-center rounded-full font-semibold transition 
-        ${currentPage === i + 1
-                      ? "bg-[#00c193] text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+        ${
+          currentPage === i + 1
+            ? "bg-[#00c193] text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+        }`}
                 >
                   {i + 1}
                 </button>
@@ -227,17 +299,20 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
 
               {/* Next Button */}
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className={`px-4 py-2 rounded-full font-medium transition 
-      ${currentPage === totalPages
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-[#00c193] text-white hover:bg-[#00a87f]"}`}
+      ${
+        currentPage === totalPages
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "bg-[#00c193] text-white hover:bg-[#00a87f]"
+      }`}
               >
                 Next
               </button>
             </div>
-
           </>
         )}
 
