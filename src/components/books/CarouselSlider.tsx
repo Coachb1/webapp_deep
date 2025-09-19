@@ -146,7 +146,7 @@ export default function Carousel({ onFilterChange, books }: CarouselProps) {
         label: capitalizeWords(book.list_name),
         filter: book.tag,
       }));
-  }, [books]);
+  }, []);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

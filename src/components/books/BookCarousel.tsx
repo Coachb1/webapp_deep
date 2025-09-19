@@ -130,7 +130,7 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   return (
     <>
       {/* Carousel wrapper */}
-      <div className="w-[95%] sm:w-[90%] max-w-[1400px] mx-auto">
+      <div className="w-[95%] sm:w-[90%] max-w-[1000px] mx-auto">
         <div className="flex flex-col items-center justify-center">
           {Array.from({ length: totalSlides }).map((_, slideIndex) => (
             <div

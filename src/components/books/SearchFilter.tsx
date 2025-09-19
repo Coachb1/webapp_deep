@@ -401,7 +401,11 @@ const SearchFilter = ({
           className="flex flex-wrap gap-2 items-center relative"
           ref={dropdownRef}
         >
-          {/* Filter */}
+
+
+          {/* Like + Later */}
+          <div className="flex gap-2 items-center">
+                      {/* Filter */}
           <Button
             variant="ghost"
             onClick={() => setShowDropdown(!showDropdown)}
@@ -435,9 +439,6 @@ const SearchFilter = ({
               ))}
             </ul>
           )}
-
-          {/* Like + Later */}
-          <div className="flex gap-2 items-center">
             <Button
               onClick={handleLikeClick}
               className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${
