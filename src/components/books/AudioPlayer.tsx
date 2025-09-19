@@ -40,7 +40,6 @@ const AudioPlayer = ({
   const [completedThreshold, setCompletedThreshold] = useState(50); // threshold for marking as completed
 
   const [loading, setLoading] = useState(false); // loader for slider knob / buffering / seeking
-
   const contentRef = useRef<HTMLDivElement | null>(null);
   const saveIntervalRef = useRef<number | null>(null);
 
@@ -52,31 +51,31 @@ const AudioPlayer = ({
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  // const getPlayedPercentage = (duration: number) => {
-  //   const totalPlayed = playedRanges.reduce((acc, [s, e]) => acc + (e - s), 0);
-  //   console.log(
-  //     `[AudioPlayer] played ${playedRanges} ${totalPlayed} of ${duration} (${
-  //       (totalPlayed / duration) * 100
-  //     }%)`
-  //   );
-  //   return duration ? Math.min(100, (totalPlayed / duration) * 100) : 0;
-  // };
+  const getPlayedPercentage = (duration: number) => {
+    const totalPlayed = playedRanges.reduce((acc, [s, e]) => acc + (e - s), 0);
+    console.log(
+      `[AudioPlayer] played ${playedRanges} ${totalPlayed} of ${duration} (${
+        (totalPlayed / duration) * 100
+      }%)`
+    );
+    return duration ? Math.min(100, (totalPlayed / duration) * 100) : 0;
+  };
 
-  // function mergeRanges(ranges: [number, number][]): [number, number][] {
-  //   if (ranges.length === 0) return [];
-  //   const sorted = [...ranges].sort((a, b) => a[0] - b[0]);
-  //   const merged: [number, number][] = [sorted[0]];
-  //   for (let i = 1; i < sorted.length; i++) {
-  //     const [start, end] = sorted[i];
-  //     const last = merged[merged.length - 1];
-  //     if (start <= last[1]) {
-  //       last[1] = Math.max(last[1], end); // extend overlap
-  //     } else {
-  //       merged.push([start, end]);
-  //     }
-  //   }
-  //   return merged;
-  // }
+  function mergeRanges(ranges: [number, number][]): [number, number][] {
+    if (ranges.length === 0) return [];
+    const sorted = [...ranges].sort((a, b) => a[0] - b[0]);
+    const merged: [number, number][] = [sorted[0]];
+    for (let i = 1; i < sorted.length; i++) {
+      const [start, end] = sorted[i];
+      const last = merged[merged.length - 1];
+      if (start <= last[1]) {
+        last[1] = Math.max(last[1], end); // extend overlap
+      } else {
+        merged.push([start, end]);
+      }
+    }
+    return merged;
+  }
 
   // returns percentage (0..100). Also logs inputs & result for debugging
   const getCompletionPercent = (
@@ -138,42 +137,41 @@ const AudioPlayer = ({
       setCurrentTime(t);
       setDuration(d);
       const percent = getCompletionPercent(d, t);
-//       const playedRanges = getPlayedPercentage(d);
 
-//       // Update played ranges (1s granularity)
-//       setPlayedRanges(prev => {
-//          const newRange: [number, number] = [t, t + 1];
-//   const merged = mergeRanges([...prev, newRange]);
+      // Update played ranges (1s granularity)
+      setPlayedRanges((prev) => {
+        const newRange: [number, number] = [t, t + 1];
+        const merged = mergeRanges([...prev, newRange]);
 
-//   // ✅ use merged immediately
-//   const totalPlayed = merged.reduce((acc, [s, e]) => acc + (e - s), 0);
-//   const percent = d ? Math.min(100, (totalPlayed / d) * 100) : 0;
+        // ✅ use merged immediately
+        const totalPlayed = merged.reduce((acc, [s, e]) => acc + (e - s), 0);
+        const percent = d ? Math.min(100, (totalPlayed / d) * 100) : 0;
 
-//   console.log("[AudioPlayer:onTimeUpdate]", {
-//     bookId: book?.title,
-//     currentTime: t,
-//     newRange,
-//     merged,
-//     totalPlayed,
-//     percent,
-//   });
+        console.log("[AudioPlayer:onTimeUpdate]", {
+          bookId: book?.title,
+          currentTime: t,
+          newRange,
+          merged,
+          totalPlayed,
+          percent,
+        });
 
-//   return merged; // return the updated state
-// });
-
+        return merged; // return the updated state
+      });
 
       // debug log per timeupdate (throttled by browser)
       // (progress-calc already logs, this is supplemental)
       // console.log("[audio-timeupdate]", { bookId: book?.id, currentTime: Number(t.toFixed(3)), duration: Number(d.toFixed(3)), percent });
+      const playedAudioPercentage = getPlayedPercentage(d)
 
-      if (!markedCompleted && percent >= completedThreshold) {
+      if (!markedCompleted && playedAudioPercentage >= completedThreshold) {
         setMarkedCompleted(true);
         const userId = user?.user?.user_data?.uid || "";
         console.log(
           `[AudioPlayer] reached ${completedThreshold}% -> marking completed (${completedThreshold})`,
           {
             bookId: book.title,
-            percent,
+            percent: playedAudioPercentage,
           }
         );
         // fire & forget; don't block UI
@@ -193,7 +191,6 @@ const AudioPlayer = ({
         });
         AudioManager.stop();
         setIsPlaying(false);
-        // Do NOT call onNext()
       }
     };
 
@@ -286,6 +283,11 @@ const AudioPlayer = ({
           completion: moduleCompletion?.completed_in_percentage || 0,
         });
         percentFromApi = moduleCompletion?.completed_in_percentage || 0;
+
+        const playedAudio = moduleCompletion?.audio_played || 0;
+        const playaudiosec = (playedAudio / 100) * duration || 0
+        setPlayedRanges([[playaudiosec, playaudiosec + 1]]);
+
         if (percentFromApi >= 100) {
           percentFromApi = 0;
         }
@@ -347,11 +349,13 @@ const AudioPlayer = ({
               duration: d,
               completion,
             });
+
+            const playedAudioPercentage = getPlayedPercentage(d)
             updateCourseProgress(
               courseId,
               userId,
               book.id,
-              completion >= completedThreshold ? "completed" : "in_progress",
+              playedAudioPercentage >= completedThreshold ? "completed" : "in_progress",
               completion
             ).catch(console.error);
           }
@@ -400,11 +404,13 @@ const AudioPlayer = ({
           src: AudioManager.getSrc(),
           completion,
         });
+        const playedAudioPercentage = getPlayedPercentage(d)
+
         updateCourseProgress(
           courseId,
           userId,
           book.id,
-          completion >= completedThreshold ? "completed" : "in_progress",
+          playedAudioPercentage >= completedThreshold ? "completed" : "in_progress",
           completion
         ).catch(console.error);
       }
@@ -430,12 +436,14 @@ const AudioPlayer = ({
           bookId: book.title,
           completion,
         });
+        const playedAudioPercentage = getPlayedPercentage(d)
+
         // synchronous-ish best-effort; API likely async. we call it and hope it finishes.
         updateCourseProgress(
           courseId,
           userId,
           book.id,
-          completion >= completedThreshold ? "completed" : "in_progress",
+          playedAudioPercentage >= completedThreshold ? "completed" : "in_progress",
           completion
         ).catch(console.error);
       }
