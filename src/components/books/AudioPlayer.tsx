@@ -103,6 +103,7 @@ const AudioPlayer = ({
 
     // event handlers must be stable for removeEventListener, so define here
     const onTimeUpdate = () => {
+      if (!mounted) return;
       const t = AudioManager.getCurrentTime();
       const d = AudioManager.getDuration() || duration;
       if (!mounted) return;
