@@ -132,17 +132,17 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
 
   // ✅ Leader Board login check
   const handlePasswordSubmit = (packageCourseId: string) => {
-    if (password === "bookdemo#12345") {
+    // if (password === "bookdemo#12345") {
       window.open(
         `/library-bot/bookReport/?package_course_id=${packageCourseId}`,
         "_blank"
       );
       setShowReportDialog(false);
       setPassword("");
-    } else {
-      alert("❌ Wrong password, try again!");
-      setPassword("");
-    }
+    // } else {
+    //   alert("❌ Wrong password, try again!");
+    //   setPassword("");
+    // }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -169,7 +169,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
             {/* Leader Board Button */}
             <Button
-              onClick={() => setShowReportDialog(true)}
+              onClick={() => handlePasswordSubmit(packageCourseId)}
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
               Leader Board

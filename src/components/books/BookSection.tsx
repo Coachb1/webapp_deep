@@ -38,7 +38,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   setCurrentSlide,
   name,
   email,
-  all_books
+  all_books,
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
@@ -58,8 +58,7 @@ const BookSection: React.FC<BookSectionProps> = ({
     setFilteredBooks(all_books);
   };
 
-
- const filteredBooks = useMemo(() => {
+  const filteredBooks = useMemo(() => {
     let list = books;
 
     if (viewMode === "liked") {
@@ -69,9 +68,8 @@ const BookSection: React.FC<BookSectionProps> = ({
     }
     return list;
   }, [books, viewMode, likedBooks, laterBooks]);
-  
 
- useEffect(() => {
+  useEffect(() => {
     setFilteredBooks(filteredBooks);
     setCurrentSlide(0);
   }, [filteredBooks, setFilteredBooks, setCurrentSlide]);
@@ -100,16 +98,21 @@ const BookSection: React.FC<BookSectionProps> = ({
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
-        <SearchFilter onSearch={onSearch} onFilterChange={onFilterChange} setViewMode={setViewMode} books={books} viewMode={viewMode} handleResetLibrary={handleResetLibrary}/>
+        <SearchFilter
+          onSearch={onSearch}
+          onFilterChange={onFilterChange}
+          setViewMode={setViewMode}
+          books={books}
+          viewMode={viewMode}
+          handleResetLibrary={handleResetLibrary}
+        />
         <br />
         <Carousel onFilterChange={onFilterChange} books={books} />
-
       </div>
-        {/* <PageRefresh onReset={handleResetLibrary}  /> */}
-        <br />
-        <br />
+      {/* <PageRefresh onReset={handleResetLibrary}  /> */}
+      <br />
+      <br />
       <BookCarousel
-        
         books={books}
         currentSlide={currentSlide}
         onSlideChange={onSlideChange}
@@ -126,7 +129,7 @@ const BookSection: React.FC<BookSectionProps> = ({
       <br />
       <CTA />
 
-      <div className="text-center jobaid-background">
+      <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
         <ConversationalForm
           job_aid_id="e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2"
           isEmailSection={false}
@@ -140,4 +143,3 @@ const BookSection: React.FC<BookSectionProps> = ({
 
 /* setSearchTerm is now handled by useState above */
 export default BookSection;
-
