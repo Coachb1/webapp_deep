@@ -180,7 +180,8 @@ const AudioPlayer = ({
           userId,
           book.id,
           "completed",
-          completedThreshold
+          completedThreshold,
+          playedAudioPercentage
         ).catch(console.error);
       }
 
@@ -356,7 +357,8 @@ const AudioPlayer = ({
               userId,
               book.id,
               playedAudioPercentage >= completedThreshold ? "completed" : "in_progress",
-              completion
+              completion,
+              playedAudioPercentage
             ).catch(console.error);
           }
         }, 15000);
@@ -411,7 +413,8 @@ const AudioPlayer = ({
           userId,
           book.id,
           playedAudioPercentage >= completedThreshold ? "completed" : "in_progress",
-          completion
+          completion,
+          playedAudioPercentage
         ).catch(console.error);
       }
 
@@ -444,7 +447,8 @@ const AudioPlayer = ({
           userId,
           book.id,
           playedAudioPercentage >= completedThreshold ? "completed" : "in_progress",
-          completion
+          completion,
+          playedAudioPercentage
         ).catch(console.error);
       }
       AudioManager.pause();
