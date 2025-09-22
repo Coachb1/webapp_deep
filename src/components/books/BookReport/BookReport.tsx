@@ -179,7 +179,7 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
               <FaChartLine /> LeaderBoard Report
             </h1>
             <p className="opacity-90 text-lg">
-              Comprehensive Your Activity & Book Management Dashboard
+              Learning leaders Dashboard
             </p>
           </div>
           <button
@@ -195,7 +195,7 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-900">
-            <FaTable /> Your Activity Report
+            <FaTable />Activity Report
           </h2>
           <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
             <FaArrowUp /> Ranked by Books Completed

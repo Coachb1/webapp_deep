@@ -170,7 +170,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
             <h1 className="text-3xl font-extrabold flex items-center gap-2">
               <FaChartLine /> IdeaBoard Report
             </h1>
-            <p className="opacity-90 text-lg">Comprehensive Your Activity & Book Management Dashboard</p>
+            <p className="opacity-90 text-lg">Enterprise Ideas log</p>
           </div>
 
           <button
@@ -186,7 +186,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 bg-white flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <FaTable /> Your Activity Report
+            <FaTable />Activity Report
           </h2>
           <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
             <FaArrowUp /> Updated just now
