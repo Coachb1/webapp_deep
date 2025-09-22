@@ -812,7 +812,7 @@ export const updateCourseProgress = async (
   moduleId: string,
   status: string,
   trackingData: number,
-  playedAudio: number
+  playedAudio: number = 0
 ) => {
   try {
 
