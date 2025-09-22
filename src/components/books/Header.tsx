@@ -172,7 +172,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
               onClick={() => handlePasswordSubmit(packageCourseId)}
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
-              Leader Board
+              LeaderBoard
             </Button>
 
             {/* Idea Board Button */}
@@ -185,7 +185,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
               }
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
-              Idea Board
+              IdeaBoard
             </Button>
           </div>
         </div>
