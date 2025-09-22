@@ -811,7 +811,8 @@ export const updateCourseProgress = async (
   userId: string,
   moduleId: string,
   status: string,
-  trackingData: number
+  trackingData: number,
+  playedAudio: number
 ) => {
   try {
 
@@ -826,6 +827,7 @@ export const updateCourseProgress = async (
         module_id: moduleId,
         status: status,
         completed_in_percentage: trackingData,
+        played_audio: playedAudio,
       },
     });
     console.log("[updateCourseProgress] Data:", data);
