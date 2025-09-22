@@ -33,24 +33,21 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
           {rows.map((row) => (
             <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
               {qnaKeys.map((key) => (
-                <td
-                  key={key}
-                  className={`px-6 py-4 text-center text-gray-600`}
-                >
-                  {row.qna[key] && row.qna[key].length > 80 ? (
-                    <>
-                      {row.qna[key].slice(0, 80)}...{key}
-                      <button
-                        onClick={() => onSelectRow({[key]: row.qna[key]})}
-                        className="ml-2 text-[#00c193] underline text-sm"
-                      >
-                        More
-                      </button>
-                    </>
-                  ) : (
-                    row.qna[key] || "-"
+                <td key={key} className="px-6 py-4 text-center text-gray-600 max-w-[200px]">
+                  <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                    {row.qna[key] || "-"}
+                  </div>
+
+                  {row.qna[key] && row.qna[key].length > 80 && (
+                    <button
+                      onClick={() => onSelectRow({ [key]: row.qna[key] })}
+                      className="ml-2 text-[#00c193] underline text-sm"
+                    >
+                      More
+                    </button>
                   )}
                 </td>
+
               ))}
 
 
@@ -58,9 +55,8 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
                 <button
                   onClick={() => onLike(row)}
                   disabled={loadingLike === row.id}
-                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border ${
-                    row.liked ? "bg-[#00c193]/20 border-[#00c193]" : "bg-white"
-                  } ${loadingLike === row.id ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border ${row.liked ? "bg-[#00c193]/20 border-[#00c193]" : "bg-white"
+                    } ${loadingLike === row.id ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {loadingLike === row.id ? (
                     <span className="text-gray-400 text-sm">...</span>
