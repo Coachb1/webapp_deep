@@ -7,6 +7,7 @@ import { Book } from "@/lib/types";
 import { getModuleCompletion, updateCourseProgress } from "@/lib/api";
 import { useUser } from "./context/UserContext";
 import AudioManager from "./AudioManager";
+import { Volume1, Volume2, VolumeX } from "lucide-react";
 
 interface AudioPlayerProps {
   show: boolean;
@@ -43,6 +44,7 @@ const AudioPlayer = ({
   const contentRef = useRef<HTMLDivElement | null>(null);
   const saveIntervalRef = useRef<number | null>(null);
   const actualPlayedPercentageRef = useRef(0);
+
   // helper
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00";
@@ -53,14 +55,14 @@ const AudioPlayer = ({
 
   const getPlayedPercentage = () => {
 
-  console.log(
-    '[getplayedpercentage]',
-    { 
-      actualPlayedPercentage: actualPlayedPercentageRef.current, 
-    }
-  );
-  return actualPlayedPercentageRef.current;
-};
+    console.log(
+      '[getplayedpercentage]',
+      {
+        actualPlayedPercentage: actualPlayedPercentageRef.current,
+      }
+    );
+    return actualPlayedPercentageRef.current;
+  };
 
 
   function mergeRanges(ranges: [number, number][]): [number, number][] {
@@ -102,6 +104,36 @@ const AudioPlayer = ({
     });
 
     return Number(clamped.toFixed(2));
+  };
+  // put this above all useEffect hooks inside your component
+  const saveProgress = (reason: string, book: Book | null) => {
+    if (!book) return;
+
+    const t = AudioManager.getCurrentTime();
+    const d = AudioManager.getDuration();
+    const completion = getCompletionPercent(d, t);
+
+    if (completion > 0) {
+      const userId = user?.user?.user_data?.uid || "";
+      const playedPercentage = getPlayedPercentage();
+
+      console.log(`[AudioPlayer:saveProgress:${reason}]`, {
+        bookId: book.id,
+        bookTitle: book.title,
+        completion,
+        playedPercentage,
+        actualPlayedPercentage: actualPlayedPercentageRef.current,
+      });
+
+      updateCourseProgress(
+        courseId,
+        userId,
+        book.id,
+        playedPercentage >= completedThreshold ? "completed" : "in_progress",
+        completion,
+        playedPercentage
+      ).catch(console.error);
+    }
   };
 
   // Initialize / play when popup opens or book changes
@@ -159,43 +191,35 @@ const AudioPlayer = ({
           percent
         });
 
-        actualPlayedPercentageRef.current = Number(playedPercent.toFixed(2));
-        console.log('played percentage', {actualPlayedPercentage:actualPlayedPercentageRef.current, playedPercent})
+      actualPlayedPercentageRef.current = Number(playedPercent.toFixed(2));
+        console.log('played percentage', { actualPlayedPercentage: actualPlayedPercentageRef.current, playedPercent })
 
-      // debug log per timeupdate (throttled by browser)
-      // (progress-calc already logs, this is supplemental)
-      // console.log("[audio-timeupdate]", { bookId: book?.id, currentTime: Number(t.toFixed(3)), duration: Number(d.toFixed(3)), percent });
+        // debug log per timeupdate (throttled by browser)
+        // (progress-calc already logs, this is supplemental)
+        // console.log("[audio-timeupdate]", { bookId: book?.id, currentTime: Number(t.toFixed(3)), duration: Number(d.toFixed(3)), percent });
 
       if (!markedCompleted && playedPercent >= completedThreshold) {
         setMarkedCompleted(true);
-        const userId = user?.user?.user_data?.uid || "";
-        console.log(
-          `[AudioPlayer] reached ${completedThreshold}% -> marking completed (${completedThreshold})`,
-          {
-            bookId: book.title,
-            playedPercent,
-            percent
-          }
-        );
-        // fire & forget; don't block UI
-        updateCourseProgress(
-          courseId,
-          userId,
-          book.id,
-          "completed",
-          completedThreshold,
-          playedPercent
-        ).catch(console.error);
-      }
+          const userId = user?.user?.user_data?.uid || "";
+          console.log(
+            `[AudioPlayer] reached ${completedThreshold}% -> marking completed (${completedThreshold})`,
+            {
+              bookId: book.title,
+              playedPercent,
+              percent
+            }
+          );
+          saveProgress('book threshold completed', book)
+        }
 
-      // Stop playback at 100%
-      if (percent >= 100) {
-        console.log("[AudioPlayer] 100% complete, stopping audio", {
-          bookId: book.title,
-        });
-        AudioManager.stop();
-        setIsPlaying(false);
-        // Do NOT call onNext()
+        // Stop playback at 100%
+        if (percent >= 100) {
+          console.log("[AudioPlayer] 100% complete, stopping audio", {
+            bookId: book.title,
+          });
+          saveProgress("book completed", book);
+          AudioManager.stop();
+          setIsPlaying(false);
       }
 
         return merged; // return the updated state
@@ -289,22 +313,19 @@ const AudioPlayer = ({
         console.log("[AudioPlayer:init] starting", {
           bookTitle: book.title,
           completion: moduleCompletion?.completed_in_percentage || 0,
-          AudioPlayed: moduleCompletion?.audio_played || 0  
+          AudioPlayed: moduleCompletion?.audio_played || 0
         });
         percentFromApi = moduleCompletion?.completed_in_percentage || 0;
 
-        const playedAudio = moduleCompletion?.audio_played || 0;
-        const playaudiosec = (playedAudio / 100) * duration || 0
+
         
         if (percentFromApi < 100) {
-          const playSec = (playedAudio / 100) * duration;
-          setPlayedRanges([[0, playSec]]); // ✅ continuous range up to saved progress
-          actualPlayedPercentageRef.current = Number((playSec / duration * 100).toFixed(2));
+          const playedAudio = moduleCompletion?.audio_played || 0;
+          actualPlayedPercentageRef.current = playedAudio;
+
+          setMarkedCompleted(playedAudio >= completedThreshold);
         }
-        console.log('[AudioPlayer:init] played ranges', {
-          bookId: book.title,
-          ranges: [[playaudiosec, playaudiosec + 1]],
-        });
+
 
         if (percentFromApi >= 100) {
           percentFromApi = 0;
@@ -338,10 +359,7 @@ const AudioPlayer = ({
           await AudioManager.play(book.audio, percentFromApi);
           setIsPlaying(true);
           setAutoplayBlocked(false);
-          console.log("[AudioPlayer:init] play success", {
-            bookId: book.title,
-            managerSrcAfter: AudioManager.getSrc(),
-          });
+
         } catch (err) {
           console.warn("[AudioPlayer:init] play blocked / failed", {
             bookId: book.title,
@@ -369,15 +387,7 @@ const AudioPlayer = ({
             });
 
             const playedPercentage = getPlayedPercentage();
-            console.log("[AudioPlayer] played percentage:", {playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current});
-            updateCourseProgress(
-              courseId,
-              userId,
-              book.id,
-              playedPercentage >= completedThreshold ? "completed" : "in_progress",
-              completion,
-              playedPercentage,
-            ).catch(console.error);
+            saveProgress("autosave in 15 sec interval", book);
           }
         }, 15000);
       } catch (err) {
@@ -412,7 +422,7 @@ const AudioPlayer = ({
         clearInterval(saveIntervalRef.current);
         saveIntervalRef.current = null;
       }
-
+      saveProgress("cleanup", book);
       // Save final progress on unmount/close
       const t = AudioManager.getCurrentTime();
       const d = AudioManager.getDuration();
@@ -426,24 +436,9 @@ const AudioPlayer = ({
         });
 
         const playedPercentage = getPlayedPercentage();
-            console.log("[AudioPlayer] played percentage:", {playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current});
-
-        updateCourseProgress(
-          courseId,
-          userId,
-          book.id,
-          playedPercentage >= completedThreshold ? "completed" : "in_progress",
-          completion,
-          playedPercentage
-        ).catch(console.error);
+        console.log("[AudioPlayer] played percentage:", { playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current });
       }
-
-      // Do NOT forcibly stop here to avoid racing with the next play() — AudioManager.play will replace src if needed.
-      // However, if you prefer to explicitly stop on every cleanup, uncomment the next two lines:
-      // AudioManager.stop();
-      // console.log("[AudioPlayer:stopped-on-cleanup]", { bookId: book?.id });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, book, courseId]);
 
   // pause/save on window beforeunload
@@ -460,17 +455,10 @@ const AudioPlayer = ({
           completion,
         });
         const playedPercentage = getPlayedPercentage();
-            console.log("[AudioPlayer] played percentage:", {playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current});
+        console.log("[AudioPlayer] played percentage:", { playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current });
 
         // synchronous-ish best-effort; API likely async. we call it and hope it finishes.
-        updateCourseProgress(
-          courseId,
-          userId,
-          book.id,
-          playedPercentage >= completedThreshold ? "completed" : "in_progress",
-          completion,
-          playedPercentage
-        ).catch(console.error);
+        saveProgress("beforeunload", book);
       }
       AudioManager.pause();
     };
@@ -489,20 +477,21 @@ const AudioPlayer = ({
         e.target instanceof Node &&
         !contentRef.current.contains(e.target)
       ) {
-        console.log(
-          "[AudioPlayer] outside click -> stopping audio and closing",
-          { bookTitle: book?.title, managerSrc: AudioManager.getSrc() }
-        );
+        console.log("[AudioPlayer] outside click -> save & close", {
+          bookTitle: book?.title,
+        });
+        saveProgress("outside-click", book);
         AudioManager.stop();
         onClose();
       }
     };
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        console.log("[AudioPlayer] Escape -> stopping audio and closing", {
+        console.log("[AudioPlayer] Escape -> save & close", {
           bookTitle: book?.title,
-          managerSrc: AudioManager.getSrc(),
         });
+        saveProgress("escape", book);
         AudioManager.stop();
         onClose();
       }
@@ -518,6 +507,30 @@ const AudioPlayer = ({
       document.removeEventListener("keydown", handleKey);
     };
   }, [show, onClose, book]);
+
+  useEffect(() => {
+    if (!show || !book) {
+      saveProgress("book-change/close", book);
+      AudioManager.stop();
+      setIsPlaying(false);
+      return;
+    }
+
+    // ✅ save old progress before switching
+    saveProgress("book-change", book);
+
+    // reset state for new book
+    setMarkedCompleted(false);
+    setStartFromPercentage(0);
+
+    // ... rest of your init logic
+    console.log("[AudioPlayer] book changed →", {
+      bookTitle: book.title,
+      bookId: book.id,
+      managerSrc: AudioManager.getSrc(),
+    });
+  }, [show, book, courseId]);
+
 
   // Controls
   const togglePlayPause = async () => {
@@ -592,7 +605,7 @@ const AudioPlayer = ({
     // update UI immediately
     setCurrentTime(newTime);
     // rely on 'seeked' event to clear loading; also clear fallback after 700ms
-    setTimeout(() => setLoading(false), 700);
+    // setTimeout(() => setLoading(false), 700);
   };
 
   const cyclePlaybackRate = () => {
@@ -611,7 +624,7 @@ const AudioPlayer = ({
     AudioManager.setCurrentTime(newTime);
     setCurrentTime(newTime);
     setLoading(true);
-    setTimeout(() => setLoading(false), 600);
+    // setTimeout(() => setLoading(false), 600);
   };
 
   const skipBackward = () => {
@@ -619,7 +632,7 @@ const AudioPlayer = ({
     AudioManager.setCurrentTime(newTime);
     setCurrentTime(newTime);
     setLoading(true);
-    setTimeout(() => setLoading(false), 600);
+    // setTimeout(() => setLoading(false), 600);
   };
 
   if (!show || !book) return null;
@@ -629,6 +642,13 @@ const AudioPlayer = ({
     ? Math.min(100, Math.max(0, (currentTime / duration) * 100))
     : 0;
 
+  const resetPlayback = () => {
+    AudioManager.setCurrentTime(0); // go to start
+    if (!isPlaying) {
+      AudioManager.play(); // auto play from start if paused
+      setIsPlaying(true);
+    }
+  };
   return (
     <div className={`popup ${show ? "show" : ""}`}>
       <div
@@ -656,19 +676,41 @@ const AudioPlayer = ({
         {/* Controls */}
         <div className="playback-section">
           <div className="player-controls">
-            <Button className="control-btn" onClick={cyclePlaybackRate}>
+            <Button
+              className="control-btn"
+              onClick={cyclePlaybackRate}
+              title="Change playback speed"
+            >
               {playbackRate}x
             </Button>
-            <Button className="control-btn" onClick={skipBackward}>
+            <Button
+              className="control-btn"
+              onClick={skipBackward}
+              title="Skip backward 10 seconds"
+            >
               &#9664;&#9664;
             </Button>
-            <Button className="control-btn" onClick={togglePlayPause}>
+            <Button
+              className="control-btn"
+              onClick={togglePlayPause}
+              title={isPlaying ? "Pause" : "Play"}
+            >
               {isPlaying ? "⏸" : "▶"}
             </Button>
-            <Button className="control-btn" onClick={skipForward}>
+            <Button
+              className="control-btn"
+              onClick={skipForward}
+              title="Skip forward 10 seconds"
+            >
               &#9654;&#9654;
             </Button>
-            <Button className="control-btn">CC</Button>
+            <Button
+              className="control-btn"
+              onClick={resetPlayback}
+              title="Reset playback"
+            >
+              ⏹
+            </Button>
           </div>
 
           <div className="player-progress flex items-center gap-2 w-full relative">
@@ -680,7 +722,7 @@ const AudioPlayer = ({
                 onValueChange={handleProgressChange}
                 max={100}
                 step={0.1}
-                className={`flex-1  ${loading ? "opacity-30" : "opacity-100"}`} // <- dim knob while loading
+                className={`flex-1 ${loading ? "opacity-30" : "opacity-100"}`} // <- dim knob while loading
               />
             </div>
             <span className="text-xs">{formatTime(duration)}</span>
@@ -689,9 +731,20 @@ const AudioPlayer = ({
 
         {/* Volume */}
         <div className="player-volume">
-          <Button className="control-btn" onClick={toggleMute}>
-            {isMuted ? "🔇" : "🔊"}
+          <Button
+            className="control-btn"
+            onClick={toggleMute}
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted || volume === 0 ? (
+              <VolumeX className="h-6 w-6" />
+            ) : volume < 0.5 ? (
+              <Volume1 className="h-6 w-6" />
+            ) : (
+              <Volume2 className="h-6 w-6" />
+            )}
           </Button>
+
           <Slider
             value={[volume]}
             onValueChange={handleVolumeChange}
