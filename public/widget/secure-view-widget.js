@@ -1,6 +1,6 @@
 (function () {
   const currentScript = document.currentScript;
-  const IMAGE_URL = currentScript.getAttribute("data-widget-image") || 'https://via.placeholder.com/150';
+  const IMAGE_URL = currentScript.getAttribute("data-widget-image") || '';
   const URL_ID = currentScript.getAttribute("data-page-id") || '';
   const WIDGET_WIDTH = parseInt(currentScript.getAttribute("data-widget-width")); // optional
   const WIDGET_HEIGHT = parseInt(currentScript.getAttribute("data-widget-height")); // optional
@@ -16,7 +16,10 @@
       position: fixed;
       bottom: 25px;
       right: 25px;
-      display: block; /* let button wrap the image exactly */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-height: calc(100vh - 83px);
       padding: 0;
       margin: 0;
       border: none;
@@ -26,6 +29,8 @@
       user-select: none;
       box-shadow: 0 6px 15px rgba(0,0,0,0.25);
       transition: all 0.3s ease;
+      font-family: sans-serif;
+      font-weight: bold;
     }
 
     .widget-button:hover {
@@ -49,6 +54,17 @@
       margin: 0;
     }
 
+    .widget-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #4dd9b3;
+      color: white;
+      font-size: 2rem;
+      width: 100%;
+      height: 100%;
+    }
+
     @media (max-width: 768px) {
       .widget-button {
         bottom: 15px;
@@ -69,6 +85,7 @@
       }
     }
   `;
+
   const styleTag = document.createElement("style");
   styleTag.innerHTML = styles;
   document.head.appendChild(styleTag);
@@ -76,29 +93,59 @@
   const button = document.createElement("div");
   button.className = "widget-button";
 
-  const img = document.createElement("img");
-  img.src = IMAGE_URL;
-  img.alt = "Widget";
-  img.className = "widget-image";
+  if (IMAGE_URL) {
+    const img = document.createElement("img");
+    img.src = IMAGE_URL;
+    img.alt = "Widget";
+    img.className = "widget-image";
 
-  img.addEventListener('load', () => {
-    let width = WIDGET_WIDTH || img.naturalWidth;
-    let height = WIDGET_HEIGHT || img.naturalHeight;
+    img.addEventListener('load', () => {
+      let width = WIDGET_WIDTH || img.naturalWidth;
+      let height = WIDGET_HEIGHT || img.naturalHeight;
 
-    // Scale if height exceeds max
+      const maxHeight = window.innerHeight - 83;
+      if (height > maxHeight) {
+        const scale = maxHeight / height;
+        width = width * scale;
+        height = height * scale;
+      }
+
+      button.style.width = width + 'px';
+      button.style.height = height + 'px';
+    });
+
+    // If image fails to load, show placeholder
+    img.addEventListener('error', () => showPlaceholder(button));
+
+    button.appendChild(img);
+  } else {
+    showPlaceholder(button);
+  }
+
+  document.body.appendChild(button);
+
+  function showPlaceholder(buttonEl) {
+    const placeholder = document.createElement("div");
+    placeholder.className = "widget-placeholder";
+
+    placeholder.textContent = "C";
+
+    // Set size
+    let width = WIDGET_WIDTH || 80;
+    let height = WIDGET_HEIGHT || 80;
     const maxHeight = window.innerHeight - 83;
     if (height > maxHeight) {
       const scale = maxHeight / height;
       width = width * scale;
       height = height * scale;
     }
+    buttonEl.style.width = width + "px";
+    buttonEl.style.height = height + "px";
 
-    button.style.width = width + 'px';
-    button.style.height = height + 'px';
-  });
-
-  button.appendChild(img);
-  document.body.appendChild(button);
+    // Remove existing children if any
+    buttonEl.innerHTML = "";
+    buttonEl.appendChild(placeholder);
+  }
 
   button.addEventListener("click", () => {
     if (window._playgroundPopup && !window._playgroundPopup.closed) {
