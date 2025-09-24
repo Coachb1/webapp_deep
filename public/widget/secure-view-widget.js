@@ -1,20 +1,23 @@
 (function () {
+  // === CONFIGURATION ===
   const currentScript = document.currentScript;
   const IMAGE_URL = currentScript.getAttribute("data-widget-image") || '';
-  const URL_ID = currentScript.getAttribute("data-page-id") || '';
-  const WIDGET_WIDTH = parseInt(currentScript.getAttribute("data-widget-width")); // optional
-  const WIDGET_HEIGHT = parseInt(currentScript.getAttribute("data-widget-height")); // optional
-  const POPUP_FEATURES = "width=900,height=600,scrollbars=yes,resizable=yes";
+  const WIDGET_TEXT = currentScript.getAttribute("data-widget-text") || '';
+  const PAGE_ID = currentScript.getAttribute("data-page-id") || '';
+  const WIDGET_WIDTH = parseInt(currentScript.getAttribute("data-widget-width")) || null;
+  const WIDGET_HEIGHT = parseInt(currentScript.getAttribute("data-widget-height")) || null;
 
-  if (!window._playgroundPopup) window._playgroundPopup = null;
-  let popupWindow = window._playgroundPopup;
+  const TARGET_URL = `https://playground.coachbots.com/library-bot/${PAGE_ID}`;
 
-  const TARGET_URL = `https://playground.coachbots.com/library-bot/${URL_ID}`;
+  let widgetOpened = false;
+  let originalWidth = 0;
+  let originalHeight = 0;
 
+  // === STYLES ===
   const styles = `
     .widget-button {
       position: fixed;
-      bottom: 25px;
+      bottom: 15px;
       right: 25px;
       display: flex;
       align-items: center;
@@ -22,27 +25,23 @@
       max-height: calc(100vh - 83px);
       padding: 0;
       margin: 0;
-      border: none;
       background: transparent;
       cursor: pointer;
-      z-index: 10000;
+      z-index: 10001;
       user-select: none;
       box-shadow: 0 6px 15px rgba(0,0,0,0.25);
       transition: all 0.3s ease;
       font-family: sans-serif;
       font-weight: bold;
     }
-
     .widget-button:hover {
       transform: scale(1.08);
       box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
-
     .widget-button:active {
       transform: scale(0.98);
       box-shadow: 0 6px 12px rgba(0,0,0,0.2);
     }
-
     .widget-image {
       display: block;
       width: 100%;
@@ -52,139 +51,181 @@
       border: 0;
       padding: 0;
       margin: 0;
+      transition: all 0.3s ease;
     }
-
     .widget-placeholder {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: #4dd9b3;
       color: white;
-      font-size: 2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      background-color: #14b8a6;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      padding: 10px 18px;
+      border-radius: 6px;
+    }
+    .widget-placeholder:hover { transform: scale(1.05); }
+    .widget-placeholder:active { transform: scale(0.96); }
+
+    .widget-chat-panel {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      height: calc(100vh - 66px);
+      background: #fff;
+      border-radius: 12px;
+      z-index: 10000;
+      display: none;
+      overflow: hidden;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    }
+    .widget-chat-panel iframe {
+      border: none;
       width: 100%;
       height: 100%;
     }
-
-    @media (max-width: 768px) {
-      .widget-button {
-        bottom: 15px;
-        right: 15px;
-      }
-      .widget-image {
-        max-width: 75%;
-      }
+    .widget-close {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      z-index: 10001;
+      font-size: 1.7rem;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
     }
-
-    @media (max-width: 480px) {
-      .widget-button {
-        bottom: 10px;
-        right: 10px;
-      }
-      .widget-image {
-        max-width: 60%;
-      }
+    .widget-close:hover {
+      background: rgba(255,255,255,1);
+      transform: scale(1.1);
     }
   `;
 
-  const styleTag = document.createElement("style");
-  styleTag.innerHTML = styles;
-  document.head.appendChild(styleTag);
+  appendStyles(styles);
 
-  const button = document.createElement("div");
-  button.className = "widget-button";
-
-  if (IMAGE_URL) {
-    const img = document.createElement("img");
-    img.src = IMAGE_URL;
-    img.alt = "Widget";
-    img.className = "widget-image";
-
-    img.addEventListener('load', () => {
-      let width = WIDGET_WIDTH || img.naturalWidth;
-      let height = WIDGET_HEIGHT || img.naturalHeight;
-
-      const maxHeight = window.innerHeight - 83;
-      if (height > maxHeight) {
-        const scale = maxHeight / height;
-        width = width * scale;
-        height = height * scale;
-      }
-
-      button.style.width = width + 'px';
-      button.style.height = height + 'px';
-    });
-
-    // If image fails to load, show placeholder
-    img.addEventListener('error', () => showPlaceholder(button));
-
-    button.appendChild(img);
-  } else {
-    showPlaceholder(button);
-  }
+  // === ELEMENTS ===
+  const button = createButton();
+  const chatPanel = createChatPanel(TARGET_URL);
 
   document.body.appendChild(button);
+  document.body.appendChild(chatPanel);
+
+  // === EVENT LISTENERS ===
+  button.addEventListener("click", toggleWidget);
+  chatPanel.querySelector(".widget-close").addEventListener("click", closeWidget);
+
+  // === FUNCTIONS ===
+  function appendStyles(cssText) {
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = cssText;
+    document.head.appendChild(styleTag);
+  }
+
+  function createButton() {
+    const btn = document.createElement("div");
+    btn.className = "widget-button";
+
+    if (IMAGE_URL) {
+      const img = document.createElement("img");
+      img.src = IMAGE_URL;
+      img.alt = "Widget";
+      img.className = "widget-image";
+
+      img.addEventListener("load", () => resizeButton(btn, img));
+      img.addEventListener("error", () => showPlaceholder(btn));
+
+      btn.appendChild(img);
+    } else {
+      showPlaceholder(btn);
+    }
+
+    return btn;
+  }
+
+  function createChatPanel(url) {
+    const panel = document.createElement("div");
+    panel.className = "widget-chat-panel";
+    panel.innerHTML = `
+      <span class="widget-close">&times;</span>
+      <iframe src="${url}"></iframe>
+    `;
+    return panel;
+  }
 
   function showPlaceholder(buttonEl) {
+    buttonEl.innerHTML = "";
     const placeholder = document.createElement("div");
     placeholder.className = "widget-placeholder";
-
-    placeholder.textContent = "C";
-
-    // Set size
-    let width = WIDGET_WIDTH || 80;
-    let height = WIDGET_HEIGHT || 80;
-    const maxHeight = window.innerHeight - 83;
-    if (height > maxHeight) {
-      const scale = maxHeight / height;
-      width = width * scale;
-      height = height * scale;
-    }
-    buttonEl.style.width = width + "px";
-    buttonEl.style.height = height + "px";
-
-    // Remove existing children if any
-    buttonEl.innerHTML = "";
+    placeholder.textContent = WIDGET_TEXT || "C";
     buttonEl.appendChild(placeholder);
   }
 
-  button.addEventListener("click", () => {
-    if (window._playgroundPopup && !window._playgroundPopup.closed) {
-      window._playgroundPopup.focus();
-      return;
+  function resizeButton(buttonEl, img) {
+    let width = WIDGET_WIDTH || img.naturalWidth;
+    let height = WIDGET_HEIGHT || img.naturalHeight;
+
+    const maxHeight = window.innerHeight - 83;
+    if (height > maxHeight) {
+      const scale = maxHeight / height;
+      width *= scale;
+      height *= scale;
     }
 
-    popupWindow = window.open("", "_blank", POPUP_FEATURES);
-    if (!popupWindow) return;
-    window._playgroundPopup = popupWindow;
-    popupWindow.opener = null;
+    buttonEl.style.width = `${width}px`;
+    buttonEl.style.height = `${height}px`;
+    originalWidth = width;
+    originalHeight = height;
+  }
 
-    popupWindow.document.write(`
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <title>Widget</title>
-        <meta name="referrer" content="no-referrer">
-        <style>
-          html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-          }
-          iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-          }
-        </style>
-      </head>
-      <body>
-        <iframe src="${TARGET_URL}"></iframe>
-      </body>
-      </html>
-    `);
-    popupWindow.document.close();
-  });
+  function shrinkButtonToPlaceholder(buttonEl) {
+    buttonEl.style.width = "auto";
+    buttonEl.style.height = "auto";
+    showPlaceholder(buttonEl);
+  }
+
+  function restoreButton(buttonEl) {
+    if (IMAGE_URL && originalWidth && originalHeight) {
+      buttonEl.innerHTML = "";
+      const img = document.createElement("img");
+      img.src = IMAGE_URL;
+      img.alt = "Widget";
+      img.className = "widget-image";
+      img.style.width = `${originalWidth}px`;
+      img.style.height = `${originalHeight}px`;
+      buttonEl.appendChild(img);
+    } else {
+      showPlaceholder(buttonEl);
+    }
+  }
+
+  function toggleWidget() {
+    const chatPanel = document.querySelector(".widget-chat-panel");
+    if (!widgetOpened) {
+      chatPanel.style.display = "block";
+      shrinkButtonToPlaceholder(button);
+    } else {
+      chatPanel.style.display = "none";
+      restoreButton(button);
+    }
+    widgetOpened = !widgetOpened;
+  }
+
+  function closeWidget() {
+    const chatPanel = document.querySelector(".widget-chat-panel");
+    chatPanel.style.display = "none";
+    restoreButton(button);
+    widgetOpened = false;
+  }
 })();
