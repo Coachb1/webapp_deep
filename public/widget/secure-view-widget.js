@@ -6,8 +6,9 @@
   const PAGE_ID = currentScript.getAttribute("data-page-id") || '';
   const WIDGET_WIDTH = parseInt(currentScript.getAttribute("data-widget-width")) || null;
   const WIDGET_HEIGHT = parseInt(currentScript.getAttribute("data-widget-height")) || null;
+  const baseUrl = currentScript.getAttribute("data-base-url") || 'https://playground.coachbots.com';
 
-  const TARGET_URL = `https://playground.coachbots.com/library-bot/${PAGE_ID}`;
+  const TARGET_URL = `${baseUrl}/library-bot/${PAGE_ID}`;
 
   let widgetOpened = false;
   let originalWidth = 0;
