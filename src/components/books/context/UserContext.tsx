@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 interface User {
   given_name: string;
@@ -18,7 +18,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const useUser = () => {
   const context = useContext(UserContext);
-  if (!context) throw new Error("useUser must be used within a UserProvider");
+  if (!context) throw new Error("useUser must be used within UserProvider");
   return context;
 };
 
@@ -27,15 +27,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("user");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setUser(parsed);
-        window.user = parsed;
-      }
-      setLoading(false);
-    }
+    const token = localStorage.getItem('jwt_token');
+    fetch("/api/session", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data.user);
+        (window as any).user = data.user;
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
