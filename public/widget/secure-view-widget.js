@@ -160,7 +160,9 @@
     panel.className = "widget-chat-panel";
     panel.innerHTML = `
       <span class="widget-close">&times;</span>
-      <iframe src="${url}"></iframe>
+      <iframe src="${url}" 
+        sandbox="allow-scripts allow-same-origin allow-forms"
+      ></iframe>
     `;
     return panel;
   }
