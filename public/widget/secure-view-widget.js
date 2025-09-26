@@ -161,7 +161,7 @@
     panel.innerHTML = `
       <span class="widget-close">&times;</span>
       <iframe src="${url}" 
-        sandbox="allow-scripts allow-same-origin allow-forms"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
       ></iframe>
     `;
     return panel;
