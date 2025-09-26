@@ -53,6 +53,8 @@ module.exports = {
               // only allow images from trusted sources
               `img-src 'self' data: ${AllowedImgDomains.join(" ")}`,
 
+              `media-src 'self' ${AllowedImgDomains.join(" ")}`,
+
               // allow blob workers
               `worker-src 'self' blob: ${AllowedScriptDomains.join(" ")}`,
 
