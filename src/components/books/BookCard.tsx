@@ -144,6 +144,26 @@ const BookCard: React.FC<BookCardProps> = ({
       </div>
 
 
+
+      {/* Finished Status + Progress */}
+      <div className="flex items-center mt-3 gap-2">
+        <span className="text-gray-700 text-sm">8 Jun • Finished</span>
+
+        <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#00c193] text-white text-xs font-bold shadow-md">
+          ✓
+        </div>
+
+        {/* progress */}
+        <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+          <div className="h-2 bg-green-500 w-1/2"></div> 
+        </div>
+      </div>
+
+
+
+
+
+
     </article>
   );
 };
