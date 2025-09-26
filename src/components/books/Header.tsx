@@ -55,7 +55,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
           {/* Buttons Section */}
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
             {/* Leader Board Button */}
-            <button
+            <Button
               onClick={() => {
                 if (packageCourseId) {
                   const url = `/library-bot/bookReport/?package_course_id=${encodeURIComponent(
@@ -67,10 +67,10 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
               LeaderBoard
-            </button>
+            </Button>
 
             {/* Idea Board Button */}
-            <button
+            <Button
               onClick={() => {
                 if (user?.email) {
                   const url = `/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${encodeURIComponent(
@@ -82,7 +82,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
               IdeaBoard
-            </button>
+            </Button>
           </div>
         </div>
       </header>
