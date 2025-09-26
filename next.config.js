@@ -5,7 +5,8 @@ const AllowedFrameDomains = [
   "http://localhost:*",
   "http://127.0.0.1:5500",
   'http://app.linke.to',
-  'https://coachbot.onlinecoursehost.com'
+  'https://coachbot.onlinecoursehost.com',
+  'https://*.scorm.com/'
 ];
 
 const AllowedScriptDomains = [
