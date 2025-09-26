@@ -5,7 +5,8 @@ const AllowedFrameDomains = [
   "http://localhost:*",
   "http://127.0.0.1:5500",
   'http://app.linke.to',
-  'https://coachbot.onlinecoursehost.com'
+  'https://coachbot.onlinecoursehost.com',
+  'https://*.scrom.com'
 ];
 
 const AllowedScriptDomains = [
@@ -53,7 +54,7 @@ module.exports = {
               // only allow images from trusted sources
               `img-src 'self' data: ${AllowedImgDomains.join(" ")}`,
 
-              `media-src 'self' ${AllowedImgDomains.join(" ")}`,
+              `media-src 'self' data: ${AllowedImgDomains.join(" ")}`,
 
               // allow blob workers
               `worker-src 'self' blob: ${AllowedScriptDomains.join(" ")}`,

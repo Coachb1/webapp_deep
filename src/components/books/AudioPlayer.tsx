@@ -218,7 +218,7 @@ const AudioPlayer = ({
             bookId: book.title,
           });
           saveProgress("book completed", book);
-          AudioManager.stop();
+          AudioManager.pause();
           setIsPlaying(false);
       }
 
@@ -289,7 +289,7 @@ const AudioPlayer = ({
     const onEnded = () => {
       if (!mounted) return;
       console.log("[AudioPlayer:event] ended", { bookId: book.title });
-      onNext();
+
     };
 
     const onPlay = () => {
@@ -642,12 +642,13 @@ const AudioPlayer = ({
     ? Math.min(100, Math.max(0, (currentTime / duration) * 100))
     : 0;
 
-  const resetPlayback = () => {
+  const resetPlayback = async () => {
     AudioManager.setCurrentTime(0); // go to start
-    if (!isPlaying) {
-      AudioManager.play(); // auto play from start if paused
+    // if (!isPlaying) {
+      await AudioManager.play(book.audio, 0);
+
       setIsPlaying(true);
-    }
+    // }
   };
   return (
     <div className={`popup ${show ? "show" : ""}`}>
@@ -748,7 +749,7 @@ const AudioPlayer = ({
           <Slider
             value={[volume]}
             onValueChange={handleVolumeChange}
-            max={1}
+            max={3}
             step={0.01}
             className="w-24"
           />
