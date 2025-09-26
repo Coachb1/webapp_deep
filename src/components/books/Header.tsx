@@ -8,11 +8,12 @@ import {
 import { Button } from "@/components/books/ui/buttonn";
 import { Input } from "@/components/books/ui/input";
 import { useUser } from "./context/UserContext";
+import Link from "next/link";
 
 const Header = ({ packageCourseId }: { packageCourseId: string }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [password, setPassword] = useState("");
-  const {user} = useUser(); // Assuming useUser is imported from context
+  const { user } = useUser(); // Assuming useUser is imported from context
 
   // ✅ Leader Board login check
   const handlePasswordSubmit = (packageCourseId: string) => {
@@ -55,7 +56,14 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
             {/* Leader Board Button */}
             <Button
-              onClick={() => handlePasswordSubmit(packageCourseId)}
+              onClick={() => {
+                if (packageCourseId) {
+                  const url = `/library-bot/bookReport/?package_course_id=${encodeURIComponent(
+                    packageCourseId
+                  )}`;
+                  window.open(url, "_blank", "noopener,noreferrer");
+                }
+              }}
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
               LeaderBoard
@@ -63,13 +71,13 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
 
             {/* Idea Board Button */}
             <Button
-              onClick={() =>{
-                const newWindow = window.open(
-                  `/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${user?.email}`,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
-                if (newWindow) newWindow.opener = null; // extra safety
+              onClick={() => {
+                if (user?.email) {
+                  const url = `/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${encodeURIComponent(
+                    user.email
+                  )}`;
+                  window.open(url, "_blank", "noopener,noreferrer");
+                }
               }}
               className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
             >
