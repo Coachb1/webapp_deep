@@ -4504,6 +4504,15 @@ async function handleFaqButtonClick(question) {
   } else {
     // something_else => begin_session
     if (question == "something_else") {
+      //end session due to inactivity :- row 708
+      if (botId && botType !== "user_bot") {
+        if (isBotInitialized === true) {
+          setTimeout(() => {
+            handleEndConversation(true);
+            isBotInitialized = false;
+          }, 1800000);
+        }
+      }
       // clear the sessionqnadata
       sessionQnAdata = [];
 
@@ -4527,6 +4536,7 @@ async function handleFaqButtonClick(question) {
             },
           }
         );
+        
         if (response.ok) {
           const data = await response.json();
           const qna = data.qna || {};
@@ -15907,15 +15917,7 @@ const openChatContainer2 = () => {
     };
   }
 
-  //end session due to inactivity :- row 708
-  if (botId && botType !== "user_bot") {
-    if (isBotInitialized === true) {
-      setTimeout(() => {
-        handleEndConversation(true);
-        isBotInitialized = false;
-      }, 1800000);
-    }
-  }
+  
 
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
