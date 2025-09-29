@@ -4507,6 +4507,15 @@ async function handleFaqButtonClick(question) {
   } else {
     // something_else => begin_session
     if (question == "something_else") {
+      //end session due to inactivity :- row 708
+      if (botId && botType !== "user_bot") {
+        if (isBotInitialized === true) {
+          setTimeout(() => {
+            handleEndConversation(true);
+            isBotInitialized = false;
+          }, 8 * 60 * 60 * 1000); // 8 hours
+        }
+      }
       // clear the sessionqnadata
       sessionQnAdata = [];
 
@@ -4530,6 +4539,7 @@ async function handleFaqButtonClick(question) {
             },
           }
         );
+        
         if (response.ok) {
           const data = await response.json();
           const qna = data.qna || {};
@@ -16000,16 +16010,6 @@ const openChatContainer2 = () => {
       alert("Pasting is not allowed.");
       return false;
     };
-  }
-
-  //end session due to inactivity :- row 708
-  if (botId && botType !== "user_bot") {
-    if (isBotInitialized === true) {
-      setTimeout(() => {
-        handleEndConversation(true);
-        isBotInitialized = false;
-      }, 8 * 60 * 60 * 1000);
-    }
   }
 
   if (chatContainer2.style.scale === "1") {

@@ -4,7 +4,7 @@ import { Book } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
-import { addModuleLater, addModuleLike } from "@/lib/api";
+import { addModuleLater, addModuleLike, getModuleCompletion } from "@/lib/api";
 import { useUser } from "./context/UserContext";
 
 interface BookCardProps {
@@ -29,8 +29,43 @@ const BookCard: React.FC<BookCardProps> = ({
   laterBooks,
 }) => {
 
-  const {user} = useUser()
+  const { user } = useUser()
   const user_id = user?.user_data?.uid;
+  const [progress, setProgress] = useState<number>(0);  // percentage
+  const [status, setStatus] = useState<string>("in-progress"); // or "finished"
+  const [completedDate, setCompletedDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user_id || !book.id) return;
+
+    const fetchProgress = async () => {
+      const data = await getModuleCompletion(user_id, book.id);
+
+      if (data) {
+        setProgress(data.completed_in_percentage || 0);
+
+        // Normalize status
+        if (data.status === "completed" || data.status === "finished") {
+          setStatus("finished");
+        } else {
+          setStatus("in-progress");
+        }
+
+        // Use end_time instead of completed_date
+        if ((data.status === "completed" || data.status === "finished") && data.end_time) {
+          setCompletedDate(
+            new Date(data.end_time).toLocaleDateString("en-US", {
+              day: "numeric",
+              month: "short",
+            })
+          );
+        }
+      }
+    };
+
+    fetchProgress();
+  }, [user_id, book.id]);
+
 
 
 
@@ -142,6 +177,41 @@ const BookCard: React.FC<BookCardProps> = ({
           More
         </button>
       </div>
+
+
+
+      {/* Finished Status + Progress */}
+      <div className="flex items-center mt-3 gap-2">
+        {status === "finished" ? (
+          <>
+            {/* Date + Finished */}
+            <span className="text-gray-700 text-sm">
+              {completedDate ? `${completedDate} • Finished` : "Finished"}
+            </span>
+            <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#00c193] text-white text-xs font-bold shadow-md">
+              ✓
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Progress (text only) */}
+            <span className="text-gray-700 text-sm">Progress</span>
+            {/* Progress bar */}
+            <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+              <div
+                className="h-2 bg-green-500 transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </>
+        )}
+      </div>
+
+
+
+
+
+
 
 
     </article>
