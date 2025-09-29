@@ -4510,7 +4510,7 @@ async function handleFaqButtonClick(question) {
           setTimeout(() => {
             handleEndConversation(true);
             isBotInitialized = false;
-          }, 1800000);
+          }, 8 * 60 * 60 * 1000); // 8 hours
         }
       }
       // clear the sessionqnadata
