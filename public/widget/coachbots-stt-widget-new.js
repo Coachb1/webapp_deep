@@ -648,7 +648,8 @@ let BotIDSTT;
 let showMindmapButtonStt = true;
 let showAssessmentButtonStt = true;
 let showModeButtonStt = true;
-
+let showDiagnosticButtonStt = true;
+let NumberConversationFordiagButton = 3;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -3256,6 +3257,8 @@ const getBotDetails2 = async (botId) => {
           "placeholder",
           `Please follow provided instructions and select "Begin session"`
         );
+          // Make the shadow root globally accessible
+           window.tShadowRoot = shadowRoot;
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
         "Welcome",
@@ -5693,6 +5696,8 @@ function createMessageNode2(message, isMarkdown = false) {
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
   messageBubble.style.color = "#000000";
+  messageBubble.style.border = "1px solid #22c55e"; // green border
+
 
   const messageText = document.createElement("p");
   if (isMarkdown) {
@@ -10767,6 +10772,45 @@ function cleanTextForAudio(text) {
   return cleanText;
 }
 
+function handleDiagnosticButtons(button) {
+    // Prevent double click
+    if (button.disabled) return;
+
+    // Disable both buttons
+    const buttons = button.parentElement.querySelectorAll("button");
+    buttons.forEach((b) => {
+    b.disabled = true;
+    b.style.backgroundColor = "#f0f0f0";   // light gray bg
+    b.style.borderColor = "lightgray";     // muted border
+    b.style.color = "gray";                // gray text
+    b.style.cursor = "not-allowed";        // disabled cursor
+    b.style.opacity = "0.6";               // slightly faded
+    b.onmouseover = null;                  // remove hover effect
+    b.onmouseout = null;                   // remove hover effect
+    b.removeAttribute("onclick");          // prevent further clicks
+  });
+
+
+    // Determine the message
+    let msg = "";
+    if (button.id === "diagOn") {
+        msg = "Can you please turn the diagnostic on again.";
+    } else if (button.id === "diagOff") {
+        msg = "Please stop using diagnostics permanently during this session. Don't show it.";
+    }
+
+    // Send the message via shadowRoot
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+    if (!shadowRoot) {
+        console.error("Shadow root not provided!");
+        return;
+    }
+    sendUserMessage(msg, shadowRoot);
+
+    console.log("✅ Sent message via shadowRoot:", msg);
+}
+
+
 
   const GeminiAiResponse = async (
     userInputMessage,
@@ -10790,6 +10834,7 @@ function cleanTextForAudio(text) {
     messageBubble.style.padding = "4px";
     messageBubble.style.backgroundColor = "#f3f4f6";
     messageBubble.style.color = "#374151";
+    messageBubble.style.border = "1px solid #22c55e"; // green border
 
     const avatarNode = document.createElement("div");
     avatarNode.classList.add("avatar-container", "left-item-position");
@@ -10812,6 +10857,54 @@ function cleanTextForAudio(text) {
       "style",
       "display:flex; flex-direction: row; gap: 8px; border-top: 2px solid lightgray; padding: 10px 0 6px 0; width: 100%; margin-top: 4px;"
     );
+
+ const diagButtons = `
+  <span style="display:inline-flex; gap:8px; align-items:center;">
+    <button 
+      id="diagOn" 
+      onclick="handleDiagnosticButtons(this)" 
+      value="diag_on"
+      style="
+        padding: 6px 14px; 
+        font-size: 13px; 
+        font-weight: 600;        /* bold-ish text */
+        border: 1px solid lightgray; 
+        border-radius: 6px; 
+        background-color: white; 
+        color: gray; 
+        cursor: pointer; 
+        transition: all 0.2s ease; 
+      "
+      onmouseover="this.style.backgroundColor='#f5f5f5'"
+      onmouseout="this.style.backgroundColor='white'"
+    >
+      Diag On
+    </button>
+    
+    <button 
+      id="diagOff" 
+      onclick="handleDiagnosticButtons(this)" 
+      value="diag_off"
+      style="
+        padding: 6px 14px; 
+        font-size: 13px; 
+        font-weight: 600;        /* bold-ish text */
+        border: 1px solid lightgray; 
+        border-radius: 6px; 
+        background-color: white; 
+        color: gray; 
+        cursor: pointer; 
+        transition: all 0.2s ease; 
+      "
+      onmouseover="this.style.backgroundColor='#f5f5f5'"
+      onmouseout="this.style.backgroundColor='white'"
+    >
+      Diag Off
+    </button>
+  </span>
+`;
+
+
     likeDisLike.innerHTML = `
       <span class="like" id="likeIcon-${randomIdForAudioElement}">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
@@ -10820,6 +10913,8 @@ function cleanTextForAudio(text) {
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-down"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
       </span>
       `;
+
+    if (botPreviousConversationHistory.length >= NumberConversationFordiagButton) likeDisLike.innerHTML += diagButtons;
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     gShadowRoot2.getElementById("messages").appendChild(messageNode);
@@ -15916,8 +16011,6 @@ const openChatContainer2 = () => {
       return false;
     };
   }
-
-  
 
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;

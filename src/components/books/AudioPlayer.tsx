@@ -8,6 +8,7 @@ import { getModuleCompletion, updateCourseProgress } from "@/lib/api";
 import { useUser } from "./context/UserContext";
 import AudioManager from "./AudioManager";
 import { Volume1, Volume2, VolumeX } from "lucide-react";
+import { AudioSlider } from "./ui/AudioSlider";
 
 interface AudioPlayerProps {
   show: boolean;
@@ -218,7 +219,7 @@ const AudioPlayer = ({
             bookId: book.title,
           });
           saveProgress("book completed", book);
-          AudioManager.pause();
+          AudioManager.stop();
           setIsPlaying(false);
       }
 
@@ -289,7 +290,7 @@ const AudioPlayer = ({
     const onEnded = () => {
       if (!mounted) return;
       console.log("[AudioPlayer:event] ended", { bookId: book.title });
-      onNext();
+      // onNext();
     };
 
     const onPlay = () => {
@@ -356,7 +357,7 @@ const AudioPlayer = ({
             managerSrcBefore: AudioManager.getSrc(),
           });
           setLoading(true);
-          await AudioManager.play(book.audio, percentFromApi);
+          await AudioManager.play(book.audio, Math.max(0, percentFromApi - 0.5)); // if less than 0, start from 0 if greater 0 then - 0.5
           setIsPlaying(true);
           setAutoplayBlocked(false);
 
@@ -741,17 +742,17 @@ const AudioPlayer = ({
             )}
           </Button>
 
-          <Slider
+          <AudioSlider
             value={[volume]}
             onValueChange={handleVolumeChange}
-            max={1}
+            max={3}
             step={0.01}
             className="w-24"
           />
         </div>
 
         {/* Autoplay fallback */}
-        {/* {autoplayBlocked && (
+        {autoplayBlocked && (
           <div
             className="autoplay-overlay"
             onClick={togglePlayPause}
@@ -773,7 +774,7 @@ const AudioPlayer = ({
           >
             Click to Play
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );
