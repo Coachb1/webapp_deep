@@ -3256,6 +3256,8 @@ const getBotDetails2 = async (botId) => {
           "placeholder",
           `Please follow provided instructions and select "Begin session"`
         );
+          // Make the shadow root globally accessible
+           window.tShadowRoot = shadowRoot;
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
         "Welcome",
@@ -5683,6 +5685,8 @@ function createMessageNode2(message, isMarkdown = false) {
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
   messageBubble.style.color = "#000000";
+  messageBubble.style.border = "1px solid #22c55e"; // green border
+
 
   const messageText = document.createElement("p");
   if (isMarkdown) {
@@ -10757,6 +10761,36 @@ function cleanTextForAudio(text) {
   return cleanText;
 }
 
+function handleClick(button, shadowRoot) {
+    // Prevent double click
+    if (button.disabled) return;
+
+    // Disable both buttons
+    const buttons = button.parentElement.querySelectorAll("button");
+    buttons.forEach((b) => {
+        b.disabled = true;
+        b.style.backgroundColor = "#808080"; // gray
+    });
+
+    // Determine the message
+    let msg = "";
+    if (button.id === "diagOn") {
+        msg = "Can you Switch on diagnostic back";
+    } else if (button.id === "diagOff") {
+        msg = "I want to switch off Diagnostic and research permanently   ";
+    }
+
+    // Send the message via shadowRoot
+    if (!shadowRoot) {
+        console.error("Shadow root not provided!");
+        return;
+    }
+    sendUserMessage(msg, shadowRoot);
+
+    console.log("✅ Sent message via shadowRoot:", msg);
+}
+
+
 
   const GeminiAiResponse = async (
     userInputMessage,
@@ -10780,6 +10814,7 @@ function cleanTextForAudio(text) {
     messageBubble.style.padding = "4px";
     messageBubble.style.backgroundColor = "#f3f4f6";
     messageBubble.style.color = "#374151";
+    messageBubble.style.border = "1px solid #22c55e"; // green border
 
     const avatarNode = document.createElement("div");
     avatarNode.classList.add("avatar-container", "left-item-position");
@@ -10809,6 +10844,10 @@ function cleanTextForAudio(text) {
       <span class="dislike" id="dislikeIcon-${randomIdForAudioElement}" >
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-down"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
       </span>
+    <span>
+       <button id="diagOn" onclick="handleClick(this, tShadowRoot)" style="border:none; background-color:#21C55D; color:white; cursor:pointer; margin-left:6px; vertical-align:middle; padding:4px 12px; border-radius:6px;">Diag On</button>
+       <button id="diagOff" onclick="handleClick(this, tShadowRoot)" style="border:none; background-color:#21C55D; color:white; cursor:pointer; margin-left:6px; vertical-align:middle; padding:4px 12px; border-radius:6px;">Diag Off</button>
+    </span>
       `;
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
