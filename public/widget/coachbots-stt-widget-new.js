@@ -3930,24 +3930,62 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
 }
 
 
-async function handleIntakeQues(btn) {
+async function handleIntakeQues(btn, type = "individual") {
   try {
     const root = document.getElementById("chat-element2").shadowRoot;
-    const formData = {
-      Name: root.getElementById("intake-name").value.trim(),
-      Role: root.getElementById("intake-role").value,
-      Department: root.getElementById("intake-department").value,
-      Team: root.getElementById("intake-teamSize").value
-    };
 
-    console.log("Form Data:", formData);
+    let intakeformdata;
 
-    const intakeformdata = {
-      qna: formData,
-      user_id: userId2
-    };
+    if (type === "individual") {
+      // ✅ Individual intake
+      const nameEl = root.getElementById("intake-name");
+      const roleEl = root.getElementById("intake-role");
+      const deptEl = root.getElementById("intake-department");
+      const teamEl = root.getElementById("intake-teamSize");
 
-    // Send data to backend
+      const formData = {
+        Name: nameEl?.value.trim() || "",
+        Role: roleEl?.value || "",
+        Department: deptEl?.value || "",
+        Team: teamEl?.value || "",
+      };
+
+      console.log("Individual Form Data:", formData);
+
+      intakeformdata = {
+        type: "individual",
+        qna: formData,
+        user_id: userId2,
+      };
+    } else if (type === "group") {
+      // ✅ Group intake
+      const nameEl =
+        root.getElementById("group-name") ||
+        document.getElementById("group-name");
+      const objEl =
+        root.getElementById("group-objective") ||
+        document.getElementById("group-objective");
+
+      if (!nameEl || !objEl) {
+        console.error("❌ Group form elements not found in DOM!");
+        return;
+      }
+
+      const groupData = {
+        GroupName: nameEl.value.trim(),
+        GroupObjective: objEl.value,
+      };
+
+      console.log("Group Form Data:", groupData);
+
+      intakeformdata = {
+        type: "group",
+        qna: groupData,
+        user_id: userId2,
+      };
+    }
+
+    // 🚀 Send data
     const response = await fetch(
       `${baseURL2}/coaching-conversations/coaching-intake/`,
       {
@@ -3963,27 +4001,29 @@ async function handleIntakeQues(btn) {
     const data = await response.json();
     console.log("Intake Submission Response:", data);
 
-    // ✅ Replace the form block with submitted data summary
-    const formContainer = root.getElementById("quick-intake-form");
+    // ✅ Replace form with summary
+    const formContainer =
+      root.getElementById("quick-intake-form") ||
+      root.getElementById("group-intake-form");
     if (formContainer) {
       formContainer.innerHTML = `
         <div style="font-size: 14px; color: #333; line-height: 1.4;">
-          <strong>✅ Intake Submitted</strong><br>
+          <strong>${type === "individual" ? "Individual" : "Group"} Intake Submitted ✅</strong><br>
         </div>
       `;
     }
 
-    // Trigger begin session if available
+    // Trigger begin session
     const beginSessionButton = document.getElementById("begin-session-button");
     if (beginSessionButton) {
       beginSessionButton.click();
     }
     isAskingIntake = false;
-
   } catch (error) {
     console.error("Error submitting intake:", error);
   }
 }
+
 
 
 
@@ -4543,18 +4583,36 @@ async function handleFaqButtonClick(question) {
         if (response.ok) {
           const data = await response.json();
           const qna = data.qna || {};
-          console.log('intake', data, qna)
-          appendMessage2(`
-            <div style="
-              font-size: 14px;
-            ">
+          console.log("intake", data, qna);
+
+          let intakeHtml = `
+            <div style="font-size: 14px;">
               <strong>Here is your intake information:</strong>
+          `;
+
+          // ✅ If it's an individual intake
+          if ("Name" in qna || "Role" in qna || "Department" in qna || "Team" in qna) {
+            intakeHtml += `
               <div><strong>Name:</strong> ${qna["Name"] || "—"}</div>
-              <div><strong>Role:</strong> ${qna['Role'] || "—"}</div>
-              <div><strong>Department:</strong> ${qna['Department'] || "—"}</div>
-              <div><strong>Team:</strong> ${qna['Team'] || "—"}</div>
-            </div>
-          `);
+              <div><strong>Role:</strong> ${qna["Role"] || "—"}</div>
+              <div><strong>Department:</strong> ${qna["Department"] || "—"}</div>
+              <div><strong>Team:</strong> ${qna["Team"] || "—"}</div>
+            `;
+          }
+
+          // ✅ If it's a group intake
+          else if ("GroupName" in qna || "GroupObjective" in qna) {
+            intakeHtml += `
+              <div><strong>Group Name:</strong> ${qna["GroupName"] || "—"}</div>
+              <div><strong>Group Objective:</strong> ${qna["GroupObjective"] || "—"}</div>
+            `;
+          }
+
+          intakeHtml += `</div>`;
+
+          appendMessage2(intakeHtml);
+
+
         } else {
         // Dynamic option arrays
         const roleOptions = [
@@ -4590,57 +4648,127 @@ async function handleFaqButtonClick(question) {
     optionsArray.map(opt => `<option>${opt}</option>`).join("");
 }
 
-        // Inject form with inline CSS and dynamic options
-        if (isAskingIntake) return;
-        appendMessage2(`
-  <div id="quick-intake-form" style="
-    display: flex; 
-    align-items: center; 
-    gap: 5px; 
-    flex-wrap: wrap; 
-    background: #f1f0f0; 
-    padding: 8px 10px; 
-    border-radius: 12px; 
-    font-family: Arial, sans-serif; 
-    font-size: 14px; 
-    line-height: 1.5;
-  ">
-    <span style="white-space: nowrap; font-weight: bold;">Please finish quick intake:</span>
-    
-    <input type="text" id="intake-name" placeholder="Name" required
-      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100px;">
+  // Step 1: Show the choice between Individual and Group
+    appendMessage2(`
+      <div id="intake-choice" style="
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        background: #f1f0f0; 
+        padding: 8px 10px; 
+        border-radius: 12px; 
+        font-family: Arial, sans-serif; 
+        font-size: 14px; 
+        line-height: 1.5;
+      ">
+        <span style="font-weight: bold;">Are we doing a group coaching or individual session today?</span>
+        <button id="individual-btn" type="button"
+          style="padding: 4px 10px; font-size: 13px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;">
+          Individual
+        </button>
+        <button id="group-btn" type="button"
+          style="padding: 4px 10px; font-size: 13px; border: none; border-radius: 4px; background: #2196F3; color: white; cursor: pointer;">
+          Group
+        </button>
+      </div>
+    `);
 
-    <select id="intake-role" required
-      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
-      ${generateOptions(roleOptions, "Role")}
-    </select>
+    // Step 2: Handle button clicks using setTimeout to ensure DOM is ready
+    setTimeout(() => {
+      const individualBtn = gShadowRoot2.getElementById("individual-btn");
+      const groupBtn = gShadowRoot2.getElementById("group-btn");
+      
+      if (individualBtn) {
+        individualBtn.onclick = () => {
+          const intakeChoices = gShadowRoot2.getElementById("intake-choice");
+          
+          intakeChoices.innerHTML = `<div id="quick-intake-form" style="
+              display: flex; 
+              align-items: center; 
+              gap: 5px; 
+              flex-wrap: wrap; 
+              background: #f1f0f0; 
+              padding: 8px 10px; 
+              border-radius: 12px; 
+              font-family: Arial, sans-serif; 
+              font-size: 14px; 
+              line-height: 1.5;
+            ">
+              <span style="white-space: nowrap; font-weight: bold;">Please finish quick intake:</span>
+              
+              <input type="text" id="intake-name" placeholder="Name" required
+                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100px;">
 
-    <select id="intake-department" required
-      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
-      ${generateOptions(departmentOptions, "Department")}
-    </select>
+              <select id="intake-role" required
+                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
+                ${generateOptions(roleOptions, "Role")}
+              </select>
 
-    <select id="intake-teamSize" required
-      style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 110px;">
-      ${generateOptions(teamSizeOptions, "Team Size")}
-    </select>
+              <select id="intake-department" required
+                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
+                ${generateOptions(departmentOptions, "Department")}
+              </select>
 
-    <button 
-      id="quickSubmit" 
-      type="button" 
-      style="padding: 2px 6px; font-size: 12px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;"
-      onclick="handleIntakeQues(
-        this
-      )"
-    >✔</button>
-  </div>
-`);
+              <select id="intake-teamSize" required
+                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 110px;">
+                ${generateOptions(teamSizeOptions, "Team Size")}
+              </select>
 
-         isAskingIntake = true;
-         return;
-        }
-        
+              <button 
+                id="quickSubmit" 
+                type="button" 
+                style="padding: 2px 6px; font-size: 12px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;"
+                onclick="handleIntakeQues(this, 'individual')"
+              >✔</button>
+            </div>`;
+          // Show individual intake form
+          // appendMessage2(`
+            
+          // `);
+        };
       }
+      
+      if (groupBtn) {
+        groupBtn.onclick = () => {
+          const intakeChoices2 = gShadowRoot2.getElementById("intake-choice");
+          intakeChoices2.innerHTML = `<div id="group-intake-form" style="
+              display: flex; 
+              align-items: center; 
+              gap: 5px; 
+              flex-wrap: wrap; 
+              background: #f1f0f0; 
+              padding: 8px 10px; 
+              border-radius: 12px; 
+              font-family: Arial, sans-serif; 
+              font-size: 14px; 
+              line-height: 1.5;
+            ">
+              <span style="white-space: nowrap; font-weight: bold;">Please finish group intake:</span>
+              
+              <input type="text" id="group-name" placeholder="Group Name" required
+                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 150px;">
+
+              <input type="text" id="group-objective" placeholder="Group Objective" required
+                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 200px;">
+
+              <button 
+                id="groupSubmit" 
+                type="button" 
+                style="padding: 2px 6px; font-size: 12px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;"
+                onclick="handleIntakeQues(this, 'group')"
+              >✔</button>
+            </div>`;
+          // Show group intake form
+          // appendMessage2(`
+            
+          // `);
+        };
+      }
+    }, 100);
+
+    return;
+  }
+}
 
       console.log(window.user, "is_logged_in");
       if (botType === "deep_dive") {
