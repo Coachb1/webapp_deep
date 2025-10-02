@@ -5437,7 +5437,7 @@ function handleEndConversation(isInActive) {
       });
 
       console.log("deepdiveBottranscriptData", botData, sessionQnAdata);
-      sendBotTranscript2();
+      if (isInActive != true) sendBotTranscript2();
       // appendMessage2(optionData);
     } else {
       isEmailFormstt = true;
@@ -5466,7 +5466,8 @@ function handleEndConversation(isInActive) {
 
       console.log("deepdiveBottranscriptData", botData, sessionQnAdata);
     }
-    sendBotTranscript2();
+
+    if (isInActive != true) sendBotTranscript2() ;
     // }
   }
 }
@@ -9375,7 +9376,7 @@ const snippetOrigin = () => {
     hostname === "playground.coachbots.com" ||
     hostname === "platform.coachbots.com";
 
-  if (isInternalHost && !pathname.startsWith("/widget/")) {
+  if (isInternalHost && !pathname.startsWith("/widget/") && !pathname.startsWith("/portal")) {
     return "internal";
   } else {
     return "external";
@@ -12000,8 +12001,8 @@ loadExternalModule().then(() => {
           "shared": {"bubble": {"maxWidth": ${JSON.stringify(
       messageBubbleMaxWidth
     )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
-          "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)"}},
-          "user" : {"bubble": {"backgroundColor": "#2DC092"}}
+          "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)", "border" : "1px solid #22c55e" }},
+          "user" : {"bubble": {"backgroundColor": "#2DC092", "border" : "1px solid #22c55e" }}
         },
         "loading": {
           "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}

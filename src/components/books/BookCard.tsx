@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
 import { addModuleLater, addModuleLike, getModuleCompletion } from "@/lib/api";
-import { useUser } from "./context/UserContext";
+import { usePortalUser } from "./context/UserContext";
 
 interface BookCardProps {
   book: Book;
@@ -29,7 +29,7 @@ const BookCard: React.FC<BookCardProps> = ({
   laterBooks,
 }) => {
 
-  const { user } = useUser()
+  const { user } = usePortalUser()
   const user_id = user?.user_data?.uid;
   const [progress, setProgress] = useState<number>(0);  // percentage
   const [status, setStatus] = useState<string>("in-progress"); // or "finished"

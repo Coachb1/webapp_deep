@@ -12,6 +12,7 @@ import { ConfigProvider } from "antd";
 import { ReadPaths } from "@/lib/ReadPaths";
 import { usePathname } from "next/navigation";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import PortalPageLayout from "./PortalPagesLayout";
 
 
 const font = Raleway({ subsets: ["latin"] });
@@ -61,6 +62,18 @@ const MainLayoutComponent = ({
           <div className="z-[999]">{children}</div>
         </body>
       </html>
+    );
+  }
+
+  if (pathname.includes("/portal")) {
+    return (
+      <HelpModeProvider>
+        <PortalPageLayout>
+          <Providers>
+          {children}
+          </Providers>
+        </PortalPageLayout>
+      </HelpModeProvider>
     );
   }
 

@@ -19,6 +19,8 @@ import { BulletList } from "@/components/MarkdownHandler";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import VideoPlayer from "@/components/Videplayer";
+import { usePathname } from "next/navigation";
+import { usePortalUser } from "@/components/books/context/UserContext";
 
 
 interface LibraryTestsAccordianType {
@@ -36,7 +38,8 @@ const LibraryTestsAccordian = ({
   type,
   tabInformation
 }: LibraryTestsAccordianType) => {
-  const {userTestMapping} = useUser()
+  const pathname = usePathname();
+  const {userTestMapping} = pathname.includes('portal/')? usePortalUser() : useUser();
   // State for pagination
   const [shortCurrentPage, setShortCurrentPage] = useState(1);
   const [standardCurrentPage, setStandardCurrentPage] = useState(1);

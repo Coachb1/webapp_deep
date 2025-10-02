@@ -27,9 +27,12 @@ import { Div } from "@/components/ui/moving-border";
 import { ExternalLink, History, Info, Loader } from "lucide-react";
 import LibraryTestsAccordian from "../library/LibraryTestsAccordian";
 import CountdownBanner from "@/components/ui/CountdownBanner";
+import { usePathname } from "next/navigation";
+import { usePortalUser } from "@/components/books/context/UserContext";
 
 const VersionOne = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
+  const pathname = usePathname();
   if (user) {
     const userEmail = user?.email;
     const exclusionEmails = [
@@ -63,8 +66,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
   const [requestedScenariosLoading, setRequestedScenariosLoading] =
     useState(false);
-  const { userInfo, requestedTestsData, attemptedTests, domainSkillLibrary } =
-    useUser();
+
+  const {
+    userInfo,
+    requestedTestsData,
+    attemptedTests,
+    domainSkillLibrary
+  } = pathname.includes("portal/") ? usePortalUser() : useUser();
+
   useEffect(() => {
     console.log("userInfo", userInfo);
     const dynamicHelpText = userInfo.helpText?.demo;
