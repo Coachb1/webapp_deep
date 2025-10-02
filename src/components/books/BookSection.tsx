@@ -10,7 +10,7 @@ import { Book } from "@/lib/types";
 import { getcourseModuleLikesAndSaveLater } from "@/lib/api"; // 👈 make sure this is imported
 import Carousel from "./CarouselSlider";
 import PageRefresh from "./PageRefreshProp";
-import { useUser } from "./context/UserContext";
+import { usePortalUser } from "./context/UserContext";
 
 interface BookSectionProps {
   books: Book[];
@@ -46,7 +46,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   console.log("Name:", name);
   console.log("Email:", email);
   const pathname = usePathname();
-  const {user} = useUser();
+  const {user} = usePortalUser();
   const userId = user?.user_data?.uid || null;
 
   const [viewMode, setViewMode] = useState<string>("all");

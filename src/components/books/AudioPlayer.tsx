@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/books/ui/slider";
 import { Book } from "@/lib/types";
 import { getModuleCompletion, updateCourseProgress } from "@/lib/api";
-import { useUser } from "./context/UserContext";
+import { usePortalUser } from "./context/UserContext";
 import AudioManager from "./AudioManager";
 import { Volume1, Volume2, VolumeX } from "lucide-react";
 import { AudioSlider } from "./ui/AudioSlider";
@@ -27,7 +27,7 @@ const AudioPlayer = ({
   onPrev,
   courseId,
 }: AudioPlayerProps) => {
-  const user = useUser();
+  const user = usePortalUser();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser } from "./context/UserContext";
 import { getUserAccount } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import { usePortalUser } from "./context/UserContext";
 
 interface User {
   given_name: string;
@@ -32,17 +33,18 @@ const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const UserInfoGate = ({ children }: UserInfoGateProps) => {
-  const { setUser } = useUser();
+  const { setUser, refreshUserData , user} = usePortalUser();
 
-  const [user, setUserData] = useState<User | null>(null);
   const [tempName, setTempName] = useState("");
   const [tempEmail, setTempEmail] = useState("");
   const [loading, setLoading] = useState(false); // submitting user
-  const [checking, setChecking] = useState(true); // initial check
 
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [apiError, setApiError] = useState("");
+  const pathname = usePathname();
+  const [checking, setChecking] = useState(pathname.includes('portal')? false : true); // initial check
+
 
     useEffect(() => {
     const fetchSession = async () => {
@@ -54,7 +56,6 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
 
           console.log('user data', data)
           if (data) {setUser(data.user)
-            setUserData(data.user)
           };
         } else {
           console.error("Failed to fetch user data", await res.text());
@@ -116,8 +117,9 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
       }
       const resdata = await res.json();
       localStorage.setItem('jwt_token', resdata.token)
-      setUserData(fullUser);
       setUser(fullUser);
+      await refreshUserData(fullUser);
+
       })
       .catch((error) => {
         console.error("❌ Error creating user:", error);
@@ -153,7 +155,7 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
                     <div className="w-6 h-6 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
-
+        
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
                   Enter Your Details
                 </h2>

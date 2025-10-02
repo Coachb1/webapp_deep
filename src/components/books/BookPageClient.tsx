@@ -10,14 +10,14 @@ import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
 import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
-import { useUser } from "./context/UserContext";
+import { usePortalUser } from "./context/UserContext";
 
 interface BookPageClientProps {
   id: string;
 }
 
 export default function BookPageClient({ id }: BookPageClientProps) {
-  const { user } = useUser();
+  const { user } = usePortalUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);

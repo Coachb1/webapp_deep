@@ -27,6 +27,8 @@ import { Div } from "@/components/ui/moving-border";
 import { ExternalLink, History, Info, Loader } from "lucide-react";
 import LibraryTestsAccordian from "../library/LibraryTestsAccordian";
 import CountdownBanner from "@/components/ui/CountdownBanner";
+import { usePathname } from "next/navigation";
+import { usePortalUser } from "@/components/books/context/UserContext";
 
 const VersionTwo = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
@@ -55,7 +57,7 @@ const VersionTwo = ({ user, helpModeText }: any) => {
       shouldRenderDiv = true;
     }
   }
-
+  const pathname = usePathname();
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
   const [data, setData] = useState<CategoryMap>({});
   const [tabTypeInformation, setTabTypeInformation] = useState<any>({});
@@ -63,8 +65,13 @@ const VersionTwo = ({ user, helpModeText }: any) => {
 
   const [requestedScenariosLoading, setRequestedScenariosLoading] =
     useState(false);
-  const { userInfo, requestedTestsData, attemptedTests, leadershipLibrary } =
-    useUser();
+  const {
+    userInfo,
+    requestedTestsData,
+    attemptedTests,
+    leadershipLibrary
+  } = pathname.includes("portal/") ? usePortalUser() : useUser();
+  
   useEffect(() => {
     console.log("userInfo", userInfo);
     const dynamicHelpText = userInfo.helpText?.demo;

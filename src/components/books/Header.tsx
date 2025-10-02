@@ -7,13 +7,13 @@ import {
 } from "@/components/books/ui/dialogg";
 import { Button } from "@/components/books/ui/buttonn";
 import { Input } from "@/components/books/ui/input";
-import { useUser } from "./context/UserContext";
+import { usePortalUser } from "./context/UserContext";
 import Link from "next/link";
 
 const Header = ({ packageCourseId }: { packageCourseId: string }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [password, setPassword] = useState("");
-  const { user } = useUser(); // Assuming useUser is imported from context
+  const { user } = usePortalUser(); // Assuming useUser is imported from context
 
   // ✅ Leader Board login check
   const handlePasswordSubmit = (packageCourseId: string) => {
