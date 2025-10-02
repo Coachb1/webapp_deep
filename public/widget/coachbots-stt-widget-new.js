@@ -6427,6 +6427,7 @@ const handleGameTypeConversation = async () => {
           .replace(/\n\s*Your Answer:/g, "<br><b>Your Answer:</b>")
           .replace(/\n\s*Correct Answer:/g, "<br><b>Correct Answer:</b>")
           .replace(/\n\s*Explanation:/g, "<br><b>Explanation:</b>")
+          .replace(/\n\s*Marks:/g, "<br><b>Marks:</b>")
           .replace(/\n/g, "<br>") + "</div>";
 
         let finalMessage = "";
