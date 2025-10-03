@@ -1098,7 +1098,7 @@ const UserBotIntake = ({
                   <label className="text-xs text-gray-700">
                     We respect your data and privacy. Any data is handled per
                     the data security and privacy policy of the organization
-                    holding the platform license. Please contact your program
+                    holding the engine license. Please contact your program
                     administrator for removal requests. Any AI assets created by
                     the users are considered the property of the organization
                     the individuals are affiliated with.
