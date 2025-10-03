@@ -72,7 +72,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
         {/* Image Section */}
         <div className="flex justify-center md:justify-end">
           <img
-            src={imageLink || "/images/Top-1.jpg"}
+            src={imageLink || "/images/Top-1.png"}
             alt="Hero Art"
             className="w-[200px] sm:w-[240px] md:w-[280px] lg:w-[320px] rounded-md shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
           />

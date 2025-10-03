@@ -39,8 +39,7 @@ const CTA = () => {
             Got questions on featured books?
           </h2>
           <p className="text-[#0e3a3f] font-normal max-w-prose mx-auto md:mx-0 text-sm sm:text-base">
-            Chat with our <span className="font-semibold">StoryInsight BoT</span> 
-            to dig deeper for more insights and unlock real insights for the workplace.
+            Would you like to request a book innovation guide? Request it via the chat widget.
           </p>
         </div>
 
