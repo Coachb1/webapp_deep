@@ -11008,7 +11008,7 @@ function handleDiagnosticButtons(button) {
       onmouseover="this.style.backgroundColor='#f5f5f5'"
       onmouseout="this.style.backgroundColor='white'"
     >
-      Diag On
+      Diagnostic On
     </button>
     
     <button 
@@ -11029,7 +11029,7 @@ function handleDiagnosticButtons(button) {
       onmouseover="this.style.backgroundColor='#f5f5f5'"
       onmouseout="this.style.backgroundColor='white'"
     >
-      Diag Off
+      Diagnostic Off
     </button>
   </span>
 `;
@@ -12003,7 +12003,7 @@ loadExternalModule().then(() => {
       messageBubbleMaxWidth
     )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)", "border" : "1px solid #22c55e" }},
-          "user" : {"bubble": {"backgroundColor": "#2DC092", "border" : "1px solid #22c55e" }}
+          "user": {"bubble": {"backgroundColor": "#f3f4f6","border": "1px solid #22c55e","outline": "1px solid #22c55e","outlineOffset": "2px" , "color": "#000000" }}
         },
         "loading": {
           "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
