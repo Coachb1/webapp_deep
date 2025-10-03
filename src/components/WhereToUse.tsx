@@ -34,7 +34,7 @@ const WhereToUse = () => {
                       className="w-60 max-sm:w-full h-[150px] bg-white p-2 border bborder-gray-100 shadow-sm rounded-md object-contain"
                     />
                     <p className="text-sm font-semibold text-gray-700 mt-2">
-                      Chat platforms - WhatsApp/Slack etc
+                      Chat engine - WhatsApp/Slack etc
                     </p>
                   </div>
                   <div>

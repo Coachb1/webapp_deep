@@ -81,13 +81,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
         target: "#user-demos",
         content: dynamicHelpText?.user_demos
           ? dynamicHelpText.user_demos
-          : "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
+          : "The engine created simulations and roleplays around various use cases. This is just a representative use case.",
       },
       {
         target: "#system-demos",
         content: dynamicHelpText?.system_demos
           ? dynamicHelpText.system_demos
-          : "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
+          : "User or client-created assets, profiles, and avatar-bots in the engine. They are specific to each client setup.",
       },
       {
         target: ".chat-icon",
