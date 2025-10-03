@@ -35,11 +35,11 @@ const CTA = () => {
       <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[1.1fr_1fr] items-center gap-8">
         {/* Text Section */}
         <div className="text-center md:text-left">
-          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-[#0e3a3f] leading-tight mb-5">
-            Got questions on featured books?
+          <h2 className="text-3xl sm:text-4xl lg:text-[41px] font-black text-[#0e3a3f] leading-tight mb-5">
+            Would you like to request a book innovation guide?
           </h2>
           <p className="text-[#0e3a3f] font-normal max-w-prose mx-auto md:mx-0 text-sm sm:text-base">
-            Would you like to request a book innovation guide? Request it via the chat widget.
+            Request it via the chat widget.
           </p>
         </div>
 
