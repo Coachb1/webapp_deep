@@ -1385,8 +1385,8 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     } else {
       // we are asking initial question
@@ -1414,8 +1414,8 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
       );
 
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
 
       appendMessage2(msg);
     } else {
@@ -1561,8 +1561,8 @@ const getUserOrAnonymousDetails = async (choice) => {
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     } else {
       FeedbackUserEmail = user_email2;
@@ -3640,7 +3640,7 @@ const getBotDetails2 = async (botId) => {
         "other data: ",
         `Please enter your ${formFieldsstt[0]}`
       );
-      appendMessage2('<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>')
+      appendMessage2('Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).')
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
@@ -5478,8 +5478,8 @@ function handleEndConversation(isInActive) {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     }
   } else {
@@ -5724,8 +5724,8 @@ const handleEndCoachingClick2 = async (randomId) => {
     isEmailFormstt = true;
     formFieldsstt = ["name", "email"];
     const msg = formFieldsstt[0] === "email" ?
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+      : `Please enter your ${formFieldsstt[0]}`;
     appendMessage2(msg);
   }
 };
@@ -7853,8 +7853,8 @@ async function setMcqVariablesStt() {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     }
 
@@ -11043,7 +11043,7 @@ function handleDiagnosticButtons(button) {
       onmouseover="this.style.backgroundColor='#f5f5f5'"
       onmouseout="this.style.backgroundColor='white'"
     >
-      Diag On
+      Diagnostic On
     </button>
     
     <button 
@@ -11064,7 +11064,7 @@ function handleDiagnosticButtons(button) {
       onmouseover="this.style.backgroundColor='#f5f5f5'"
       onmouseout="this.style.backgroundColor='white'"
     >
-      Diag Off
+      Diagnostic Off
     </button>
   </span>
 `;
@@ -12038,7 +12038,7 @@ loadExternalModule().then(() => {
       messageBubbleMaxWidth
     )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)", "border" : "1px solid #22c55e" }},
-          "user" : {"bubble": {"backgroundColor": "#2DC092", "border" : "1px solid #22c55e" }}
+          "user": {"bubble": {"backgroundColor": "#f3f4f6","border": "1px solid #22c55e","outline": "1px solid #22c55e","outlineOffset": "2px" , "color": "#000000" }}
         },
         "loading": {
           "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
@@ -12683,7 +12683,7 @@ const customMicButton = document.getElementById("startMicBtn");
               role: "ai",
             },
             {
-              html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
+              html: `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`,
               role: "ai",
             },
           ];
@@ -12710,7 +12710,7 @@ const customMicButton = document.getElementById("startMicBtn");
             role: "ai",
           },
           {
-            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
+            html: `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`,
             role: "ai",
           },
         ];
@@ -13120,8 +13120,8 @@ const customMicButton = document.getElementById("startMicBtn");
             }
             if (formFieldsstt.length > 0) {
               const msg = formFieldsstt[0] === "email" ?
-                `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-                : `<b>Please enter your ${formFieldsstt[0]}.</b>`;
+                `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+                : `Please enter your ${formFieldsstt[0]}.`;
               signals.onResponse({
                 html: msg,
               });
@@ -15932,8 +15932,8 @@ const customMicButton = document.getElementById("startMicBtn");
                       formFieldsstt = ["name", "email"];
                       isEmailFormstt = true;
                       const msg = formFieldsstt[0] === "email" ?
-                        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-                        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+                        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+                        : `Please enter your ${formFieldsstt[0]}`;
                       signals.onResponse({
                         html: msg,
                       });
