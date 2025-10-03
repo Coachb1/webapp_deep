@@ -16,6 +16,8 @@ const AllowedScriptDomains = [
   "https://cdnjs.cloudflare.com",
   "https://cdn.intake-lr.com",
   "http://localhost:*",
+  "https://*.tinytalk.ai",
+
 ];
 
 const AllowedApiDomains = [
@@ -28,7 +30,7 @@ const AllowedApiDomains = [
 
 const AllowedImgDomains = [
   "https://*.coachbots.com",
-  "https://dashboard.tinytalk.ai",
+  "https://*.tinytalk.ai",
   "https://tiny-talk-prod-uploads.s3.eu-central-1.amazonaws.com",
   "https://storage.googleapis.com",
   "https://res.cloudinary.com",
