@@ -650,6 +650,7 @@ let showAssessmentButtonStt = true;
 let showModeButtonStt = true;
 let showDiagnosticButtonStt = true;
 let NumberConversationFordiagButton = 3;
+let IntakeTypeSTT='individual_only';
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -4614,157 +4615,191 @@ async function handleFaqButtonClick(question) {
 
 
         } else {
-        // Dynamic option arrays
-        const roleOptions = [
-          "Individual Contributor",
-          "Team Lead/Senior IC",
-          "Manager (1-2 levels below)",
-          "Director/Senior Manager",
-          "VP/Head of Department",
-          "C-Suite/Founder"
-        ];
+// ----------------- Dynamic option arrays -----------------
+const roleOptions = [
+  "Individual Contributor",
+  "Team Lead/Senior IC",
+  "Manager (1-2 levels below)",
+  "Director/Senior Manager",
+  "VP/Head of Department",
+  "C-Suite/Founder"
+];
 
-        const departmentOptions = [
-          "Engineering/Product",
-          "Sales/Business Development",
-          "Marketing",
-          "Operations/Finance",
-          "HR/People",
-          "Customer Success",
-          "Other"
-        ];
+const departmentOptions = [
+  "Engineering/Product",
+  "Sales/Business Development",
+  "Marketing",
+  "Operations/Finance",
+  "HR/People",
+  "Customer Success",
+  "Other"
+];
 
-        const teamSizeOptions = [
-          "No direct reports",
-          "1-3 direct reports",
-          "4-10 direct reports",
-          "11-25 direct reports",
-          "25+ direct reports"
-        ];
+const teamSizeOptions = [
+  "No direct reports",
+  "1-3 direct reports",
+  "4-10 direct reports",
+  "11-25 direct reports",
+  "25+ direct reports"
+];
 
-        // Function to generate options HTML
-        function generateOptions(optionsArray, placeholder) {
+// ----------------- Helper: create options -----------------
+function generateOptions(optionsArray, placeholder) {
   return `<option value="" disabled selected>${placeholder}</option>` +
     optionsArray.map(opt => `<option>${opt}</option>`).join("");
 }
 
-  // Step 1: Show the choice between Individual and Group
+// ----------------- Validation Helper -----------------
+function validateForm(containerId) {
+  const container = gShadowRoot2.getElementById(containerId);
+  const inputs = container.querySelectorAll("input[required], select[required]");
+  let isValid = true;
+
+  inputs.forEach(input => {
+    if (!input.value.trim()) {
+      input.style.border = "1px solid red";
+      isValid = false;
+    } else {
+      input.style.border = "1px solid #ccc";
+    }
+  });
+
+  return isValid;
+}
+
+// ----------------- Main Intake Rendering Function -----------------
+function renderIntakeUI(intakeType) {
+  // Individual Form
+  const individualForm = `
+    <div id="quick-intake-form" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+      background:#f1f0f0;padding:8px 10px;border-radius:12px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;">
+      <span style="white-space:nowrap;font-weight:bold;">Please finish quick intake:</span>
+      
+      <input type="text" id="intake-name" placeholder="Name" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:100px;">
+
+      <select id="intake-role" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:120px;">
+        ${generateOptions(roleOptions, "Role")}
+      </select>
+
+      <select id="intake-department" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:120px;">
+        ${generateOptions(departmentOptions, "Department")}
+      </select>
+
+      <select id="intake-teamSize" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:110px;">
+        ${generateOptions(teamSizeOptions, "Team Size")}
+      </select>
+
+      <button id="quickSubmit" type="button"
+        style="padding:2px 6px;font-size:12px;border:none;border-radius:4px;background:#4CAF50;color:white;cursor:pointer;">
+        ✔
+      </button>
+    </div>
+  `;
+
+  // Group Form
+  const groupForm = `
+    <div id="group-intake-form" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+      background:#f1f0f0;padding:8px 10px;border-radius:12px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;">
+      <span style="white-space:nowrap;font-weight:bold;">Please finish group intake:</span>
+      
+      <input type="text" id="group-name" placeholder="Group Name" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:150px;">
+
+      <input type="text" id="group-objective" placeholder="Group Objective" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:200px;">
+
+      <button id="groupSubmit" type="button"
+        style="padding:2px 6px;font-size:12px;border:none;border-radius:4px;background:#4CAF50;color:white;cursor:pointer;">
+        ✔
+      </button>
+    </div>
+  `;
+
+  // Rendering logic
+  if (intakeType === "group_and_individual_both") {
     appendMessage2(`
-      <div id="intake-choice" style="
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        background: #f1f0f0; 
-        padding: 8px 10px; 
-        border-radius: 12px; 
-        font-family: Arial, sans-serif; 
-        font-size: 14px; 
-        line-height: 1.5;
-      ">
-        <span style="font-weight: bold;">Are we doing a group coaching or individual session today?</span>
+      <div id="intake-choice" style="display:flex;align-items:center;gap:10px;background:#f1f0f0;
+        border-radius:12px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;">
+        <span style="font-weight:bold;">Are we doing a group coaching or individual session today?</span>
         <button id="individual-btn" type="button"
-          style="padding: 4px 10px; font-size: 13px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;">
+          style="padding:4px 10px;font-size:13px;border:none;border-radius:4px;background:#4CAF50;color:white;cursor:pointer;">
           Individual
         </button>
         <button id="group-btn" type="button"
-          style="padding: 4px 10px; font-size: 13px; border: none; border-radius: 4px; background: #2196F3; color: white; cursor: pointer;">
+          style="padding:4px 10px;font-size:13px;border:none;border-radius:4px;background:#2196F3;color:white;cursor:pointer;">
           Group
         </button>
       </div>
     `);
 
-    // Step 2: Handle button clicks using setTimeout to ensure DOM is ready
+    // Bind listeners
     setTimeout(() => {
       const individualBtn = gShadowRoot2.getElementById("individual-btn");
       const groupBtn = gShadowRoot2.getElementById("group-btn");
-      
+
       if (individualBtn) {
         individualBtn.onclick = () => {
-          const intakeChoices = gShadowRoot2.getElementById("intake-choice");
-          
-          intakeChoices.innerHTML = `<div id="quick-intake-form" style="
-              display: flex; 
-              align-items: center; 
-              gap: 5px; 
-              flex-wrap: wrap; 
-              background: #f1f0f0; 
-              padding: 8px 10px; 
-              border-radius: 12px; 
-              font-family: Arial, sans-serif; 
-              font-size: 14px; 
-              line-height: 1.5;
-            ">
-              <span style="white-space: nowrap; font-weight: bold;">Please finish quick intake:</span>
-              
-              <input type="text" id="intake-name" placeholder="Name" required
-                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100px;">
-
-              <select id="intake-role" required
-                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
-                ${generateOptions(roleOptions, "Role")}
-              </select>
-
-              <select id="intake-department" required
-                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 120px;">
-                ${generateOptions(departmentOptions, "Department")}
-              </select>
-
-              <select id="intake-teamSize" required
-                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 110px;">
-                ${generateOptions(teamSizeOptions, "Team Size")}
-              </select>
-
-              <button 
-                id="quickSubmit" 
-                type="button" 
-                style="padding: 2px 6px; font-size: 12px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;"
-                onclick="handleIntakeQues(this, 'individual')"
-              >✔</button>
-            </div>`;
-          // Show individual intake form
-          // appendMessage2(`
-            
-          // `);
+          const container = gShadowRoot2.getElementById("intake-choice");
+          container.innerHTML = individualForm;
+          bindIndividualSubmit();
         };
       }
-      
+
       if (groupBtn) {
         groupBtn.onclick = () => {
-          const intakeChoices2 = gShadowRoot2.getElementById("intake-choice");
-          intakeChoices2.innerHTML = `<div id="group-intake-form" style="
-              display: flex; 
-              align-items: center; 
-              gap: 5px; 
-              flex-wrap: wrap; 
-              background: #f1f0f0; 
-              padding: 8px 10px; 
-              border-radius: 12px; 
-              font-family: Arial, sans-serif; 
-              font-size: 14px; 
-              line-height: 1.5;
-            ">
-              <span style="white-space: nowrap; font-weight: bold;">Please finish group intake:</span>
-              
-              <input type="text" id="group-name" placeholder="Group Name" required
-                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 150px;">
-
-              <input type="text" id="group-objective" placeholder="Group Objective" required
-                style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 200px;">
-
-              <button 
-                id="groupSubmit" 
-                type="button" 
-                style="padding: 2px 6px; font-size: 12px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer;"
-                onclick="handleIntakeQues(this, 'group')"
-              >✔</button>
-            </div>`;
-          // Show group intake form
-          // appendMessage2(`
-            
-          // `);
+          const container = gShadowRoot2.getElementById("intake-choice");
+          container.innerHTML = groupForm;
+          bindGroupSubmit();
         };
       }
     }, 100);
+
+  } else if (intakeType === "group_only") {
+    appendMessage2(groupForm);
+    setTimeout(bindGroupSubmit, 100);
+  } else {
+    appendMessage2(individualForm);
+    setTimeout(bindIndividualSubmit, 100);
+  }
+}
+
+// ----------------- Bind Handlers -----------------
+function bindIndividualSubmit() {
+  const btn = gShadowRoot2.getElementById("quickSubmit");
+  if (btn) {
+    btn.onclick = () => {
+      if (validateForm("quick-intake-form")) {
+        handleIntakeQues(btn, "individual");
+      }
+    };
+  }
+}
+
+function bindGroupSubmit() {
+  const btn = gShadowRoot2.getElementById("groupSubmit");
+  if (btn) {
+    btn.onclick = () => {
+      if (validateForm("group-intake-form")) {
+        handleIntakeQues(btn, "group");
+      }
+    };
+  }
+}
+
+// ----------------- Example Usage -----------------
+// renderIntakeUI("group_and_individual_both");
+// renderIntakeUI("group_only");
+// renderIntakeUI("individual_only");
+if (sttWidgetClientId){  // meaning its is bot outside of webdeep
+  IntakeTypeSTT = "group_and_individual_both"
+}
+
+renderIntakeUI(IntakeTypeSTT || 'individual_only');
+
 
     return;
   }
@@ -5935,9 +5970,9 @@ function disableOrEnableButtons(id, is_disable = true) {
 
 function addStickerToMessage(sticker, msg, color = "#3b82f6") {
   const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-  <div style="font-size : 12px; font-weight: bold; color: ${sticker === "Begin Session" ? "white" : "black"
-    }; padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 1px solid lightgray; background-color : ${sticker === "Begin Session" ? "#21C55D" : "transparent"
-    }">${sticker}</div>
+  <div style="font-size : 12px; font-weight: bold; color: black;
+     padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 1px solid lightgray; background-color :"transparent"
+    ">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
   </div>`;
   return divWithLabel;
