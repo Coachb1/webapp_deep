@@ -5975,7 +5975,7 @@ function disableOrEnableButtons(id, is_disable = true) {
 function addStickerToMessage(sticker, msg, color = "#3b82f6") {
   const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
   <div style="font-size : 12px; font-weight: bold; color: black;
-     padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 1px solid lightgray; background-color :"transparent"
+     padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 2px solid gray; background-color :"transparent"
     ">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
   </div>`;
