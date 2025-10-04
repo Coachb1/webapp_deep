@@ -2,7 +2,8 @@
 
 import { UserProvider } from "@/components/books/context/UserContext";
 import UserInfoGate from "@/components/books/Userinfogate";
-import NavBar from "@/components/no-kinde-portal/navBar";
+import Navbar from "@/components/job-aid/navbar";
+// import NavBar from "@/components/no-kinde-portal/navBar";
 import Script from "next/script";
 
 export const metadata = {
@@ -17,7 +18,7 @@ export default function PortalPageLayout({ children }: { children: React.ReactNo
       <body>
         <UserProvider>
           <UserInfoGate>
-            <NavBar />
+            <Navbar />
             {children}
           </UserInfoGate>
         </UserProvider>
