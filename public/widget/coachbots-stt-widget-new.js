@@ -651,6 +651,7 @@ let showModeButtonStt = true;
 let showDiagnosticButtonStt = true;
 let NumberConversationFordiagButton = 3;
 let IntakeTypeSTT='individual_only';
+let diagnosticCurrentlyActive = false; // Track if diagnostic is currently on
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -11079,7 +11080,7 @@ function handleDiagnosticButtons(button) {
       </span>
       `;
 
-    if (botPreviousConversationHistory.length >= NumberConversationFordiagButton) likeDisLike.innerHTML += diagButtons;
+    // if (botPreviousConversationHistory.length >= NumberConversationFordiagButton) likeDisLike.innerHTML += diagButtons;
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     gShadowRoot2.getElementById("messages").appendChild(messageNode);
@@ -11104,6 +11105,7 @@ function handleDiagnosticButtons(button) {
 
       let index = 0;
       let text = "";
+      let hasDiagnosticInsight = false;
       const CHUNK_TIMEOUT = 5000; // 5s wait for data
       const RETRY_DELAY = 2000;   // 2s delay before retry
       let retries = 0;
@@ -11146,6 +11148,68 @@ function handleDiagnosticButtons(button) {
               indvMessage.remove();
             }
           });
+// Check if response contains diagnostic insight
+if (messageText.innerText.includes("🔍 DIAGNOSTIC INSIGHT")) {
+  hasDiagnosticInsight = true;
+  diagnosticCurrentlyActive = true;
+  likeDisLike.innerHTML += diagButtons;
+  console.log("✅ Diagnostic insight detected - buttons added!");
+  
+  // Disable "Diagnostic On", Enable "Diagnostic Off"
+  setTimeout(() => {
+    const diagOnBtn = gShadowRoot2.getElementById("diagOn");
+    const diagOffBtn = gShadowRoot2.getElementById("diagOff");
+    
+    if (diagOnBtn) {
+      diagOnBtn.disabled = true;
+      diagOnBtn.style.backgroundColor = "#f0f0f0";
+      diagOnBtn.style.borderColor = "lightgray";
+      diagOnBtn.style.color = "#999";
+      diagOnBtn.style.cursor = "not-allowed";
+      diagOnBtn.style.opacity = "0.6";
+      diagOnBtn.onmouseover = null;
+      diagOnBtn.onmouseout = null;
+      diagOnBtn.removeAttribute("onclick");
+    }
+    
+    if (diagOffBtn) {
+      diagOffBtn.disabled = false;
+      diagOffBtn.style.backgroundColor = "white";
+      diagOffBtn.style.color = "gray";
+      diagOffBtn.style.cursor = "pointer";
+    }
+  }, 50);
+} else if (diagnosticCurrentlyActive === true) {
+  // Diagnostic was OFF in this response, show "Diagnostic On" enabled
+  likeDisLike.innerHTML += diagButtons;
+  console.log("✅ No diagnostic - showing On button enabled");
+  
+  setTimeout(() => {
+    const diagOnBtn = gShadowRoot2.getElementById("diagOn");
+    const diagOffBtn = gShadowRoot2.getElementById("diagOff");
+    
+    // Enable "Diagnostic On"
+    if (diagOnBtn) {
+      diagOnBtn.disabled = false;
+      diagOnBtn.style.backgroundColor = "white";
+      diagOnBtn.style.color = "gray";
+      diagOnBtn.style.cursor = "pointer";
+    }
+    
+    // Disable "Diagnostic Off"
+    if (diagOffBtn) {
+      diagOffBtn.disabled = true;
+      diagOffBtn.style.backgroundColor = "#f0f0f0";
+      diagOffBtn.style.borderColor = "lightgray";
+      diagOffBtn.style.color = "#999";
+      diagOffBtn.style.cursor = "not-allowed";
+      diagOffBtn.style.opacity = "0.6";
+      diagOffBtn.onmouseover = null;
+      diagOffBtn.onmouseout = null;
+      diagOffBtn.removeAttribute("onclick");
+    }
+  }, 50);
+}
 
           if (
             messageText.innerText.toLowerCase().includes("I am sorry but") ||
