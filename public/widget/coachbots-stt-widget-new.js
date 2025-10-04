@@ -30,6 +30,9 @@ if (!['playground', 'platform', 'localhost'].includes(subdomainStt)) {
 
 console.log('baseURl2', baseURL2)
 
+const LLMBaseURl = baseURL2.includes('gke-dev')? 'https://playground.coachbots.com' : 'https://platform.coachbots.com'
+// const LLMBaseURl = 'http://localhost:3000'
+
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {
   console.log("swipeHeader", swipeHeader);
@@ -651,6 +654,7 @@ let showModeButtonStt = true;
 let showDiagnosticButtonStt = true;
 let NumberConversationFordiagButton = 3;
 let IntakeTypeSTT='individual_only';
+let IsDiagnosticsOn;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -10803,7 +10807,7 @@ async function callLLM(userInputMessage) {
           };
         } 
         else if (provider === 'gpt') {
-          apiURL = "/api/openai";
+          apiURL = `${LLMBaseURl}/api/openai`;
           bodyData = {
             userInput: userInputMessage,
             selectedModel,
@@ -10811,7 +10815,7 @@ async function callLLM(userInputMessage) {
           };
         } 
         else if (provider === 'anthropic') {
-          apiURL = "/api/anthropic";
+          apiURL = `${LLMBaseURl}/api/anthropic`;
           bodyData = {
             userInput: userInputMessage,
             selectedModel,
@@ -10960,8 +10964,10 @@ function handleDiagnosticButtons(button) {
     let msg = "";
     if (button.id === "diagOn") {
         msg = "Can you please turn the diagnostic on again.";
+        IsDiagnosticsOn = true;
     } else if (button.id === "diagOff") {
         msg = "Please stop using diagnostics permanently during this session. Don't show it.";
+        IsDiagnosticsOn = false;
     }
 
     // Send the message via shadowRoot
@@ -10973,6 +10979,63 @@ function handleDiagnosticButtons(button) {
     sendUserMessage(msg, shadowRoot);
 
     console.log("✅ Sent message via shadowRoot:", msg);
+}
+
+function getDiagButtons(isDiagnosticOn) {
+  const commonStyle = `
+    padding: 6px 14px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    border: 1px solid lightgray; 
+    border-radius: 6px; 
+    background-color: white; 
+    color: gray; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+  `;
+
+  const disabledStyle = `
+    padding: 6px 14px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    border: 1px solid lightgray; 
+    border-radius: 6px; 
+    background-color: #f0f0f0; 
+    color: gray; 
+    cursor: not-allowed; 
+    opacity: 0.6; 
+  `;
+
+  const diagOnBtn = `
+    <button 
+      id="diagOn"
+      value="diag_on"
+      ${isDiagnosticOn ? "disabled" : "onclick='handleDiagnosticButtons(this)'"}
+      style="${isDiagnosticOn ? disabledStyle : commonStyle}"
+      ${isDiagnosticOn ? "" : `onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='white'"`}
+    >
+      Diagnostic On
+    </button>
+  `;
+
+  const diagOffBtn = `
+    <button 
+      id="diagOff"
+      value="diag_off"
+      ${!isDiagnosticOn ? "disabled" : "onclick='handleDiagnosticButtons(this)'"}
+      style="${!isDiagnosticOn ? disabledStyle : commonStyle}"
+      ${!isDiagnosticOn ? "" : `onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='white'"`}
+    >
+      Diagnostic Off
+    </button>
+  `;
+
+  return `
+    <span style="display:inline-flex; gap:8px; align-items:center;">
+      ${diagOnBtn}
+      ${diagOffBtn}
+    </span>
+  `;
 }
 
 
@@ -11023,53 +11086,6 @@ function handleDiagnosticButtons(button) {
       "display:flex; flex-direction: row; gap: 8px; border-top: 2px solid lightgray; padding: 10px 0 6px 0; width: 100%; margin-top: 4px;"
     );
 
- const diagButtons = `
-  <span style="display:inline-flex; gap:8px; align-items:center;">
-    <button 
-      id="diagOn" 
-      onclick="handleDiagnosticButtons(this)" 
-      value="diag_on"
-      style="
-        padding: 6px 14px; 
-        font-size: 13px; 
-        font-weight: 600;        /* bold-ish text */
-        border: 1px solid lightgray; 
-        border-radius: 6px; 
-        background-color: white; 
-        color: gray; 
-        cursor: pointer; 
-        transition: all 0.2s ease; 
-      "
-      onmouseover="this.style.backgroundColor='#f5f5f5'"
-      onmouseout="this.style.backgroundColor='white'"
-    >
-      Diagnostic On
-    </button>
-    
-    <button 
-      id="diagOff" 
-      onclick="handleDiagnosticButtons(this)" 
-      value="diag_off"
-      style="
-        padding: 6px 14px; 
-        font-size: 13px; 
-        font-weight: 600;        /* bold-ish text */
-        border: 1px solid lightgray; 
-        border-radius: 6px; 
-        background-color: white; 
-        color: gray; 
-        cursor: pointer; 
-        transition: all 0.2s ease; 
-      "
-      onmouseover="this.style.backgroundColor='#f5f5f5'"
-      onmouseout="this.style.backgroundColor='white'"
-    >
-      Diagnostic Off
-    </button>
-  </span>
-`;
-
-
     likeDisLike.innerHTML = `
       <span class="like" id="likeIcon-${randomIdForAudioElement}">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
@@ -11079,7 +11095,6 @@ function handleDiagnosticButtons(button) {
       </span>
       `;
 
-    if (botPreviousConversationHistory.length >= NumberConversationFordiagButton) likeDisLike.innerHTML += diagButtons;
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     gShadowRoot2.getElementById("messages").appendChild(messageNode);
@@ -11285,6 +11300,14 @@ function handleDiagnosticButtons(button) {
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
+
+          if (messageText.innerText.includes('DIAGNOSTIC INSIGHT')) IsDiagnosticsOn = true;
+            
+          if (IsDiagnosticsOn != undefined){
+            const diagButtons = getDiagButtons(IsDiagnosticsOn)
+            likeDisLike.innerHTML += diagButtons;
+          }
+
           messageBubble.appendChild(likeDisLike);
           setTimeout(() => {
             const likeIcon = gShadowRoot2.getElementById(
