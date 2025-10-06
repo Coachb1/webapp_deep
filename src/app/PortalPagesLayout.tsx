@@ -15,6 +15,8 @@ export const metadata = {
 
 function PortalPageContent({ children }: { children: React.ReactNode }) {
   const { user, userInfo } = usePortalUser();
+
+  console.log('PortaluserInfo', userInfo.isDemoUser)
   
   return (
     <UserInfoGate>
