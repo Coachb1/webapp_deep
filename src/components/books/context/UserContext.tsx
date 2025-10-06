@@ -136,7 +136,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error fetching user info:", err);
         setUserInfo(emptyData);
       }
-
+      console.log('userINfo', userInfoData)
       if (userInfoData.clientName == ""){
         await CreateOrAssignClientId(user.email);
         try {
