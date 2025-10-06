@@ -7,7 +7,7 @@ const AllowedFrameDomains = [
   'http://app.linke.to',
   'https://coachbot.onlinecoursehost.com',
   'https://*.scrom.com',
-  'https://ashianahrms.peoplestrong.com/'
+  'https://*.peoplestrong.com'
 ];
 
 const AllowedScriptDomains = [
@@ -37,47 +37,48 @@ const AllowedImgDomains = [
   "https://res.cloudinary.com",
   "http://localhost:*",
 ];
+// {
+      //   source: "/library-bot/(.*)",
+      //   headers: [
+      //     {
+      //       key: "Content-Security-Policy",
+      //       value: [
+      //         // only allow scripts from trusted domains
+      //         `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${AllowedScriptDomains.join(" ")}`,
+
+      //         // only allow connections to trusted APIs
+      //         `connect-src 'self' ${AllowedApiDomains.join(" ")}`,
+
+      //         // only allow images from trusted sources
+      //         `img-src 'self' data: ${AllowedImgDomains.join(" ")}`,
+
+      //         `media-src 'self' data: ${AllowedImgDomains.join(" ")}`,
+
+      //         // allow blob workers
+      //         `worker-src 'self' blob: ${AllowedScriptDomains.join(" ")}`,
+
+      //         // allow iframes only from trusted domains
+      //         `frame-src 'self' ${AllowedScriptDomains.join(" ")}`,
+
+      //         // only allow the page to be embedded in trusted domains
+      //         `frame-ancestors 'self' ${AllowedFrameDomains.join(" ")}`,
+
+      //         // allow inline styles for Tailwind / SDK
+      //         `style-src 'self' 'unsafe-inline' ${AllowedScriptDomains.join(" ")}`,
+
+      //         // fallback
+      //         "default-src 'self'",
+      //       ].join("; "),
+      //     },
+      //     { key: "X-Content-Type-Options", value: "nosniff" },
+      //   ],
+      // },
+
 
 module.exports = {
   output: "standalone",
   async headers() {
     return [
-      {
-        source: "/library-bot/(.*)",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value: [
-              // only allow scripts from trusted domains
-              `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${AllowedScriptDomains.join(" ")}`,
-
-              // only allow connections to trusted APIs
-              `connect-src 'self' ${AllowedApiDomains.join(" ")}`,
-
-              // only allow images from trusted sources
-              `img-src 'self' data: ${AllowedImgDomains.join(" ")}`,
-
-              `media-src 'self' data: ${AllowedImgDomains.join(" ")}`,
-
-              // allow blob workers
-              `worker-src 'self' blob: ${AllowedScriptDomains.join(" ")}`,
-
-              // allow iframes only from trusted domains
-              `frame-src 'self' ${AllowedScriptDomains.join(" ")}`,
-
-              // only allow the page to be embedded in trusted domains
-              `frame-ancestors 'self' ${AllowedFrameDomains.join(" ")}`,
-
-              // allow inline styles for Tailwind / SDK
-              `style-src 'self' 'unsafe-inline' ${AllowedScriptDomains.join(" ")}`,
-
-              // fallback
-              "default-src 'self'",
-            ].join("; "),
-          },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-        ],
-      },
       {
         // Routes this applies to
         source: "/api/(.*)",
