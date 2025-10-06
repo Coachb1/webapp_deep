@@ -10,7 +10,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
-import { emptyData, getTestMappings, getUserTestMappings } from "@/lib/utils";
+import { CreateOrAssignClientId, emptyData, getTestMappings, getUserTestMappings } from "@/lib/utils";
 import {
   getClientUserInfo,
   getRequestedTests,
@@ -135,6 +135,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       } catch (err) {
         console.error("Error fetching user info:", err);
         setUserInfo(emptyData);
+      }
+
+      if (userInfoData.clientName == ""){
+        await CreateOrAssignClientId(user.email);
+        try {
+          userInfoData = await getClientUserInfo(user.email, { id: "", picture: "", 'family_name': '', ...user });
+          setUserInfo(userInfoData);
+        } catch (err) {
+          console.error("Error fetching user info:", err);
+          setUserInfo(emptyData);
+        }
       }
 
       // 4️⃣ Fetch Libraries in parallel

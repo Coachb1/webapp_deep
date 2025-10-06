@@ -6436,15 +6436,28 @@ const handleGameTypeConversation = async () => {
     let next_question_text = responseData.question_text || null;
 
     // Check if it is the last question using specific conditions
-    const is_last_question = responseData.is_last_question !== undefined
-      ? responseData.is_last_question
-      : (next_question_text === null || /end of quiz|achieved a score of/i.test(next_question_text));
 
 
-    console.log(
-      is_last_question,
-      next_question_text
-    )
+   const is_last_question = (() => {
+      if (!next_question_text) return true; // null or undefined
+
+      // Handle object case
+      if (typeof next_question_text === "object") {
+        const text = JSON.stringify(next_question_text).toLowerCase();
+        return text.includes("eng_message") || /end of quiz|achieved a score of|congratulations/i.test(text);
+      }
+
+      // Handle string case
+      if (typeof next_question_text === "string") {
+        return next_question_text.includes("eng_message") ||
+              /end of quiz|achieved a score of|congratulations/i.test(next_question_text);
+      }
+
+      return false;
+    })();
+
+    console.log(is_last_question, next_question_text);
+
 
     if (is_last_question) {
       if (!emailCandidate2) {
@@ -6459,6 +6472,9 @@ const handleGameTypeConversation = async () => {
           console.log("Score:", score, "Total:", total);
         }
         next_question_text = JSON.parse(next_question_text);
+        if (next_question_text.score){
+          score = next_question_text.score
+        }
 
         // Format incorrect answers nicely
         let formattedFeedback = next_question_text.feedback
@@ -6475,7 +6491,7 @@ const handleGameTypeConversation = async () => {
           finalMessage += `<b>${next_question_text.end_message}</b><br>`;
         }
 
-        if (gameExplanationVisibleStt) {
+        if (gameExplanationVisibleStt && next_question_text.feedback.length > 0) {
           finalMessage += `
             <div style="margin-top:10px;">
               <h3>Feedback:</h3>
@@ -11300,9 +11316,9 @@ function getDiagButtons(isDiagnosticOn) {
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
-
-          if (messageText.innerText.includes('DIAGNOSTIC INSIGHT')) IsDiagnosticsOn = true;
-            
+          const KeywordList = ['DIAGNOSTIC INSIGHT', 'PLATFORM INSIGHT', 'Professional Insight'];
+          const isDiag = KeywordList.some(k => messageText.innerText.toLowerCase().includes(k.toLowerCase()));
+          if (isDiag) IsDiagnosticsOn = true;
           if (IsDiagnosticsOn != undefined){
             const diagButtons = getDiagButtons(IsDiagnosticsOn)
             likeDisLike.innerHTML += diagButtons;

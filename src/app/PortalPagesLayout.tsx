@@ -1,30 +1,45 @@
 "use client";
 
-import { UserProvider } from "@/components/books/context/UserContext";
+import {
+  usePortalUser,
+  UserProvider,
+} from "@/components/books/context/UserContext";
 import UserInfoGate from "@/components/books/Userinfogate";
 import Navbar from "@/components/job-aid/navbar";
-// import NavBar from "@/components/no-kinde-portal/navBar";
-import Script from "next/script";
+import { RestrictedPage } from "@/components/no-kinde-portal/RestrictedWall";
 
 export const metadata = {
   title: "Coachbot",
   description: "Coaching Simulations",
 };
 
-export default function PortalPageLayout({ children }: { children: React.ReactNode }) {
+function PortalPageContent({ children }: { children: React.ReactNode }) {
+  const { user, userInfo } = usePortalUser();
+  
+  return (
+    <UserInfoGate>
+      {userInfo?.isDemoUser ? <RestrictedPage user={user} /> : (
+        <>
+        <Navbar/>
+        {children}
+        </>
+        )}
+    </UserInfoGate>
+  );
+}
 
+export default function PortalPageLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
         <UserProvider>
-          <UserInfoGate>
-            <Navbar />
-            {children}
-          </UserInfoGate>
+          <PortalPageContent>{children}</PortalPageContent>
         </UserProvider>
-
         <div id="portal-coachscribe" className="coachbots-coachscribe"></div>
-
       </body>
     </html>
   );

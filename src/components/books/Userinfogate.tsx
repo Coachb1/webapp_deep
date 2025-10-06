@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getUserAccount } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { usePortalUser } from "./context/UserContext";
 
 interface User {
@@ -44,9 +44,12 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
   const [apiError, setApiError] = useState("");
   const pathname = usePathname();
   const [checking, setChecking] = useState(pathname.includes('portal')? false : true); // initial check
+  const params = useSearchParams();
 
+  const clientName = params.get("client_name"); // ✅ correct way
+  console.log("cpaths", Object.fromEntries(params), pathname, clientName);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchSession = async () => {
       try {
         const token = localStorage.getItem('jwt_token')
@@ -104,6 +107,17 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
           ...newUser,
           user_data: data,
         };
+      
+      // if (clientName){
+        // console.log('Updating client for the user to ', clientName)
+        // updateClientInfo(
+        //   clientName,
+        //   newUser.email,
+        //   ""
+        // )
+
+      // }
+
 
       const res = await fetch("/api/session", {
         method: "POST",
