@@ -16,6 +16,7 @@ import {
   FaTimes,
   FaLock,
 } from "react-icons/fa";
+import { usePortalUser } from "../context/UserContext";
 
 
 interface UserReport {
@@ -28,7 +29,7 @@ interface UserReport {
 const PASSWORD = "demobook#12345";
 const EXPIRY_HOURS = 24;
 
-const fetchBookReportData = async (
+const fetchLeaderBoardReportData = async (
   backend: string,
   packageCourseID: string
 ): Promise<UserReport[]> => {
@@ -60,11 +61,13 @@ const fetchBookReportData = async (
   }
 };
 
-interface BookReportProps {
+interface LeaderBoardReportProps {
   packageCourseId: string;
 }
 
-const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
+const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }) => {
+  const {userInfo} = usePortalUser();
+  console.log(userInfo, 'clientbookreport')
   const [data, setData] = useState<UserReport[]>([]);
   const [date, setDate] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserReport | null>(null);
@@ -97,6 +100,10 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
   }, [isAuthenticated]);
 
   const checkAuth = () => {
+    if (!userInfo.leaderboard_report_protected) {
+      setIsAuthenticated(true);
+      return;
+    }
     const stored = localStorage.getItem("reportAuth");
     if (stored) {
       const { expiresAt } = JSON.parse(stored);
@@ -109,7 +116,8 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
   };
 
   const handleLogin = () => {
-    if (password === PASSWORD) {
+    
+    if (password === userInfo.leaderboard_report_password) {
       const expiresAt =
         new Date().getTime() + EXPIRY_HOURS * 60 * 60 * 1000; // 24 hrs
       localStorage.setItem(
@@ -125,7 +133,7 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
 
   const loadData = async () => {
     setLoading(true);
-    const response = await fetchBookReportData(baseURL, packageCourseId);
+    const response = await fetchLeaderBoardReportData(baseURL, packageCourseId);
     setData(response);
     setLoading(false);
   };
@@ -364,4 +372,4 @@ const BookReport: React.FC<BookReportProps> = ({ packageCourseId }) => {
   );
 };
 
-export default BookReport;
+export default LeaderBoardReport;

@@ -361,6 +361,9 @@ export interface UserInfoType {
     tagLine: string | null;
   } | null;
   helpText: any;
+  is_active?: boolean;
+  leaderboard_report_protected?: boolean;
+  leaderboard_report_password?: string;
 }
 
 export interface PositionedUserTypes {

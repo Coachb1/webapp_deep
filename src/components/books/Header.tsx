@@ -19,7 +19,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
   const handlePasswordSubmit = (packageCourseId: string) => {
     // if (password === "bookdemo#12345") {
     const newWindow = window.open(
-      `/library-bot/bookReport/?package_course_id=${packageCourseId}`,
+      `/library-bot/leaderBoardReport/?package_course_id=${packageCourseId}`,
       "_blank",
       "noopener,noreferrer"
     );
@@ -58,7 +58,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
             <Button
               onClick={() => {
                 if (packageCourseId) {
-                  const url = `/library-bot/bookReport/?package_course_id=${encodeURIComponent(
+                  const url = `/library-bot/leaderBoardReport/?package_course_id=${encodeURIComponent(
                     packageCourseId
                   )}`;
                   window.open(url, "_blank", "noopener,noreferrer");
@@ -73,7 +73,7 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
             <Button
               onClick={() => {
                 if (user?.email) {
-                  const url = `/library-bot/leaderboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${encodeURIComponent(
+                  const url = `/library-bot/ideaboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${encodeURIComponent(
                     user.email
                   )}`;
                   window.open(url, "_blank", "noopener,noreferrer");
