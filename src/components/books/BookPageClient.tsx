@@ -38,11 +38,11 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     const loadBooks = async () => {
       try {
         const data: Book[] = await fetchBooks(id);
-        console.log("[fetchBooks] Books:", data[0].course_details);
+        console.log("[fetchBooks] Books:", data[0].package_detail);
         if (!data || !data.length) return;
 
-        setTitle(data[0].course_details.title);
-        setSubTitle(data[0].course_details.desc);
+        setTitle(data[0].package_detail.package_name);
+        setSubTitle(data[0].package_detail.package_description);
         setCourseId(data[0].course_id);
 
         setAllBooks(data);
