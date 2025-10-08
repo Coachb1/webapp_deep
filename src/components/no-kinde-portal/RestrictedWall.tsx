@@ -19,10 +19,9 @@ export const RestrictedPage = ({ user }: any) => {
         <div className="my-2 max-w-prose">
           {" "}
           <p>
-            Thank you for your interest in the trial. A team member wll reach
-            out to you for providing a custom onboarding experience.
+            This content is restricted. Please use your office email and try again. Else contact us at <b>partner@coachbots.com</b>
           </p>
-          <LogoutPortalUser/>
+          
         </div>
       </MaxWidthWrapper>{" "}
     </div>
