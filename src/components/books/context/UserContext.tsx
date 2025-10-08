@@ -10,28 +10,13 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
-import { CreateOrAssignClientId, emptyData, getTestMappings, getUserTestMappings } from "@/lib/utils";
+import { emptyData, getTestMappings, getUserTestMappings } from "@/lib/utils";
 import {
   getClientUserInfo,
   getRequestedTests,
   getAttemptedTestsList,
 } from "@/lib/api";
-
-export interface UserInfoType {
-  clientName: string;
-  isDemoUser: boolean;
-  isRestricted: boolean;
-  clientExpertise: string;
-  clientDepartments: string;
-  restrictedPages: string | null;
-  restrictedFeatures: string | null;
-  headings: {
-    heading: string | null;
-    subHeading: string | null;
-    tagLine: string | null;
-  } | null;
-  helpText: any;
-}
+import { UserInfoType } from "@/lib/types";
 
 interface User {
   given_name: string;
@@ -130,46 +115,43 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       // 3️⃣ User Info
       let userInfoData: UserInfoType = emptyData;
       try {
-        userInfoData = await getClientUserInfo(user.email, { id: "", picture: "", 'family_name': '', ...user });
+        userInfoData = await getClientUserInfo(user.email, {
+          id: "",
+          picture: "",
+          family_name: "",
+          ...user,
+        });
         setUserInfo(userInfoData);
       } catch (err) {
         console.error("Error fetching user info:", err);
         setUserInfo(emptyData);
       }
-      console.log('userINfo', userInfoData)
-      if (userInfoData.clientName == ""){
-        await CreateOrAssignClientId(user.email);
+      console.log("userINfo", userInfoData);
+
+      // 4️⃣ Fetch Libraries in parallel for portal
+      if (pathname.startsWith("/portal/")) {
         try {
-          userInfoData = await getClientUserInfo(user.email, { id: "", picture: "", 'family_name': '', ...user });
-          setUserInfo(userInfoData);
+          console.log("User client", userInfoData.clientName);
+          const [leadership, domain] = await Promise.all([
+            fetchTestMappings(userInfoData.clientName, "leadership_library"),
+            fetchTestMappings(userInfoData.clientName, "domain_skills_library"),
+          ]);
+          setLeadershipLibrary(leadership);
+          setDomainSkillLibrary(domain);
         } catch (err) {
-          console.error("Error fetching user info:", err);
-          setUserInfo(emptyData);
+          console.error("Error fetching libraries:", err);
+          setLeadershipLibrary(null);
+          setDomainSkillLibrary(null);
+        }
+
+        try {
+          const userTestMapping = await getUserTestMappings(user.user_data.uid);
+          setUserTestMapping(userTestMapping);
+        } catch (error) {
+          console.error("Error fetching user test mapping:", error);
+          setUserTestMapping(null);
         }
       }
-
-      // 4️⃣ Fetch Libraries in parallel
-      try {
-        const [leadership, domain] = await Promise.all([
-          fetchTestMappings(userInfoData.clientName, "leadership_library"),
-          fetchTestMappings(userInfoData.clientName, "domain_skills_library"),
-        ]);
-        setLeadershipLibrary(leadership);
-        setDomainSkillLibrary(domain);
-      } catch (err) {
-        console.error("Error fetching libraries:", err);
-        setLeadershipLibrary(null);
-        setDomainSkillLibrary(null);
-      }
-
-      try {
-        const userTestMapping = await getUserTestMappings(user.user_data.uid);
-        setUserTestMapping(userTestMapping);
-      } catch (error) {
-        console.error("Error fetching user test mapping:", error);
-        setUserTestMapping(null);
-      }
-
     } finally {
       setLoading(false);
     }
@@ -198,7 +180,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         await fetchUserData(data.user);
       })
       .finally(() => setLoading(false));
-
   }, []);
 
   const value = useMemo(
@@ -212,20 +193,43 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       domainSkillLibrary,
       leadershipLibrary,
       refreshUserData,
-      userTestMapping
+      userTestMapping,
     }),
-    [user, loading, requestedTestsData, attemptedTests, domainSkillLibrary, leadershipLibrary, userInfo, userTestMapping]
+    [
+      user,
+      loading,
+      requestedTestsData,
+      attemptedTests,
+      domainSkillLibrary,
+      leadershipLibrary,
+      userInfo,
+      userTestMapping,
+    ]
   );
 
   // 🚨 Show loader for /portal/ routes
-  if (pathname.startsWith("/portal/") && loading) {
+
+  const allowedPagesForLoader = ["/portal/", "/library-bot/leaderBoardReport"];
+  const shouldShowLoader = allowedPagesForLoader.some((route) =>
+    pathname.startsWith(route)
+  );
+  if (shouldShowLoader && loading) {
+    let loadingStates: any = [];
+
+    if (pathname.startsWith("/library-bot/leaderBoardReport")) {
+      loadingStates = [
+        { text: "Fetching Leaderboard Report Data" },
+        { text: "Processing and Setting Up Leaderboard" },
+      ];
+    } else if (pathname.startsWith("/portal/")) {
+      loadingStates = [
+        { text: "Setting up your environment" },
+        { text: "Fetching simulations" },
+      ];
+    }
     return (
       <MultiStepLoader
-        loadingStates={[
-          { text: "Personalizing coaching with Avatars" },
-          { text: "Updating simulations" },
-
-        ]}
+        loadingStates={loadingStates}
         loading={loading}
         duration={1500}
       />

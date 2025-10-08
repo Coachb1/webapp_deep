@@ -91,6 +91,9 @@ export const getClientUserInfo = async (
                 tagLine: data.data.user_info[0].tag_line,
               },
               helpText: data.data.user_info[0].help_text,
+              leaderboard_report_password: data.data.user_info[0].leaderboard_report_password,
+              leaderboard_report_protected: data.data.user_info[0].leaderboard_report_protected,
+              is_active: data.data.user_info[0].is_active
             };
           } else {
             throw new Error("Failed to fetch client information");

@@ -20,7 +20,7 @@ function PortalPageContent({ children }: { children: React.ReactNode }) {
   
   return (
     <UserInfoGate>
-      {userInfo?.isDemoUser ? <RestrictedPage user={user} /> : (
+      {userInfo?.isDemoUser || !userInfo?.is_active ? <RestrictedPage user={user} /> : (
         <>
         <Navbar/>
         {children}
