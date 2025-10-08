@@ -200,7 +200,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         onClose={handleCloseDescription}
       />
 
-      <TinyTalkWidget up={showAudioPlayer} />
+      {/* <TinyTalkWidget up={showAudioPlayer} /> */}
     </>
   );
 }
