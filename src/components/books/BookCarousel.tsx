@@ -40,7 +40,8 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
     return books.slice(start, start + booksPerSlide);
   };
 
-  useEffect(() => {
+const handlePageChange = (page: number) => {   
+   onSlideChange(page)
   const scrollToPagination = () => {
     if (!paginationRef.current) return;
 
@@ -56,7 +57,7 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   };
 
   requestAnimationFrame(scrollToPagination);
-}, [currentSlide]);
+}
 
 
 
@@ -98,7 +99,7 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
         <Pagination
           totalSlides={totalSlides}
           currentSlide={currentSlide}
-          onPageChange={onSlideChange}
+          onPageChange={handlePageChange}
         />
       </div>
     </>
