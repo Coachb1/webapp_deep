@@ -94,6 +94,25 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     setLoading(true);
     try {
+
+      // 3️⃣ User Info
+      let userInfoData: UserInfoType = emptyData;
+      try {
+        userInfoData = await getClientUserInfo(user.email, {
+          id: "",
+          picture: "",
+          family_name: "",
+          ...user,
+        });
+        setUserInfo(userInfoData);
+      } catch (err) {
+        console.error("Error fetching user info:", err);
+        setUserInfo(emptyData);
+      }
+      console.log("userINfo", userInfoData);
+
+      if (pathname.startsWith("/portal/")) {
+
       // 1️⃣ Requested Tests
       try {
         const requestedTestData = await getRequestedTests(user.user_data.uid);
@@ -112,24 +131,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setAttemptedTests([]);
       }
 
-      // 3️⃣ User Info
-      let userInfoData: UserInfoType = emptyData;
-      try {
-        userInfoData = await getClientUserInfo(user.email, {
-          id: "",
-          picture: "",
-          family_name: "",
-          ...user,
-        });
-        setUserInfo(userInfoData);
-      } catch (err) {
-        console.error("Error fetching user info:", err);
-        setUserInfo(emptyData);
-      }
-      console.log("userINfo", userInfoData);
+      
 
       // 4️⃣ Fetch Libraries in parallel for portal
-      if (pathname.startsWith("/portal/")) {
         try {
           console.log("User client", userInfoData.clientName);
           const [leadership, domain] = await Promise.all([

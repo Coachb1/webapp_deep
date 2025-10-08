@@ -5,7 +5,9 @@ import { useEffect } from "react";
 
 export default function TinyTalkWidget({ up }: { up: boolean }) {
   useEffect(() => {
-    const launcher = document.querySelector<HTMLElement>(".tiny-talk-launcher");
+    const host = document.getElementById("tiny-talk-shadow-host");
+    const launcher = host?.shadowRoot?.querySelector<HTMLElement>(".tiny-talk-launcher");
+    console.log(launcher, 'tinytalk', up)
     if (!launcher) return;
 
     if (up) {
