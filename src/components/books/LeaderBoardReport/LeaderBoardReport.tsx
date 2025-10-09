@@ -17,6 +17,7 @@ import {
   FaLock,
 } from "react-icons/fa";
 import { usePortalUser } from "../context/UserContext";
+import * as XLSX from 'xlsx'; 
 
 
 interface UserReport {
@@ -140,6 +141,35 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }
 
   const refreshData = () => loadData();
 
+
+// ADD THIS FUNCTION HERE
+const downloadReport = (format: 'csv' | 'xlsx') => {
+  // Prepare data for export
+  const exportData = groupedData.map((user, idx) => ({
+    'Rank': idx + 1,
+    'Name': user.name,
+    'Email': user.email,
+    'Total Books Completed': user.books.length,
+    'Last Completed Book': user.books[user.books.length - 1] || 'No Books Completed',
+    'Last Activity Date': user.dates[user.dates.length - 1] || 'No Date Available',
+    'All Completed Books': user.books.join(', ') || 'None',
+  }));
+
+  // Create worksheet
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'LeaderBoard Report');
+
+  // Generate filename with timestamp
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `leaderboard_report_${timestamp}.${format}`;
+
+  // Download file
+  XLSX.writeFile(wb, filename, { bookType: format === 'csv' ? 'csv' : 'xlsx' });
+};
+
   // Sort by number of books (descending)
   const groupedData = [...data].sort(
     (a, b) => b.books.length - a.books.length
@@ -190,12 +220,26 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }
               Learning leaders Dashboard
             </p>
           </div>
+          <div className="flex gap-2">
+          <button
+            onClick={() => downloadReport('csv')}
+            className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+          >
+            <FaTable /> CSV
+          </button>
+          <button
+            onClick={() => downloadReport('xlsx')}
+            className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+          >
+            <FaTable /> Excel
+          </button>
           <button
             onClick={refreshData}
-            className="bg-white/20 border border-white/30 px-5 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition"
+            className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
           >
             <FaSyncAlt /> Refresh
           </button>
+        </div>
         </div>
       </div>
 
