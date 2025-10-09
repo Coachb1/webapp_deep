@@ -8,6 +8,7 @@ export interface Book {
   img: string;
   audio: string;
   course_id: string;
+  jobaid_id:string;
   course_details: Record<string, any>;
   package_detail: Record<string, any>;
   list_name: string;

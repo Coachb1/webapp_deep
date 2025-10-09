@@ -73,7 +73,8 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
             <Button
               onClick={() => {
                 if (user?.email) {
-                  const url = `/library-bot/ideaboardReport/?jobaid=e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2&email=${encodeURIComponent(
+                  const jobaid_id = localStorage.getItem('jobaid');
+                  const url = `/library-bot/ideaboardReport/?jobaid=${jobaid_id}&email=${encodeURIComponent(
                     user.email
                   )}`;
                   window.open(url, "_blank", "noopener,noreferrer");

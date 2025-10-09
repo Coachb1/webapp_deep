@@ -36,7 +36,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
+  // const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
   const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
 
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>(
@@ -64,7 +64,6 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           })
         );
         setQuestions(normalizedQuestions);
-        setIsJobAid(data?.job_aid_type === "job_aid"); // Set isJobAid based on the fetched data
         console.log("validatioan", data?.is_validation);
         setIsValidation(data?.is_validation);
       } catch (err: any) {
@@ -345,7 +344,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     return (
       <div className="pt-24 flex flex-col items-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          {isJobAid || isValidation
+          {isValidation
             ? "⏳ Generating Your Report..."
             : "⏳ Submitting..."}
         </h2>
@@ -353,7 +352,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
         <p className="text-gray-600 mt-4 text-lg text-center">
-          {isJobAid || isValidation
+          {isValidation
             ? "Please wait while we prepare your personalized Management Action Planner."
             : "Please wait while we submit your form"}
         </p>
@@ -364,7 +363,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   if (currentStep === "completed") {
     return (
       <div className="pt-24 flex flex-col items-center">
-        {(isJobAid || isValidation) && reportUrl ? (
+        {(isValidation) && reportUrl ? (
           // ✅ Job Aid → Show report
           reportUrl && (
             <>
