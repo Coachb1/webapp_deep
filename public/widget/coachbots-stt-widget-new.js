@@ -10979,10 +10979,10 @@ function handleDiagnosticButtons(button) {
     // Determine the message
     let msg = "";
     if (button.id === "diagOn") {
-        msg = "Can you please turn the diagnostic on again.";
+        msg = "Please switch back the diagnostic, platform and professional insights.";
         IsDiagnosticsOn = true;
     } else if (button.id === "diagOff") {
-        msg = "Please stop using diagnostics permanently during this session. Don't show it.";
+        msg = "Please do not provide any type of diagnostic, platform and professional insights permanently.";
         IsDiagnosticsOn = false;
     }
 
@@ -11025,6 +11025,7 @@ function getDiagButtons(isDiagnosticOn) {
   const diagOnBtn = `
     <button 
       id="diagOn"
+      class="diagnostic-button"
       value="diag_on"
       ${isDiagnosticOn ? "disabled" : "onclick='handleDiagnosticButtons(this)'"}
       style="${isDiagnosticOn ? disabledStyle : commonStyle}"
@@ -11037,6 +11038,7 @@ function getDiagButtons(isDiagnosticOn) {
   const diagOffBtn = `
     <button 
       id="diagOff"
+      class="diagnostic-button"
       value="diag_off"
       ${!isDiagnosticOn ? "disabled" : "onclick='handleDiagnosticButtons(this)'"}
       style="${!isDiagnosticOn ? disabledStyle : commonStyle}"
@@ -11056,7 +11058,25 @@ function getDiagButtons(isDiagnosticOn) {
 
 
 
-  const GeminiAiResponse = async (
+function disableAllDiagnosticButtons() {
+  const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+  if (!shadowRoot) return;
+
+  const diagButtons = shadowRoot.querySelectorAll(".diagnostic-button");
+
+  diagButtons.forEach((btn) => {
+    btn.disabled = true;
+    btn.style.backgroundColor = "#f0f0f0";
+    btn.style.cursor = "not-allowed";
+    btn.style.opacity = "0.6";
+    btn.removeAttribute("onclick");
+    btn.onmouseover = null;
+    btn.onmouseout = null;
+  });
+}
+
+
+   const GeminiAiResponse = async (
     userInputMessage,
     signals,
     conversationId,
@@ -11065,6 +11085,10 @@ function getDiagButtons(isDiagnosticOn) {
     selectedModel,
     nextModel
   ) => {
+    disableAllDiagnosticButtons();
+    if (IsDiagnosticsOn==false) {
+      latestMessage+= "\n Please do not provide any type of diagnostic, platform and professional insights permanently.";
+    }
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
     const messageNode = document.createElement("div");
@@ -11316,7 +11340,7 @@ function getDiagButtons(isDiagnosticOn) {
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
-          const KeywordList = ['DIAGNOSTIC INSIGHT', 'PLATFORM INSIGHT', 'Professional Insight'];
+          const KeywordList = ['DIAGNOSTIC INSIGHT:', 'PLATFORM INSIGHT:', 'Professional Insight:'];
           const isDiag = KeywordList.some(k => messageText.innerText.toLowerCase().includes(k.toLowerCase()));
           if (isDiag) IsDiagnosticsOn = true;
           if (IsDiagnosticsOn != undefined){
@@ -11520,7 +11544,7 @@ function getDiagButtons(isDiagnosticOn) {
         });
       }
     }
-  };
+ };
 
   const OpenAiResponse = async (
     userInputMessage,
