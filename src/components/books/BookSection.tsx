@@ -25,6 +25,7 @@ interface BookSectionProps {
   name: string;
   email: string;
   all_books: Book[];
+  jobAidId: string| null;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -40,13 +41,14 @@ const BookSection: React.FC<BookSectionProps> = ({
   name,
   email,
   all_books,
+  jobAidId,
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
   console.log("Name:", name);
   console.log("Email:", email);
   const pathname = usePathname();
-  const {user} = usePortalUser();
+  const { user } = usePortalUser();
   const userId = user?.user_data?.uid || null;
 
   const [viewMode, setViewMode] = useState<string>("all");
@@ -130,15 +132,16 @@ const BookSection: React.FC<BookSectionProps> = ({
       <br />
       <br />
       <CTA />
-
-      <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-        <ConversationalForm
-          job_aid_id="e4f6b3d1-50e7-4aae-a8d7-5a83b0a609a2"
-          isEmailSection={false}
-          inputEmail={email || "undefined@gmail.com"}
-          inputName={name || "User"}
-        />
-      </div>
+      {jobAidId && (
+        <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+          <ConversationalForm
+            job_aid_id={jobAidId}
+            isEmailSection={false}
+            inputEmail={email || "undefined@gmail.com"}
+            inputName={name || "User"}
+          />
+        </div>
+      )}
     </section>
   );
 };

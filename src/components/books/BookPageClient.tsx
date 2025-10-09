@@ -32,6 +32,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showDescription, setShowDescription] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [jobAidId, setJobaidID] = useState<string|null>(null);
 
   // Load books
   useEffect(() => {
@@ -44,6 +45,8 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         setTitle(data[0].package_detail.package_name);
         setSubTitle(data[0].package_detail.package_description);
         setCourseId(data[0].course_id);
+        setJobaidID(data[0].jobaid_id)
+        localStorage.setItem('jobaid', data[0].jobaid_id);
 
         setAllBooks(data);
         setFilteredBooks(data);
@@ -169,6 +172,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             name={user?.user_data?.name}
             email={user?.user_data?.email}
             all_books={allBooks}
+            jobAidId={jobAidId}
           />
         )}
       </main>

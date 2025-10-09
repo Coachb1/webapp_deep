@@ -28,7 +28,6 @@ import {
   knowledgeBotJson,
   Book
 } from "./types";
-import { books } from "@/components/data/books";
 
 export const getClientUserInfo = async (
   userEmail: string | null | undefined,
@@ -798,7 +797,8 @@ export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
             'package_description': data.sub_title || data.description || '',
             'image_link': data.image_link,
           },
-          list_name: m.list_name || ''
+          list_name: m.list_name || '',
+          jobaid_id: data.jobaid_uid
         }))
     );
     console.log('[fetchBooks] Books:', books);
