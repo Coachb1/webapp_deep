@@ -6,6 +6,7 @@ import { FaChartLine, FaSyncAlt, FaTable, FaArrowUp, FaCalendar, FaClock } from 
 import IdeaBoardTable from "./IdeaBoardTable";
 import IdeaBoardPagination from "./IdeaBoardPagination";
 import IdeaBoardModal from "./IdeaboardModel";
+import * as XLSX from 'xlsx';
 
 // Row type
 export interface RowData {
@@ -67,14 +68,31 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
         setRows(mapped);
 
        if (data.length > 0) {
-        const allKeys = new Set<string>();
+  const allKeys = new Set<string>();
 
-        data.forEach((item: any) => {
-          Object.keys(item.qna || {}).forEach(key => allKeys.add(key));
-        });
+  data.forEach((item: any) => {
+    Object.keys(item.qna || {}).forEach(key => allKeys.add(key));
+  });
 
-        setQnaKeys(Array.from(allKeys));
-      }
+  // Define the desired order
+  const desiredOrder = [
+    "Idea Name",
+    "Idea Details", 
+    "Estimated Impact",
+    "Category",
+    "Collaborators Identfied",
+    "Innovation Rating",
+    "Risks"
+  ];
+
+  // Sort keys based on desired order
+  const sortedKeys = desiredOrder.filter(key => allKeys.has(key));
+  
+  // Add any remaining keys that weren't in the desired order
+  const remainingKeys = Array.from(allKeys).filter(key => !desiredOrder.includes(key));
+  
+  setQnaKeys([...sortedKeys, ...remainingKeys]);
+}
       } catch (err: any) {
         console.error("Error fetching data:", err);
         setError(err.message || "Something went wrong");
@@ -154,6 +172,43 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
   };
 
 
+
+// ADD THIS ENTIRE FUNCTION HERE (after handleLike, before pagination helpers)
+const downloadReport = (format: 'csv' | 'xlsx') => {
+  // Prepare data for export
+  const exportData = rows.map(row => {
+    const rowData: any = {
+      
+      
+    };
+    
+    // Add all Q&A columns
+    qnaKeys.forEach(key => {
+      rowData[key] = row.qna[key] || '-';
+    });
+    rowData['Likes'] = row.likes;
+    
+    return rowData;
+  });
+
+  // Create worksheet
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'IdeaBoard Report');
+
+  // Generate filename with timestamp
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `ideaboard_report_${timestamp}.${format}`;
+
+  // Download file
+  XLSX.writeFile(wb, filename, { bookType: format === 'csv' ? 'csv' : 'xlsx' });
+};
+
+
+
+
   // Pagination helpers
   const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
   const paginatedRows = rows.slice(
@@ -173,12 +228,26 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
             <p className="opacity-90 text-lg">Enterprise Ideas log</p>
           </div>
 
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-white/20 border border-white/30 px-5 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
-          >
-            <FaSyncAlt /> Refresh
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => downloadReport('csv')}
+              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+            >
+              <FaTable /> CSV
+            </button>
+            <button
+              onClick={() => downloadReport('xlsx')}
+              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+            >
+              <FaTable /> Excel
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+            >
+              <FaSyncAlt /> Refresh
+            </button>
+          </div>
         </div>
       </div>
 
