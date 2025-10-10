@@ -83,7 +83,7 @@ export const UnAuth = ({ user }: any) => {
           </p>{" "}
           <p>
             Your subscription has expired or you are no longer authorized to
-            access the platform. Please contact your administrator or email us
+            access the engine. Please contact your administrator or email us
             at{" "}
             <Link
               type="email"
@@ -293,7 +293,7 @@ export const LoginWall = () => {
             BOT
           </h1>
           <p className="mt-4 text-3xl">
-            CONTINUOUS ENABLEMENT PLATFORM
+            CONTINUOUS ENABLEMENT ENGINE
           </p>
           <div className="my-4 max-sm:mb-12">
             <LoginLink>

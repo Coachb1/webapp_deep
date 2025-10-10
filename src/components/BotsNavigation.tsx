@@ -35,11 +35,11 @@ const BotsNavigation = ({ user }: any) => {
             Content Library{" "}
           </Button>
         </Link>
-        <Link href={"/"}>
+        <Link href={"/network"}>
           <Button
             variant={"outline"}
             className={` h-8 px-2 ${
-              pathname === "/" || pathname.includes("/coach")
+              pathname === "/network" || pathname.includes("/coach")
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
@@ -98,9 +98,9 @@ const BotsNavigation = ({ user }: any) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href={"/"}
+                href={"/network"}
                 className={`${
-                  pathname === "/" || pathname.includes("/coach")
+                  pathname === "/network" || pathname.includes("/coach")
                     ? "bg-gray-200"
                     : null
                 }`}
@@ -111,7 +111,7 @@ const BotsNavigation = ({ user }: any) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href={"/"}
+                href={"/network"}
                 className={`${
                   pathname === "/subject-expert" ||
                   pathname.includes("/subject-expert")

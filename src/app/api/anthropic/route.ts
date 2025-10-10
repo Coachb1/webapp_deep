@@ -7,17 +7,40 @@ const anthropic = new Anthropic({
 });
 
 export async function POST(req: Request) {
-  const { userInput } = await req.json();
-  console.log(userInput);
+  try {
+    const { userInput, selectedModel="claude-3-haiku-20240307" } = await req.json();
+    console.log("User input:", userInput);
 
-  const response = await anthropic.messages.create({
-    max_tokens: 1000,
-    messages: [{ role: "user", content: userInput }],
-    model: "claude-3-haiku-20240307",
-    stream: true,
-  });
+    if (!userInput || typeof userInput !== "string") {
+      return new Response(JSON.stringify({ error: "Invalid input" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-  const stream = AnthropicStream(response);
+    const response = await anthropic.messages.create({
+      max_tokens: 1000,
+      messages: [{ role: "user", content: userInput }],
+      model: selectedModel,
+      temperature: 1,
+      stream: true,
+    });
 
-  return new StreamingTextResponse(stream);
+    const stream = AnthropicStream(response);
+    return new StreamingTextResponse(stream);
+
+  } catch (error: any) {
+    console.error("Anthropic API error:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: "Failed to process request",
+        details: error?.message || "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 }

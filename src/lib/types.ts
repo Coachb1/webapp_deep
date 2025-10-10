@@ -1,5 +1,19 @@
-import { CategoryMap } from "./test";
 
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  tag: string[];
+  desc: string;
+  img: string;
+  audio: string;
+  course_id: string;
+  jobaid_id:string;
+  course_details: Record<string, any>;
+  package_detail: Record<string, any>;
+  list_name: string;
+
+}
 interface Recommendation {
   title: string;
   test_code: string;
@@ -348,6 +362,9 @@ export interface UserInfoType {
     tagLine: string | null;
   } | null;
   helpText: any;
+  is_active?: boolean;
+  leaderboard_report_protected?: boolean;
+  leaderboard_report_password?: string;
 }
 
 export interface PositionedUserTypes {

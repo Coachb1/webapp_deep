@@ -122,7 +122,7 @@ const MyPages = ({ user }: any) => {
     } else if (botType === "user_bot") {
       return "AI Knowledge Agent";
     } else if (botType === "subject_specific_bot") {
-      return "Co-pilot Level 1";
+      return "Intake Copilot";
     }
   };
 

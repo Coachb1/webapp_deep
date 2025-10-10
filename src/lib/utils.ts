@@ -134,8 +134,11 @@ export const subdomain =
 export const devUrl = "https://coach-api-gke-dev.coachbots.com/api/v1";
 // export const devUrl =  "http://127.0.0.1:8001/api/v1"
 export const prodUrl = "https://coach-api-gke-prod.coachbots.com/api/v1";
-export const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+const ENVIRONMENT = process.env.NEXT_PUBLIC_ENV;
 
+export const baseURL = ENVIRONMENT === "prod" ? prodUrl : devUrl;
+
+console.log('base url 1', baseURL, ENVIRONMENT)
 export const basicAuth =
   "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
 
@@ -194,6 +197,7 @@ export const getUserAccounts = async (
   retry: boolean = true
 ): Promise<any> => {
   try {
+console.log('base url getuser', baseURL, ENVIRONMENT)
     const response = await fetch(`${baseURL}/accounts/`, {
       method: "POST",
       headers: {
@@ -223,7 +227,7 @@ export const getUserAccounts = async (
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
+    
     return response.json() as Promise<any>; // Typecast response to UserAccountResponse
   } catch (error) {
     if (retry) {
@@ -869,6 +873,30 @@ export async function getTestMappings(clientName: string,page_name: string) {
 
 } catch (error: any) {
     console.error("Failed to load test mappings:", error);
+    return null
+}
+}
+
+
+export async function getUserTestMappings(userId:string) {
+  try {
+    const res = await fetch(`${baseURL}/tests/user-test-mappings/?user_id=${userId}`);
+
+    if (!res.ok) {
+        console.error(`HTTP error! Status: ${res.status}`);
+        return null;
+    }
+
+    if (res.status !== 200) {
+        console.error("Failed a to fetch user test mappings", res.status);
+        return null;
+    }
+    const json = await res.json();
+    console.log("[getUserTestMappings] for ", json, json);
+    return json
+
+} catch (error: any) {
+    console.error("Failed to load user test mappings:", error);
     return null
 }
 }

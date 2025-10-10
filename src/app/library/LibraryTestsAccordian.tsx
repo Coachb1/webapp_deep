@@ -17,6 +17,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@/components/ui/card-hover-effect";
 import { BulletList } from "@/components/MarkdownHandler";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
+import VideoPlayer from "@/components/Videplayer";
+import { usePathname } from "next/navigation";
+import { usePortalUser } from "@/components/books/context/UserContext";
+
 
 interface LibraryTestsAccordianType {
   tests: any;
@@ -33,6 +38,8 @@ const LibraryTestsAccordian = ({
   type,
   tabInformation
 }: LibraryTestsAccordianType) => {
+  const pathname = usePathname();
+  const {userTestMapping} = pathname.includes('portal/')? usePortalUser() : useUser();
   // State for pagination
   const [shortCurrentPage, setShortCurrentPage] = useState(1);
   const [standardCurrentPage, setStandardCurrentPage] = useState(1);
@@ -187,6 +194,14 @@ const LibraryTestsAccordian = ({
                         ) : (
                           <>{test.title}</>
                         )} */}
+                        {userTestMapping?.tests?.includes(test.test_code) && userTestMapping?.sticker && (
+                          <span
+                            className="mr-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800 animate-float animate-pulse"
+                          >
+                            {userTestMapping.sticker}
+                          </span>
+                        )}
+
                         {test.domain ? (
                           <><strong>{test.domain}</strong>  -  {test.title}</>
                         ) : (
@@ -197,14 +212,14 @@ const LibraryTestsAccordian = ({
                         )}
 
 
-                        {attemptedTests.includes(test.test_code) && (
+                        {/* {attemptedTests.includes(test.test_code) && (
                           <Badge
                             variant={"secondary"}
                             className="ml-2 rounded-sm bg-gray-200 text-xs text-gray-700 hover:bg-gray-300"
                           >
                             ✅
                           </Badge>
-                        )}
+                        )} */}
                         {test.is_recommended && (
                           <Badge
                             variant={"secondary"}
@@ -213,6 +228,9 @@ const LibraryTestsAccordian = ({
                             Recommended
                           </Badge>
                         )}
+                        
+
+
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="max-sm:text-xs ">
@@ -228,24 +246,23 @@ const LibraryTestsAccordian = ({
                                   {test.description_media
                                     .split(',')
                                     .map((url: string, i: number) => (
-                                      <video
-                                        key={i}
-                                        src={url.trim()}
-                                        controls
-                                        onEnded={() => console.log("Playback ended")}
+                                      <VideoPlayer
+                                      key={url}
+                                        src={url}
                                         poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
-                                        className="rounded-lg w-full mb-2"
                                       />
                                     ))}
                                 </>
                               ) : (
-                                <video
-                                  src={test.description_media}
-                                  controls
-                                  onEnded={() => console.log("Playback ended")}
-                                  poster={test.scenario_case === 'observation' ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg" : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"}
-                                  className="rounded-lg w-full"
-                                />
+                                <VideoPlayer
+                                  key={test.description_media}
+                                    src={test.description_media}
+                                    poster={
+                                      test.scenario_case === "observation"
+                                        ? "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747648264/npecvqn52exayigefpyx.jpg"
+                                        : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg"
+                                    }
+                                  />
                               )}
                             </AccordionContent>
 

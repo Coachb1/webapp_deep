@@ -311,7 +311,7 @@ const Coach = ({ user, renderType }: any) => {
 
         {!loginRequired && (
           <div className="fixed bottom-28 right-[4px] z-50 max-sm:hidden">
-            <span className="mr-6 text-sm font-bold">Connect now</span>
+            {/* <span className="mr-6 text-sm font-bold">Connect now</span> */}
             {/* <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" /> */}
           </div>
         )}
@@ -325,7 +325,7 @@ const Coach = ({ user, renderType }: any) => {
                 variant={"link"}
                 onClick={(event) => {
                   event.preventDefault();
-                  window.location.href = "/";
+                  window.location.href = "/network";
                 }}
               >
                 Home

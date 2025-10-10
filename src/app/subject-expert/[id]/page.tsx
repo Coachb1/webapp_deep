@@ -16,7 +16,7 @@ const Page = async () => {
     <div>
       <SubjectExpert user={user} renderType="dynamic" />
       <Widgets from="subjectDynamic" />
-      <Script src="../widget/coachbots-stt-widget.js" />
+      <Script src="../widget/coachbots-stt-widget-new.js" />
     </div>
   );
 };

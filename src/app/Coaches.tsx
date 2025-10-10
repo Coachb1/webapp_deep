@@ -352,9 +352,9 @@ const Coaches = ({
         filterName: "Profile Type",
         filterOptions: [
           "coach",
-          // "mentor",
-          "coachee",
-          "mentee",
+          "mentor",
+          // "coachee",
+          // "mentee",
           "icons_by_ai",
           "accepted",
           "feedback_bot",
@@ -649,6 +649,9 @@ const Coaches = ({
       );
       console.log(filteredData);
       setCoachesData(filteredData);
+    } else if (newValues.includes("coach") && newValues.includes("mentor")) {
+      // if both coach & mentor are selected -> no results
+      setCoachesData([]);
     } else if (newValues.includes("mentor")) {
       const filteredData = filterData(
         newValues.includes("Connected")
@@ -1386,7 +1389,7 @@ const Coaches = ({
                               color: "black",
                               padding: "8px",
                             }}
-                            title="You can Join the CoachBot network as a Coach Our platform facilitates coaches in forming profiles, which evolve into AI Copilots. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                            title="You can Join the CoachBot network as a Coach Our engine facilitates coaches in forming profiles, which evolve into AI Copilots. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
                           >
                             <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
                           </Tooltip>
@@ -1460,7 +1463,7 @@ const Coaches = ({
                               color: "black",
                               padding: "8px",
                             }}
-                            title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach AI Avatar and enter into feedback loop through AI analytics. "
+                            title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our engine, through which they can interact with Coach AI Avatar and enter into feedback loop through AI analytics. "
                           >
                             <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
                           </Tooltip>

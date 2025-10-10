@@ -51,6 +51,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
       (pathname === "/profile" ||
         pathname === "/content-library" ||
         pathname === "/domain-skills-library" ||
+        pathname === "/ai-coaching" ||
         pathname.includes("intake")) &&
       scrolledUp > 0
     ) {
@@ -76,7 +77,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
       <Link
         href={""}
         className={`pl-12 max-sm:pl-1  ${
-          scrolled || pathname !== "/" ? "visible" : "invisible"
+          scrolled || !["/network", "/"].includes(pathname) ? "visible" : "invisible"
         }`}
       >
         <div className="flex flex-row items-center justify-center">
@@ -92,7 +93,20 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         </div>
       </Link>
       <div className="flex flex-row">
-        <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">          
+        <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden"> 
+          {!restrictedPages?.includes("AI CoachBot") && (
+            <Button
+              variant={"outline"}
+              className={` h-8 ${
+                pathname.includes("/ai-coaching")
+                  ? "border border-gray-500 shadow-md"
+                  : ""
+              } `}
+              asChild
+            >
+              <Link href={"/ai-coaching"}>AI CoachBot</Link>
+            </Button>
+          )}         
           {!restrictedPages?.includes("Leadership Library") && (
             <Button
               variant={"outline"}
@@ -103,7 +117,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/content-library"}>Leadership</Link>
+              <Link href={"/content-library"}>Leadership Skills</Link>
             </Button>
           )}
           {!restrictedPages?.includes("Domain Skills Library") && (
@@ -116,9 +130,23 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/domain-skills-library"}>Domain Area</Link>
+              <Link href={"/domain-skills-library"}>Domain Skills</Link>
             </Button>
           )}
+          
+
+          {!restrictedPages?.includes("Network Directory") && (
+            <Button
+              variant={"outline"}
+              className={` h-8 ${
+                pathname === "/network" ? "border border-gray-500 shadow-md" : ""
+              } `}
+              asChild
+            >
+              <Link href={"/network"}>Network</Link>
+            </Button>
+          )}
+
           {userRole === 'super_admin' && (
             <Button
               variant={"outline"}
@@ -130,18 +158,6 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               asChild
             >
               <Link href={"/create-scenario"}>Studio </Link>
-            </Button>
-          )}
-
-          {!restrictedPages?.includes("Network Directory") && (
-            <Button
-              variant={"outline"}
-              className={` h-8 ${
-                pathname === "/" ? "border border-gray-500 shadow-md" : ""
-              } `}
-              asChild
-            >
-              <Link href={"/"}>AI Coaching Network</Link>
             </Button>
           )}
         </div>
@@ -163,7 +179,16 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                   align="end"
                   className="z-[999] w-fit max-sm:text-xs"
                 >
-                  
+                  {!restrictedPages?.includes("AI CoachBot") && (
+                    <DropdownMenuItem
+                      className={`max-sm:text-xs ${
+                        pathname.includes("/ai-coaching") ? "bg-gray-200" : null
+                      }`}
+                      asChild
+                    >
+                      <Link href={"/ai-coaching"}>AI CoachBot</Link>
+                    </DropdownMenuItem>
+                  )}
                   {!restrictedPages?.includes("Leadership Library") && (
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
@@ -171,7 +196,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       }`}
                       asChild
                     >
-                      <Link href={"/content-library"}>Leadership</Link>
+                      <Link href={"/content-library"}>Leadership Skills</Link>
                     </DropdownMenuItem>
                   )}
                   {!restrictedPages?.includes("Domain Skills Library") && (
@@ -181,10 +206,21 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       }`}
                       asChild
                     >
-                      <Link href={"/domain-skills-library"}>Domain Area</Link>
+                      <Link href={"/domain-skills-library"}>Domain Skills</Link>
                     </DropdownMenuItem>
                   )}
 
+                  
+                  {!restrictedPages?.includes("Network Directory") && (
+                    <DropdownMenuItem
+                      className={`max-sm:text-xs ${
+                        pathname === "/network" ? "bg-gray-200" : null
+                      }`}
+                      asChild
+                    >
+                      <Link href={"/network"}>Network</Link>
+                    </DropdownMenuItem>
+                  )}
                   {userRole === 'super_admin' &&(
                     <DropdownMenuItem
                       className={`max-sm:text-xs ${
@@ -195,16 +231,6 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       asChild
                     >
                       <Link href={"/create-scenario"}>Studio</Link>
-                    </DropdownMenuItem>
-                  )}
-                  {!restrictedPages?.includes("Network Directory") && (
-                    <DropdownMenuItem
-                      className={`max-sm:text-xs ${
-                        pathname === "/" ? "bg-gray-200" : null
-                      }`}
-                      asChild
-                    >
-                      <Link href={"/"}>AI Coaching Network</Link>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

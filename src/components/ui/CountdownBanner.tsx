@@ -1,9 +1,11 @@
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const CountdownBanner = () => {
   const [timeLeft, setTimeLeft] = useState('');
   const [dayName, setDayName] = useState('');
   const [visible, setVisible] = useState(true);
+  const pathname = usePathname();
 
   const getNextMonday = () => {
     const now = new Date();
@@ -41,6 +43,8 @@ const CountdownBanner = () => {
   }, []);
 
   if (!visible) return null;
+
+  if (pathname.includes('portal/')) return null; 
 
   return (
     <div

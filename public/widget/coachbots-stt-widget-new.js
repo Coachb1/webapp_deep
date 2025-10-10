@@ -30,6 +30,9 @@ if (!['playground', 'platform', 'localhost'].includes(subdomainStt)) {
 
 console.log('baseURl2', baseURL2)
 
+const LLMBaseURl = baseURL2.includes('gke-dev')? 'https://playground.coachbots.com' : 'https://platform.coachbots.com'
+// const LLMBaseURl = 'http://localhost:3000'
+
 const swipeHeader = document.getElementsByClassName("tatsu-header")[0];
 if (swipeHeader) {
   console.log("swipeHeader", swipeHeader);
@@ -92,6 +95,296 @@ style.textContent = `
       padding: 1px 4px;
       font: 16px Arial;
     }
+
+    .audio-interaction {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  font-size: 14px;
+}
+
+.audio-interaction .label {
+  font-size: 20px;
+}
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 5px;
+}
+
+.toggle-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #4b5563; /* gray-600 */
+}
+
+/* Switch styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Checked state */
+.switch input:checked + .slider {
+  background-color: #4ade80; /* green-400 */
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Disabled state */
+.switch input:disabled + .slider {
+  background-color: #e5e7eb; /* gray-200 */
+  cursor: not-allowed;
+}
+
+    @media screen and (max-width: 426px) {
+      #chat-container2 {
+        width: 100% !important;
+        height: 100vh !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
+        overflow-y: auto;
+
+      }
+      // #chat-icon2 img {
+      //   height: 20% !important;
+      //   width: 100% !important;
+      // }
+
+      .chat-icon-container2 {
+        width: 90px !important;
+        height: 270px !important;
+      }
+
+      .chat-icon2 {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        display: block;
+      }
+        
+    }
+
+    .switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #2DC092;
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+    <style>
+  #bot-header-logo-2 {
+    display: flex;
+    flex-wrap: nowrap !important; 
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background-color: #f3f4f6;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2px 2px 0 2px;
+  overflow-x: auto !important;
+  scrollbar-width: none !important; 
+}
+#bot-header-logo-2::-webkit-scrollbar {
+  display: none !important; 
+}
+  @media (max-width: 1024px) {
+  #bot-header-logo-2 {
+    overflow-x: auto;
+  }
+}
+@media (max-width: 768px) {
+  #bot-header-logo-2 {
+    flex-wrap: wrap;
+  }
+}
+  #chat-history-wrapper,
+  #response-style {
+    display: flex;
+    align-items: center;
+  }
+
+  #chatHistoryDropdown,
+  #style-selector {
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 0px !important;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 100px;
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    #chat-history-wrapper,
+    #response-style {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 4px;
+    }
+
+    #chatHistoryDropdown,
+    #style-selector {
+      width: 100%;
+      margin-left: 5px;
+    }
+
+    #close-top2{
+      position: absolute;
+      top: 15px;
+      left: 0;
+    }
+  }
+</style>
+
+
+  .dropdown .arrow {
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
+
+  /* Dropdown menu */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background: #fff;
+    min-width: 240px;
+    border-radius: 8px;
+    margin-top: 6px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-in-out;
+    border: 1px solid #ddd;
+  }
+
+  /* Main items */
+  .dropdown-content .item {
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dropdown-content .item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-content .item:hover {
+    background: #f5f5f5;
+  }
+
+  /* Sub-items */
+  .sub-items {
+    display: none;
+    background: #fff;
+    border-left: 3px solid #000;
+    margin-top: 4px;
+  }
+
+  .sub-items div {
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #000;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .sub-items div:hover {
+    background: #f0f0f0;
+  }
+
+  /* Caret */
+  .caret {
+    transition: transform 0.3s;
+    font-weight: bold;
+  }
+
+  .caret.open {
+    transform: rotate(90deg);
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-4px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
 `;
 document.head.appendChild(style);
 
@@ -107,7 +400,9 @@ const createLink = (url, text) => {
 
 // attatch the link to the body of the page
 document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
+let isFlatWidget = window.location.pathname.includes('widget-container');
 
+let showBotSwitchMode = true;
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -122,6 +417,8 @@ let questionIndex2 = 0;
 let audioRes;
 let wordLimit = 15;
 let botWordLimit = 10;
+let chatElementRef2;
+
 
 let clientAllowAudioInteraction2;
 let userAllowAudioInteraction2;
@@ -258,6 +555,8 @@ let snnipetConfigSTT;
 let askAccessBotCodeSTT = false;
 let AttemptTestDirectSTT = false;
 let emailCandidate2;
+let buttonPositionSTT = 'top';
+let previousChatHistory = [];
 
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = [];
@@ -303,8 +602,59 @@ let USE_CUSTOM_STT = false;
 let finalTranscriptAccumulator = "";
 let widgetHeight = `clamp(100px, 85vh, calc(100vh - 83px))`
 let widgetWidth = `auto`
-let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1750673478/o89352vtmiywyobwi2bg.jpg`
+let widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575631/twbwglxpze4kbxaotms4.jpg`;
+
+if (window.location.pathname.startsWith('/coach/')) {
+  widgetImageLink = `https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575609/zmvwlpahzrxijcdkhs3r.jpg`;
+}
 let InstructinoMediaLinkStt;
+let selectedChatId = null;
+let onlyCurrentSession = false;
+let allowAudioInteraction = false;
+let styleMap = {};
+let isAskingIntake = false;
+let LLMOrder = {
+  providers : ['gemini', 'gpt', 'anthropic'],
+  models: {
+    gemini: ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite-001'],
+    gpt: [
+      'gpt-4o',
+      'gpt-4o-mini',
+      'gpt-3.5-turbo'
+    ],
+    anthropic: [
+      'claude-3-5-sonnet-20240620',
+      'claude-3-opus-20240229',
+      'claude-3-haiku-20240307'
+    ]
+  }
+}
+
+let BotGenerationLLMOrder = {
+  providers : [
+        ["anthropic"],
+        ["gemini"],
+        ["gpt"],
+      ],
+  models: {
+        'gpt': 'gpt-4.1-mini',
+        'gemini': 'gemini-2.5-flash-lite',
+        'anthropic': 'claude-sonnet-4-20250514'
+      }
+};
+let MindMapLinks;
+let AssessmentLinks;
+let ScoreConfigStt = {};
+let gameScoreVisbileStt = true;
+let gameExplanationVisibleStt = true;
+let BotIDSTT;
+let showMindmapButtonStt = true;
+let showAssessmentButtonStt = true;
+let showModeButtonStt = true;
+let showDiagnosticButtonStt = true;
+let NumberConversationFordiagButton = 3;
+let IntakeTypeSTT='individual_only';
+let IsDiagnosticsOn;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -453,8 +803,11 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
   return token2;
 }
 function displayBrowserWarning() {
+  const warningBannerContainer = document.getElementById("warning-banner-stt");
+  warningBannerContainer.style.display = 'none'
   if (!isChromeSTT()) {
     const warningBannerContainer = document.getElementById("warning-banner-stt");
+    warningBannerContainer.style.display = 'block'
     warningBannerContainer.innerHTML = `<b style="color: red;text-align: center;font-size: 14px;font-size: ${window.innerWidth < 768 ? "10px" : "12px"
       };" >
       Warning: we detected that you are on a non-supported browser. Please switch to Chrome to avoid interruptions.
@@ -582,11 +935,14 @@ const initialiseUserSTT = async () => {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log("get-client-information : ", data);
+          console.log("get-client-information [init]: ", data, user_email2);
 
           if (!data.data.user_info[0].msg) {
             clientuserInformationSTT = data.data.user_info[0];
-
+            if (!user_email2.includes('coachbots_anonyoususer')){
+              console.log('calling getbuttoncontrolls')
+              getButtonControls();
+            }
             allowPastingAtClientLevelStt =
               data.data.user_info[0].ui_information.allow_paste_answer;
 
@@ -644,6 +1000,11 @@ const createUserSTT = async (user_name, user_email) => {
   user_email2 = user_email;
   console.log("newuser_name2", user_name2);
   console.log("newuser_email2", user_email2);
+
+  if (!askAccessBotCodeSTT){
+    console.log(snnipetConfigSTT.clientId, user_email)
+    await updateClientInfoSTT(snnipetConfigSTT.clientId, user_email, null);
+  }
   const response = await fetch(`${baseURL2}/accounts/`, {
     method: "POST",
     headers: {
@@ -698,10 +1059,12 @@ const createUserSTT = async (user_name, user_email) => {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log("get-client-information : ", data);
+          console.log("get-client-information [createUserstt]: ", data);
 
           if (!data.data.user_info[0].msg) {
             clientuserInformationSTT = data.data.user_info[0];
+            getButtonControls();
+
             allowPastingAtClientLevelStt =
               data.data.user_info[0].ui_information.allow_paste_answer;
 
@@ -982,10 +1345,6 @@ function isDuplicateResponseStt(text) {
   return userResponses2.includes(text);
 }
 
-const capitalizeFirstLetterStt = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
 function getAnonymousEmail() {
   const user_name = "coachbots_anonyoususer";
   const user_sid = getOrSetSessionId();
@@ -1030,8 +1389,8 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     } else {
       // we are asking initial question
@@ -1059,8 +1418,8 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
       );
 
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
 
       appendMessage2(msg);
     } else {
@@ -1206,8 +1565,8 @@ const getUserOrAnonymousDetails = async (choice) => {
         `<b>Please enter your ${formFieldsstt[0]}</b>`
       );
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     } else {
       FeedbackUserEmail = user_email2;
@@ -1586,6 +1945,29 @@ const feedbackBotInitialFlow = async (flow) => {
     return div_cont;
   }
 };
+async function getResponseStyleList() {
+  try {
+    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    console.log("responseStyle", data);
+    return data; // styleMap equivalent
+  } catch (error) {
+    console.error("Failed to fetch response style list:", error);
+    return null;
+  }
+}
+
 
 const getUserBotConversation = async (participant_id) => {
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
@@ -1625,6 +2007,639 @@ const getUserBotConversation = async (participant_id) => {
     throw new Error("Error in getting bot conversation");
   }
 };
+
+function populateChatHistory(chatId) {
+  if (optedBeginSession) return;
+  
+  const results = previousChatHistory.filter(session => session.uid === chatId);
+  if (results.length === 0) {
+    console.warn("No chat history found for session:", chatId);
+    return;
+  }
+
+  const sessionData = results[0];
+  const conversations = sessionData.conversations;
+
+  if (!Array.isArray(conversations) || conversations.length === 0) {
+    console.warn("No conversations in this session:", chatId);
+    return;
+  }
+
+  console.log('Loading previous chat history:', chatId, conversations);
+
+  // Display chat header
+  appendMessage2(`<b>🔄 Starting New Session:</b> ( Short Summary text:<i>${sessionData.summary?.slice(0, 30) || "No Summary"}...</i>)`);
+
+  conversations.forEach((entry, index) => {
+    const coachMessage = entry.coach_message_text?.trim();
+    const participantMessage = entry.participant_message_text?.trim();
+
+    if (coachMessage && index !== 0) {
+      appendMessage2(parseMarkdown(coachMessage));
+    }
+
+    if (participantMessage) {
+      const cleanedMessage = participantMessage
+        .replace(" I am not sure if you are getting my point, let me know and I can explain further.", "")
+        .replace(" Always respond in less than 50 tokens. Note: Never mention token count.", "")
+        .trim();
+
+      if (cleanedMessage) {
+        appendMessageForUser2(parseMarkdown(cleanedMessage));
+      }
+    }
+  });
+
+  // Display chat footer
+  const formattedSummary = (sessionData.summary || "No Summary")
+  .replace(/\n/g, "<br>");
+
+appendMessage2(
+  `<b>✅ End of Session Summary:</b><br>
+   <i>${formattedSummary}</i>`
+);
+
+
+  // Disable the selected dropdown option
+  // const dropdown = document.getElementById('chatHistoryDropdown');
+  // if (dropdown) {
+  //   Array.from(dropdown.options).forEach(opt => (opt.disabled = false)); // Reset all first
+  //   const selectedOption = Array.from(dropdown.options).find(opt => opt.value === chatId);
+  //   if (selectedOption) selectedOption.disabled = true;
+  // }
+}
+
+
+async function populateChatHistoryOptions(refresh = false) {
+  const chathistorywrapper = document.getElementById('chat-history-wrapper');
+  const dropdown = document.getElementById('chatHistoryDropdown');
+  if (!dropdown) return;
+
+  // Clear existing options
+  dropdown.innerHTML = "";
+
+  // 1. Disabled "Previous Chats" option
+  const defaultOption = document.createElement("option");
+  defaultOption.textContent = "Session History";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  dropdown.appendChild(defaultOption);
+
+  // 2. "➕ Start New Chat" option
+  const newChatOption = document.createElement("option");
+  newChatOption.textContent = "➕ Start New Session";
+  newChatOption.value = "new-chat"; // special value
+  newChatOption.style.fontWeight = "bold";
+  newChatOption.style.color = "#0066cc";
+  dropdown.appendChild(newChatOption);
+
+  // 3. Fetch chats if empty or refresh
+  if (previousChatHistory.length === 0 || refresh) {
+    previousChatHistory = await getPreviousChats(userId2, botId, refresh);
+  }
+
+  // 4. Create optgroups
+  if (previousChatHistory.length > 0) {
+    const mode_switch_button = document.getElementById('bot-mode-switch');
+    const data = previousChatHistory.filter(chat =>
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 3
+  );
+    if (mode_switch_button && data.length > 0){
+      enableDisablebuttons('bot-mode-switch', false);
+    } else {
+      enableDisablebuttons('bot-mode-switch', true);
+    }
+    const completedOptGroup = document.createElement("optgroup");
+    completedOptGroup.label = "Completed Sessions";
+
+    const incompleteOptGroup = document.createElement("optgroup");
+    incompleteOptGroup.label = "Incomplete Sessions";
+
+    previousChatHistory.forEach(chat => {
+      const option = document.createElement("option");
+      option.value = chat.uid;
+
+      const isIncomplete =
+        chat.summary === null ||
+        chat.summary === '' ||
+        chat.summary.includes('No Summary');
+
+      const truncated = chat.summary && chat.summary.length > 30
+        ? chat.summary.slice(0, 20) + "..."
+        : chat.summary || `Session ${chat.uid.slice(0, 5)}`;
+
+      option.textContent = isIncomplete ? `❌ ${truncated}` : truncated;
+      option.title = isIncomplete ? "Abandoned session — needs attention" : chat.summary || `Session ${chat.uid.slice(0, 5)}`;
+      option.style.color = isIncomplete ? "red" : "green";
+
+      if (isIncomplete) {
+        incompleteOptGroup.appendChild(option);
+      } else {
+        completedOptGroup.appendChild(option);
+      }
+    });
+
+    if (completedOptGroup.children.length > 0) dropdown.appendChild(completedOptGroup);
+    if (incompleteOptGroup.children.length > 0) dropdown.appendChild(incompleteOptGroup);
+  } else{
+    const mode_switch_button = document.getElementById('bot-mode-switch');
+    if (mode_switch_button){
+      enableDisablebuttons('bot-mode-switch', true);
+    }
+  }
+
+  // 5. Show the dropdown wrapper
+  if (chathistorywrapper) {
+    chathistorywrapper.style.display = "block";
+  }
+
+  // 6. Add listener to handle "Start New Chat"
+  dropdown.addEventListener("change", (e) => {
+  const selectedValue = e.target.value;
+  if (selectedValue === "new-chat") {
+    // ✅ Simulate a click on the "Begin session" button
+    const beginSessionButton = document.getElementById("begin-session-button");
+    if (beginSessionButton) {
+      beginSessionButton.click();
+    }
+
+    // Optional: Reset dropdown to first item
+    dropdown.selectedIndex = 0;
+  }
+  });
+  if (window.widgetReady) window.widgetReady();
+  hideHeaderLoader();
+  hideLoader();
+}
+
+
+function IsSimulationChatHistory() {
+  return document.getElementById('simulation-chat-history').style.display === 'block'
+}
+
+async function populateChatHistoryWrapper(refresh=false) {
+  // Fetch sessions if empty
+  const menu = document.getElementById("dropdownMenu");
+  if (previousChatHistory.length === 0 || refresh) {
+    previousChatHistory = await getPreviousChats(userId2, BotIDSTT, true);
+  }
+  
+  await getLLMOrderSTT(null, 'scenario_generation');
+
+  const data = previousChatHistory.filter(chat =>
+    chat.summary && chat.summary !== '' && !chat.summary.includes("No Summary") && chat.conversations.length > 3
+  );
+
+  if (data.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.className = "item";
+    emptyMsg.textContent = "No completed sessions";
+    menu.appendChild(emptyMsg);
+    return;
+  }
+
+  // ✅ SAFE DATA STORAGE - No JSON in HTML attributes
+  if (!window.sessionDataStore) {
+    window.sessionDataStore = {};
+  }
+
+  data.forEach((chat, index) => {
+    const item = document.createElement("div");
+    item.className = "item";
+    
+    // Create a safe ID for this chat session
+    const safeChatId = `session_${index}_${Date.now()}`;
+    window.sessionDataStore[safeChatId] = chat;
+
+    const truncated = chat.summary.length > 30
+      ? chat.summary.slice(0, 20) + "..."
+      : chat.summary;
+    
+    const d = new Date(chat.attempt_datetime);
+
+    const formatted =
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ` +
+      `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
+
+    console.log(formatted);
+
+
+    // Escape quotes for safe attribute usage
+    const safeSummary = chat.summary.replace(/"/g, '&quot;').replace(/'/g, "&apos;");
+
+    item.innerHTML = `
+      <span title="${safeSummary}">${truncated}-${formatted}</span> <span class="caret">▸</span>
+      <div class="sub-items">
+        <div onclick="selectItem(event, this)" data-chat-ref="${safeChatId}" style="color:blue; cursor:pointer;">
+          🔄 Practice
+        </div>
+      </div>
+    `;
+
+
+    // Add click handler for the main item
+    item.addEventListener('click', function(e) {
+      toggleSub(e, this);
+    });
+
+    menu.appendChild(item);
+  });
+  if (data.length > 10) {
+    menu.style.maxHeight = "350px";  // ~10 items (adjust if your items are taller/shorter)
+    menu.style.overflowY = "auto";
+  }
+}
+
+function toggleSub(event, el) {
+  event.stopPropagation();
+  const sub = el.querySelector(".sub-items");
+  const caret = el.querySelector(".caret");
+  
+  if (!sub || !caret) {
+    console.error("Sub-items or caret not found");
+    return;
+  }
+  
+  const isOpen = sub.style.display === "block";
+
+  // Collapse all others first
+  document.querySelectorAll(".sub-items").forEach(s => s.style.display = "none");
+  document.querySelectorAll(".caret").forEach(c => c.classList.remove("open"));
+
+  if (!isOpen) {
+    sub.style.display = "block";
+    caret.classList.add("open");
+  }
+}
+
+function selectItem(event, el) {
+  event.stopPropagation();
+  
+  try {
+    // ✅ Get chat data safely from storage
+    const chatRef = el.getAttribute('data-chat-ref');
+    const chatData = window.sessionDataStore && window.sessionDataStore[chatRef];
+    
+    if (!chatData) {
+      console.error("Chat data not found for reference:", chatRef);
+      console.log("Available data store:", window.sessionDataStore);
+      return;
+    }
+    
+    console.log("✅ Generate Simulation clicked for:", chatData);
+
+    // Update dropdown button label
+    // const SimulationHistorybtn = document.getElementById("SimulationHistorybtn");
+    // if (SimulationHistorybtn) {
+    //   SimulationHistorybtn.textContent = (chatData.summary || "Selected") + " ▼";
+    // }
+
+    // Close dropdown
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (dropdownMenu) {
+      dropdownMenu.style.display = "none";
+    }
+
+    // ✅ Call appendMessage2 immediately when Generate Simulation is clicked
+    // if (typeof appendMessage2 === "function") {
+    //   console.log("📞 Calling appendMessage2 with:", chatData.summary);
+    //   appendMessage2(chatData.summary);
+    // } else {
+    //   console.error("❌ appendMessage2 function not found");
+    // }
+
+    // ✅ Show only the test code
+    console.log(isSessionActiveStt, 'isSessionActiveStt')
+    if (isSessionActiveStt){
+      appendMessage2("<p style='font-size: 14px;color: #991b1b;'>You are in middle of a session either \"STOP\" it or complete it.</p>");
+      return;
+    } else {
+      generateScenario(chatData.uid,false, false);
+    }
+    
+  } catch (error) {
+    console.error("❌ Error in selectItem:", error);
+  }
+}
+
+
+async function handleStartScenario(el) {
+  const sessionId = el.dataset.sessionId;
+  let title = decodeURIComponent(el.dataset.title);
+  const testCode = el.dataset.testCode;
+
+  console.log("🚀 Start clicked for:", sessionId, title);
+
+  title = decodeURIComponent(title)
+
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const section = gShadowRoot2.getElementById(`create-scenario-section-${sessionId}`);
+  if (!section) return;
+
+  const startBtn = section.querySelector(`#start-btn-${sessionId}`);
+  const moreBtn = section.querySelector(`#more-btn-${sessionId}`);
+
+  if (startBtn) {
+    startBtn.disabled = true;
+    startBtn.style.opacity = "0.6";
+    startBtn.style.cursor = "not-allowed";
+  }
+  if (moreBtn) {
+    moreBtn.disabled = true;
+    moreBtn.style.opacity = "0.6";
+    moreBtn.style.cursor = "not-allowed";
+  }
+
+  // 🔒 Lock this session permanently
+  if (!scenarioCache[sessionId]) scenarioCache[sessionId] = {};
+  scenarioCache[sessionId].locked = true;
+
+  //check if already in session
+  if (isSessionActiveStt){
+    await StopSession("<b>The previous session has been terminated. A new session will now begin.</b>");
+  }
+
+  handleAttemptScenaiosSTT(title, testCode);
+}
+
+
+
+
+// Cache format: { results: [], index: 0, moreEnabled: false, loadingMore: false }
+const scenarioCache = {};
+
+async function generateScenario(sessionId, retry = false, fromMore = false) {
+  console.log("🔄 generateScenario | session:", sessionId, "| retry:", retry, "| fromMore:", fromMore);
+  const results = previousChatHistory.filter(session => session.uid === sessionId);
+  if (results.length === 0) {
+    console.warn("No chat history found for session:", sessionId);
+    return;
+  }
+
+  const summary = results[0].summary
+
+  const contId = `create-scenario-section-${sessionId}`
+  let container = gShadowRoot2.getElementById(contId);
+  if (!container) {
+    const placeholder = `
+      <div id=${contId}
+           style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
+        <p style="font-size: 14px; color:#666;">⏳ Generating scenario...</p>
+      </div>
+    `;
+    appendMessage2(placeholder);
+    container = gShadowRoot2.getElementById(contId);
+  }
+
+
+
+    const startBtn = gShadowRoot2.getElementById(`start-btn-${sessionId}`)
+    console.log('xyz', startBtn)
+    if (startBtn) {
+      startBtn.disabled = false;        // re-enable
+      startBtn.style.opacity = "1";     // normal opacity
+      startBtn.style.cursor = "pointer"; // restore pointer
+    }
+    console.log('xyz', startBtn)
+
+  
+
+  try {
+    const cache = scenarioCache[sessionId] || { results: [], index: 0, moreEnabled: false, loadingMore: false };
+
+    // --- First batch OR More batch ---
+    if (cache.results.length === 0 || fromMore) {
+      if (fromMore && cache.loadingMore) {
+        console.log("⏳ More batch already loading, skipping duplicate trigger.");
+        return;
+      }
+      cache.loadingMore = true;
+      scenarioCache[sessionId] = cache;
+
+      // Show spinner on "More" button if triggered by More
+      if (fromMore) {
+        const moreBtn = gShadowRoot2.getElementById(`more-btn-${sessionId}`);
+        if (moreBtn) {
+          moreBtn.innerHTML = `⏳ Loading...`;
+          moreBtn.style.opacity = "0.7";
+          moreBtn.style.pointerEvents = "none";
+        }
+      }
+
+      console.log(fromMore ? "➕ Fetching More scenarios..." : "⚡ First batch of scenarios...");
+      console.log('llm order for scenario generattion', BotGenerationLLMOrder)
+      let llmOrders = BotGenerationLLMOrder.providers
+      let modelOrder = BotGenerationLLMOrder.models
+      
+
+      const promises = llmOrders.map((order) =>
+        generateTestScenarioStt({
+          userId: userId2,
+          sessionId: null,
+          skills: null,
+          flavour: "normal_transcript_static",
+          isMicro: true,
+          information: summary,
+          llmOrder: Array.isArray(order) ? order.join(", ") : order ?? "",          
+          modelOrder: modelOrder
+        }).then((res) => {
+          console.log(`✅ LLM [${Array.isArray(order) ? order.join(" >") : order ?? ""}] →`, res.title);
+          return res;
+        })
+      );
+
+      // Show the fastest immediately
+      Promise.race(promises).then((firstResult) => {
+        cache.results.push(firstResult);
+        cache.index = cache.results.length - 1;
+        scenarioCache[sessionId] = cache;
+        renderScenario(container, sessionId, firstResult, summary, cache.index + 1, cache.results.length);
+        console.log("🏆 First scenario shown:", firstResult.title);
+      });
+
+      // Fill cache in background
+      Promise.allSettled(promises).then((settled) => {
+        settled
+          .filter((r) => r.status === "fulfilled")
+          .forEach((r) => {
+            if (!cache.results.some((c) => c.test_code === r.value.test_code)) {
+              cache.results.push(r.value);
+              console.log("✨ New scenario cached:", r.value.title);
+            }
+          });
+        cache.loadingMore = false;
+        scenarioCache[sessionId] = cache;
+
+        // Restore "More" button
+        const moreBtn = gShadowRoot2.getElementById(`more-btn-${sessionId}`);
+        if (moreBtn) {
+          moreBtn.innerHTML = "➕ More";
+          moreBtn.style.opacity = "1";
+          moreBtn.style.pointerEvents = "auto";
+        }
+
+        console.log("📦 Cache updated:", cache.results.map((r) => r.title));
+      });
+
+    } else {
+      // --- Retry / Next flow ---
+      cache.index = (cache.index + 1) % cache.results.length;
+      const nextResult = cache.results[cache.index];
+
+      // Enable "More" when loop completed
+      if (cache.index === cache.results.length - 1) {
+        cache.moreEnabled = true;
+      }
+
+      renderScenario(container, sessionId, nextResult, summary, cache.index + 1, cache.results.length, cache.moreEnabled);
+      scenarioCache[sessionId] = cache;
+
+      console.log(`🔁 Next scenario → ${cache.index + 1}/${cache.results.length}:`, nextResult.title);
+    }
+  } catch (err) {
+    container.innerHTML = `<p style="color:red;">❌ Failed to generate scenario.</p>`;
+    console.error("💥 Error in generateScenario:", err);
+  }
+}
+
+function copyCode(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      // swap icon → checkmark
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" viewBox="0 0 16 16">
+          <path d="M13.485 1.929a1.5 1.5 0 0 1 0 2.121l-7.071 7.071-3.536-3.536a1.5 1.5 0 1 1 2.121-2.121l1.415 1.414 5.657-5.657a1.5 1.5 0 0 1 2.121 0z"/>
+        </svg>`;
+      setTimeout(() => {
+        // revert back to copy icon
+        btn.innerHTML = `Copy For Later`;
+      }, 1200);
+    });
+}
+
+function renderScenario(container, sessionId,data, summary ,version, total, moreEnabled = false) {
+  console.log(`🎨 Rendering scenario [${version}/${total}] for session ${sessionId}`);
+  // const results = previousChatHistory.filter(session => session.uid === sessionId);
+  // if (results.length === 0) {
+  //   console.warn("No chat history found for session:", sessionId);
+  //   return;
+  // }
+
+  // const summary = results[0].summary
+
+  const cache = scenarioCache[sessionId] || {};
+  const isLocked = cache.locked === true; // 🔒
+
+  container.style.opacity = "0";
+  container.style.transition = "opacity 0.4s ease";
+
+  const title = encodeURIComponent(data.title)
+  console.log('generateScenario', summary)
+
+  container.innerHTML = `
+    <div class="scenario-card" style="animation: fadeIn 0.4s ease;">
+      <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
+        ${data.title} <span style="font-size:11px; color:#888;">(Version ${version}/${total})</span>
+      </p>
+      <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
+        ${data.description}
+      </p>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <code style="background:#f4f4f4; padding:6px 10px; border-radius:4px; font-size:12px; color:green;">
+          ${data.test_code}
+        </code>
+        <button 
+          title='Copy for later use'
+          onclick="copyCode(this, '${data.test_code}')"
+          style="background:#e0e0e0; border:none; padding:4px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+          Copy For Later
+        </button>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <!-- Start button -->
+        <button 
+          id="start-btn-${sessionId}"
+          data-session-id="${sessionId}"
+          data-title="${title}"
+          data-test-code="${data.test_code}"
+          style="background:white; color:black; border:1px solid #000; padding:6px 12px; border-radius:6px; 
+                cursor:"pointer";
+                opacity:"1";
+                font-size:13px; font-weight:500;"
+          onmouseover="this.style.background='black'; this.style.color='white'"
+          onmouseout="this.style.background='white'; this.style.color='black'"
+          onclick="handleStartScenario(this)"
+          }
+        >          
+          ▶ Start
+        </button>
+
+        <!-- Next button -->
+        <button 
+          style="background:white; color:black; border:1px solid #000; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:500;"
+          onmouseover="this.style.background='black'; this.style.color='white'"
+          onmouseout="this.style.background='white'; this.style.color='black'"
+          onclick="generateScenario('${sessionId}', true)">
+          🔄 Next
+        </button>
+
+        <!-- More button -->
+        <button 
+          id="more-btn-${sessionId}"
+          ${isLocked ? "disabled" : ""}
+          style="background:white; 
+                color:black; 
+                border:1px solid #000;
+                padding:6px 12px; 
+                border-radius:6px; 
+                cursor:${isLocked ? "not-allowed" : (moreEnabled ? "pointer" : "not-allowed")};
+                font-size:13px; 
+                font-weight:500;
+                opacity:${isLocked ? "0.6" : (moreEnabled ? "1" : "0.7")};"
+          ${(!isLocked && moreEnabled) ? `
+            onmouseover="this.style.background='black'; this.style.color='white'" 
+            onmouseout="this.style.background='white'; this.style.color='black'" 
+            onclick="generateScenario('${sessionId}', false, true)" 
+          ` : ""}
+        >
+          ➕ More
+        </button>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    container.style.opacity = "1";
+  }, 50);
+}
+
+
+
+
+
+
+async function getPreviousChats(participant_id, bot_id, refresh = false, filter=false) {
+  try {
+    let url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user-chat-history&user_id=${participant_id}&bot_id=${bot_id}&refresh=${refresh}`;
+    if (filter) {
+      url += `&filtered_history=${filter}`
+    }
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    const botConv = await response.json();
+    console.log("Previous chats", botConv);
+
+    return botConv; // optional: if you want to use it elsewhere
+  } catch (error) {
+    console.error("Failed to fetch previous chats:", error);
+    return [];
+  }
+}
+
 
 async function populateBotConversation(participant_id) {
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
@@ -1830,6 +2845,41 @@ const getIdps = async (user_id) => {
     return false;
   }
 };
+
+
+function getFeedbackFromScoreConfigStt(score, total = 100) {
+  if (!ScoreConfigStt) return '';
+
+  // find config min & max
+  let minRange = Infinity;
+  let maxRange = -Infinity;
+
+  for (const key in ScoreConfigStt) {
+    const [min, max] = ScoreConfigStt[key].score.map(Number);
+    if (min < minRange) minRange = min;
+    if (max > maxRange) maxRange = max;
+  }
+
+  // check if config is on 0–10 scale (like earlier case)
+  const needsNormalization = maxRange <= 10;
+
+  // normalize if needed
+  const effectiveScore = needsNormalization
+    ? Math.round((score / total) * maxRange) // map 0–100 → 0–10
+    : score; // already 0–100
+
+  // find matching range
+  for (const key in ScoreConfigStt) {
+    const [min, max] = ScoreConfigStt[key].score.map(Number);
+    if (effectiveScore >= min && effectiveScore <= max) {
+      return ScoreConfigStt[key].feedback;
+    }
+  }
+
+  return '';
+}
+
+
 function showLoader(message = "Loading...") {
   const loader = document.createElement("div");
   loader.id = "bot-loader";
@@ -1840,13 +2890,15 @@ function showLoader(message = "Loading...") {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: rgba(255, 255, 255, 0.9);
+        background: white;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 9999;
         font-family: 'Segoe UI', Arial, sans-serif;
+        border-radius: 1rem 1rem 0rem 1rem; /* same as chat-container2 */
+        overflow: hidden;
       }
 
       .wave-text {
@@ -1906,23 +2958,87 @@ function showLoader(message = "Loading...") {
     </div>
   `;
 
-  const chatElement = document.getElementById("chat-element2");
-  if (chatElement?.shadowRoot) {
-    chatElement.shadowRoot.append(loader);
-  } else {
-    console.warn("chat-element2 or its shadowRoot not found");
-  }
+  const container = document.getElementById("chat-container2") || document.body;
+  container.appendChild(loader);
+  // const chatElement = document.getElementById("chat-element2");
+  // if (chatElement?.shadowRoot) {
+  //   console.log('loader.added')
+  //   chatElement.shadowRoot.append(loader);
+  // } else {
+  //   console.warn("chat-element2 or its shadowRoot not found");
+  // }
 }
 
 
 function hideLoader() {
-  const chatElement = document.getElementById("chat-element2");
-  if (chatElement?.shadowRoot) {
-    const loader = chatElement.shadowRoot.getElementById("bot-loader");
-    if (loader) loader.remove();
-  } else {
-    console.warn("chat-element2 or its shadowRoot not found");
-  }
+  console.log('loader.hide')
+  const loader = document.getElementById("bot-loader");
+  if (loader) loader.remove();
+}
+
+function showHeaderLoader(message = "Loading...") {
+  const header = document.getElementById("bot-header-logo-2");
+  if (!header) return;
+
+  // header.style.display = "none";
+
+  // // Clear header temporarily
+  // header.innerHTML = "";
+
+  // Create loader
+  const loader = document.createElement("div");
+  loader.id = "header-loader";
+  loader.innerHTML = `
+  <style>
+    .loader-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: Arial, sans-serif;
+    }
+
+    .loader-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgb(87, 223, 160);
+      text-align: center;
+    }
+
+    .circle-loader {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(87, 223, 160, 0.2);
+      border-top: 3px solid rgb(87, 223, 160);
+      border-radius: 50%;
+      animation: spin 0.8s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(87, 223, 160, 0.4);
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <div class="loader-wrapper">
+    <div class="loader-text">Loading...</div>
+    <div class="circle-loader"></div>
+  </div>
+`;
+
+
+  header.appendChild(loader);
+}
+
+function hideHeaderLoader() {
+  const loader = document.getElementById("header-loader");
+  if (loader) loader.remove();
+  // const header = document.getElementById("bot-header-logo-2");
+  // if (!header) return;
+
+  // header.style.display = "flex";
 }
 
 
@@ -1937,6 +3053,7 @@ async function setupBotAndProceed() {
 
     if (createdBotData.length > 0 && createdBotData[0]?.bot_id) {
       botId = createdBotData[0].bot_id;
+
     }
     hideLoader();
   }
@@ -1944,8 +3061,134 @@ async function setupBotAndProceed() {
   return botId;
 }
 
+const getMindmapandAssessment = async (user_id) => {
+  try {
+    console.log('user id mindmap', user_id)
+    const response = await fetch(`${baseURL2}/accounts/get-mindmap-and-assessments-report/?user_id=${user_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Error fetching mindmaps and assessments");
+    }
+
+    const data = await response.json();
+    console.log("Mindmaps and Assessments: ", data);
+    MindMapLinks = data.mindmaps || [];
+    AssessmentLinks = data.assessments || [];
+    return data;
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+};
+function applyStyle(btn, styles) {
+    Object.entries(styles).forEach(([k, v]) => (btn.style[k] = v));
+  }
+
+function enableDisablebuttons(buttonId, disabled=true) {
+  const DEFAULT_STYLE = {
+    padding: '3px 9px',
+    border: '1px solid green',
+    background: 'white',
+    color: 'black',
+    borderRadius: '5px',
+    fontSize: '14px',
+    cursor: 'pointer'
+  };
+
+  const DISABLED_STYLE = {
+    background: '#e0e0e0',
+    color: '#888',
+    border: '1px solid #aaa',
+    cursor: 'not-allowed'
+  };
+
+  const btn = document.getElementById(buttonId);
+  if (btn) btn.disabled = disabled;
+
+  applyStyle(btn, disabled ? DISABLED_STYLE : DEFAULT_STYLE);
+}
+
+
+// Utility to populate dropdowns
+async function populateDropdown(menuId ) {
+    if (botId === undefined || botId === null) {
+      return;
+    }
+    const menu = document.getElementById(menuId);
+    menu.innerHTML = ""; // clear existing
+
+    if (!MindMapLinks || !AssessmentLinks) {
+      await getMindmapandAssessment(userId2);
+    }
+
+    let items = [];
+    if (menuId === "mindmap-menu") {
+      items = MindMapLinks || [];
+      enableDisablebuttons("mindmap-btn", items.length === 0);
+    } else if (menuId === "assessment-menu") {
+      items = AssessmentLinks || [];
+      enableDisablebuttons("assessment-btn", items.length === 0);
+    }
+
+    items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "dropdown-item";
+        div.style.cssText = "display:flex; align-items:center; gap:8px; padding:5px; cursor:pointer; border-radius:4px; transition: background-color 0.2s;";
+        div.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 viewBox="0 0 24 24" fill="none" stroke="blue"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6"/>
+                <path d="M10 14 21 3"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            </svg>
+            <span style="color:black;">${item.name}</span>
+        `;
+        div.addEventListener("click", () => {
+            window.open(item.link, "_blank");
+        });
+        menu.appendChild(div);
+    });
+}
+
+function intializeBotsetup(maxAttempts = 99, delay = 1000) {
+  let attempts = 0;
+  const interval = setInterval(() => {
+
+    if (userId2){
+      clearInterval(interval);
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)){ 
+          populateChatHistoryOptions();   
+        }
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+            populateDropdown("mindmap-menu");
+            populateDropdown("assessment-menu");
+            }
+      if( botType == 'user_bot'){
+        updateAudioAllowed(false, false)
+      } else {
+        updateAudioAllowed(true, true)
+      }
+      return;
+    }
+
+    attempts++;
+    if (attempts >= maxAttempts) {
+      clearInterval(interval);
+      console.warn("Unable to find userId2");
+    }
+  }, delay);
+}
+
 const getBotDetails2 = async (botId) => {
   try {
+    if (window.user) {
+     showHeaderLoader();
+    }
     if (snnipetConfigSTT?.createBotSheetUrl != undefined) {
       botId = await setupBotAndProceed();
     }
@@ -1980,7 +3223,15 @@ const getBotDetails2 = async (botId) => {
     botScenarioCase = botDetails.data.scenario_case;
     LLMsystemInstructions = botDetails.data.system_instructions;
     // botSelectedLLM = botDetails.data.selected_llms;
+    console.log('LLMOrder',LLMOrder,botDetails.data.llm_order);
+    LLMOrder = botDetails.data.llm_order
 
+    if (botType === 'subject_specific_bot'){
+      const mode_switch_button = document.getElementById('more-section')
+      if (mode_switch_button){
+        mode_switch_button.style.display = 'none'
+      }
+    }
     if (botType === "user_bot") {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
@@ -1989,8 +3240,19 @@ const getBotDetails2 = async (botId) => {
     } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
         (botType === "avatar_bot" && botScenarioCase === "icons_by_ai")
-          ? `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
-          : "Welcome to the world of AI coaching copilots. As your personal coaching co-pilot, I can make you 10x smarter. Let's start!"
+          ? (isFlatWidget? 
+          `I'm your AI CoachBot, designed to help you discover solutions through guided questions. I offer three modes:
+            
+            • Coach Mode - Explore solutions through ICF-aligned GROW coaching questions
+            • Mentor Mode - Get direct business advice and executive strategies
+            • Mindset Mode - Examine and reframe unhelpful thought patterns
+            • What's on your mind that you'd like to explore today?
+          `
+          :
+                    // `Welcome to <b>${botDetails.data.bot_name}</b>. Your personal self-discovery and growth agent is purpose-built with a question-first approach for reflection.`
+                    `Welcome to our Multi-Modal AI Coaching Agent. Let's get started!`
+            )
+    : "Welcome to our Multi-Modal AI Coaching Agent. Let's get started!"
       const shadowRoot = document.getElementById("chat-element2").shadowRoot;
       console.log(shadowRoot.getElementById("text-input"));
 
@@ -2000,6 +3262,8 @@ const getBotDetails2 = async (botId) => {
           "placeholder",
           `Please follow provided instructions and select "Begin session"`
         );
+          // Make the shadow root globally accessible
+           window.tShadowRoot = shadowRoot;
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
         "Welcome",
@@ -2115,144 +3379,9 @@ const getBotDetails2 = async (botId) => {
         .join("_");
     }
 
-    let dropdownButtonText = "Styles";
-    if (selectedResponseType) {
-      dropdownButtonText =
-        "Response style : " +
-        `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
-    }
+    
 
-    if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
-      const dropdownButton = document.createElement("button");
-      dropdownButton.id = "styles-dropdown-button";
-      dropdownButton.innerHTML = dropdownButtonText;
-      dropdownButton.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background : white; color: #374151;`
-      );
 
-      dropdownButton.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'"
-      );
-      dropdownButton.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = 'white'"
-      );
-
-      buttonsWrapper.appendChild(dropdownButton);
-
-      const dropdown = document.createElement("div");
-      dropdown.id = "dropdown";
-      dropdown.style.position = "absolute";
-      dropdown.style.backgroundColor = "#f3f4f6";
-      dropdown.style.borderRadius = "4px";
-      dropdown.style.border = "1px solid #1f2937";
-      if (window.innerWidth < 768) {
-        dropdown.style.bottom = "7rem";
-        dropdown.style.left = "1rem";
-      } else {
-        dropdown.style.bottom = "6rem";
-        dropdown.style.left = "6rem";
-      }
-      dropdown.classList.add("hiddenn");
-
-      const options = [
-        "basic",
-        "cheerleader",
-        "change_manager",
-        "calculator",
-        "conversationalist",
-        "co_creator",
-      ];
-      options.forEach((option, i) => {
-        const item = document.createElement("div");
-
-        item.style.padding = "8px 12px";
-        item.style.fontSize = "14px";
-        if (window.innerWidth < 768) {
-          item.style.fontSize = "12px";
-        } else {
-          item.style.fontSize = "14px";
-        }
-        item.setAttribute(
-          "onmouseover",
-          "this.style.backgroundColor = '#e5e7eb',this.style.cursor = 'pointer', this.style.borderRadius = '4px'"
-        );
-        item.setAttribute(
-          "onmouseleave",
-          "this.style.backgroundColor = '#f3f4f6',this.style.cursor = 'default', this.style.borderRadius = '4px'"
-        );
-        if (i !== options.length - 1) {
-          item.style.borderBottom = "1px solid #1f2937";
-        }
-        item.className = "dropdown-item";
-        item.textContent = convertTextToCorrectFormat(option);
-
-        item.addEventListener("click", (event) => {
-          console.log(
-            convertTextToOriginalFormat(event.target.textContent),
-            participantId2
-          );
-
-          if (participantId2) {
-            fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-              method: "POST",
-              headers: {
-                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                user_id: participantId2,
-                response_style: convertTextToOriginalFormat(
-                  event.target.textContent
-                ),
-              }),
-            })
-              .then((res) => {
-                res.json;
-              })
-              .then((data) => {
-                data;
-              });
-          }
-          dropdownButton.innerHTML =
-            "Response style : " + `<b>${event.target.textContent}</b>`;
-          dropdown.classList.add("hiddenn");
-          dropdown.style.display = "none";
-        });
-        dropdown.appendChild(item);
-
-        console.log("selectedResponseType", selectedResponseType);
-        if (!selectedResponseType) {
-          const basicOption = Array.from(dropdown.children).find(
-            (item) => item.textContent.toLowerCase() === "basic"
-          );
-          if (basicOption) {
-            basicOption.click();
-          }
-        }
-      });
-
-      dropdownButton.addEventListener("click", () => {
-        const shadowRootForDropdowns =
-          document.getElementById("chat-element2").shadowRoot;
-        shadowRootForDropdowns.appendChild(dropdown);
-        console.log(dropdown);
-        dropdown.style.display =
-          dropdown.style.display === "block" ? "none" : "block";
-      });
-
-      document.addEventListener("click", (event) => {
-        if (
-          !dropdownButton.contains(event.target) &&
-          !dropdown.contains(event.target)
-        ) {
-          dropdown.classList.add("hiddenn");
-          dropdown.style.display = "none";
-        }
-      });
-    }
 
     if (
       botDetails.data.is_fitment_analysis &&
@@ -2330,6 +3459,103 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(endSessionButton);
     }
     console.log("buttons : ", buttons);
+  if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+
+   styleMap = await getResponseStyleList()
+
+  function convertTextToOriginalFormat(displayText) {
+    return styleMap[displayText] || displayText;
+  }
+
+  function convertTextToCorrectFormat(backendValue) {
+    const reverseMap = Object.fromEntries(
+      Object.entries(styleMap).map(([k, v]) => [v, k])
+    );
+    return reverseMap[backendValue] || backendValue;
+  }
+
+
+  // If not valid, default to "icf_aligned_coach"
+  const allowedValues = Object.values(styleMap);
+  if (!allowedValues.includes(selectedResponseType)) {
+    selectedResponseType = "icf_aligned_coach";
+
+    // Send default immediately if needed
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedResponseType,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  }
+
+
+  // Create dropdown
+  const select = document.createElement("select");
+  select.id = "style-selector";
+  select.style.cssText = `
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  `;
+
+  // Add default option
+  // const defaultOption = document.createElement("option");
+  // defaultOption.textContent = "Select Style";
+  // defaultOption.value = "";
+  // defaultOption.disabled = true;
+  // if (!selectedResponseType) defaultOption.selected = true;
+  // select.appendChild(defaultOption);
+
+  // Add style options with pre-selected logic
+  for (const label in styleMap) {
+    const value = styleMap[label];
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    if (selectedResponseType === value) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  // Handle selection change
+  select.addEventListener("change", () => {
+    const selectedValue = select.value;
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedValue,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  });
+
+  // Inject into #response-style
+  const container = document.getElementById("response-style");
+  container.innerHTML = ""; // clear if re-rendering
+  container.appendChild(select);
+  container.style.display = "block";
+}
+
 
     // if (!["user_bot",'deep_dive'].includes(botType)) {
     //    //canned button one
@@ -2422,6 +3648,9 @@ const getBotDetails2 = async (botId) => {
     }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+    const faqButtonsWrapper2 = document.getElementById("starting-faq-buttons-headers");
+
+    console.log("faqButtonsWrapper", faqButtonsWrapper);
 
     if (botType != "feedback_bot") {
       fitmentAnalysisQuestions = botDetails.data.fitment_qna;
@@ -2431,8 +3660,15 @@ const getBotDetails2 = async (botId) => {
       isStrictFitment = botDetails.data.is_strict_fitment;
       isBotAudioResponse = botDetails.data.is_audio_response;
       CoachingForFitment = botDetails.data.coaching_for_fitment;
-      faqButtonsWrapper.style.display = "flex";
-      faqButtonsWrapper.append(buttonsWrapper);
+      const effectiveButtonPosition = snnipetConfigSTT?.buttonPosition ?? buttonPositionSTT;
+
+      if ( effectiveButtonPosition === "top"){
+        faqButtonsWrapper2.style.display = "flex";
+        faqButtonsWrapper2.append(buttonsWrapper);
+      } else {
+        faqButtonsWrapper.style.display = "flex";
+        faqButtonsWrapper.append(buttonsWrapper);
+      }
       if (botType === "deep_dive") {
         botInitialQuestions = {
           1: "Please let us know more about your context for this survey such as role, impact and whatever else you may feel comfortable with.",
@@ -2444,17 +3680,36 @@ const getBotDetails2 = async (botId) => {
       feedbackBotQuestions = botDetails.data.feedback_qna;
       initialfeedbackBotQuestions = botDetails.data.feedback_qna;
     }
+    if  (!window.user) {
+      setBeginSessionEnabled(false);
+    }
 
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
     console.log("id", userId2, participantId2);
     console.log("id from web app", window.userIdFromWebApp);
-    if (
-      !isBotConversationPopulated &&
-      !["feedback_bot", "deep_dive", "user_bot"].includes(botType)
-    ) {
-      populateBotConversation(window.userIdFromWebApp);
+    // if (
+    //   !isBotConversationPopulated &&
+    //   !["feedback_bot", "deep_dive", "user_bot"].includes(botType)
+    // ) {
+    //   populateBotConversation(window.userIdFromWebApp);
+    // }
+    if(window.user) {
+      intializeBotsetup()
+      
+    } else {
+      enableDisablebuttons("assessment-btn", true);
+      enableDisablebuttons("mindmap-btn", true);
     }
+
+      // show the buttons if coaching bot.
+      if (['icons_by_ai'].includes(botScenarioCase)) {
+        const mindmapBtn = document.getElementById("mindmap-btn");
+        const assessmentBtn = document.getElementById("assessment-btn");
+        mindmapBtn.style.display = "block";
+        assessmentBtn.style.display = "block";
+      }
+
     return botDetails;
   } catch (error) {
     console.error(`Error in getBotDetails: ${error}`);
@@ -2678,6 +3933,104 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
 
   return formRadio;
 }
+
+
+async function handleIntakeQues(btn, type = "individual") {
+  try {
+    const root = document.getElementById("chat-element2").shadowRoot;
+
+    let intakeformdata;
+
+    if (type === "individual") {
+      // ✅ Individual intake
+      const nameEl = root.getElementById("intake-name");
+      const roleEl = root.getElementById("intake-role");
+      const deptEl = root.getElementById("intake-department");
+      const teamEl = root.getElementById("intake-teamSize");
+
+      const formData = {
+        Name: nameEl?.value.trim() || "",
+        Role: roleEl?.value || "",
+        Department: deptEl?.value || "",
+        Team: teamEl?.value || "",
+      };
+
+      console.log("Individual Form Data:", formData);
+
+      intakeformdata = {
+        type: "individual",
+        qna: formData,
+        user_id: userId2,
+      };
+    } else if (type === "group") {
+      // ✅ Group intake
+      const nameEl =
+        root.getElementById("group-name") ||
+        document.getElementById("group-name");
+      const objEl =
+        root.getElementById("group-objective") ||
+        document.getElementById("group-objective");
+
+      if (!nameEl || !objEl) {
+        console.error("❌ Group form elements not found in DOM!");
+        return;
+      }
+
+      const groupData = {
+        GroupName: nameEl.value.trim(),
+        GroupObjective: objEl.value,
+      };
+
+      console.log("Group Form Data:", groupData);
+
+      intakeformdata = {
+        type: "group",
+        qna: groupData,
+        user_id: userId2,
+      };
+    }
+
+    // 🚀 Send data
+    const response = await fetch(
+      `${baseURL2}/coaching-conversations/coaching-intake/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(intakeformdata),
+      }
+    );
+
+    const data = await response.json();
+    console.log("Intake Submission Response:", data);
+
+    // ✅ Replace form with summary
+    const formContainer =
+      root.getElementById("quick-intake-form") ||
+      root.getElementById("group-intake-form");
+    if (formContainer) {
+      formContainer.innerHTML = `
+        <div style="font-size: 14px; color: #333; line-height: 1.4;">
+          <strong>${type === "individual" ? "Individual" : "Group"} Intake Submitted ✅</strong><br>
+        </div>
+      `;
+    }
+
+    // Trigger begin session
+    const beginSessionButton = document.getElementById("begin-session-button");
+    if (beginSessionButton) {
+      beginSessionButton.click();
+    }
+    isAskingIntake = false;
+  } catch (error) {
+    console.error("Error submitting intake:", error);
+  }
+}
+
+
+
 
 async function SendingFirstInitialQue() {
   // disabling button
@@ -3199,6 +4552,15 @@ async function handleFaqButtonClick(question) {
   } else {
     // something_else => begin_session
     if (question == "something_else") {
+      //end session due to inactivity :- row 708
+      if (botId && botType !== "user_bot") {
+        if (isBotInitialized === true) {
+          setTimeout(() => {
+            handleEndConversation(true);
+            isBotInitialized = false;
+          }, 8 * 60 * 60 * 1000); // 8 hours
+        }
+      }
       // clear the sessionqnadata
       sessionQnAdata = [];
 
@@ -3208,6 +4570,245 @@ async function handleFaqButtonClick(question) {
         console.log("===> yes optedBeginSession");
         return;
       }
+      if (botType === 'avatar_bot' && botScenarioCase === 'icons_by_ai' ){
+
+        const response = await fetch(`${baseURL2}/coaching-conversations/coaching-intake/?user_id=${userId2}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(
+                key2,
+                secret2
+              )}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          const qna = data.qna || {};
+          console.log("intake", data, qna);
+
+          let intakeHtml = `
+            <div style="font-size: 14px;">
+              <strong>Here is your intake information:</strong>
+          `;
+
+          // ✅ If it's an individual intake
+          if ("Name" in qna || "Role" in qna || "Department" in qna || "Team" in qna) {
+            intakeHtml += `
+              <div><strong>Name:</strong> ${qna["Name"] || "—"}</div>
+              <div><strong>Role:</strong> ${qna["Role"] || "—"}</div>
+              <div><strong>Department:</strong> ${qna["Department"] || "—"}</div>
+              <div><strong>Team:</strong> ${qna["Team"] || "—"}</div>
+            `;
+          }
+
+          // ✅ If it's a group intake
+          else if ("GroupName" in qna || "GroupObjective" in qna) {
+            intakeHtml += `
+              <div><strong>Group Name:</strong> ${qna["GroupName"] || "—"}</div>
+              <div><strong>Group Objective:</strong> ${qna["GroupObjective"] || "—"}</div>
+            `;
+          }
+
+          intakeHtml += `</div>`;
+
+          appendMessage2(intakeHtml);
+
+
+        } else {
+// ----------------- Dynamic option arrays -----------------
+const roleOptions = [
+  "Individual Contributor",
+  "Team Lead/Senior IC",
+  "Manager (1-2 levels below)",
+  "Director/Senior Manager",
+  "VP/Head of Department",
+  "C-Suite/Founder"
+];
+
+const departmentOptions = [
+  "Engineering/Product",
+  "Sales/Business Development",
+  "Marketing",
+  "Operations/Finance",
+  "HR/People",
+  "Customer Success",
+  "Other"
+];
+
+const teamSizeOptions = [
+  "No direct reports",
+  "1-3 direct reports",
+  "4-10 direct reports",
+  "11-25 direct reports",
+  "25+ direct reports"
+];
+
+// ----------------- Helper: create options -----------------
+function generateOptions(optionsArray, placeholder) {
+  return `<option value="" disabled selected>${placeholder}</option>` +
+    optionsArray.map(opt => `<option>${opt}</option>`).join("");
+}
+
+// ----------------- Validation Helper -----------------
+function validateForm(containerId) {
+  const container = gShadowRoot2.getElementById(containerId);
+  const inputs = container.querySelectorAll("input[required], select[required]");
+  let isValid = true;
+
+  inputs.forEach(input => {
+    if (!input.value.trim()) {
+      input.style.border = "1px solid red";
+      isValid = false;
+    } else {
+      input.style.border = "1px solid #ccc";
+    }
+  });
+
+  return isValid;
+}
+
+// ----------------- Main Intake Rendering Function -----------------
+function renderIntakeUI(intakeType) {
+  // Individual Form
+  const individualForm = `
+    <div id="quick-intake-form" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+      background:#f1f0f0;padding:8px 10px;border-radius:12px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;">
+      <span style="white-space:nowrap;font-weight:bold;">Please finish quick intake:</span>
+      
+      <input type="text" id="intake-name" placeholder="Name" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:100px;">
+
+      <select id="intake-role" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:120px;">
+        ${generateOptions(roleOptions, "Role")}
+      </select>
+
+      <select id="intake-department" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:120px;">
+        ${generateOptions(departmentOptions, "Department")}
+      </select>
+
+      <select id="intake-teamSize" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:110px;">
+        ${generateOptions(teamSizeOptions, "Team Size")}
+      </select>
+
+      <button id="quickSubmit" type="button"
+        style="padding:2px 6px;font-size:12px;border:none;border-radius:4px;background:#4CAF50;color:white;cursor:pointer;">
+        ✔
+      </button>
+    </div>
+  `;
+
+  // Group Form
+  const groupForm = `
+    <div id="group-intake-form" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+      background:#f1f0f0;padding:8px 10px;border-radius:12px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;">
+      <span style="white-space:nowrap;font-weight:bold;">Please finish group intake:</span>
+      
+      <input type="text" id="group-name" placeholder="Group Name" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:150px;">
+
+      <input type="text" id="group-objective" placeholder="Group Objective" required
+        style="padding:4px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:200px;">
+
+      <button id="groupSubmit" type="button"
+        style="padding:2px 6px;font-size:12px;border:none;border-radius:4px;background:#4CAF50;color:white;cursor:pointer;">
+        ✔
+      </button>
+    </div>
+  `;
+
+  // Rendering logic
+  if (intakeType === "group_and_individual_both") {
+    appendMessage2(`
+      <div id="intake-choice" style="display:flex;align-items:center;gap:10px;background:#f1f0f0;
+        border-radius:12px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;">
+        <span style="font-weight:bold;">Are we doing a group coaching or individual session today?</span>
+        <button id="individual-btn" type="button"
+          style="padding:4px 10px;font-size:13px;border:none;border-radius:4px;background:#4CAF50;color:white;cursor:pointer;">
+          Individual
+        </button>
+        <button id="group-btn" type="button"
+          style="padding:4px 10px;font-size:13px;border:none;border-radius:4px;background:#2196F3;color:white;cursor:pointer;">
+          Group
+        </button>
+      </div>
+    `);
+
+    // Bind listeners
+    setTimeout(() => {
+      const individualBtn = gShadowRoot2.getElementById("individual-btn");
+      const groupBtn = gShadowRoot2.getElementById("group-btn");
+
+      if (individualBtn) {
+        individualBtn.onclick = () => {
+          const container = gShadowRoot2.getElementById("intake-choice");
+          container.innerHTML = individualForm;
+          bindIndividualSubmit();
+        };
+      }
+
+      if (groupBtn) {
+        groupBtn.onclick = () => {
+          const container = gShadowRoot2.getElementById("intake-choice");
+          container.innerHTML = groupForm;
+          bindGroupSubmit();
+        };
+      }
+    }, 100);
+
+  } else if (intakeType === "group_only") {
+    appendMessage2(groupForm);
+    setTimeout(bindGroupSubmit, 100);
+  } else {
+    appendMessage2(individualForm);
+    setTimeout(bindIndividualSubmit, 100);
+  }
+}
+
+// ----------------- Bind Handlers -----------------
+function bindIndividualSubmit() {
+  const btn = gShadowRoot2.getElementById("quickSubmit");
+  if (btn) {
+    btn.onclick = () => {
+      if (validateForm("quick-intake-form")) {
+        handleIntakeQues(btn, "individual");
+      }
+    };
+  }
+}
+
+function bindGroupSubmit() {
+  const btn = gShadowRoot2.getElementById("groupSubmit");
+  if (btn) {
+    btn.onclick = () => {
+      if (validateForm("group-intake-form")) {
+        handleIntakeQues(btn, "group");
+      }
+    };
+  }
+}
+
+// ----------------- Example Usage -----------------
+// renderIntakeUI("group_and_individual_both");
+// renderIntakeUI("group_only");
+// renderIntakeUI("individual_only");
+if (sttWidgetClientId){  // meaning its is bot outside of webdeep
+  IntakeTypeSTT = "group_and_individual_both"
+}
+
+renderIntakeUI(IntakeTypeSTT || 'individual_only');
+
+
+    return;
+  }
+}
+
       console.log(window.user, "is_logged_in");
       if (botType === "deep_dive") {
         const today = new Date();
@@ -3430,10 +5031,13 @@ async function handleFaqButtonClick(question) {
         // <p>
         // Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
         // <p>`,'#22c55e'))
+        const msg = selectedChatId ? `Welcome back! Let's pick up right where we left off. If anything has changed or you'd like to adjust your direction, just let me know. Otherwise, feel free to continue from where we paused—I'm here to help you reach your goals.` 
+                     :`Welcome to your session! What's the specific challenge you're facing? Once I understand that, I can provide immediate insights based on your background.`;
+
         appendMessage2(
           addStickerToMessage(
             "Begin Session",
-            `Hello, welcome to the session! I know it's the same old boring message you see every time, but if you engage meaningfully, we can deep dive into any issue together. Please let me know in detail what you want to accomplish with this session and what your goals are.`,
+            msg,
             "#22c55e"
           )
         );
@@ -3707,11 +5311,25 @@ function sendBotTranscript2() {
   //     credsUpdated2 = data.status;
   //     console.log("name email updated, sending email");
 
-  const queryParamsEmail2 = new URLSearchParams({
+ const send_email = snnipetConfigSTT.sendTranscriptEmail ?? null;
+
+  let params = {
     submitted_email: userEmail,
     submitted_name: userName,
     test_attempt_session_id: sessionId2,
-  });
+  };
+
+  // Only add send_email if it's explicitly set
+  if (send_email !== null && send_email !== undefined) {
+    // normalize it to a string 'true' or 'false'
+    params['send_email'] = String(send_email === true || send_email === 'true');
+  }
+
+  console.log(params, 'params');
+
+  const queryParamsEmail2 = new URLSearchParams(params);
+
+  console.log('send transcription email', send_email)
 
   fetch(
     `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParamsEmail2}`,
@@ -3727,6 +5345,7 @@ function sendBotTranscript2() {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamic mcq response : ", data);
+      if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(true);
 
       // appendMessage2(faqHtmlData)
 
@@ -3756,7 +5375,7 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-      appendMessage2(`<b>Your session has completed. You will get your session report in some time. Now, you can start new session by clicking "Begin session".</b>`)
+      appendMessage2(`<b>Your session has completed. Your session summary, if enabled,  will be emailed to you. Now, you can start new session by clicking "Begin session".</b>`)
     }
   }
 
@@ -3857,14 +5476,14 @@ function handleEndConversation(isInActive) {
       });
 
       console.log("deepdiveBottranscriptData", botData, sessionQnAdata);
-      sendBotTranscript2();
+      if (isInActive != true) sendBotTranscript2();
       // appendMessage2(optionData);
     } else {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     }
   } else {
@@ -3886,7 +5505,8 @@ function handleEndConversation(isInActive) {
 
       console.log("deepdiveBottranscriptData", botData, sessionQnAdata);
     }
-    sendBotTranscript2();
+
+    if (isInActive != true) sendBotTranscript2() ;
     // }
   }
 }
@@ -4087,7 +5707,8 @@ const handleEndCoachingClick2 = async (randomId) => {
     console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
     if (['psychometric', 'game', 'interview'].includes(senarioCase2)
       || !clientuserInformationSTT.show_recommendations
-      || userScenarioRecommendationStt.total_recommendation >= 2) {
+      || userScenarioRecommendationStt.total_recommendation >= 2 
+    || isTranscriptOnlyStt) {
       appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
     } else {
 
@@ -4107,8 +5728,8 @@ const handleEndCoachingClick2 = async (randomId) => {
     isEmailFormstt = true;
     formFieldsstt = ["name", "email"];
     const msg = formFieldsstt[0] === "email" ?
-      `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-      : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+      `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+      : `Please enter your ${formFieldsstt[0]}`;
     appendMessage2(msg);
   }
 };
@@ -4177,14 +5798,16 @@ function formatMessage2(message) {
       instructions: "Instructions",
       instruction_media: "Reference",
       oem: "▶️ AI Coach Lesson or Additional Context (Expand to view or pause)",
-      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)"
+      "feedback_media": "▶️ Here is your Feedback Video from coach (Expand to view)",
+      'game_oem': "▶️ AI Coach Lesson / Simulataion (Click to expand & pause)"
+      
     };
 
     return Object.keys(keyToTitleMappings).map(key => {
       let value = message[key];
       if (!value) return null;
 
-      if (['oem', 'feedback_media'].includes(key) && value.includes('iframe')) {
+      if (['oem', 'feedback_media', 'game_oem'].includes(key) && value.includes('iframe')) {
 
         return `
           <div>
@@ -4235,11 +5858,14 @@ function createMessageNode2(message, isMarkdown = false) {
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
   messageBubble.style.maxWidth = "100%";
+  messageBubble.style.width = "calc(100% - 3rem)";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
   messageBubble.style.backgroundColor = "#f3f4f6";
   messageBubble.style.color = "#000000";
+  messageBubble.style.border = "1px solid #22c55e"; // green border
+
 
   const messageText = document.createElement("p");
   if (isMarkdown) {
@@ -4272,6 +5898,12 @@ function parseMarkdown(markdown) {
   markdown = markdown.replace(/(?:\*|_)(.*?)\1/g, "<em>$1</em>");
   // Handle links [text](url)
   markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  markdown = markdown.replace(
+  /(?<!href=")(https?:\/\/[^\s<)\]]+)([)\].,;!?]*)/,
+  '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; cursor: pointer;">$1</a>$2'
+);
+
   // Convert newlines (\n) to <br>
   markdown = markdown.replace(/\n/g, "<br>");
   // Preserve spaces for better formatting
@@ -4342,9 +5974,9 @@ function disableOrEnableButtons(id, is_disable = true) {
 
 function addStickerToMessage(sticker, msg, color = "#3b82f6") {
   const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-  <div style="font-size : 12px; font-weight: bold; color: ${sticker === "Begin Session" ? "white" : "black"
-    }; padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 1px solid lightgray; background-color : ${sticker === "Begin Session" ? "#21C55D" : "transparent"
-    }">${sticker}</div>
+  <div style="font-size : 12px; font-weight: bold; color: black;
+     padding: 4px; border-radius:4px; width: fit-content; padding: 2px 8px; border-radius: 4px; border: 2px solid gray; background-color :"transparent"
+    ">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
   </div>`;
   return divWithLabel;
@@ -4804,26 +6436,83 @@ const handleGameTypeConversation = async () => {
     let next_question_text = responseData.question_text || null;
 
     // Check if it is the last question using specific conditions
-    const is_last_question = responseData.is_last_question !== undefined
-      ? responseData.is_last_question
-      : (next_question_text === null || /end of quiz|achieved a score of/i.test(next_question_text));
 
 
-    console.log(
-      is_last_question,
-      next_question_text
-    )
+   const is_last_question = (() => {
+      if (!next_question_text) return true; // null or undefined
+
+      // Handle object case
+      if (typeof next_question_text === "object") {
+        const text = JSON.stringify(next_question_text).toLowerCase();
+        return text.includes("eng_message") || /end of quiz|achieved a score of|congratulations/i.test(text);
+      }
+
+      // Handle string case
+      if (typeof next_question_text === "string") {
+        return next_question_text.includes("eng_message") ||
+              /end of quiz|achieved a score of|congratulations/i.test(next_question_text);
+      }
+
+      return false;
+    })();
+
+    console.log(is_last_question, next_question_text);
+
 
     if (is_last_question) {
-      next_question_text = JSON.parse(next_question_text)
-      next_question_text = `<div>
-      <b>${next_question_text.end_message}</b>
-      <div>
-        <h3>Feedback:</h3>
-        <p>${next_question_text.feedback}</p>
-      </div>
-    </div>`
+      if (!emailCandidate2) {
+        next_question_text =
+          "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>";
+      } else {
+        const scoreMatch = next_question_text.match(/achieved a score of (\d+) out of (\d+)/);
+        let score;
+        if (scoreMatch) {
+          score = parseInt(scoreMatch[1], 10);   // "70" → 70
+          const total = parseInt(scoreMatch[2], 10);   // "100" → 100
+          console.log("Score:", score, "Total:", total);
+        }
+        next_question_text = JSON.parse(next_question_text);
+        if (next_question_text.score){
+          score = next_question_text.score
+        }
+
+        // Format incorrect answers nicely
+        let formattedFeedback = next_question_text.feedback
+          .replace(/\n❌ Question:/g, "</p><div class='incorrect'><b>❌ Question:</b>")
+          .replace(/\n\s*Your Answer:/g, "<br><b>Your Answer:</b>")
+          .replace(/\n\s*Correct Answer:/g, "<br><b>Correct Answer:</b>")
+          .replace(/\n\s*Explanation:/g, "<br><b>Explanation:</b>")
+          .replace(/\n\s*Marks:/g, "<br><b>Marks:</b>")
+          .replace(/\n/g, "<br>") + "</div>";
+
+        let finalMessage = "";
+
+        if (gameScoreVisbileStt) {
+          finalMessage += `<b>${next_question_text.end_message}</b><br>`;
+        }
+
+        if (gameExplanationVisibleStt && next_question_text.feedback.length > 0) {
+          finalMessage += `
+            <div style="margin-top:10px;">
+              <h3>Feedback:</h3>
+              <p>${formattedFeedback}</p>
+            </div>`;
+        }
+
+        // Add getFeedback() result or fallback
+        if (gameScoreVisbileStt || gameExplanationVisibleStt) {
+          finalMessage += `<br><b>${getFeedbackFromScoreConfigStt(score)}</b>`;
+          next_question_text = `
+            <div>
+              ${finalMessage}
+            </div>`;
+        } else {
+          next_question_text = `<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>`;
+        }
+      }
+
     }
+
 
     return { is_last_question, next_question_text }
 
@@ -4836,12 +6525,135 @@ const handleGameTypeConversation = async () => {
   }
 };
 
+const handleMediaLinks = async (questionMediaLinkStt, field = "game_oem") =>{
+  if (questionMediaLinkStt) {
+        const urlList = questionMediaLinkStt.split(",");
+        console.log("media link list", urlList);
+        if (urlList.length > 0) {
+          urlList.forEach((element) => {
+            element = element.trim();
+            if (element.includes("docs.google.com")) {
+              let url =
+                element.split("edit?")[0] +
+                "embed?start=true&loop=true&delayms=3000";
+              console.log(url);
+              console.log('Ahere7')
+
+              appendMessage2(`<iframe src=${url}
+                                frameborder="0" 
+                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                allowfullscreen="true" 
+                                mozallowfullscreen="true" 
+                                webkitallowfullscreen="true"
+                                ></iframe>`);
+            } else if (element.includes("guidejar.com")) {
+              const guidejarId = element.split("/").pop();
+              console.log('Ahere6')
+
+              appendMessage2(`
+                <div style="width:640px">
+                <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                ></div></div>
+                `);
+            } else if (isAudioURL(element)) {
+              console.log(element);
+              console.log('Aheresa')
+
+              appendMessage2(`<div ><audio style="${window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+                }" controls autoplay>
+                  <source src=${element} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                  </audio></div>`);
+            } else if (element.includes("player.cloudinary.com") || element.includes('storage.googleapis.com')) {
+                appendMessage2({
+                  [field]: `
+                      <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
+                        <div id="poster-overlay" style="
+                          position: absolute;
+                          top: 0; left: 0;
+                          width: 100%; height: 100%;
+                          background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
+                          z-index: 2;
+                          transition: opacity 0.5s ease;
+                          border-radius: 8px;
+                        "></div>
+
+                        <iframe
+                          onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
+                          allow="autoplay; encrypted-media; fullscreen;"
+                          style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
+                          src="${element}"
+                          frameborder="0"
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      `
+                });
+            } else if (
+              element.includes("youtube.com") ||
+              element.includes("vimeo.com") ||
+              element.includes("twitter.com")
+             ) {
+                if (element.includes("youtube.com")) {
+                  const videoId = element.split("v=")[1];
+                  embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                } else if (element.includes("vimeo.com")) {
+                  const videoId = element.split("/").pop();
+                  embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                } else if (element.includes("twitter.com")) {
+                  embeddingUrl = `https://twitframe.com/show?url=${element}`;
+                }
+
+                if (embeddingUrl) {
+                  console.log('Ahere11')
+
+                  appendMessage2({[field]: `<iframe
+                                    allow="autoplay; encrypted-media; fullscreen;"
+                                    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                    src=${embeddingUrl}
+                                    frameborder="0"
+                                    allowfullscreen
+                                  >
+                            `});
+                }
+            
+            } else {
+                  // considering else a aritcle url
+                    appendMessage2(`<a href="${element}" target="_blank"
+                                      style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
+                                      onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                                      onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
+                                      View Context
+                                    </a>`)
+
+            }
+
+          });
+        }
+      }
+}
+
 const handleGameQuestion = async (
   questionText,
   randomNumber,
   isSingleSelect,
   signals
 ) => {
+
+  const questions = questionData2?.results?.[0]?.questions ?? [];
+  const prevQuestion = questions[questionIndex2 - 1];
+
+  if (prevQuestion) {
+    questionMediaLinkStt = prevQuestion.media_link;
+  } else {
+    questionMediaLinkStt = null; // or handle gracefully
+  }
+  console.log('game', questionMediaLinkStt, questionIndex2-1)
+  
+  handleMediaLinks(questionMediaLinkStt);
 
 
   const tChatElementRef = document.getElementById("chat-element2")
@@ -4851,43 +6663,8 @@ const handleGameQuestion = async (
   chatInputBox.classList.add("text-input-disabled")
   chatInputBox.contentEditable = false
   chatInputBox.placeholder = "Please wait for the next question..."
-  //@disable the input
 
-
-  // const inputText = questionText;
-  // const headingRegex = /^##\s+(.*)$/m;
-  // const scenarioRegex = isSingleSelect ? /(?:\*\*Scenario:\*\*|- \*\*Scenario\*\*):\s+(.*)$/m :  /\*\*Scenario:\*\*\s+(.*)$/m;
-  // const objectiveRegex = /\*\*Objective:\*\*\s+(.*)$/m;
-  // const optionsRegex = /-\s+\*\*([A-D])\.\*\*\s+(.*?)(?=\n|$)/g;
-  // const feedbackRegex = /(?:\*\*Feedback:\*\*|##\s*Feedback:)\s*([\s\S]*)/i;
-  // const decisionRegex =
-  //   /\*\*Decision\*\*:\s*(.*?)\n((?:\s*-\s+\*\*[A-D]\.\*\*.*\n)+)/s;
-
-  // const headingMatch = inputText.match(headingRegex);
-  // const scenarioMatch = inputText.match(scenarioRegex);
-  // const objectiveMatch = inputText.match(objectiveRegex);
-  // const feedbackMatch = inputText.match(feedbackRegex);
-  // const decisionMatch = inputText.match(decisionRegex);
-
-  // const options = [];
-  // let optionMatch;
-  // while ((optionMatch = optionsRegex.exec(inputText)) !== null) {
-  //   options.push({
-  //     option: optionMatch[1],
-  //     description: optionMatch[2]?.trim(),
-  //   });
-  // }
-
-  // const extractedData = {
-  //   heading: headingMatch ? headingMatch[1].trim() : null,
-  //   scenario: scenarioMatch ? scenarioMatch[1].trim() : null,
-  //   decisionMatch: decisionMatch ? decisionMatch[1].trim() : null,
-  //   objective: objectiveMatch ? objectiveMatch[1].trim() : null,
-  //   options: options.length > 0 ? options : null,
-  //   feedback: feedbackMatch ? feedbackMatch[1].trim() : null,
-  // };
-
-  questionText = JSON.parse(questionText)
+  questionText = typeof questionText == 'string' ? JSON.parse(questionText) : questionText
   console.log(questionText)
 
   const heading = questionText?.context
@@ -5114,6 +6891,9 @@ const handleGameQuestion = async (
     exitButton.style.border = "1px solid lightgray";
     exitButton.style.color = "#111827";
   })
+
+
+
 };
 
 function isAudioURL(url) {
@@ -5122,6 +6902,10 @@ function isAudioURL(url) {
 }
 
 const handleProceedClickStt = async (choice) => {
+
+  try {
+
+    console.log("Proceed clicked with choice:", choice);
   if (choice == "Yes") {
     if (testCountDown > 0){
     startModernTimer(testCountDown, async () => {
@@ -5169,119 +6953,32 @@ const handleProceedClickStt = async (choice) => {
       console.log(questionMediaLinkStt);
       let embeddingUrl = "";
 
-      if (questionMediaLinkStt.length > 0) {
-        if (questionMediaLinkStt.includes("youtube.com")) {
-          const videoId = questionMediaLinkStt.split("v=")[1];
-          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        } else if (questionMediaLinkStt.includes("vimeo.com")) {
-          const videoId = questionMediaLinkStt.split("/").pop();
-          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-        } else if (questionMediaLinkStt.includes("twitter.com")) {
-          embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-        }
+      handleMediaLinks(questionMediaLinkStt, "oem");
 
-        if (embeddingUrl) {
-          console.log('Ahere11')
+      if (['game'].includes(senarioCase2)) {
+        const randomnumber = generateRandomAlphanumeric(5);
 
-          appendMessage2(`▪ <b>Optional Enrichment Media</b><br>  <iframe
-                            allow="autoplay; encrypted-media; fullscreen;"
-                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                            src=${embeddingUrl}
-                            frameborder="0"
-                            allowfullscreen
-                          >
-                    `);
-        }
+        if (IsSingleSelectSTT !== null) {
 
-        const urlList = questionMediaLinkStt.split(",");
-        console.log("list", urlList);
-        if (urlList.length > 1) {
-          urlList.forEach((element) => {
-            element = element.trim();
-            if (element.includes("docs.google.com")) {
-              let url =
-                element.split("edit?")[0] +
-                "embed?start=true&loop=true&delayms=3000";
-              console.log(url);
-              console.log('Ahere10')
-
-              appendMessage2(`<iframe src=${url}
-                                frameborder="0" 
-                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                allowfullscreen="true" 
-                                mozallowfullscreen="true" 
-                                webkitallowfullscreen="true"
-                                ></iframe>`);
-            } else if (isAudioURL(element)) {
-              console.log(element);
-              console.log('Ahere8')
-
-              appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                ? "width: 200px; max-width: 200px !important;"
-                : " min-width: 50vw !important;"
-                }" controls autoplay>
-                <source src=${element} type="audio/mpeg" />
-                Your browser does not support the audio element.
-                </audio></div>`);
-            } else {
-              // considering else a aritcle url
-
-              appendMessage2(`<a href="${element}" target="_blank"
-                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                              View Context
-                            </a>`)
-            }
-          });
-        } else {
-          if (questionMediaLinkStt.includes("docs.google.com")) {
-            let url =
-              questionMediaLinkStt.split("edit?")[0] +
-              "embed?start=true&loop=true&delayms=3000";
-            console.log(url);
-            console.log('Ahere7')
-
-            appendMessage2(`<iframe src=${url}
-                              frameborder="0" 
-                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                              allowfullscreen="true" 
-                              mozallowfullscreen="true" 
-                              webkitallowfullscreen="true"
-                              ></iframe>`);
-          } else if (questionMediaLinkStt.includes("guidejar.com")) {
-            const guidejarId = questionMediaLinkStt.split("/").pop();
-            console.log('Ahere6')
-
-            appendMessage2(`
-              <div style="width:640px">
-              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-              ></div></div>
-              `);
-          } else if (isAudioURL(questionMediaLinkStt)) {
-            console.log(questionMediaLinkStt);
-            console.log('Aheresa')
-
-            appendMessage2(`<div ><audio style="${window.innerWidth < 600
-              ? "width: 200px; max-width: 200px !important;"
-              : " min-width: 50vw !important;"
-              }" controls autoplay>
-                <source src=${questionMediaLinkStt} type="audio/mpeg" />
-                Your browser does not support the audio element.
-                </audio></div>`);
+          if (IsSingleSelectSTT) {
+            console.log("HERE 2")
+            // add logic to add single box
+            // handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
+            // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+            handleGameQuestion(initialQuestionTextStt, randomnumber, true)
           } else {
-            // considering else a aritcle url
+            console.log("multiple game")
 
-            appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
-                              style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                              onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                              onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                              View Context
-                            </a>`)
+            // add logic to add multiselect
+            handleGameQuestion(initialQuestionTextStt, randomnumber, false)
           }
+        } else {
+          appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
+
         }
-      }
+
+      } else {
+
 
       if (initialQuestionTextStt) {
         const linkPattern = /(http[s]?:\/\/[^\s]+)/;
@@ -5366,6 +7063,7 @@ const handleProceedClickStt = async (choice) => {
           appendMessage2(initialQuestionTextStt);
         }
       }
+      }
     } else {
       if (
         !questionMediaLinkStt &&
@@ -5376,8 +7074,8 @@ const handleProceedClickStt = async (choice) => {
       ) {
         let responderName;
 
-        if (testType2 === "dynamic_discussion_thread") {
-          if (!['game'].includes(senarioCase2)) {
+        if (!['game'].includes(senarioCase2)) {
+          if (testType2 === "dynamic_discussion_thread") {
 
             if (initialQuestionTextStt.includes(":")) {
               initialQuestionTextStt = initialQuestionTextStt.replace(
@@ -5390,16 +7088,17 @@ const handleProceedClickStt = async (choice) => {
             } else {
               responderName = `<b>System:</b><br>`;
             }
-          }
-        } else {
-          let strLIst = initialQuestionTextStt
-            .replaceAll("*", "")
-            .split(":", 2);
-          if (strLIst.length > 1) {
-            initialQuestionTextStt = strLIst[1];
-            responderName = `<b>${strLIst[0]}:</b><br>`;
+          } else {
+            let strLIst = initialQuestionTextStt
+              .replaceAll("*", "")
+              .split(":", 2);
+            if (strLIst.length > 1) {
+              initialQuestionTextStt = strLIst[1];
+              responderName = `<b>${strLIst[0]}:</b><br>`;
+            }
           }
         }
+
         if (isImmersiveStt && !['game'].includes(senarioCase2)) {
           const queText = initialQuestionTextStt;
 
@@ -5475,6 +7174,8 @@ const handleProceedClickStt = async (choice) => {
               // appendMessage2(initialQuestionTextStt, ['game'].includes(senarioCase2));
               handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, true)
             } else {
+              console.log("multiple game")
+
               // add logic to add multiselect
               handleGameQuestion(initialQuestionTextStt, randomIdForAudioElement, false)
             }
@@ -5716,6 +7417,20 @@ const handleProceedClickStt = async (choice) => {
     //enable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input");
     textInputElement.removeAttribute("onpaste");
+  }
+  } catch (error) { 
+    console.error("Error in handleProceedClickStt:", error);
+    // resetallvariable and show error
+    resetAllVariablesStt();
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    error_message = '<b style="color: red;">Due to abnormal activity, like session has been terminated. (e.g, very fast responses). It can also be due to the internet connection. Please try again.</b>'
+    que_msg.innerHTML = error_message;
+    // customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
   }
 };
 
@@ -6158,8 +7873,8 @@ async function setMcqVariablesStt() {
       isEmailFormstt = true;
       formFieldsstt = ["name", "email"];
       const msg = formFieldsstt[0] === "email" ?
-        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+        : `Please enter your ${formFieldsstt[0]}`;
       appendMessage2(msg);
     }
 
@@ -6206,7 +7921,8 @@ async function setMcqVariablesStt() {
           console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
           if (['psychometric', 'game', 'interview'].includes(senarioCase2)
             || !clientuserInformationSTT.show_recommendations
-            || userScenarioRecommendationStt.total_recommendation >= 2) {
+            || userScenarioRecommendationStt.total_recommendation >= 2
+          ||isTranscriptOnlyStt) {
             appendMessage2("<b>Please enter another interaction code to start a new interaction.</b>")
           } else {
 
@@ -6821,13 +8537,23 @@ async function createTestRecommendationStt(recommended_test_id, session_id, test
 }
 
 
-async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro }) {
+async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isMicro, information, llmOrder='anthropic, gemini, gpt', modelOrder=null }) {
   const url = new URL(`${baseURL2}/tests/get_or_create_test_scenarios_by_site/`);
+  let informationstt = ''
+  if (skills){
+    informationstt += `Targeted Skills: ${skills}\n`;
+  }
+  if (information){
+    informationstt += `${information}\n`;
+  }
+
+  console.log('LLM order:', llmOrder)
+
   const params = {
     mode: "A",
     information: JSON.stringify({
       data: {
-        information: `Targeted Skills: ${skills}`,
+        information: informationstt,
       },
       title: "",
     }),
@@ -6836,6 +8562,8 @@ async function generateTestScenarioStt({ userId, sessionId, skills, flavour, isM
     flavour: flavour,
     is_micro: isMicro,
     previous_session_id: sessionId,
+    llm_order: llmOrder,
+    model_order: JSON.stringify(modelOrder)
   };
 
   try {
@@ -7073,26 +8801,27 @@ async function handleScenarioRegeneration(signals) {
         const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
-
-        <button 
-        onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
-        style="
-          background-color: #bfdbfe; 
-          border-radius : 6px; 
-          font-size: 14px; 
-          font-weight : 600; 
-          border: 1px solid #1d4ed8; 
-          color : #1d4ed8; 
-          width : 100%; 
-          padding: 4px; 
-          margin : 8px 0 0 0;
-        "
-        onmouseout="this.style.backgroundColor = '#bfdbfe'"
-        id="scenario-err-regenerate-buttonn"
-        >
-          Regenerate
-        </button>
+        <div style="display: flex; justify-content: flex-end;">
+          <button 
+              id="scenario-err-regenerate-buttonn"
+              type="button"
+              style="
+                margin-top: 8px;
+                padding: 4px 10px;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid green;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+              " 
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+            >
+             🔄 Regenerate
+            </button>
         </div>
         </div>
         `;
@@ -7111,7 +8840,7 @@ async function handleScenarioRegeneration(signals) {
             html: ErrorDiv,
           });
         } else {
-          appendMessage(ErrorDiv);
+          appendMessage2(ErrorDiv);
         }
         return;
       }
@@ -7132,35 +8861,36 @@ async function handleScenarioRegeneration(signals) {
 
       let divCont = "";
       scenarios.forEach((element, i) => {
+        const testHtml = formatMessage2({
+          title: element.title,
+          description: element.description,
+          instructions: "Response should be at least 15 words."
+        });
+
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"
-          }">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === "test" ? "Simulation" : "Roleplay"
-          }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title
-          }</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description
-          }</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
-          <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
-            style="
-              margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
-              border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
-              font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
-            " 
-            id="attempt-btn-regen-${i}"
-            onmouseout="this.style.backgroundColor = '#16a34a'">
-            Attempt
-          </button>
-        </div>
-        </div>
+            ${testHtml}
+          <div style="display: flex; justify-content: flex-end;">
+
+            <button
+              id="attempt-btn-regen-${i}"
+              type="button"
+              style="
+                margin-top: 0.75rem;
+                padding: 0.25rem 0.75rem;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+              "
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='#999';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='#ccc';"
+            >
+              Attempt
+            </button>
+          </div>
         `;
 
         setTimeout(() => {
@@ -7179,7 +8909,7 @@ async function handleScenarioRegeneration(signals) {
         });
       } else {
         appendMessage2(`
-            <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
+            <div id='create-scenario-section' style="gap: 4px;">
             ${divCont}
             </div>
             `);
@@ -7337,24 +9067,27 @@ async function handleOptionButtonClick2(
         const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          <div style="display: flex; justify-content: flex-end;">
           <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
-            style="
-              margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
-              border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
-              font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
-            " 
-            onmouseout="this.style.backgroundColor = '#16a34a'"
-            id="scenario-err-regenerate-button">
-            Regenerate
-          </button>
+              id="scenario-err-regenerate-button"
+              type="button"
+              style="
+                margin-top: 8px;
+                padding: 4px 10px;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid green;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+              " 
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+            >
+             🔄 Regenerate
+            </button>
         </div>
         </div>
         `;
@@ -7372,41 +9105,67 @@ async function handleOptionButtonClick2(
             html: ErrorDiv,
           });
         } else {
-          appendMessage(ErrorDiv);
+          appendMessage2(ErrorDiv);
         }
         return;
       }
 
       let divCont = "";
+      const scenarioCount = scenarios.length;
       scenarios.forEach((element, i) => {
+        const testHtml = formatMessage2({
+          title: element.title,
+          description: element.description,
+          instructions: "Response should be at least 15 words."
+        });
+
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"
-          }">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === "test" ? "Simulation" : "Roleplay"
-          }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title
-          }</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description
-          }</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          ${testHtml}
+          <div style="display: flex; justify-content: flex-end; ${scenarioCount ===1 ? "gap: 4px;": ""}">
           <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
+            id="attempt-btn-${i}"
+            type="button"
             style="
               margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
+              padding: 4px 10px;
+              background-color: #fff;
+              color: #333;
+              border: 1px solid #ccc;
               border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
               font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
+              font-weight: 500;
+              cursor: pointer;
+              transition: background-color 0.2s, border-color 0.2s, color 0.2s;
             " 
-            id="attempt-btn-${i}"
-            onmouseout="this.style.backgroundColor = '#16a34a'">
+            onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='#999';"
+            onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='#ccc';"
+          >
             Attempt
           </button>
-        </div>
-        </div>
+          ${scenarioCount === 1 && (
+            `<button 
+              id="scenario-regenerate-button"
+
+              type="button"
+              style="
+                margin-top: 8px;
+                padding: 4px 10px;
+                background-color: #fff;
+                color: #333;
+                border: 1px solid green;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+              " 
+              onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+              onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+            >
+             🔄 Regenerate
+            </button>`
+          )}
+          </div>
         `;
 
         setTimeout(() => {
@@ -7420,31 +9179,35 @@ async function handleOptionButtonClick2(
       if (signals) {
         signals.onResponse({
           html: `
-            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 500px;">
-            ${divCont}
-
-              <div style="display:flex; flex-direction: row; justify-content: flex-end;">
-              <button 
-              onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
-              style="
-                background-color: #bfdbfe; 
-                border-radius : 6px; 
-                font-size: 14px; 
-                font-weight : 600; 
-                border: 1px solid #1d4ed8; 
-                color : #1d4ed8; 
-                width : fit-content;
-                padding: 4px; 
-                margin : 8px 0 0 0;
-              "
-              onmouseout="this.style.backgroundColor = '#bfdbfe'"
-              id="scenario-regenerate-button"
-              >
-                Regenerate
-              </button>
-              </div>
+            <div id="create-scenario-section">
+              ${divCont}
+              ${scenarioCount > 1 ? `
+                <hr/>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button 
+                    id="scenario-regenerate-button"
+                    type="button"
+                    style="
+                      margin-top: 8px;
+                      padding: 4px 10px;
+                      background-color: #fff;
+                      color: #333;
+                      border: 1px solid green;
+                      border-radius: 4px;
+                      font-size: 12px;
+                      font-weight: 500;
+                      cursor: pointer;
+                      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+                    " 
+                    onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.borderColor='green';"
+                    onmouseout="this.style.backgroundColor='#fff'; this.style.borderColor='green';"
+                  >
+                    🔄 Regenerate
+                  </button>
+                </div>
+              ` : ""}
             </div>
-            `,
+          `,
         });
 
         setTimeout(() => {
@@ -7457,7 +9220,7 @@ async function handleOptionButtonClick2(
         }, 50);
       } else {
         appendMessage2(`
-      <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
+      <div id='create-scenario-section' style="display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
       `);
@@ -7537,11 +9300,20 @@ async function handleReportButtonClickStt(choice) {
 }
 
 function enableReportButtons() {
-  const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
-  if (faqButtonsWrapper) {
-    faqButtonsWrapper.style.display = window.user ? "flex" : "none";
+  let faqButtonsWrapper;
+  const faqButtonsWrapperBottom = document.getElementById("starting-faq-buttons");
+  const faqButtonsWrappertop= document.getElementById("starting-faq-buttons-headers");
+  const effectiveButtonPosition = snnipetConfigSTT?.buttonPosition ?? buttonPositionSTT;
+
+  if ( effectiveButtonPosition === "top"){
+    faqButtonsWrapper = faqButtonsWrappertop;
+  } else {
+    faqButtonsWrapper = faqButtonsWrapperBottom;
   }
-  const wrapper = document.getElementById("report-buttons-stt");
+  // if (faqButtonsWrapper) {
+  //   faqButtonsWrapper.style.display = window.user ? "flex" : "none";
+  // }
+  const wrapper = document.getElementById(`report-buttons-stt-${effectiveButtonPosition}`);
   if (wrapper) {
     wrapper.querySelectorAll("button").forEach((btn) => {
       btn.disabled = false;
@@ -7577,10 +9349,21 @@ function waitForMessagesElement(maxAttempts = 20, delay = 100) {
 
 
 const addReportButtons = async () => {
-  const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
+  showHeaderLoader();
+  let faqButtonsWrapper;
+  const faqButtonsWrapperBottom = document.getElementById("starting-faq-buttons");
+  const faqButtonsWrappertop= document.getElementById("starting-faq-buttons-headers");
+  const effectiveButtonPosition = snnipetConfigSTT?.buttonPosition ?? buttonPositionSTT;
+
+  if ( effectiveButtonPosition === "top"){    
+    faqButtonsWrapper = faqButtonsWrappertop;
+  } else {
+    faqButtonsWrapper = faqButtonsWrapperBottom;
+  }
+
 
   const buttonsWrapper = document.createElement("div");
-  buttonsWrapper.id = "report-buttons-stt";
+  buttonsWrapper.id = `report-buttons-stt-${effectiveButtonPosition}`;
   buttonsWrapper.style.cssText = `
     display: flex;
     flex-direction: row;
@@ -7605,7 +9388,7 @@ const addReportButtons = async () => {
       border-color: green;
       cursor: ${window.user ? 'pointer' : 'not-allowed'};
       opacity: '1';
-      display: ${window.user ? 'inline-block' : 'none'};
+      display: 'inline-block';
     `;
 
     button.onmouseover = () => (button.style.backgroundColor = '#e5e7eb');
@@ -7620,12 +9403,13 @@ const addReportButtons = async () => {
   faqButtonsGenerator('report-test', "Interaction Report");
   faqButtonsGenerator('report-leaderboard', "Leaderboard Rank");
 
-  faqButtonsWrapper.style.display = window.user ? "flex" : "none";
+  // faqButtonsWrapper.style.display = window.user ? "flex" : "none";
   faqButtonsWrapper.appendChild(buttonsWrapper);
 
   waitForMessagesElement();
 
   console.log('BotId', faqButtonsWrapper, buttonsWrapper)
+  hideHeaderLoader();
 }
 
 
@@ -7638,13 +9422,17 @@ if (window.innerWidth < 768) {
 const snippetOrigin = () => {
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
+  console.log('check', pathname,)
+  if (isFlatWidget){
+    return 'external'
+  }
 
   const isInternalHost = 
     hostname === "localhost" ||
     hostname === "playground.coachbots.com" ||
     hostname === "platform.coachbots.com";
 
-  if (isInternalHost && !pathname.startsWith("/widget/")) {
+  if (isInternalHost && !pathname.startsWith("/widget/") && !pathname.startsWith("/portal")) {
     return "internal";
   } else {
     return "external";
@@ -7689,17 +9477,8 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
       </div>`
     }
   } else if (type === 'bot') {
-    return `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-        <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
-              <li><strong>2. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
-              <li><strong>3. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
-              <li><strong>4. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context for best results. The aim is to simulate real-world interactions.</li>
-              <li><strong>5. Optimal Response:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-        </ul>
-      </div>
-      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+    return `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot Coaching interaction guide</b>
         <ol style="list-style-type: none;">
           <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
@@ -7728,12 +9507,31 @@ const getDefaultInstractionsStt = (type = 'system', condition = "normal") => {
           <li><strong>7. Ask Follow-Up Questions:</strong> As you implement the suggestions from your AI Coach, don't hesitate to ask follow-up questions if you encounter challenges or need further clarification.</li>
           <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
         </ol>
-      </div>`
+      </div>
+      
+        <span id="close-instructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </span>
+      
+      `
 
   }
 }
 
-const StopSession = async() =>{
+document.addEventListener("click", function (event) {
+    if (event.target.closest("#close-instructions-pane")) {
+        const instructionsPane = document.getElementById("instructions-pane");
+        if (instructionsPane) {
+            instructionsPane.style.display = "none";
+        }
+    }
+});
+
+const StopSession = async(msg='<b>Your session is terminated. You can restart again!</b>') =>{
+  console.log('[stopsession]', msg)
   await window.cancelTestStt(participantId2); // cancelling session
   if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
     const shadowRoot =
@@ -7763,11 +9561,13 @@ const StopSession = async() =>{
   // });
   resetAllVariablesStt().then(() => {
     console.log("Your session is terminated. You can restart again!");
-    if (Object.keys(snnipetConfigSTT).length > 0) {
-      appendMessage2('<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>')
-    } else {
-      appendMessage2('<b>Your session is terminated. You can restart again!</b>');
-    }
+    // if (Object.keys(snnipetConfigSTT).length > 0 ) {
+    //   appendMessage2('<b>Your session is terminated. You can either enter a interaction code or refresh the page for generating the a new simulation.</b>')
+    // } else {
+      if (msg){
+        appendMessage2(msg);
+      }
+    // }
 
     //Enable Copy Paste
     var chatElementRef2 = document.getElementById("chat-element2");
@@ -7792,6 +9592,62 @@ function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
+}
+
+async function getButtonControls(){
+  // first we check client one then snnipet one, snnipet one override client one
+  if (clientuserInformationSTT?.button_controlls){
+    const ButtonControls = clientuserInformationSTT?.button_controlls
+
+    console.log('butttoncontroll', ButtonControls)
+    if (ButtonControls?.mindmap_button) {
+      showMindmapButtonStt = ButtonControls?.mindmap_button?.show === true
+    }
+    if (ButtonControls?.assessment_button) {
+      showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
+    }
+
+    if (ButtonControls?.mode_button) {
+      showModeButtonStt = ButtonControls?.mode_button?.show === true
+    }
+  }
+
+
+  // now checking snnipetconfigstt
+  if (snnipetConfigSTT.mindmapBtn) {
+    showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
+  }
+  if (snnipetConfigSTT.assessmentBtn ) {
+    showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
+  }
+  if (snnipetConfigSTT.modeBtn) {
+    showModeButtonStt = snnipetConfigSTT.modeBtn === 'true';
+  }
+
+  console.log(
+    showMindmapButtonStt,
+    showAssessmentButtonStt,
+    showModeButtonStt
+    )
+
+  const mindmap_button = document.getElementById("mindmap_button");
+  const assessment_button = document.getElementById("assessment_button");
+
+  const mode_button = document.getElementById("mode_button");
+
+  if (mindmap_button){
+    mindmap_button.style.display = showMindmapButtonStt ? 'block': 'none'
+  }
+
+  if (assessment_button){
+    assessment_button.style.display = showAssessmentButtonStt ? 'block': 'none'
+  }
+
+  if (mode_button){
+    mode_button.style.display = showModeButtonStt ? 'block': 'none'
+  }
+
+  
 }
 
 function startModernTimer(seconds, onComplete) {
@@ -7843,837 +9699,166 @@ function stopModernTimer() {
   }
 }
 
+  function setBeginSessionEnabled(enabled) {
+  const button = document.getElementById("begin-session-button");
+  if (!button) return;
 
-async function loadExternalModule() {
-  try {
-    const { DeepChat } = await import(
-      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
-      "https://storage.googleapis.com/coachbots-simulator/deepchat-bundle.js"
-    );
-    // const {DeepChat} = await import('./public/widget/coachbots-stt-widget-new.js');
-  } catch (error) {
-    console.error("Error loading external module:", error);
+  if (enabled) {
+    button.disabled = false;
+    Object.assign(button.style, {
+      backgroundColor: "#22c55e",
+      color: "white",
+      fontWeight: "normal",
+    });
+
+    button.style.cursor = "pointer";
+
+    // Optional: restore hover behavior
+    button.addEventListener("mouseover", () => {
+      if (!button.disabled) {
+        button.style.backgroundColor = "#4ade80";
+    button.style.cursor = "pointer";
+
+      }
+    });
+    button.addEventListener("mouseleave", () => {
+      if (!button.disabled) {
+        button.style.backgroundColor = "#22c55e";
+    button.style.cursor = "pointer";
+
+      }
+    });
+  } else {
+    button.disabled = true;
+    Object.assign(button.style, {
+      cursor: "not-allowed",
+      backgroundColor: "#d3d3d3",
+      color: "#a0a0a0",
+      fontWeight: "600",
+    });
+
+    // Override hover behavior
+    button.addEventListener("mouseover", () => {
+      button.style.backgroundColor = "#d3d3d3";
+      button.style.cursor = "not-allowed";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.backgroundColor = "#d3d3d3";
+      button.style.cursor = "not-allowed";
+    });
   }
 }
 
-// Call the function to load and use the external module2
-loadExternalModule().then(() => {
-  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+function updateAudioInteraction(newState) {
+  allowAudioInteraction = newState;
+  console.log("Audio toggle changed:", allowAudioInteraction);
 
-  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt) {
-    USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
-  }
-  if (Object.keys(snnipetConfigSTT).length > 0) {
-    if (snnipetConfigSTT?.widgetHeight && snnipetConfigSTT?.widgetHeight.length > 0) {
-      widgetHeight = snnipetConfigSTT?.widgetHeight;
-    }
-    if (snnipetConfigSTT?.widgetWidth && snnipetConfigSTT?.widgetWidth.length > 0) {
-      widgetWidth = snnipetConfigSTT?.widgetWidth;
-    }
-    if (snnipetConfigSTT?.widgetImageLink && snnipetConfigSTT?.widgetImageLink.length > 0) {
-      widgetImageLink = snnipetConfigSTT?.widgetImageLink;
-    }
+  // Update the checkbox to reflect the new state
+  const audioToggle = document.getElementById("bot-audio-interaction-switch");
+
+  if (audioToggle) {
+    audioToggle.checked = newState;
   }
 
+  // Perform actions based on the new state
+  if (!allowAudioInteraction) {
+    console.log("Audio interaction is OFF.");
+  } else {
+    console.log("Audio interaction is ON.");
+  }
+}
 
+async function  updateAudioAllowed(initial, showToggel=true){
+  let isaudio = false;
 
-  deepChatPocElement2 = document.getElementsByClassName(
-    "coachbots-coachscribe"
-  )?.[0];
-  deepChatPocElement2.innerHTML = `
-  <div class="chat-wrapper2">
-    <div
-      onclick="closeFromTop2()"
-      id="backdrop"
-      style="
-      display: none;
-      position: fixed;
-      top: 0; right: 0; bottom: 0; left: 0;
-      background: black;
-      opacity: 0.8;
-      z-index: 998;
-      "
-    ></div>
+  if (initial){
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+    isaudio =
+      snnipetConfigSTT.allowAudioInteraction === "true";
     
+  } else {
+    console.log(
+      "clientAllowAudioInteraction2",
+      clientAllowAudioInteraction2
+    );
+    console.log(
+      "userAllowAudioInteraction2",
+      userAllowAudioInteraction2
+    );
+    console.log(
+      "prioritiseUserAllowInteraction2",
+      prioritiseUserAllowInteraction2
+    );
 
+    if (clientAllowAudioInteraction2) {
+      isaudio = userAllowAudioInteraction2;
+    } else {
+      isaudio = false;
+    }
+  }
 
-    <button
-      type="button"
-      onclick="openChatContainer2()"
-      class="chat-icon-container2"
-      id="chat-icon2"
-      style="
-        height: ${widgetHeight};
-        width: ${widgetWidth};
-        max-height: calc(100vh - 83px);
-        background-color:rgb(246, 250, 249);
-        box-shadow: 0px 0px 10px rgb(125, 125, 125);
-        display: flex;
-        justify-content: center;
-        padding:0;
-        align-items: center;
-        position: fixed;
-        right: 0.4rem;
-        bottom: 1rem;
-        cursor: pointer;
-        border-top-width: 0px;
-        border-right-width: 0px;
-        border-bottom-width: 0px;
-        border-left-width: 0px;
-        z-index: 999;
-      "
-    >
-      <img
-        class="chat-icon2"
-        style="
-        height: 100%; 
-        width: 100%; 
-        object-fit: cover;
-        display: block;
-        "
-        src= ${widgetImageLink}
-        alt="chat-bot-image"
-      />
-    </button>
-  </div>
+  }
   
-  <div
-    class="chat-container2 " 
-    id="chat-container2"
-    style="
-      position: fixed;
-      scale: 0;
-      bottom: 15vh;
-      width: 80vw;
-      right: 6rem; 
-      transition: 0.4s ease-in-out; 
-      transform-origin: right bottom;
-      padding-bottom: 0.8rem;
-      border-radius: 1rem 1rem 0rem 1rem;
-      box-shadow: 0px 0px 10px rgb(196, 196, 196);
-      background-color: white;
-      z-index: 1000 !important;
-      hight: 75vh;
-    "
-  >
-    <div 
-      style="
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: fit-content;
-      background-color: #f3f4f6;
-      border-radius: 1rem 1rem 0 0;
-      padding: ${snippetOrigin() === "internal" ? "0" : "0.8rem 0"};
-    ">
-    <div 
-    id="bot-header-logo-2"
-    style="
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: fit-content;
-      background-color: #f3f4f6;
-      border-radius: 1rem 1rem 0 0;
-    ">
-    <h1 id="logo-h1" style="
-      margin : 8px;
-      color : #2DC092;
-      border : 2px solid #2DC092;
-      padding : 3px;
-      font-size : 16px;
-      line-height : 20px;
-      font-weight : 800;
-    ">
-      <span id="logo-span" style="
-        background-color : #2DC092;
-        color : white;
-        font-size : 14px;
-        font-weight : 700;
-        margin-right : 4px;
-        padding : 4px;
-      ">
-        COACH
-      </span>
-      BOT
-    </h1>
-    </div>
-    <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
-    <p id="header-text" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
-    }; text-align:center;"> ${window.location.href.includes("knowledge-bot")
-      ? "Simple AI Knowledge Agent. Check 'Instructions' for more"
-      : "Accessibility features may not work inside the bot."
-    } </p>
-    <p id="warning-banner-stt">
-    </p>
-    
-<div id="timerContainer" style="
-  display: none;
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 8px;
-  border: 1.5px solid #4CAF50;
-  border-radius: 6px;
-  background: #f9fff9;
-  color: #2b2b2b;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  z-index: 1000;
-  width: 80px;
-  text-align: center;
-">
-  ⏱ <span id="countdown">00:00</span>
-</div>
 
+  updateAudioInteraction(isaudio);
+  allowAudioInteraction = isaudio;
+  isImmersiveStt = isaudio;
 
+  const audiointeraction = document.getElementById("audio-interaction");
 
+  if (showToggel){
+    audiointeraction.style.display = 'flex'
+  } else{
+  audiointeraction.style.display = 'none'
 
-  </div>
-    <div 
-      id="close-top2" 
-      onmouseover="this.style.cursor ='pointer'"
-      onclick="closeFromTop2()"
-      style="
-        width : 50px;
-        position: absolute;
-        left : 1rem;
-      "
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" stroke="10" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-      </svg>
-    </div>
-    </div>
-    <deep-chat
-      avatars="true"
-      id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "64vh"
-    }; border: none;"
-      messageStyles='{
-        "default": {
-          "shared": {"bubble": {"maxWidth": ${JSON.stringify(
-      messageBubbleMaxWidth
-    )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
-          "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
-          "user" : {"bubble": {"backgroundColor": "#2DC092"}}
+  }
+
+  return isaudio;
+}
+
+async function updateResponseStyle(newValue) {
+  styleMap = await getResponseStyleList()
+  const allowedValues = Object.values(styleMap);
+  if (!allowedValues.includes(newValue)) {
+    console.warn(`Invalid response style: "${newValue}"`);
+    return;
+  }
+
+  const select = document.getElementById("style-selector");
+  if (select) {
+    select.value = newValue;
+
+    // Send to backend
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
         },
-        "loading": {
-          "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
-        }
-      }'
-      displayLoadingBubble = "true";
-      demo="true"
-      style="border: none"
-      textInput='{
-        "styles": {
-          "text": {"color": "black", "fontSize" : ${JSON.stringify(
-      chatInputFontSize
-    )}},
-          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
-          "focus": {"border": "1px solid #9ca3af"}
-        },
-        "placeholder": {"text": "Welcome, Please follow provided instructions."}
-      }'
-      submitButtonStyles='{
-        "submit": {
-          "container": {
-            "default": {"padding" : "4px" },
-            "hover": {"backgroundColor": "#c6e1ff",  "padding" : "4px" },
-            "click": {"backgroundColor": "#acd3ff",  "padding" : "4px" }
-          },
-          "svg": {
-            "styles": {
-              "default": {
-                "height" : "24px", "width" : "24px", "paddingBottom" : "16px"
-              }
-            }
-          }
-        },
-        "alwaysEnabled": true,
-        "position": "inside-right"
-      }'
-      speechToText='{"webSpeech": false,
-        "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
-
-        "button": {
-          "position" : "outside-left",
-          "default": {
-            "container": {
-              "default": {
-                "padding": "4px",
-                "display": "${USE_CUSTOM_STT ? "none" : "block"}"
-              },
-              "hover": {"backgroundColor": "#7fbded69", "padding" : "4px"},
-              "click": {"backgroundColor": "#4babf669", "padding" : "4px"}
-            },
-             "svg": {
-              "styles": {
-                "default": {
-                  "filter":
-                    "brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(826%) hue-rotate(52deg) brightness(95%) contrast(93%)"
-                }
-              },
-                "content" : ${JSON.stringify(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
-    )}
-          }
-          },
-          "active": {
-            "container": {
-              "default" : {"padding" : "4px"},
-              "hover": {"backgroundColor": "#fee2e2", "padding" : "4px" },
-              "click": {"backgroundColor": "#ecb85c70"}
-            },
-            "svg": {
-              "styles": {
-                "default": {
-                  "filter":
-                    "brightness(0) saturate(100%) invert(17%) sepia(98%) saturate(7277%) hue-rotate(359deg) brightness(99%) contrast(112%)"
-                }
-              },
-               "content" : ${JSON.stringify(
-      '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
-    )}
-          }
-        }
-      }}'
-      errorMessages='{
-        "overrides": {
-          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
-        }
-      }'
-      auxiliaryStyle="
-        ::-webkit-scrollbar {
-          width: 6px;
-          height: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-          background-color: #9ca3af;
-          border-radius: 5px;
-        }"
-      >
-
-    </deep-chat>
-    ${USE_CUSTOM_STT ?
-      `<button id="startMicBtn" style="
-      position: absolute; 
-      /* These will be set dynamically by JavaScript */
-      left: 0; 
-      bottom: 0; 
-      height: 0;
-      width: 0;
-      
-      padding: 6px;
-      border: none;
-      border-radius: 50%;
-      background-color: #00c080;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    ">
-      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="white">
-        <path d="M12 14q-1.25 0-2.125-.875T9 11V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v6q0 1.25-.875 2.125T12 14Zm-1 7v-3.1q-2.875-.35-4.738-2.437Q4.4 13.375 4.4 10.4H6q0 2.275 1.613 3.938Q9.225 16 12 16q2.775 0 4.388-1.662Q18 12.675 18 10.4h1.6q0 2.975-1.862 5.062Q15.875 17.55 13 17.9V21Z"/>
-      </svg>
-    </button>`
-      : ""
-    }
-
-    <div 
-      id="starting-faq-buttons"
-      style=" 
-        position: absolute; 
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: ${window.innerWidth < 768 ? "13vh" : "5.5rem"};
-        max-width: calc(100% - 4rem);
-        overflow-x: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none;  /* Internet Explorer 10+ */
-        height: 36px; 
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 8px;
-        border-radius: 6px;
-        display: none;
-        z-index: 0;
-        background-color: white;
-      "
-    >
-    </div>
-    <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"
-    }; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
-      <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
-        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
-          Instructions
-        </button>
-      </span> 
-      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px"
-    }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
-        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
-              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
-              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-              <li><strong>3. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
-              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
-              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
-              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
-          </ul>
-        </div>
-
-
-        <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-          </svg>
-        </span>
-      </div> 
-    </p> 
-  </div>
-  `;
-
-  const customMicButton = document.getElementById("startMicBtn");
-  function updateMicButtonPosition() {
-    const startMicBtn = document.getElementById('startMicBtn');
-    if (!startMicBtn) return; // Exit if button not found
-
-    const windowWidth = window.innerWidth;
-    const isMobile = windowWidth < 768; // Define your mobile breakpoint
-
-    // Calculate button size
-    let buttonSize = isMobile ? 40 : 36; // px
-    // You can also use a more fluid calculation:
-    // buttonSize = Math.max(36, Math.min(60, windowWidth * 0.05)); // Min 36px, Max 60px, fluid up to 5% of width
-
-    // Calculate left position
-    let leftPosition = isMobile ? '1rem' : '1.5rem'; // Use rem for positioning
-    // If you want more fluid, use vw:
-    // leftPosition = `${isMobile ? 1 : 1.5}vw`;
-
-
-    // Calculate bottom position
-    let bottomPosition;
-    if (isMobile) {
-      bottomPosition = '13vh';
-    } else {
-      bottomPosition = '3.15rem'; // Use rem for desktop
-      // Or use vh:
-      // bottomPosition = '3.15vh';
-    }
-
-    // Apply styles to the button
-    startMicBtn.style.left = leftPosition;
-    startMicBtn.style.bottom = bottomPosition;
-    startMicBtn.style.height = `${buttonSize}px`;
-    startMicBtn.style.width = `${buttonSize}px`;
-
-    // Adjust SVG size relative to button size
-    const svg = startMicBtn.querySelector('svg');
-    if (svg) {
-      // SVG size can be a percentage of the button's size
-      const svgSize = buttonSize * 0.5; // Example: SVG is 50% of button width/height
-      svg.style.height = `${svgSize}px`;
-      svg.style.width = `${svgSize}px`;
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: newValue,
+        }),
+      }).then((res) => res.json()).then(() => {
+        console.log("Response style updated to:", newValue);
+      });
     }
   }
+}
 
-  console.log('custommic', customMicButton);
-  if (customMicButton) {
-    updateMicButtonPosition();
-    customMicButton.addEventListener("click", handleCustomStt);
-    customMicButton.addEventListener('resize', updateMicButtonPosition);
 
+async function toggleBotSwitch(type_of_bot){
+  const toggle = document.getElementById("bot-mode-switch");
+  if (type_of_bot == 'simulation'){
+    toggle.checked = true;
+  } else if (type_of_bot == 'coaching'){
+    toggle.checked = false;
   }
+}
 
-  const readMoreButton = document.getElementById("read-more-button");
-  const instructionsPane = document.getElementById("instructions-pane");
-  const closeInstructionsPane = document.getElementById(
-    "close-intructions-pane"
-  );
-  const instructionsPaneList = document.getElementById("instructions-list");
-  const botFooterXyz = document.getElementById("bot-footer");
-  const headerText = document.getElementById("header-text");
+// Apis and other functions
 
-  if (snippetOrigin() === "external") {
-    if (botFooterXyz) {
-      if (!swipeHeader) {
-        botFooterXyz.style.margin = "0";
-      } else {
-        botFooterXyz.style.width = "100%";
-        botFooterXyz.style.fontSize = "16px";
-
-        const footerText = document.getElementById("footer-text");
-        if (footerText) {
-          footerText.style.fontSize = "14px";
-          footerText.style.fontWeight = "600";
-        }
-        instructionsPaneList.style.fontSize = "14px";
-        instructionsPaneList.style.fontWeight = "600";
-        instructionsPaneList.style.lineHeight = "normal";
-      }
-    }
-    if (headerText) {
-      headerText.style.display = "none";
-    }
-  }
-
-  readMoreButton.addEventListener("click", () => {
-    instructionsPane.style.display = "flex";
-  });
-
-  closeInstructionsPane.addEventListener("click", () => {
-    instructionsPane.style.display = "none";
-  });
-
-  const chatContainer2 = document.getElementById("chat-container2");
-  const chatElementRef2 = document.getElementById("chat-element2");
-  const chatIconContainer2 = document.getElementById("chat-icon2");
-  const chatbotHeading2 = document.getElementById("chatbot-heading2");
-  const closeFromTopp2 = document.getElementById("close-top2");
-  botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
-  sttWidgetClientId = document.querySelector(".coachbots-coachscribe").dataset
-    .clientId;
-  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
-  console.log(
-    "widgetInfo: ",
-    document.querySelector(".coachbots-coachscribe").dataset
-  );
-  console.log("stt widget ClientID :", sttWidgetClientId);
-  console.log("stt widget botID :", botId);
-
-  if (chatContainer2) {
-    if (snippetOrigin() === "external") {
-      chatContainer2.style.paddingBottom = "0";
-    }
-  }
-
-  if (botId === undefined && snippetOrigin() === "internal") {
-    const pathname = window.location.pathname;
-    botId = pathname.split("/")[2];
-  }
-  console.log(botId, 'botid')
-  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
-    const _ = getBotDetails2(botId);
-  } else {
-    if (Object.keys(snnipetConfigSTT).length > 0) {
-      if (snnipetConfigSTT?.isReportButtons === 'true') {
-        console.log('showing report buttons');
-        const _ = addReportButtons();
-      }
-    } else {
-      const _ = addReportButtons();
-    }
-  }
-
-  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
-    const list = getDefaultInstractionsStt("bot")
-    console.log('botinstruction: ', list)
-    instructionsPane.innerHTML = list;
-    const footerText = document.getElementById("footer-text");
-    footerText.innerHTML = `Available only on Google Chrome 🌐.`
-  } else {
-    const list = getDefaultInstractionsStt("system", 'simulations')
-    instructionsPaneList.innerHTML = list;
-  }
-
-  if (!user2) {
-    if (window.location.href.includes("engagement-survey")) {
-      instructionsPane.innerHTML = `
-        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list">
-              <li><strong>1. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
-              <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
-          </ul>
-        </div>
-      `;
-    }
-
-    if (window.location.href.includes("feedback")) {
-      instructionsPane.innerHTML = `
-      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-         <ul id="instructions-list">
-              <li><strong>1. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
-             <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
-         </ul>
-       </div>
-     `;
-    }
-  }
-
-  if (window.location.href.includes("knowledge-bot")) {
-    instructionsPane.innerHTML = `
-      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">System Instructions</b>
-        <ul id="instructions-list">
-            <li><strong>1. Provide Full Context:</strong> Please provide the full context of your questions for optimum results.</li>
-            <li><strong>2. Ask Relevant Questions:</strong> Please ask relevant questions only, related to the topic.</li>
-        </ul>
-    </div>
-
-    <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
-        <ul id="instructions-list">
-            <li><strong>1. Purpose:</strong> This AI Knowledge Agent is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
-            <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
-            <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
-        </ul>
-    </div>
-
-    <span id="close-intructions-pane-kbot" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-          </svg>
-    </span>
-`;
-  }
-
-  if (window.innerWidth < 600) {
-    chatContainer2.style.borderRadius = "0";
-    chatContainer2.style.width = "100vw";
-    chatContainer2.style.right = "0";
-    chatContainer2.style.top = "0";
-    chatContainer2.style.height = "100vh";
-    chatContainer2.style.bottom = "0";
-    chatElementRef2.style.height = "80vh";
-    chatElementRef2.style.fontSize = "12px";
-    chatElementRef2.style.width = "100vw";
-    // chatIconContainer2.style.position = "fixed";
-    // chatIconContainer2.style.width = "3rem";
-    // chatIconContainer2.style.height = "3rem";
-    chatContainer2.style.position = "fixed";
-    closeFromTopp2.style.width = "30px";
-    closeFromTopp2.style.left = "0.3rem";
-    closeFromTopp2.style.top = "1rem";
-  }
-
-  let credentialsForm2;
-  if (window.innerWidth > 868) {
-    console.log("using des Form");
-    credentialsForm2 = `
-      <div style="min-width: 730px;">
-      <b>For obtaining your report, please submit the following details.</b>
-      <div
-        id="input-form2"
-        style="
-        display: flex;
-        flex-direction: row;
-        min-width: 100%;
-        gap: 1rem;
-        align-items: center;
-      "
-      >
-        <div style="display: flex; flex-direction: column; width: 45%;">
-          <label for="name" style="margin: 12px 0 4px 0">Name</label>
-          <input
-            type="text"
-            id="input-name2"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <div style="display: flex; flex-direction: column; width: 45%;">
-          <label for="email" style="margin: 12px 0 4px 0">Email</label>
-          <input
-            id="input-email2"
-            type="email"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <button
-          style="
-            height: fit-content;
-            width: fit-content;
-            padding: 8px;
-            margin-bottom: -1.3rem;
-            border: 1px solid rgb(188, 188, 188);
-            border-radius: 20px;
-            color: white;
-            background-color: #1984ff;
-          "
-          id="submit-btn2"
-          onclick="submitEmailAndName2()"
-        >
-          Submit
-        </button>
-      </div>
-    </div>`;
-  } else {
-    credentialsForm2 = `
-      <div>
-      <b>For obtaining your report, please submit the following details.</b>
-      <div
-        id="input-form2"
-        style="
-        display: flex;
-        flex-direction: column;
-        min-width: 100%;
-        gap: 1rem;
-        align-items: flex-start;
-      "
-      >
-        <div style="display: flex; flex-direction: column; width: 100%;">
-          <label for="name" style="margin: 12px 0 4px 0">Name</label>
-          <input
-            type="text"
-            id="input-name2"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <div style="display: flex; flex-direction: column; width: 100%;">
-          <label for="email" style="margin: 12px 0 4px 0">Email</label>
-          <input
-            id="input-email2"
-            type="email"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <button
-          style="
-            height: fit-content;
-            width: fit-content;
-            padding: 8px;
-            border: 1px solid rgb(188, 188, 188);
-            border-radius: 20px;
-            color: white;
-            background-color: #1984ff;
-          "
-          id="submit-btn2"
-          onclick="submitEmailAndName2()"
-        >
-          Submit
-        </button>
-      </div>
-    </div>`;
-  }
-  // if botid is null or notdefined show other message
-  console.log(botId == undefined, snnipetConfigSTT?.createBotSheetUrl == undefined)
-  if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
-    if (Object.keys(snnipetConfigSTT).length > 0) {
-        let welcomeMessage;
-        if (snnipetConfigSTT["psychometric"] === "true") {
-          welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
-        } else{
-          welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
-        }
-        if (snnipetConfigSTT?.["welcomeMessage"]) {
-          welcomeMessage = snnipetConfigSTT["welcomeMessage"];
-        }
-        console.log(welcomeMessage, 'welcome')
-        const indivisualPageUserEmail = localStorage.getItem("userEmail");
-        if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
-          const userName = indivisualPageUserEmail.split('@')[0];
-          createUserSTT(userName, indivisualPageUserEmail);
-          chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          }]
-        } else {
-        isEmailFormstt = true;
-        formFieldsstt = ["email", "name"];
-        console.log(
-          "### formFieldsstt : ",
-          formFieldsstt,
-          "other data: ",
-          `Please enter your ${formFieldsstt[0]}`
-        );
-        chatElementRef2.initialMessages = [
-          {
-            html: welcomeMessage,
-            role: "ai",
-          },
-          {
-            html: `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`,
-            role: "ai",
-          },
-        ];
-      }
-    } else {
-      chatElementRef2.initialMessages = [
-        {
-          html: `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`,
-          role: "ai",
-        },
-      ];
-      // chatElementRef2.initialMessages.push({
-      //   html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
-      //       <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-      //   role: "user",
-      // });
-    }
-  } else {
-    // faqs = Object.keys(globalBotDetails.data.faqs)
-    // console.log("Bot details",Object.keys(globalBotDetails.data.faqs))
-    // let buttons = ''
-    // faqs.forEach(title => {
-    //     buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
-    // })
-    // console.log("buttons : ",buttons)
-    // let htmlData = `<div id="option-button-container" >
-    //                 ${buttons}
-    //                 </div>`
-    // chatElementRef2.initialMessages.push(
-    //   {
-    //     html:htmlData,
-    //     role: "user",
-    //   }
-    // );
-  }
-
-  chatElementRef2.htmlClassUtilities = {
-    ["deep-chat-temporary-message"]: {
-      styles: {
-        default: {},
-      },
-    },
-    ["button2"]: {
-      styles: {
-        default: {
-          backgroundColor: "transparent",
-        },
-        hover: {
-          backgroundColor: "white",
-        },
-      },
-    },
-  };
-  displayBrowserWarning();
 
   function excludeSpecialCharacters(inputString) {
     return inputString.replace(/[*#]+/g, "");
@@ -8755,6 +9940,33 @@ loadExternalModule().then(() => {
 
   window.cancelTestStt = cancelTestStt;
 
+    // get session status
+  const getLLMOrderSTT = async (bot_type, feature_type) => {
+    const url = `${baseURL2}/accounts/get-llm-order/?bot_type=${bot_type}&feature_type=${feature_type}`;
+
+    try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          },
+        });
+
+        if (response.ok) {
+
+        const responseJson = await response.json();
+        console.log('[getLLMOrderSTT] - api response',responseJson);
+        BotGenerationLLMOrder = responseJson.data
+        } else {
+          console.error(`Error in getLLMOrderSTT: ${responseJson}`);
+        }
+
+   
+    } catch (error) {
+      console.error(`Error in getLLMOrderSTT: ${error}`);
+    }
+  };
+
   // get session status
   const getSessionStatusStt = async (session_id) => {
     const url = `${baseURL2}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
@@ -8779,6 +9991,7 @@ loadExternalModule().then(() => {
       }
     } catch (error) {
       console.error(`Error in getSessionStatus: ${error}`);
+      throw new Error(`Failed to fetch session status: ${error}`);
     }
   };
 
@@ -9067,7 +10280,7 @@ loadExternalModule().then(() => {
     nextLLM,
     fallbackLLM
   ) => {
-    console.log("anthropic", userInputMessage);
+    console.log("anthropic", userInputMessage, nextLLM);
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -9235,7 +10448,7 @@ loadExternalModule().then(() => {
             });
 
           responseSavedCount += 1;
-          if (responseSavedCount >= 2 && endSessionButton) {
+          if (responseSavedCount >= 1 && endSessionButton) {
             enableEndSessionButton();
           }
           return;
@@ -9590,7 +10803,280 @@ loadExternalModule().then(() => {
 
   let calledOnceError = 0;
 
-  const GeminiAiResponse = async (
+async function callLLM(userInputMessage) {
+  for (let i = 0; i < LLMOrder.providers.length; i++) {
+    let provider = LLMOrder.providers[i] || 'gemini';
+    let models = LLMOrder.models[provider] || [];
+
+    for (let j = 0; j < models.length; j++) {
+      let selectedModel = models[j];
+      let apiURL = "";
+      let bodyData = {};
+
+      try {
+        if (provider === 'gemini') {
+          apiURL = "https://next-js-gemini-frontend.vercel.app/api/gemini-stream";
+          bodyData = {
+            prompt: userInputMessage,
+            selectedModel,
+            systemInstructions: botScenarioCase !== 'icons_by_ai'? LLMsystemInstructions : "respond within 200 tokens",
+          };
+        } 
+        else if (provider === 'gpt') {
+          apiURL = `${LLMBaseURl}/api/openai`;
+          bodyData = {
+            userInput: userInputMessage,
+            selectedModel,
+            systemInstructions: LLMsystemInstructions,
+          };
+        } 
+        else if (provider === 'anthropic') {
+          apiURL = `${LLMBaseURl}/api/anthropic`;
+          bodyData = {
+            userInput: userInputMessage,
+            selectedModel,
+            systemInstructions: LLMsystemInstructions,
+          };
+        } 
+        else {
+          console.error("Unknown model type:", provider);
+          continue;
+        }
+
+        console.info(`Trying provider: ${provider}, model: ${selectedModel}`);
+
+        const response = await fetch(apiURL, {
+          method: "POST",
+          body: JSON.stringify(bodyData),
+        });
+
+        if (response.ok) {
+          return response; // ✅ Success — stop here
+        } else {
+          console.warn(`Failed with ${provider} ${selectedModel}:`, response.status);
+        }
+
+      } catch (err) {
+        console.error(`Error with ${provider} ${selectedModel}:`, err);
+      }
+    }
+  }
+
+  // If all fail
+  enableEndSessionButton();
+  signals.onResponse({
+    html: `<p style='font-size: 14px;color: #991b1b;'><b>All providers failed. Please try again.</b></p>`,
+  });
+}
+
+function cleanTextForAudio(text) {
+  if (!text || typeof text !== 'string') return '';
+  
+  console.log('Original text for audio:', text);
+  
+  let cleanText = text
+    // Remove emojis (comprehensive emoji regex)
+    .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+    
+    // Remove other emoji ranges
+    .replace(/[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FA6F}]|[\u{1FA70}-\u{1FAFF}]|[\u{2B50}]|[\u{2B55}]|[\u{2934}]|[\u{2935}]/gu, '')
+    
+    // Remove markdown formatting
+    .replace(/\*\*(.*?)\*\*/g, '$1')  // Bold
+    .replace(/\*(.*?)\*/g, '$1')      // Italic
+    .replace(/__(.*?)__/g, '$1')     // Bold underscore
+    .replace(/_(.*?)_/g, '$1')       // Italic underscore
+    .replace(/~~(.*?)~~/g, '$1')     // Strikethrough
+    .replace(/`(.*?)`/g, '$1')       // Inline code
+    .replace(/```[\s\S]*?```/g, '')  // Code blocks
+    
+    // Remove URLs (since they're not readable in audio) - be more specific
+    .replace(/https?:\/\/[^\s\)\]]+/g, '')
+    
+    // Remove HTML tags
+    .replace(/<[^>]*>/g, '')
+    
+    // Remove special symbols and characters that don't sound good in audio
+    .replace(/[🎯📊💼📈💡⚡🔥✨🌟⭐]/g, '')  // Common business emojis
+    .replace(/[→←↑↓⇒⇐⇑⇓]/g, '')          // Arrows
+    .replace(/[•·▪▫■□▲▼◆◇]/g, '')         // Bullet points and shapes
+    .replace(/[©®™℠]/g, '')               // Copyright symbols
+    .replace(/[€£¥₹$]/g, ' dollars ')     // Currency symbols (replace with word)
+    .replace(/[%]/g, ' percent ')         // Percent symbol
+    .replace(/[&]/g, ' and ')             // Ampersand
+    .replace(/[@#]/g, '')                 // Social media symbols
+    
+    // Clean up brackets and parentheses content that might be references
+    .replace(/\[URL:.*?\]/gi, '')         // Remove [URL: ...] references
+    .replace(/\(URL:.*?\)/gi, '')         // Remove (URL: ...) references
+    .replace(/\[.*?:\s*https?:\/\/.*?\]/gi, '') // Remove [text: URL] patterns
+    .replace(/\(\s*https?:\/\/[^\)]*\s*\)/gi, '') // Remove URLs in parentheses
+    
+    // Remove excessive punctuation and clean parentheses
+    .replace(/[.,;:!?]{2,}/g, '. ')      // Multiple punctuation
+    .replace(/[-_]{2,}/g, ' ')           // Multiple dashes/underscores
+    .replace(/\(\s*\)/g, '')             // Empty parentheses
+    .replace(/\[\s*\]/g, '')             // Empty brackets  
+    .replace(/\{\s*\}/g, '')             // Empty braces
+    
+    // Remove standalone numbers that might be references or IDs
+    .replace(/\b\d{4,}\b/g, '')          // Remove long numbers (likely IDs)
+    
+    // Clean up common text artifacts
+    .replace(/\n+/g, ' ')                // Newlines to spaces
+    .replace(/\t+/g, ' ')                // Tabs to spaces
+    .replace(/\s+/g, ' ')                // Multiple spaces to single
+    
+    // Replace common abbreviations with full words for better pronunciation
+    .replace(/\bDr\./gi, 'Doctor')
+    .replace(/\bMr\./gi, 'Mister')
+    .replace(/\bMrs\./gi, 'Missus')
+    .replace(/\bMs\./gi, 'Miss')
+    .replace(/\bProf\./gi, 'Professor')
+    .replace(/\betc\./gi, 'etcetera')
+    .replace(/\be\.g\./gi, 'for example')
+    .replace(/\bi\.e\./gi, 'that is')
+    .replace(/\bvs\./gi, 'versus')
+    .replace(/\bCEO\b/gi, 'Chief Executive Officer')
+    .replace(/\bCTO\b/gi, 'Chief Technology Officer')
+    .replace(/\bCFO\b/gi, 'Chief Financial Officer')
+    .replace(/\bHR\b/gi, 'Human Resources')
+    .replace(/\bAI\b/gi, 'Artificial Intelligence')
+    .replace(/\bAPI\b/gi, 'Application Programming Interface')
+    .replace(/\bUI\b/gi, 'User Interface')
+    .replace(/\bUX\b/gi, 'User Experience');
+
+  // Final cleanup - remove any remaining problematic characters
+  cleanText = cleanText
+    .replace(/[^\w\s.,!?;:+()'-]/g, ' ')  // Keep only basic punctuation and alphanumeric
+    .replace(/\s+/g, ' ')                // Ensure clean spacing
+    .trim();
+  
+  console.log('Cleaned text for audio:', cleanText);
+  
+  return cleanText;
+}
+
+function handleDiagnosticButtons(button) {
+    // Prevent double click
+    if (button.disabled) return;
+
+    // Disable both buttons
+    const buttons = button.parentElement.querySelectorAll("button");
+    buttons.forEach((b) => {
+    b.disabled = true;
+    b.style.backgroundColor = "#f0f0f0";   // light gray bg
+    b.style.borderColor = "lightgray";     // muted border
+    b.style.color = "gray";                // gray text
+    b.style.cursor = "not-allowed";        // disabled cursor
+    b.style.opacity = "0.6";               // slightly faded
+    b.onmouseover = null;                  // remove hover effect
+    b.onmouseout = null;                   // remove hover effect
+    b.removeAttribute("onclick");          // prevent further clicks
+  });
+
+
+    // Determine the message
+    let msg = "";
+    if (button.id === "diagOn") {
+        msg = "Please switch back the diagnostic, platform and professional insights.";
+        IsDiagnosticsOn = true;
+    } else if (button.id === "diagOff") {
+        msg = "Please do not provide any type of diagnostic, platform and professional insights permanently.";
+        IsDiagnosticsOn = false;
+    }
+
+    // Send the message via shadowRoot
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+    if (!shadowRoot) {
+        console.error("Shadow root not provided!");
+        return;
+    }
+    sendUserMessage(msg, shadowRoot);
+
+    console.log("✅ Sent message via shadowRoot:", msg);
+}
+
+function getDiagButtons(isDiagnosticOn) {
+  const commonStyle = `
+    padding: 6px 14px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    border: 1px solid lightgray; 
+    border-radius: 6px; 
+    background-color: white; 
+    color: gray; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+  `;
+
+  const disabledStyle = `
+    padding: 6px 14px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    border: 1px solid lightgray; 
+    border-radius: 6px; 
+    background-color: #f0f0f0; 
+    color: gray; 
+    cursor: not-allowed; 
+    opacity: 0.6; 
+  `;
+
+  const diagOnBtn = `
+    <button 
+      id="diagOn"
+      class="diagnostic-button"
+      value="diag_on"
+      ${isDiagnosticOn ? "disabled" : "onclick='handleDiagnosticButtons(this)'"}
+      style="${isDiagnosticOn ? disabledStyle : commonStyle}"
+      ${isDiagnosticOn ? "" : `onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='white'"`}
+    >
+      Diagnostic On
+    </button>
+  `;
+
+  const diagOffBtn = `
+    <button 
+      id="diagOff"
+      class="diagnostic-button"
+      value="diag_off"
+      ${!isDiagnosticOn ? "disabled" : "onclick='handleDiagnosticButtons(this)'"}
+      style="${!isDiagnosticOn ? disabledStyle : commonStyle}"
+      ${!isDiagnosticOn ? "" : `onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='white'"`}
+    >
+      Diagnostic Off
+    </button>
+  `;
+
+  return `
+    <span style="display:inline-flex; gap:8px; align-items:center;">
+      ${diagOnBtn}
+      ${diagOffBtn}
+    </span>
+  `;
+}
+
+
+
+function disableAllDiagnosticButtons() {
+  const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+  if (!shadowRoot) return;
+
+  const diagButtons = shadowRoot.querySelectorAll(".diagnostic-button");
+
+  diagButtons.forEach((btn) => {
+    btn.disabled = true;
+    btn.style.backgroundColor = "#f0f0f0";
+    btn.style.cursor = "not-allowed";
+    btn.style.opacity = "0.6";
+    btn.removeAttribute("onclick");
+    btn.onmouseover = null;
+    btn.onmouseout = null;
+  });
+}
+
+
+   const GeminiAiResponse = async (
     userInputMessage,
     signals,
     conversationId,
@@ -9598,12 +11084,14 @@ loadExternalModule().then(() => {
     streamWithAudio,
     selectedModel,
     nextModel
-    // nextLLM,
-    // fallbackLLM
   ) => {
+    disableAllDiagnosticButtons();
+    let userInputMessageOriginal = latestMessage;
+    if (IsDiagnosticsOn==false) {
+      userInputMessageOriginal+= "\n Please do not provide any type of diagnostic, platform and professional insights permanently.";
+    }
     userInputMessage =
-      userInputMessage + `\n input: ${latestMessage}\n output: `;
-    console.log("prompt", userInputMessage);
+      userInputMessage + `\n input: ${userInputMessageOriginal}\n output: `;
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -9612,9 +11100,10 @@ loadExternalModule().then(() => {
     messageBubble.style.maxWidth = "100%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
-    messageBubble.style.padding = "4";
+    messageBubble.style.padding = "4px";
     messageBubble.style.backgroundColor = "#f3f4f6";
     messageBubble.style.color = "#374151";
+    messageBubble.style.border = "1px solid #22c55e"; // green border
 
     const avatarNode = document.createElement("div");
     avatarNode.classList.add("avatar-container", "left-item-position");
@@ -9637,6 +11126,7 @@ loadExternalModule().then(() => {
       "style",
       "display:flex; flex-direction: row; gap: 8px; border-top: 2px solid lightgray; padding: 10px 0 6px 0; width: 100%; margin-top: 4px;"
     );
+
     likeDisLike.innerHTML = `
       <span class="like" id="likeIcon-${randomIdForAudioElement}">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
@@ -9645,6 +11135,7 @@ loadExternalModule().then(() => {
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-down"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
       </span>
       `;
+
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     gShadowRoot2.getElementById("messages").appendChild(messageNode);
@@ -9655,28 +11146,13 @@ loadExternalModule().then(() => {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
     let audioDiv;
-    // audioDiv.setAttribute("id", `auido-div-${randomIdForAudioElement}`);
-    // audioDiv.style.width = "100%";
-    // audioDiv.style.height = "3rem";
-    // audioDiv.style.border = "1px solid lightgray";
-    // audioDiv.style.borderRadius = "4px";
-    // audioDiv.style.backgroundColor = "white";
-    // audioDiv.style.overflow = "hidden";
-    // audioDiv.style.marginBottom = "6px";
-    // // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
-    // audioDiv.style.display = "none";
+
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory);
 
-    const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
-      //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
-      method: "POST",
-      body: JSON.stringify({
-        prompt: userInputMessage,
-        selectedModel: selectedModel || "gemini-2.0-flash",
-        systemInstructions: LLMsystemInstructions,
-      }),
-    });
+    const response = await callLLM(userInputMessage)
+
+    if (!response) return;
 
     if (response.ok) {
       const reader = response.body.getReader();
@@ -9684,24 +11160,38 @@ loadExternalModule().then(() => {
 
       let index = 0;
       let text = "";
-      while (true) {
-        const { done, value } = await reader?.read();
-        if (done) {
-          // if (streamWithAudio) {
-          //   messageBubble.appendChild(audioDiv);
-          //   audioSourceOpen(
-          //     text,
-          //     audioDiv,
-          //     0,
-          //     randomIdForAudioElement,
-          //     signals
-          //   );
-          // } else {
-          //   signals.onResponse({
-          //     html: ".",
-          //   });
-          // }
+      const CHUNK_TIMEOUT = 5000; // 5s wait for data
+      const RETRY_DELAY = 2000;   // 2s delay before retry
+      let retries = 0;
+      const MAX_RETRIES = 2;
 
+      while (true) {
+        let chunk;
+        try {
+          chunk = await Promise.race([
+            reader.read(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Stream timeout")), CHUNK_TIMEOUT)
+            ),
+          ]);
+          console.log("Chunk received:", chunk);
+
+        } catch (err) {
+          console.error("Stream read error:", err.message);
+          if (retries < MAX_RETRIES) {
+            retries++;
+            console.log(`Retrying stream read in ${RETRY_DELAY / 1000}s...`);
+            await new Promise((res) => setTimeout(res, RETRY_DELAY));
+            continue; // try again without breaking
+          } else {
+            console.error("Max retries reached. Ending stream.");
+            break;
+          }
+        }
+
+
+        const { done, value } = chunk;
+        if (done) {
           allMessages.forEach((indvMessage) => {
             if (
               indvMessage.innerText === "." ||
@@ -9724,13 +11214,6 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               " \n\n Please explain your question or comment in different words which I may be able to understand better.";
             if (streamWithAudio) {
-              // audioSourceOpen(
-              //   "Please explain your question or comment in different words which I may be able to understand better.",
-              //   audioDiv,
-              //   1,
-              //   randomIdForAudioElement
-              // );
-
               text += " Please explain your question or comment in different words which I may be able to understand better.";
             }
           }
@@ -9739,32 +11222,23 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
-              // audioSourceOpen(
-              //   " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-              //   audioDiv,
-              //   1,
-              //   randomIdForAudioElement
-              // );
-
               text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
-              // audioSourceOpen(
-              //   "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-              //   audioDiv,
-              //   1,
-              //   randomIdForAudioElement
-              // );
 
               text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
             }
           }
+          console.log("STREAMED MESSAGE 1 -> ", messageText.innerText);
 
+          messageText.innerHTML =  parseMarkdown(messageText.innerText);
+
+     
           if (streamWithAudio) {
-            const encodedText = encodeURIComponent(text);
+            const encodedText = encodeURIComponent(cleanTextForAudio(text));
 
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${encodedText}`;
             const response = await fetch(url, {
@@ -9848,9 +11322,33 @@ loadExternalModule().then(() => {
                 }, 20);
               });
             }, 100);
+          } else {
+            signals.onResponse({
+                  html: "",
+                });
+                setTimeout(() => {
+                  allMessages.forEach((indvMessage) => {
+                    if (
+                      indvMessage.innerText === "." ||
+                      indvMessage.innerText === "..." ||
+                      indvMessage.innerText === " " ||
+                      indvMessage.innerText === ""
+                    ) {
+                      indvMessage.remove();
+                    }
+                  });
+                }, 20);
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
+          const KeywordList = ['DIAGNOSTIC INSIGHT', 'PLATFORM INSIGHT', 'Professional Insight'];
+          const isDiag = KeywordList.some(k => messageText.innerText.includes(k));
+          if (isDiag) IsDiagnosticsOn = true;
+          if (IsDiagnosticsOn != undefined){
+            const diagButtons = getDiagButtons(IsDiagnosticsOn)
+            likeDisLike.innerHTML += diagButtons;
+          }
+
           messageBubble.appendChild(likeDisLike);
           setTimeout(() => {
             const likeIcon = gShadowRoot2.getElementById(
@@ -9862,43 +11360,46 @@ loadExternalModule().then(() => {
             console.log(likeIcon, dislikeIcon);
 
             // Add hover effect
-            likeIcon.addEventListener("mouseover", function () {
-              likeIcon.querySelector("svg").style.stroke = "black";
-              likeIcon.style.cursor = "pointer";
-            });
+            if (likeIcon && dislikeIcon) {
 
-            likeIcon.addEventListener("mouseout", function () {
-              likeIcon.querySelector("svg").style.stroke = "gray";
-              likeIcon.style.cursor = "normal";
-            });
-
-            dislikeIcon.addEventListener("mouseover", function () {
-              dislikeIcon.querySelector("svg").style.stroke = "black";
-              dislikeIcon.style.cursor = "pointer";
-            });
-
-            dislikeIcon.addEventListener("mouseout", function () {
-              dislikeIcon.querySelector("svg").style.stroke = "gray";
-              dislikeIcon.style.cursor = "normal";
-            });
-
-            // Add click functionality
-            likeIcon.addEventListener("click", function () {
-              if (!likeIcon.classList.contains("active")) {
-                likeIcon.classList.add("active");
-                likeIcon.querySelector("svg").style.fill = "gray";
+              likeIcon.addEventListener("mouseover", function () {
                 likeIcon.querySelector("svg").style.stroke = "black";
-                dislikeIcon.classList.remove("active");
-                dislikeIcon.querySelector("svg").style.stroke = "gray";
-                dislikeIcon.querySelector("svg").style.fill = "transparent";
-              } else {
-                likeIcon.querySelector("svg").style.fill = "transparent";
+                likeIcon.style.cursor = "pointer";
+              });
+  
+              likeIcon.addEventListener("mouseout", function () {
                 likeIcon.querySelector("svg").style.stroke = "gray";
-                likeIcon.classList.remove("active");
-              }
-            });
+                likeIcon.style.cursor = "normal";
+              });
+  
+              
+  
+              // Add click functionality
+              likeIcon.addEventListener("click", function () {
+                if (!likeIcon.classList.contains("active")) {
+                  likeIcon.classList.add("active");
+                  likeIcon.querySelector("svg").style.fill = "gray";
+                  likeIcon.querySelector("svg").style.stroke = "black";
+                  dislikeIcon.classList.remove("active");
+                  dislikeIcon.querySelector("svg").style.stroke = "gray";
+                  dislikeIcon.querySelector("svg").style.fill = "transparent";
+                } else {
+                  likeIcon.querySelector("svg").style.fill = "transparent";
+                  likeIcon.querySelector("svg").style.stroke = "gray";
+                  likeIcon.classList.remove("active");
+                }
+              });
 
-            dislikeIcon.addEventListener("click", function () {
+              dislikeIcon.addEventListener("mouseover", function () {
+                              dislikeIcon.querySelector("svg").style.stroke = "black";
+                              dislikeIcon.style.cursor = "pointer";
+                            });
+  
+              dislikeIcon.addEventListener("mouseout", function () {
+                dislikeIcon.querySelector("svg").style.stroke = "gray";
+                dislikeIcon.style.cursor = "normal";
+              });
+              dislikeIcon.addEventListener("click", function () {
               if (!dislikeIcon.classList.contains("active")) {
                 dislikeIcon.classList.add("active");
                 dislikeIcon.querySelector("svg").style.fill = "gray";
@@ -9912,6 +11413,8 @@ loadExternalModule().then(() => {
                 dislikeIcon.classList.remove("active");
               }
             });
+            }
+            
           }, 100);
 
           console.log("Stream complete");
@@ -9980,40 +11483,39 @@ loadExternalModule().then(() => {
             });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
           responseSavedCount += 1;
-          if (responseSavedCount >= 2 && endSessionButton) {
+          if (responseSavedCount >= 1 && endSessionButton) {
             enableEndSessionButton();
           }
           return Promise.resolve();
         }
+        if (value) {
+          const decodedText = decoder.decode(value, { stream: !done });
+          console.log('recived decoded text: ',decodedText);
 
-        const decodedText = decoder.decode(value, { stream: !done });
-        console.log(decodedText);
+          messageText.innerText += excludeSpecialCharacters(decodedText);
+          text += excludeSpecialCharacters(decodedText);
 
-        messageText.innerText += excludeSpecialCharacters(decodedText);
-        text += excludeSpecialCharacters(decodedText);
+            //remove loading message
+            const divsToRemove = Array.from(
+              shadowRoot.querySelectorAll(".inner-message-container")
+            ).filter((div) => {
+              return Array.from(div.children).some((child) =>
+                child.classList.contains("loading-message-text")
+              );
+            });
 
-        if (!streamWithAudio) {
-          signals.onResponse({
-            html: ".",
-          });
+            divsToRemove.forEach((div) => {
+              div.remove();
+            });
+          
         } else {
-          //remove loading message
-          const divsToRemove = Array.from(
-            shadowRoot.querySelectorAll(".inner-message-container")
-          ).filter((div) => {
-            return Array.from(div.children).some((child) =>
-              child.classList.contains("loading-message-text")
-            );
-          });
-
-          divsToRemove.forEach((div) => {
-            div.remove();
-          });
+          console.warn("Empty stream chunk received");
         }
         shadowRoot.getElementById("messages").scrollBy(0, 500);
         index++;
       }
     } else {
+      console.log('failing gemini with model', selectedModel, 'now try with model: ', nextModel)
       if (calledOnceError < 3) {
         calledOnceError += 1;
         GeminiAiResponse(
@@ -10042,27 +11544,8 @@ loadExternalModule().then(() => {
           }
         });
       }
-      // if(nextLLM?.toLowerCase().includes("gpt")){
-      //   OpenAiResponse(
-      //     userInputMessage,
-      //     signals,
-      //     conversationId,
-      //     latestMessage,
-      //     streamWithAudio,
-      //     fallbackLLM
-      //   );
-      // } else {
-      //   anthropicAiResponse(
-      //     userInputMessage,
-      //     signals,
-      //     conversationId,
-      //     latestMessage,
-      //     streamWithAudio,
-      //     fallbackLLM
-      //   );
-      // }
     }
-  };
+ };
 
   const OpenAiResponse = async (
     userInputMessage,
@@ -10193,7 +11676,7 @@ loadExternalModule().then(() => {
           botPreviousConversationHistory.push(messageText.innerText);
 
           responseSavedCount += 1;
-          if (responseSavedCount >= 2 && endSessionButton) {
+          if (responseSavedCount >= 1 && endSessionButton) {
             enableEndSessionButton();
           }
 
@@ -10273,10 +11756,1090 @@ loadExternalModule().then(() => {
     }
   };
 
+
+
+async function loadExternalModule() {
+  try {
+    const { DeepChat } = await import(
+      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      "https://storage.googleapis.com/coachbots-simulator/deepchat-bundle.js"
+    );
+    // const {DeepChat} = await import('./public/widget/coachbots-stt-widget-new.js');
+  } catch (error) {
+    console.error("Error loading external module:", error);
+  }
+}
+
+// Call the function to load and use the external module2
+loadExternalModule().then(() => {
+  snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
+
+  if (snnipetConfigSTT.botId === undefined) showBotSwitchMode = false;
+
+  showBotSwitchMode = snnipetConfigSTT?.botSwitchButton ? 
+                                        snnipetConfigSTT?.botSwitchButton =='true' 
+                                        : showBotSwitchMode;
+
+           
+
+  function InitializeBot (type_of_widget) {
+
+  if (Object.keys(snnipetConfigSTT).length > 0 && snnipetConfigSTT?.useCustomStt) {
+    USE_CUSTOM_STT = snnipetConfigSTT?.useCustomStt === 'true'
+  }
+  if (Object.keys(snnipetConfigSTT).length > 0) {
+    if (snnipetConfigSTT?.widgetHeight && snnipetConfigSTT?.widgetHeight.length > 0) {
+      widgetHeight = snnipetConfigSTT?.widgetHeight;
+    }
+    if (snnipetConfigSTT?.widgetWidth && snnipetConfigSTT?.widgetWidth.length > 0) {
+      widgetWidth = snnipetConfigSTT?.widgetWidth;
+    }
+    if (snnipetConfigSTT?.widgetImageLink && snnipetConfigSTT?.widgetImageLink.length > 0) {
+      widgetImageLink = snnipetConfigSTT?.widgetImageLink;
+    } else if (snnipetConfigSTT?.botId && snnipetConfigSTT?.botId.length > 0) {
+      widgetImageLink = 'https://res.cloudinary.com/dtbl4jg02/image/upload/v1755575609/zmvwlpahzrxijcdkhs3r.jpg'
+    }
+  }
+
+
+
+  deepChatPocElement2 = document.getElementsByClassName(
+    "coachbots-coachscribe"
+  )?.[0];
+  deepChatPocElement2.innerHTML = `
+  <div class="chat-wrapper2">
+    <div
+      onclick="closeFromTop2()"
+      id="backdrop"
+      style="
+      display: none;
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: black;
+      opacity: 0.8;
+      z-index: 998;
+      "
+    ></div>
+    
+
+
+    <button
+      type="button"
+      onclick="openChatContainer2()"
+      class="chat-icon-container2"
+      id="chat-icon2"
+      style="
+        height: ${widgetHeight};
+        width: ${widgetWidth};
+        max-height: calc(100vh - 83px);
+        background-color:rgb(246, 250, 249);
+        box-shadow: 0px 0px 10px rgb(125, 125, 125);
+        display: flex;
+        justify-content: center;
+        padding:0;
+        align-items: center;
+        position: fixed;
+        right: 0.4rem;
+        bottom: 1rem;
+        cursor: pointer;
+        border-top-width: 0px;
+        border-right-width: 0px;
+        border-bottom-width: 0px;
+        border-left-width: 0px;
+        z-index: 999;
+      "
+    >
+      <img
+        class="chat-icon2"
+        style="
+        height: 100%; 
+        width: 100%; 
+        object-fit: cover;
+        display: block;
+        "
+        src= ${widgetImageLink}
+        alt="chat-bot-image"
+      />
+    </button>
+  </div>
+  
+  <div
+    class="chat-container2 " 
+    id="chat-container2"
+    style="
+      position: fixed;
+      scale: 0;
+      // bottom: 15vh;
+      top: 5vh;
+      bottom: auto;
+      width: 80vw;
+      right: 6rem; 
+      transition: 0.4s ease-in-out; 
+      transform-origin: right bottom;
+      padding-bottom: 0.8rem;
+      border-radius: 1rem 1rem 0rem 1rem;
+      box-shadow: 0px 0px 10px rgb(196, 196, 196);
+      background-color: white;
+      z-index: 1000 !important;
+      hight: 75vh;
+    "
+  >
+    <div 
+      style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: fit-content;
+      background-color: #f3f4f6;
+      border-radius: 1rem 1rem 0 0;
+      padding: ${snippetOrigin() === "internal" ? "0" : "0.4rem 0 0 0"};
+      overflow-x: auto;
+      overflow-y: hidden;
+      
+    ">
+    <div 
+  id="bot-header-logo-2"
+  style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: fit-content;
+    padding: 2px 0 0 2px;
+    background-color: #f3f4f6;
+    border-radius: 1rem 1rem 0 0;
+    gap: 8px;
+  "
+>
+  <h1 
+    id="logo-h1"
+    style="
+      margin: 0;
+      color: #2DC092;
+      border: 2px solid #2DC092;
+      padding: 4px 8px;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 800;
+      align-items: center;
+      display: none
+    "
+  >
+    <span 
+      id="logo-span"
+      style="
+        background-color: #2DC092;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        margin-right: 2px;
+        padding: 2px;
+      "
+    >
+      COACH
+    </span>
+    BOT
+  </h1>
+
+  <div 
+    id="starting-faq-buttons-headers"
+    style="
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background-color: transparent;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE 10+ */
+    "
+  >
+    </div>
+
+   <div id="chat-history-wrapper" style="position: relative; display: none">
+  <select 
+    id="chatHistoryDropdown"
+    style="
+      font-size: 12px;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-left: 8px;
+      cursor: pointer;
+      vertical-align: middle;
+      min-width: 160px;
+    "
+  >
+    <option value="">Previous Chats</option>
+  </select>
+</div>
+
+<div id="response-style" style="position: relative; display: none">
+</div>
+
+<!-- Mindmap Button + Dropdown -->
+<div class="dropdown" id="mindmap_button" >
+    <button id="mindmap-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
+        Mindmap
+    </button>
+    <div id="mindmap-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
+    </div>
+</div>
+
+<!-- Assessment Button + Dropdown -->
+<div class="dropdown" id="assessment_button" >
+    <button id="assessment-btn" style="display: none; padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;" disabled>
+        Assessment
+    </button>
+    <div id="assessment-menu" class="dropdown-menu" style="max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+        <!-- Items will be injected dynamically -->
+    </div>
+</div>
+
+<div class="dropdown" id="simulation-chat-history" style="display: none;">
+  <button id="SimulationHistorybtn" style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Session & Simulation
+  </button>
+  <div class="dropdown-content dropdown-menu" id="dropdownMenu">
+    <!-- Dynamic chat sessions will be inserted here -->
+  </div>
+</div>
+
+<div class="dropdown" id="mode_button" >
+  <button id="more-btn" 
+    style="padding:3px 9px; border:1px solid green; background:white; color:black; border-radius:5px; font-size:14px; cursor:pointer;">
+    Mode
+  </button>
+
+  <div id="more-menu" class='dropdown-menu'
+    style="dispaly: none; max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
+    
+    <!-- Mode Toggle inside dropdown -->
+    <div id="more-section" style="display:${showBotSwitchMode? "flex": 'none'}; align-items:center; gap:10px;">
+      <div class="toggle-wrapper">
+        <span class="toggle-text">Coach</span>
+        <label class="switch">
+          <input type="checkbox" id="bot-mode-switch" />
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-text">Sim</span>
+      </div>
+    </div>
+    <div id="audio-interaction" class="audio-interaction">
+  <p class="label" style="margin:0px;">🔊</p>
+  <div class="toggle-wrapper">
+    <span class="toggle-text">No</span>
+    <label class="switch">
+      <input type="checkbox" id="bot-audio-interaction-switch" />
+      <span class="slider"></span>
+    </label>
+    <span class="toggle-text">Yes</span>
+  </div>
+</div>
+  </div>
+
+  
+</div>
+
+</div>
+
+<div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+    
+    <p id="warning-banner-stt">
+    </p>
+    
+  <div id="timerContainer" style="
+    display: none;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border: 1.5px solid #4CAF50;
+    border-radius: 6px;
+    background: #f9fff9;
+    color: #2b2b2b;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    z-index: 1000;
+    width: 80px;
+    text-align: center;
+  ">
+    ⏱ <span id="countdown">00:00</span>
+  </div>
+
+
+</div>
+    <div 
+      id="close-top2" 
+      onmouseover="this.style.cursor ='pointer'"
+      onclick="closeFromTop2()"
+      style="
+        width : 50px;
+        position: absolute;
+        left : 1rem;
+      "
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" stroke="10" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>
+    </div>
+    </div>
+    <deep-chat
+      avatars="true"
+      id="chat-element2"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${isFlatWidget? "84vh" : snippetOrigin() === "internal" ? "68vh" : "64vh"
+    }; border: none;"
+      messageStyles='{
+        "default": {
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(
+      messageBubbleMaxWidth
+    )}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "ai" : {"bubble": {"backgroundColor": "#f3f4f6", "width": "calc(100% - 3rem)", "border" : "1px solid #22c55e" }},
+          "user": {"bubble": {"backgroundColor": "#f3f4f6","border": "1px solid #22c55e","outline": "1px solid #22c55e","outlineOffset": "2px" , "color": "#000000" }}
+        },
+        "loading": {
+          "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
+        }
+      }'
+      displayLoadingBubble = "true";
+      demo="true"
+      style="border: none"
+      textInput='{
+        "styles": {
+          "text": {"color": "black", "fontSize" : ${JSON.stringify(
+      chatInputFontSize
+    )}},
+          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
+          "focus": {"border": "1px solid #9ca3af"}
+        },
+        "placeholder": {"text": "Welcome, Please follow provided instructions."}
+      }'
+      submitButtonStyles='{
+        "submit": {
+          "container": {
+            "default": {"padding" : "4px" },
+            "hover": {"backgroundColor": "#c6e1ff",  "padding" : "4px" },
+            "click": {"backgroundColor": "#acd3ff",  "padding" : "4px" }
+          },
+          "svg": {
+            "styles": {
+              "default": {
+                "height" : "24px", "width" : "24px", "paddingBottom" : "16px"
+              }
+            }
+          }
+        },
+        "alwaysEnabled": true,
+        "position": "inside-right"
+      }'
+      speechToText='{"webSpeech": false,
+        "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
+
+        "button": {
+          "position" : "outside-left",
+          "default": {
+            "container": {
+              "default": {
+                "padding": "4px",
+                "display": "${USE_CUSTOM_STT ? "none" : "block"}"
+              },
+              "hover": {"backgroundColor": "#7fbded69", "padding" : "4px"},
+              "click": {"backgroundColor": "#4babf669", "padding" : "4px"}
+            },
+             "svg": {
+              "styles": {
+                "default": {
+                  "filter":
+                    "brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(826%) hue-rotate(52deg) brightness(95%) contrast(93%)"
+                }
+              },
+                "content" : ${JSON.stringify(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
+    )}
+          }
+          },
+          "active": {
+            "container": {
+              "default" : {"padding" : "4px"},
+              "hover": {"backgroundColor": "#fee2e2", "padding" : "4px" },
+              "click": {"backgroundColor": "#ecb85c70"}
+            },
+            "svg": {
+              "styles": {
+                "default": {
+                  "filter":
+                    "brightness(0) saturate(100%) invert(17%) sepia(98%) saturate(7277%) hue-rotate(359deg) brightness(99%) contrast(112%)"
+                }
+              },
+               "content" : ${JSON.stringify(
+      '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
+    )}
+          }
+        }
+      }}'
+      errorMessages='{
+        "overrides": {
+          "default": "Due to system issues, the response can not be processed. Please check your internet connection and try to respond again."
+        }
+      }'
+      auxiliaryStyle="
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #9ca3af;
+          border-radius: 5px;
+        }"
+      >
+
+    </deep-chat>
+    ${USE_CUSTOM_STT ?
+      `<button id="startMicBtn" style="
+      position: absolute; 
+      /* These will be set dynamically by JavaScript */
+      left: 0; 
+      bottom: 0; 
+      height: 0;
+      width: 0;
+      
+      padding: 6px;
+      border: none;
+      border-radius: 50%;
+      background-color: #00c080;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    ">
+      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="white">
+        <path d="M12 14q-1.25 0-2.125-.875T9 11V5q0-1.25.875-2.125T12 2q1.25 0 2.125.875T15 5v6q0 1.25-.875 2.125T12 14Zm-1 7v-3.1q-2.875-.35-4.738-2.437Q4.4 13.375 4.4 10.4H6q0 2.275 1.613 3.938Q9.225 16 12 16q2.775 0 4.388-1.662Q18 12.675 18 10.4h1.6q0 2.975-1.862 5.062Q15.875 17.55 13 17.9V21Z"/>
+      </svg>
+    </button>`
+      : ""
+    }
+
+    <div 
+      id="starting-faq-buttons"
+      style=" 
+        position: absolute; 
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: ${window.innerWidth < 768 ? "13vh" : "5rem"};
+        max-width: calc(100% - 4rem);
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        height: 36px; 
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        display: none;
+        z-index: 0;
+        background-color: white;
+      "
+    >
+    </div>
+    <p id="bot-footer" style="font-size: ${window.innerWidth < 768 ? "10px" : "12px"
+    };  text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Available only on Google Chrome 🌐. Use "STOP" keyword to restart any time.</span>
+      <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
+          Instructions
+        </button>
+      </span> 
+      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px"
+    }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For AI Coaching Agent, no emails are being sent.</li>
+              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+              <li><strong>3. AI Knowledge Agent:</strong> Simple AI Knowledge Agent is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
+              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
+          </ul>
+        </div>
+
+
+        <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </span>
+      </div> 
+    </p> 
+  </div>
+  `;
+
+
+  toggleBotSwitch(type_of_widget);
+  if (type_of_widget){
+    getButtonControls();
+  }
+
+function adjustHeaderLayout() {
+  const header = document.getElementById("bot-header-logo-2");
+  if (window.innerWidth < 768) {
+    header.style.flexDirection = "column";
+    header.style.alignItems = "center";
+  } else {
+    header.style.flexDirection = "row";
+  }
+}
+if (!window.user){
+  enableDisablebuttons('more-btn', true)
+}
+
+window.addEventListener("load", adjustHeaderLayout);
+window.addEventListener("resize", adjustHeaderLayout);
+
+document.getElementById('bot-audio-interaction-switch')?.addEventListener('change', function (event) {
+    allowAudioInteraction = event.target.checked;
+    isImmersiveStt = allowAudioInteraction;
+    console.log("Audio toggle changed:", allowAudioInteraction);
+});
+
+document.getElementById('chatHistoryDropdown')?.addEventListener('change', function () {
+  selectedChatId = this.value != 'new-chat' ? this.value: null;
+  if (selectedChatId) {
+    populateChatHistory(selectedChatId);
+  }
+});
+
+
+  // Handle toggle
+  document.getElementById("bot-mode-switch").addEventListener("change", function(e) {
+    if (e.target.checked) {
+      console.log("✅ Switched to Simulation Bot");
+      // 👉 Your Simulation bot logic
+      BotIDSTT = botId
+      delete snnipetConfigSTT.botId
+      
+      InitializeBot('simulation')
+      document.getElementById('simulation-chat-history').style.display = 'block';
+      if (window.user) populateChatHistoryWrapper();
+
+    } else {
+      console.log("✅ Switched to Coaching Bot");
+      // 👉 Your Coaching bot logic
+      snnipetConfigSTT.botId = BotIDSTT;
+      InitializeBot('coaching')
+      document.getElementById('simulation-chat-history').style.display = 'none';
+
+    }
+      if (!isFlatWidget) window.openChatContainer2();
+
+      showLoader()
+      setTimeout(() => {
+        hideLoader()
+      }, 2000);
+
+
+  });
+
+const customMicButton = document.getElementById("startMicBtn");
+  function updateMicButtonPosition() {
+    const startMicBtn = document.getElementById('startMicBtn');
+    if (!startMicBtn) return; // Exit if button not found
+
+    const windowWidth = window.innerWidth;
+    const isMobile = windowWidth < 768; // Define your mobile breakpoint
+
+    // Calculate button size
+    let buttonSize = isMobile ? 40 : 36; // px
+    // You can also use a more fluid calculation:
+    // buttonSize = Math.max(36, Math.min(60, windowWidth * 0.05)); // Min 36px, Max 60px, fluid up to 5% of width
+
+    // Calculate left position
+    let leftPosition = isMobile ? '1rem' : '1.5rem'; // Use rem for positioning
+    // If you want more fluid, use vw:
+    // leftPosition = `${isMobile ? 1 : 1.5}vw`;
+
+
+    // Calculate bottom position
+    let bottomPosition;
+    if (isMobile) {
+      bottomPosition = '13vh';
+    } else {
+      bottomPosition = '3.15rem'; // Use rem for desktop
+      // Or use vh:
+      // bottomPosition = '3.15vh';
+    }
+
+    // Apply styles to the button
+    startMicBtn.style.left = leftPosition;
+    startMicBtn.style.bottom = bottomPosition;
+    startMicBtn.style.height = `${buttonSize}px`;
+    startMicBtn.style.width = `${buttonSize}px`;
+
+    // Adjust SVG size relative to button size
+    const svg = startMicBtn.querySelector('svg');
+    if (svg) {
+      // SVG size can be a percentage of the button's size
+      const svgSize = buttonSize * 0.5; // Example: SVG is 50% of button width/height
+      svg.style.height = `${svgSize}px`;
+      svg.style.width = `${svgSize}px`;
+    }
+  }
+
+  console.log('custommic', customMicButton);
+  if (customMicButton) {
+    updateMicButtonPosition();
+    customMicButton.addEventListener("click", handleCustomStt);
+    customMicButton.addEventListener('resize', updateMicButtonPosition);
+
+  }
+
+  const readMoreButton = document.getElementById("read-more-button");
+  const instructionsPane = document.getElementById("instructions-pane");
+  const closeInstructionsPane = document.getElementById(
+    "close-intructions-pane"
+  );
+  const instructionsPaneList = document.getElementById("instructions-list");
+  const botFooterXyz = document.getElementById("bot-footer");
+  const headerText = document.getElementById("header-text");
+
+  if (snippetOrigin() === "external") {
+    if (botFooterXyz) {
+      if (!swipeHeader) {
+        botFooterXyz.style.margin = "0";
+      } else {
+        botFooterXyz.style.width = "100%";
+        botFooterXyz.style.fontSize = "16px";
+
+        const footerText = document.getElementById("footer-text");
+        if (footerText) {
+          footerText.style.fontSize = "14px";
+          footerText.style.fontWeight = "600";
+        }
+        instructionsPaneList.style.fontSize = "14px";
+        instructionsPaneList.style.fontWeight = "600";
+        instructionsPaneList.style.lineHeight = "normal";
+      }
+    }
+    if (headerText) {
+      headerText.style.display = "none";
+    }
+  }
+
+  readMoreButton.addEventListener("click", () => {
+    instructionsPane.style.display = "flex";
+  });
+
+  closeInstructionsPane.addEventListener("click", () => {
+    instructionsPane.style.display = "none";
+  });
+
+  const chatContainer2 = document.getElementById("chat-container2");
+  chatElementRef2 = document.getElementById("chat-element2");
+  const chatIconContainer2 = document.getElementById("chat-icon2");
+  const chatbotHeading2 = document.getElementById("chatbot-heading2");
+  const closeFromTopp2 = document.getElementById("close-top2");
+  botId = snnipetConfigSTT.botId;
+  sttWidgetClientId = snnipetConfigSTT
+    .clientId;
+  console.log(
+    "widgetInfo: ",
+    snnipetConfigSTT
+  );
+  console.log("stt widget ClientID :", sttWidgetClientId);
+  console.log("stt widget botID :", botId);
+
+  if (chatContainer2) {
+    if (snippetOrigin() === "external") {
+      chatContainer2.style.paddingBottom = "0";
+    }
+  }
+
+  if (botId === undefined && snippetOrigin() === "internal" && ['coaching', undefined].includes(type_of_widget)) {
+    const pathname = window.location.pathname;
+    botId = pathname.split("/")[2];
+  }
+  console.log(botId, 'botid')
+
+  console.log('bot widget botId2', botId)
+  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
+    const _ = getBotDetails2(botId); 
+    toggleBotSwitch('coaching')
+  } else {
+    if (isFlatWidget) addReportButtons();
+
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+      if (snnipetConfigSTT?.isReportButtons === 'true') {
+        console.log('showing report buttons');
+        const _ = addReportButtons();
+      }
+    } else {
+      const _ = addReportButtons();
+    }
+    if(window.user){
+      updateAudioAllowed(true, true)
+    }
+  }
+
+  if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
+    const list = getDefaultInstractionsStt("bot")
+    console.log('botinstruction: ', list)
+    instructionsPane.innerHTML = list;
+    const footerText = document.getElementById("footer-text");
+    footerText.innerHTML = `Available only on Google Chrome 🌐.`
+  } else {
+    const list = getDefaultInstractionsStt("system", 'simulations')
+    instructionsPaneList.innerHTML = list;
+  }
+
+  if (!user2) {
+    if (window.location.href.includes("engagement-survey")) {
+      instructionsPane.innerHTML = `
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ul id="instructions-list">
+              <li><strong>1. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+          </ul>
+        </div>
+      `;
+    }
+
+    if (window.location.href.includes("feedback")) {
+      instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+         <ul id="instructions-list">
+              <li><strong>1. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+             <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+         </ul>
+       </div>
+     `;
+    }
+  }
+
+  if (window.location.href.includes("knowledge-bot")) {
+    instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">System Instructions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Provide Full Context:</strong> Please provide the full context of your questions for optimum results.</li>
+            <li><strong>2. Ask Relevant Questions:</strong> Please ask relevant questions only, related to the topic.</li>
+        </ul>
+    </div>
+
+    <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Purpose:</strong> This AI Knowledge Agent is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
+            <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
+            <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
+        </ul>
+    </div>
+
+    <span id="close-intructions-pane-kbot" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+    </span>
+`;
+  }
+
+  if (window.innerWidth < 600) {
+    chatContainer2.style.borderRadius = "0";
+    chatContainer2.style.width = "100vw";
+    chatContainer2.style.right = "0";
+    chatContainer2.style.top = "0";
+    chatContainer2.style.height = "100vh";
+    chatContainer2.style.bottom = "0";
+    chatElementRef2.style.height = "80vh";
+    chatElementRef2.style.fontSize = "12px";
+    chatElementRef2.style.width = "100vw";
+    // chatIconContainer2.style.position = "fixed";
+    // chatIconContainer2.style.width = "3rem";
+    // chatIconContainer2.style.height = "3rem";
+    chatContainer2.style.position = "fixed";
+    closeFromTopp2.style.width = "30px";
+    closeFromTopp2.style.left = "0.3rem";
+    closeFromTopp2.style.top = "1rem";
+  }
+
+  let credentialsForm2;
+  if (window.innerWidth > 868) {
+    console.log("using des Form");
+    credentialsForm2 = `
+      <div style="min-width: 730px;">
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: row;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: center;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1.3rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  } else {
+    credentialsForm2 = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: column;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  }
+  // if botid is null or notdefined show other message
+  console.log(botId, snnipetConfigSTT?.createBotSheetUrl, 'snnipet')
+  if (botId == undefined && snnipetConfigSTT?.createBotSheetUrl == undefined) {
+    if (Object.keys(snnipetConfigSTT).length > 0) {
+        let welcomeMessage;
+        if (snnipetConfigSTT["psychometric"] === "true") {
+          welcomeMessage = `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b>,b) <b>Role play games</b>  and c) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an interaction code, and an email to complete your experience. Let's start!</p>`
+        } else{
+          welcomeMessage = `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`
+        }
+        if (snnipetConfigSTT?.["welcomeMessage"]) {
+          welcomeMessage = snnipetConfigSTT["welcomeMessage"];
+        }
+
+        if (type_of_widget === 'simulation'){
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed. If you have a simulation code you can also use that instead.</p>`
+        }
+        console.log(welcomeMessage, 'welcome')
+        if (window.user){
+            chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          },
+        ];
+
+        } else {
+          const indivisualPageUserEmail = localStorage.getItem("userEmail");
+          if (indivisualPageUserEmail && snnipetConfigSTT['bypassEmail'] == 'true'){
+            const userName = indivisualPageUserEmail.split('@')[0];
+            createUserSTT(userName, indivisualPageUserEmail);
+            chatElementRef2.initialMessages = [
+            {
+              html: welcomeMessage,
+              role: "ai",
+            }]
+          } else {
+          isEmailFormstt = true;
+          formFieldsstt = ["email", "name"];
+          console.log(
+            "### formFieldsstt : ",
+            formFieldsstt,
+            "other data: ",
+            `Please enter your ${formFieldsstt[0]}`
+          );
+          chatElementRef2.initialMessages = [
+            {
+              html: welcomeMessage,
+              role: "ai",
+            },
+            {
+              html: `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`,
+              role: "ai",
+            },
+          ];
+          }
+        }
+    } else {
+      if (!window.user){
+
+        let welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        if (type_of_widget === 'simulation'){
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed. If you have a simulation code you can also use that instead.</p>`
+        }
+        isEmailFormstt = true;
+        formFieldsstt = ["email", "name"];
+        console.log(
+          "### formFieldsstt : ",
+          formFieldsstt,
+          "other data: ",
+          `Please enter your ${formFieldsstt[0]}`
+        );
+        chatElementRef2.initialMessages = [
+          {
+            html: welcomeMessage,
+            role: "ai",
+          },
+          {
+            html: `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`,
+            role: "ai",
+          },
+        ];
+      } else {
+        let welcomeMessage = `<p> Welcome to CoachBot simulations. Please enter your interaction code to proceed. If you don't have them , you can directly use the START button in the library to attempt any simulation. Thank you !</p>`
+        if (type_of_widget === 'simulation'){
+          welcomeMessage = `<p>Welcome to AI-powered simulation learning. Looking to deep dive or realize the takeaways from the session? Just select the session and hit the "practice" button. Please note that only eligible sessions are listed. If you have a simulation code you can also use that instead.</p>`
+        }
+        chatElementRef2.initialMessages = [
+                {
+                  html: welcomeMessage,
+                  role: "ai",
+                },
+              ];
+      }
+      
+      // chatElementRef2.initialMessages.push({
+      //   html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+      //       <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
+      //   role: "user",
+      // });
+    }
+  } else {
+    // faqs = Object.keys(globalBotDetails.data.faqs)
+    // console.log("Bot details",Object.keys(globalBotDetails.data.faqs))
+    // let buttons = ''
+    // faqs.forEach(title => {
+    //     buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
+    // })
+    // console.log("buttons : ",buttons)
+    // let htmlData = `<div id="option-button-container" >
+    //                 ${buttons}
+    //                 </div>`
+    // chatElementRef2.initialMessages.push(
+    //   {
+    //     html:htmlData,
+    //     role: "user",
+    //   }
+    // );
+  }
+
+  chatElementRef2.htmlClassUtilities = {
+    ["deep-chat-temporary-message"]: {
+      styles: {
+        default: {},
+      },
+    },
+    ["button2"]: {
+      styles: {
+        default: {
+          backgroundColor: "transparent",
+        },
+        hover: {
+          backgroundColor: "white",
+        },
+      },
+    },
+  };
+  displayBrowserWarning();
+
   //No condition STT pending
   chatElementRef2.request = {
     handler: async (body, signals) => {
       try {
+        console.log('geeting here..')
         if (body instanceof FormData) {
         } else {
           //
@@ -10424,13 +12987,21 @@ loadExternalModule().then(() => {
                 console.log(data);
 
                 const testCodeMessage = `
-                  <div id='create-scenario-section'>
-                          <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; "margin-top : 10px"">
-                            <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${data.title}</p>
-                            <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${data.description}</p>
-                          </div>
+                  <div id="create-scenario-section"
+                      style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px 0; background: #fafafa;">
+                    <p style="font-size: 14px; color: #111; font-weight: 600; margin: 0 0 6px 0;">
+                      ${data.title}
+                    </p>
+                    <p style="font-size: 12px; color: #444; margin: 0 0 8px 0; font-weight: 300;">
+                      ${data.description}
+                    </p>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <code style="background: #f4f4f4; padding: 6px; border-radius: 4px; font-size: 12px; color: green;">
+                        ${data.test_code}
+                      </code>
+                    </div>
                   </div>
-                  `;
+                `;
 
                 signals.onResponse({
                   html: testCodeMessage,
@@ -10613,13 +13184,14 @@ loadExternalModule().then(() => {
             }
             if (formFieldsstt.length > 0) {
               const msg = formFieldsstt[0] === "email" ?
-                `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-                : `<b>Please enter your ${formFieldsstt[0]}.</b>`;
+                `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+                : `Please enter your ${formFieldsstt[0]}.`;
               signals.onResponse({
                 html: msg,
               });
             } else {
               isEmailFormstt = false;
+              enableDisablebuttons('more-btn', false)
               if (botId != undefined && botType === "deep_dive") {
                 const userEmail = emailNameformJsonstt["email"];
                 if (!isEmailSTT(userEmail)) {
@@ -10665,10 +13237,24 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
+                showHeaderLoader();
                 await createUserSTT(
                   emailNameformJsonstt["name"],
                   emailNameformJsonstt["email"]
                 );
+                                
+                setBeginSessionEnabled(true)
+                if(window.user) {
+                  if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
+                  console.log('selectedResponseType ', selectedResponseType)
+                  await updateResponseStyle("icf_aligned_coach");
+
+                  populateDropdown("mindmap-menu");
+                  populateDropdown("assessment-menu");
+                }
+
+                if (botType != 'user_bot')  updateAudioAllowed(true, true)
+
                 if (botType === "feedback_bot") {
                   const thumbsupdiv = await feedbackBotInitialFlow("save_email");
                   signals.onResponse({
@@ -10699,6 +13285,14 @@ loadExternalModule().then(() => {
                     emailNameformJsonstt["name"],
                     emailNameformJsonstt["email"]
                   );
+
+                  updateAudioAllowed(true, true)
+
+                  if (IsSimulationChatHistory()){
+                    populateChatHistoryWrapper();
+                  }
+
+                  
                   if (!clientuserInformationSTT) {
                     clientuserInformationSTT = await getClientInformationStt(
                       "only_client_data",
@@ -10760,7 +13354,8 @@ loadExternalModule().then(() => {
                 console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                 if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                   || !clientuserInformationSTT.show_recommendations
-                  || userScenarioRecommendationStt.total_recommendation >= 2) {
+                  || userScenarioRecommendationStt.total_recommendation >= 2 ||
+                isTranscriptOnlyStt) {
                   signals.onResponse({
                     html: "<b>Please enter another interaction code to start a new interaction.</b>",
                   });
@@ -11072,64 +13667,64 @@ loadExternalModule().then(() => {
                   isIntakeInProgress = false;
                   isAskingInitialQuestions = false;
                   //********** submit intake to backend: start */
-                  const intakeData = {
-                    method: "post",
-                    qna: JSON.stringify(botInitialQuestionsQnA),
-                    bot_id: botId,
-                    is_positive: "False",
-                    qna_type: "initial_qna",
-                    user_id: userId2,
-                  };
-                  const queryparam = new URLSearchParams(intakeData);
-                  const resp = await fetch(
-                    `${baseURL2}/accounts/get-user-feedback-data/`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Basic ${createBasicAuthToken2(
-                          key2,
-                          secret2
-                        )}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify(intakeData),
-                    }
-                  )
-                    .then((response) => response.json())
-                    .then((data) => {
-                      console.log("Precheck Submission response : ", data);
+                    const intakeData = {
+                        method: "post",
+                        qna: JSON.stringify(botInitialQuestionsQnA),
+                        bot_id: botId,
+                        is_positive: "False",
+                        qna_type: "initial_qna",
+                        user_id: userId2,
+                      };
+                    const queryparam = new URLSearchParams(intakeData);
+                    const resp = await fetch(
+                      `${baseURL2}/accounts/get-user-feedback-data/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Basic ${createBasicAuthToken2(
+                            key2,
+                            secret2
+                          )}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(intakeData),
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        console.log("Precheck Submission response : ", data);
+                      });
+                    //********** submit intake to backend: end */
+                    signals.onResponse({
+                      text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
                     });
-                  //********** submit intake to backend: end */
-                  signals.onResponse({
-                    text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
-                  });
-                  // ****** enabling begin session button
-                  if (
-                    ["avatar_bot", "subject_specific_bot"].includes(botType)
-                  ) {
-                    const begginSessionButton = document.getElementById(
-                      "begin-session-button"
-                    );
-                    begginSessionButton.setAttribute(
-                      "onmouseover",
-                      "this.style.backgroundColor = '#4ade80'"
-                    );
-                    begginSessionButton.setAttribute(
-                      "onmouseleave",
-                      "this.style.backgroundColor = '#22c55e'"
-                    );
-                    begginSessionButton.setAttribute(
-                      "onclick",
-                      `handleFaqButtonClick('something_else')`
-                    );
-                    begginSessionButton.disabled = false;
-                    begginSessionButton.style.cursor = "pointer";
-                    begginSessionButton.style.color = "white";
-                    begginSessionButton.style.backgroundColor = "#22c55e";
-                  } else {
-                    appendMessage2(
-                      `<b>Please scroll above to view the conversation and proceed accordingly.</b>`
-                    );
+                    // ****** enabling begin session button
+                    if (
+                      ["avatar_bot", "subject_specific_bot"].includes(botType)
+                    ) {
+                      const begginSessionButton = document.getElementById(
+                        "begin-session-button"
+                      );
+                      begginSessionButton.setAttribute(
+                        "onmouseover",
+                        "this.style.backgroundColor = '#4ade80'"
+                      );
+                      begginSessionButton.setAttribute(
+                        "onmouseleave",
+                        "this.style.backgroundColor = '#22c55e'"
+                      );
+                      begginSessionButton.setAttribute(
+                        "onclick",
+                        `handleFaqButtonClick('something_else')`
+                      );
+                      begginSessionButton.disabled = false;
+                      begginSessionButton.style.cursor = "pointer";
+                      begginSessionButton.style.color = "white";
+                      begginSessionButton.style.backgroundColor = "#22c55e";
+                    } else {
+                      appendMessage2(
+                        `<b>Please scroll above to view the conversation and proceed accordingly.</b>`
+                      );
                   }
 
                   // ***** disabling intake button
@@ -11201,9 +13796,11 @@ loadExternalModule().then(() => {
                       test_id: botId,
                       is_signature_bot: true,
                       is_idp_discussion_opted: isIDPDiscussionOpted,
+                      signature_session_id: selectedChatId
                     }),
                   }
                 );
+                onlyCurrentSession = selectedChatId? true:false;
                 const data = await response.json();
                 sessionId2 = data.uid;
                 isSessionActiveStt = true;
@@ -11296,6 +13893,7 @@ loadExternalModule().then(() => {
                     participant_message_url: "",
                     is_signature_bot: true,
                     is_prompt_only: true,
+                    only_current_session: onlyCurrentSession
                   }),
                 }
               );
@@ -11308,42 +13906,40 @@ loadExternalModule().then(() => {
 
               conversation_id2 = responseData["uid"];
 
-              let allowAudioInteraction = false;
               console.log(
                 "snnipetConfigSTT",
                 Object.keys(snnipetConfigSTT).length
               );
-              if (Object.keys(snnipetConfigSTT).length > 1) {
-                console.log(
-                  "snnipetConfigSTT audio interaction enabled",
-                  snnipetConfigSTT.allowAudioInteraction
-                );
-                allowAudioInteraction =
-                  snnipetConfigSTT.allowAudioInteraction === "true";
-              } else {
-                console.log(
-                  "clientAllowAudioInteraction2",
-                  clientAllowAudioInteraction2
-                );
-                console.log(
-                  "userAllowAudioInteraction2",
-                  userAllowAudioInteraction2
-                );
-                console.log(
-                  "prioritiseUserAllowInteraction2",
-                  prioritiseUserAllowInteraction2
-                );
+              // if (Object.keys(snnipetConfigSTT).length > 1) {
+              //   console.log(
+              //     "snnipetConfigSTT audio interaction enabled",
+              //     snnipetConfigSTT.allowAudioInteraction
+              //   );
+              //   allowAudioInteraction =
+              //     snnipetConfigSTT.allowAudioInteraction === "true";
+              // } else {
+              //   console.log(
+              //     "clientAllowAudioInteraction2",
+              //     clientAllowAudioInteraction2
+              //   );
+              //   console.log(
+              //     "userAllowAudioInteraction2",
+              //     userAllowAudioInteraction2
+              //   );
+              //   console.log(
+              //     "prioritiseUserAllowInteraction2",
+              //     prioritiseUserAllowInteraction2
+              //   );
 
-                if (clientAllowAudioInteraction2) {
-                  allowAudioInteraction = userAllowAudioInteraction2;
-                } else {
-                  allowAudioInteraction = false;
-                }
-
-                if (botType === "user_bot") {
+              //   if (clientAllowAudioInteraction2) {
+              //     allowAudioInteraction = userAllowAudioInteraction2;
+              //   } else {
+              //     allowAudioInteraction = false;
+              //   }
+              // }
+              if (botType === "user_bot") {
                   allowAudioInteraction = true;
                 }
-              }
               console.log("allowAudioInteraction => ", allowAudioInteraction);
 
               //streaming responses
@@ -11363,8 +13959,8 @@ loadExternalModule().then(() => {
                   conversation_id2,
                   latestMessage,
                   true, // True by Default | allowAudioInteraction,
-                  "gemini-2.0-flash",
-                  "gemini-2.0-flash-lite-001"
+                  "gemini-2.5-flash",
+                  "gemini-2.0-flash"
                 );
               } else {
                 console.log("#similarity LAST QUESTION:", userQuestionsHistory.at(-1));
@@ -11393,7 +13989,7 @@ loadExternalModule().then(() => {
                 console.log("#similarity SIMILARITY VALUE:", similarityValue);
                 console.log("#similarity LLM Queue:", conversationLlmQueue);
 
-                const botSelectedLLM = ["gemini-2.0-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
+                const botSelectedLLM = ["gemini-2.5-flash", "gemini-2.0-flash-lite-001", "gemini-2.0-flash"];
                 const messageFrequency = userQuestionsHistory.filter(
                   (msg) => msg?.toLowerCase() === latestMessage.toLowerCase()
                 ).length;
@@ -11410,14 +14006,14 @@ loadExternalModule().then(() => {
                 }
 
                 GeminiAiResponse(
-                  responseData.coach_message_metadata.prompt,
-                  signals,
-                  conversation_id2,
-                  latestMessage,
-                  allowAudioInteraction,
-                  selectedModel,
-                  fallbackModel
-                );
+                responseData.coach_message_metadata.prompt,
+                signals,
+                conversation_id2,
+                latestMessage,
+                allowAudioInteraction,
+                selectedModel,
+                fallbackModel
+              );
                 conversationLlmQueue.push(selectedModel);
               }
 
@@ -11628,7 +14224,7 @@ loadExternalModule().then(() => {
           }
           // to check session is active or not
           if (!isTestCode2(latestMessage)) {
-            await getSessionStatusStt(sessionId2);
+              await getSessionStatusStt(sessionId2);
             // getting text which is from option-button-container
             const shadowRoot =
               document.getElementById("chat-element2").shadowRoot;
@@ -11852,12 +14448,18 @@ loadExternalModule().then(() => {
                 emailCandidate2 = questionData2.results[0].email_candidate;
                 FeedbackVideoLinkStt = questionData2.results[0].feedback_script_video_link;
                 InstructinoMediaLinkStt = questionData2.results[0].instruction_media_link;
+                ScoreConfigStt = questionData2.results[0].score_config;
+                gameExplanationVisibleStt = questionData2.results[0].explanation_visible;
+                gameScoreVisbileStt = questionData2.results[0].score_visible;
+
+
                 console.log('InstructinoMediaLinkStt', InstructinoMediaLinkStt)
 
                 if (
                   clientuserInformationSTT?.report_on &&
                   clientuserInformationSTT?.report_on != null &&
-                  senarioCase2 !== "assessment"
+                  senarioCase2 !== "assessment" &&
+                  emailCandidate2 === true
                 ) {
                   emailCandidate2 = clientuserInformationSTT.report_on;
                 }
@@ -11923,26 +14525,9 @@ loadExternalModule().then(() => {
                   if (snnipetConfigSTT.assessment && snnipetConfigSTT.assessment === 'true') {
                     emailCandidate2 = false;
                   }
-                } else {
-                  console.log(
-                    "clientAllowAudioInteraction2",
-                    clientAllowAudioInteraction2
-                  );
-                  console.log(
-                    "userAllowAudioInteraction2",
-                    userAllowAudioInteraction2
-                  );
-                  console.log(
-                    "prioritiseUserAllowInteraction2",
-                    prioritiseUserAllowInteraction2
-                  );
-
-                  if (clientAllowAudioInteraction2) {
-                    isImmersiveStt = userAllowAudioInteraction2;
-                  } else {
-                    isImmersiveStt = false;
-                  }
+                  
                 }
+                updateAudioAllowed(true,true)
                 console.log("isImmersive", isImmersiveStt);
                 if (testType2 === "mcq") {
                   globalQuestionLengthStt = Math.log2(questionLength2 + 1);
@@ -12080,9 +14665,10 @@ loadExternalModule().then(() => {
                   console.log("Session Created => ", sessionId2);
 
                   if (senarioCase2 === 'game') {
-                    questionLength2 = 1;
+                    questionLength2 = 999;
                     questionIndex2 = 0;
                     // getting question for the game scenario:
+                    console.log('game init question', data.next_question_text)
                     questionText2 = `${data.next_question_text}`
 
 
@@ -12301,7 +14887,35 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true"
                                               webkitallowfullscreen="true"
                                               ></iframe>`;
-                            } else if (isAudioURL(questionMediaLinkStt)) {
+                            } else if (questionMediaLinkStt.includes("player.cloudinary.com") || questionMediaLinkStt.includes('storage.googleapis.com')) {
+
+                          appendMessage2({
+                            oem: `
+                                <div style="position: relative; width: 100%; min-height: 50vh; margin-top: 8px; border-radius: 8px; overflow: hidden;">
+                                  <div id="poster-overlay" style="
+                                    position: absolute;
+                                    top: 0; left: 0;
+                                    width: 100%; height: 100%;
+                                    background: url('https://res.cloudinary.com/dtbl4jg02/image/upload/v1747293563/bupvdcx55wkqtrbwrwjc.jpg') center center / cover no-repeat;
+                                    z-index: 2;
+                                    transition: opacity 0.5s ease;
+                                    border-radius: 8px;
+                                  "></div>
+
+                                  <iframe
+                                    onload="this.previousElementSibling.style.opacity = '0'; setTimeout(() => this.previousElementSibling.remove(), 500);"
+                                    allow="autoplay; encrypted-media; fullscreen;"
+                                    style="width: 100%; height: auto; border-radius: 8px; min-height: 50vh; margin-top: 8px; z-index: 1; position: relative;"
+                                    src="${questionMediaLinkStt}"
+                                    frameborder="0"
+                                    allowfullscreen
+                                  ></iframe>
+                                </div>
+                                `
+                          });
+                        } 
+                            
+                            else if (isAudioURL(questionMediaLinkStt)) {
                               console.log(questionMediaLinkStt);
                               questionText2 =
                                 questionText2 +
@@ -12383,24 +14997,27 @@ loadExternalModule().then(() => {
                       </div>`;
                       questionText2 = formRadio;
                     } else {
-                      if (testType2 != "coaching" || questionIndex2 == 0) {
-                        if (isHindiStt) {
+                      if (!['game'].includes(senarioCase2)){
+
+                        if (testType2 != "coaching" || questionIndex2 == 0) {
+                          if (isHindiStt) {
+                            questionText2 =
+                              testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                          }
                           questionText2 =
-                            testUIInfoStt[`Question ${questionIndex2 + 1}`];
+                            questionData2.results[0].questions[questionIndex2]
+                              .question;
+                          questionMediaLinkStt =
+                            questionData2.results[0].questions[questionIndex2]
+                              .media_link;
+                          questionSnippetLinkStt =
+                            questionData2.results[0].questions[questionIndex2]
+                              .snippet_url;
                         }
-                        questionText2 =
-                          questionData2.results[0].questions[questionIndex2]
-                            .question;
-                        questionMediaLinkStt =
-                          questionData2.results[0].questions[questionIndex2]
-                            .media_link;
-                        questionSnippetLinkStt =
-                          questionData2.results[0].questions[questionIndex2]
-                            .snippet_url;
                       }
                     }
                   }
-                  console.log(questionText2);
+                  console.log(questionText2, 'init question text');
                   if (questionIndex2 === 0) {
                     if (isHindiStt) {
                       questionText2 =
@@ -12822,7 +15439,8 @@ loadExternalModule().then(() => {
                     if (
                       testType2 != "orchestrated_conversation" &&
                       testType2 != "dynamic_discussion_thread" &&
-                      testType2 != "coaching"
+                      testType2 != "coaching" &&
+                      !['game'].includes(senarioCase2)
                     ) {
                       if (isHindiStt) {
                         questionText2 = testUIInfoStt[`Question ${questionIndex2 + 1}`];
@@ -12846,114 +15464,7 @@ loadExternalModule().then(() => {
                       }
                       if (questionMediaLinkStt) {
                         console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionMediaLinkStt.length > 0) {
-                          if (questionMediaLinkStt.includes("youtube.com")) {
-                            const videoId = questionMediaLinkStt.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("vimeo.com")
-                          ) {
-                            const videoId = questionMediaLinkStt
-                              .split("/")
-                              .pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("twitter.com")
-                          ) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-                          }
-                          if (embeddingUrl) {
-                            questionText2 = `▪ <b>Optional Enrichment Media</b><br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                          `;
-                          }
-                          const urlList = questionMediaLinkStt.split(",");
-                          console.log("list", urlList);
-                          if (urlList.length > 1) {
-                            urlList.forEach((element) => {
-                              element = element.trim();
-                              if (element.includes("docs.google.com")) {
-                                let url =
-                                  element.split("edit?")[0] +
-                                  "embed?start=true&loop=true&delayms=3000";
-                                console.log(url);
-                                appendMessage2(`<iframe src=${url}
-                                                frameborder="0"
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                                allowfullscreen="true"
-                                                mozallowfullscreen="true"
-                                                webkitallowfullscreen="true"
-                                                ></iframe>`);
-                              } else if (isAudioURL(element)) {
-                                console.log(element);
-                                appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                                  ? "width: 200px; max-width: 200px !important;"
-                                  : " min-width: 50vw !important;"
-                                  }" controls autoplay>
-                                <source src=${element} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`);
-                              } else {
-                                appendMessage2(`<a href="${element}" target="_blank"
-                                                style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                                                onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                                onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                                View Context
-                                              </a>`)
-                              }
-                            });
-                          } else {
-                            if (
-                              questionMediaLinkStt.includes("docs.google.com")
-                            ) {
-                              let url =
-                                questionMediaLinkStt.split("edit?")[0] +
-                                "embed?start=true&loop=true&delayms=3000";
-                              console.log(url);
-                              appendMessage2(`<iframe src=${url}
-                                              frameborder="0"
-                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                              allowfullscreen="true"
-                                              mozallowfullscreen="true"
-                                              webkitallowfullscreen="true"
-                                              ></iframe>`);
-                            } else if (
-                              questionMediaLinkStt.includes("guidejar.com")
-                            ) {
-                              const guidejarId = questionMediaLinkStt
-                                .split("/")
-                                .pop();
-                              appendMessage2(`
-                              <div style="width:640px">
-                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-                              ></div></div>
-                              `);
-                            } else if (isAudioURL(questionMediaLinkStt)) {
-                              console.log(questionMediaLinkStt);
-                              appendMessage2(`<div ><audio style="${window.innerWidth < 600
-                                ? "width: 200px; max-width: 200px !important;"
-                                : " min-width: 50vw !important;"
-                                }" controls autoplay>
-                                <source src=${questionMediaLinkStt} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`);
-                            } else {
-                              appendMessage2(`<a href="${questionMediaLinkStt}" target="_blank"
-                                                  style="display:inline-block; background:white; color:#333; padding:4px 10px; border:1px solid #ddd; border-radius:6px; text-decoration:none; font-family:sans-serif; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:all 0.2s ease;"
-                                                  onmouseover="this.style.background='#f1f1f1'; this.style.borderColor='#bbb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
-                                                  onmouseout="this.style.background='white'; this.style.borderColor='green'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.06)'">
-                                                  View Context
-                                                </a>`)
-                            }
-                          }
-                        }
+                        handleMediaLinks(questionMediaLinkStt, "oem")
                       }
                       if (questionSnippetLinkStt) {
                         if (questionSnippetLinkStt.length > 0) {
@@ -13026,7 +15537,7 @@ loadExternalModule().then(() => {
                           });
                           // questionText2 = questionText2 + imageDiv
                         } else {
-                          console.log("6quetext");
+                          console.log("6quetext", questionText2);
 
                           signals.onResponse({
                             html: questionText2,
@@ -13042,6 +15553,7 @@ loadExternalModule().then(() => {
 
                 if (senarioCase2 === 'game') {
                   if (questionIndex2 !== 0) {
+                    questionIndex2++;
                     try {
                       // Fetch the next game question
                       const response = await handleGameTypeConversation();
@@ -13484,8 +15996,8 @@ loadExternalModule().then(() => {
                       formFieldsstt = ["name", "email"];
                       isEmailFormstt = true;
                       const msg = formFieldsstt[0] === "email" ?
-                        `<b>Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).</b>`
-                        : `<b>Please enter your ${formFieldsstt[0]}</b>`;
+                        `Please enter your email. (Used for reporting and ranking. Please use same email for accurate tracking).`
+                        : `Please enter your ${formFieldsstt[0]}`;
                       signals.onResponse({
                         html: msg,
                       });
@@ -13508,7 +16020,9 @@ loadExternalModule().then(() => {
                       console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                       if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                         || !clientuserInformationSTT.show_recommendations
-                        || userScenarioRecommendationStt.total_recommendation >= 2) {
+                        || userScenarioRecommendationStt.total_recommendation >= 2
+                        || isTranscriptOnlyStt
+                      ) {
                         signals.onResponse({
                           html: "<b>Please enter another interaction code to start a new interaction.</b>",
                         });
@@ -13560,7 +16074,8 @@ loadExternalModule().then(() => {
                     console.log(senarioCase2, clientuserInformationSTT.show_recommendations)
                     if (['psychometric', 'game', 'interview'].includes(senarioCase2)
                       || !clientuserInformationSTT.show_recommendations
-                      || userScenarioRecommendationStt.total_recommendation >= 2) {
+                      || userScenarioRecommendationStt.total_recommendation >= 2
+                      || isTranscriptOnlyStt) {
 
                       signals.onResponse({
                         html: "<b>Please enter another interaction code to start a new interaction.</b>",
@@ -13691,6 +16206,10 @@ loadExternalModule().then(() => {
       }
     },
   };
+
+  }
+
+  InitializeBot()
 });
 
 const openChatContainer2 = () => {
@@ -13722,16 +16241,6 @@ const openChatContainer2 = () => {
     };
   }
 
-  //end session due to inactivity :- row 708
-  if (botId && botType !== "user_bot") {
-    if (isBotInitialized === true) {
-      setTimeout(() => {
-        handleEndConversation(true);
-        isBotInitialized = false;
-      }, 1800000);
-    }
-  }
-
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
@@ -13742,7 +16251,7 @@ const openChatContainer2 = () => {
     chatContainer2.style["transform-origin"] = "100% 50%";
 
     //to close other bot
-    botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
+    botId = snnipetConfigSTT.botId;
     // botId = 'stress-management-0032'
 
     // if (!botId) {
@@ -13831,3 +16340,68 @@ const closeFromTop2 = () => {
 };
 
 window.openChatContainer2 = openChatContainer2;
+
+
+// Dropdown toggle
+document.addEventListener("click", function (event) {
+    const mindmapMenu = document.getElementById("mindmap-menu");
+    const assessmentMenu = document.getElementById("assessment-menu");
+    const simulationhistoryMenu = document.getElementById('dropdownMenu');
+    const moreMenu = document.getElementById('more-menu');
+
+    if (event.target.closest("#mindmap-btn")) {
+        mindmapMenu.style.display = mindmapMenu.style.display === "block" ? "none" : "block";
+        assessmentMenu.style.display = "none";
+        simulationhistoryMenu.style.display = 'none';
+        moreMenu.style.display = 'none'
+
+    }
+    else if (event.target.closest("#assessment-btn")) {
+        assessmentMenu.style.display = assessmentMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+        simulationhistoryMenu.style.display = 'none';
+        moreMenu.style.display = 'none'
+
+
+    } else if (event.target.closest("#SimulationHistorybtn")) {
+        simulationhistoryMenu.style.display = simulationhistoryMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
+        moreMenu.style.display = 'none'
+
+
+    } else if (event.target.closest("#more-btn")) {
+        moreMenu.style.display = moreMenu.style.display === "block" ? "none" : "block";
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
+        simulationhistoryMenu.style.display = "none";
+    }
+
+    else if (!event.target.closest(".dropdown-menu")) {
+        mindmapMenu.style.display = "none";
+        assessmentMenu.style.display = "none";
+        simulationhistoryMenu.style.display = "none"
+        moreMenu.style.display = 'none'
+    }
+});
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   setTimeout(() => {
+//     const rootDiv = document.querySelector(".coachbots-coachscribe");
+
+//     if (rootDiv) {
+//       const mindmapAllowed   = rootDiv.getAttribute("data-mindmapBtn") !== "false";
+//       const assessmentAllowed = rootDiv.getAttribute("data-assessmentBtn") !== "false";
+//       const modeAllowed      = rootDiv.getAttribute("data-mode") !== "false";
+
+//       const mindmapBtn = document.getElementById("mindmap-btn");   
+//       const assessmentBtn = document.getElementById("assessment-btn"); 
+//       const modeBtn = document.getElementById("more-btn");        
+
+//       if (mindmapBtn && !mindmapAllowed) mindmapBtn.style.display = "none";
+//       if (assessmentBtn && !assessmentAllowed) assessmentBtn.style.display = "none";
+//       if (modeBtn && !modeAllowed) modeBtn.style.display = "none";
+//     }
+//   }, 500);
+// });
+

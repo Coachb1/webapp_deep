@@ -26,6 +26,7 @@ import {
   TestsType,
   UserInfoType,
   knowledgeBotJson,
+  Book
 } from "./types";
 
 export const getClientUserInfo = async (
@@ -89,6 +90,9 @@ export const getClientUserInfo = async (
                 tagLine: data.data.user_info[0].tag_line,
               },
               helpText: data.data.user_info[0].help_text,
+              leaderboard_report_password: data.data.user_info[0].leaderboard_report_password,
+              leaderboard_report_protected: data.data.user_info[0].leaderboard_report_protected,
+              is_active: data.data.user_info[0].is_active
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -740,3 +744,257 @@ export const getIDPs = async (userId: string) => {
     return [];
   }
 };
+
+export const getCoursePackage = async (coursePackageId: string) => {
+  const response = await fetch(
+    `${baseURL}/courses/course-package/?package_id=${coursePackageId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log('[getCoursePackage]',responseData);
+    return responseData
+  } else {
+    console.error('failed [getcoursepackage]', response)
+    return [];
+  }
+};
+
+
+export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
+  try {
+    const data = await getCoursePackage(coursePackageId);
+
+    if (!data?.courses) return [];
+    
+    // Flatten all courses → modules → books
+    const books: Book[] = data.courses.flatMap((course: any) =>
+      course.modules
+        .filter((m: any) => m.chapter_type === "BOOK")
+        .map((m: any) => ({
+          id: m.uid,
+          title: m.title,
+          author: m.author,
+          tag: m.tag? m.tag?.split(',') : [],
+          desc: m.description,
+          audio: m.audio_link,
+          img: m.image_link,
+          course_id: course.uid,
+          course_details: {
+            'title': course.title,
+            'desc': course.sub_title,
+            'image_link': course.image_link,
+          },
+          package_detail: {
+            'package_id': data.uid,
+            'package_name': data.title,
+            'package_description': data.sub_title || data.description || '',
+            'image_link': data.image_link,
+            'jobaid_id': data.jobaid_uid
+          },
+          list_name: m.list_name || '',
+          jobaid_id: data.jobaid_uid
+        }))
+    );
+    console.log('[fetchBooks] Books:', books);
+    return books;
+  } catch (err) {
+    console.error("Error fetching books:", err);
+    return [];
+  }
+};
+
+export const updateCourseProgress = async (
+  courseId: string,
+  userId: string,
+  moduleId: string,
+  status: string,
+  trackingData: number,
+  playedAudio: number
+) => {
+  try {
+
+    if (!courseId || !userId || !moduleId || !status) {
+      console.error("[updateCourseProgress] Missing required parameters : ", courseId, userId, moduleId, status);
+      return null;
+    }
+    const data = JSON.stringify({
+      course_id: courseId,
+      user_uid: userId,
+      module: {
+        module_id: moduleId,
+        status: status,
+        completed_in_percentage: trackingData,
+        played_audio: playedAudio,
+      },
+    });
+    console.log("[updateCourseProgress] Data:", data);
+
+    const response = await fetch(`${baseURL}/courses/course-progress/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: data
+    });
+
+    if (!response.ok) {
+      console.error("[updateCourseProgress] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[updateCourseProgress] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[updateCourseProgress] Error:", error);
+    return null;
+  }
+};
+
+
+export const getModuleCompletion = async (
+  userId: string,
+  moduleId: string,
+) => {
+  try {
+
+    if (  !userId || !moduleId) {
+      console.error("[getModuleCompletion] Missing required parameters", userId, moduleId);
+      return null;
+    }
+
+
+    const response = await fetch(`${baseURL}/courses/module-user-data/?module_id=${moduleId}&user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[getModuleCompletion] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[getModuleCompletion] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[getModuleCompletion] Error:", error);
+    return null;
+  }
+};
+
+
+export const addModuleLike = async (moduleId: string, userId: string) => {
+  try {
+    if (!userId || !moduleId) {
+      console.error("[addModuleLike] Missing required parameters : ", userId, moduleId);
+      return null;
+    }
+
+    console.log("[addModuleLike] Module ID:", moduleId, userId);
+
+    const response = await fetch(`${baseURL}/courses/modules/${moduleId}/like/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    console.log(response.statusText)
+    if (!response.ok) {
+      console.error("[addModuleLike] Failed:", response.statusText);
+      return null;
+    }
+
+    // ✅ Check if response has content
+    const responseData = await response.json();
+    console.log("[addModuleLike] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[addModuleLike] Error:", error);
+    return null;
+  }
+};
+
+export const addModuleLater = async (moduleId: string, userId: string) => {
+  try {
+    if (!userId || !moduleId) {
+      console.error("[addModuleLater] Missing required parameters : ", userId, moduleId);
+      return null;
+    }
+
+    const response = await fetch(`${baseURL}/courses/modules/${moduleId}/later/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+
+    if (!response.ok) {
+      console.error("[addModuleLater] Failed:", response.statusText);
+      return null;
+    }
+
+    // Check for empty body (e.g. 204 response)
+    const text = await response.text();
+    if (!text) {
+      console.log("[addModuleLater] Success: no content (probably removed)");
+      return { success: true, removed: true }; // 👈 easier for frontend
+    }
+
+    const responseData = JSON.parse(text);
+    console.log("[addModuleLater] Success:", responseData);
+    return { success: true, removed: false, data: responseData };
+  } catch (error) {
+    console.error("[addModuleLater] Error:", error);
+    return null;
+  }
+};
+
+
+
+export const getcourseModuleLikesAndSaveLater = async(courseId:string, userId:string) => {
+  try {
+    
+    if (  !userId || !courseId) {
+      console.error("[getcourseModuleLikesAndSaveLater] Missing required parameters : ", userId, courseId);
+      return null;
+    }
+
+    const response = await fetch(`${baseURL}/courses/get-liked-and-for-later-modules/?course_id=${courseId}&user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[getcourseModuleLikesAndSaveLater] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[getcourseModuleLikesAndSaveLater] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[getcourseModuleLikesAndSaveLater] Error:", error);
+    return null;
+  }
+};
+
+

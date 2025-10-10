@@ -663,7 +663,7 @@ const CoachIntake = ({ user }: any) => {
                     "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
-                    router.push("/");
+                    router.push("/network");
                     getAllDirectoryData();
                   }, 4000);
                 }
@@ -697,7 +697,7 @@ const CoachIntake = ({ user }: any) => {
                     "Your Feedback bot already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
-                    router.push("/");
+                    router.push("/network");
                   }, 4000);
                 }
               })
@@ -763,7 +763,7 @@ const CoachIntake = ({ user }: any) => {
       switchState
     );
     try {
-      if (characteristicsRateHigh && characteristicsRateLows) {
+      // if (characteristicsRateHigh && characteristicsRateLows) {
         if (user) {
           setCreateLoading(true);
           var myHeaders = new Headers();
@@ -1289,7 +1289,7 @@ const CoachIntake = ({ user }: any) => {
                               resetAllStates();
                               getAllDirectoryData();
                               setTimeout(() => {
-                                router.push("/");
+                                router.push("/network");
                               }, 4000);
                             } else {
                               setCreateLoading(false);
@@ -1348,7 +1348,7 @@ const CoachIntake = ({ user }: any) => {
                   });
                   setTimeout(() => {
                     getAllDirectoryData();
-                    router.push("/");
+                    router.push("/network");
                   }, 4000);
                 }
               })
@@ -1809,9 +1809,9 @@ const CoachIntake = ({ user }: any) => {
               });
           }
         }
-      } else {
-        toast.warning("Please select the high and low skills");
-      }
+      // } else {
+      //   toast.warning("Please select the high and low skills");
+      // }
     } catch (error) {
       console.log(error);
       toast.error("Error creating your coach profile. Please try again.");
@@ -1821,7 +1821,7 @@ const CoachIntake = ({ user }: any) => {
 
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (characteristicsRateHigh && characteristicsRateLows) {
+    // if (characteristicsRateHigh && characteristicsRateLows) {
       if (user) {
         console.log("user feedback", user);
         setFeedbackCreateLoading(true);
@@ -1917,7 +1917,7 @@ const CoachIntake = ({ user }: any) => {
                     setTimeout(() => {
                       // getFeedbackBotsData();
                       getAllDirectoryData();
-                      router.push("/");
+                      router.push("/network");
                     }, 10000);
                   }
                   resetAllStates();
@@ -1953,9 +1953,9 @@ const CoachIntake = ({ user }: any) => {
               });
           });
       }
-    } else {
-      toast.warning("Please select the high and low skills");
-    }
+    // } else {
+    //   toast.warning("Please select the high and low skills");
+    // }
   };
 
   const onCharacteristicsSelectLow = (val: string) => {
@@ -2491,8 +2491,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows },
-        { HighCompetency: characteristicsRateHigh },
+        // { LowCompetency: characteristicsRateLows },
+        // { HighCompetency: characteristicsRateHigh },
       ];
     } else if (formVersion === "2") {
       console.log("here");
@@ -2502,8 +2502,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows },
-        { HighCompetency: characteristicsRateHigh },
+        // { LowCompetency: characteristicsRateLows },
+        // { HighCompetency: characteristicsRateHigh },
       ];
     } else {
       coachFields = [
@@ -2517,8 +2517,8 @@ const CoachIntake = ({ user }: any) => {
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
         { AllowActionPlan: allowSessionNotes },
-        { LowCompetency: characteristicsRateLows },
-        { HighCompetency: characteristicsRateHigh },
+        // { LowCompetency: characteristicsRateLows },
+        // { HighCompetency: characteristicsRateHigh },
       ];
     }
 
@@ -2857,13 +2857,13 @@ const CoachIntake = ({ user }: any) => {
                           value: "no-co-pilot",
                         },
                         {
-                          label: "Co-pilot Level 1 (10 mins)",
+                          label: "Intake Copilot",
                           value: "subject-copilot",
                         },
-                        {
-                          label: "Co-pilot Level 2 (25 Mins)",
-                          value: "coaching-copilot",
-                        },
+                        // {
+                        //   label: "Co-pilot Level 2 (25 Mins)",
+                        //   value: "coaching-copilot",
+                        // },
                       ]}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -3949,9 +3949,9 @@ const CoachIntake = ({ user }: any) => {
                           <p className="text-sm my-1">
                             Please rate the characteristics/skills on which you
                             will rate yourself near the lows.{" "}
-                            <span className="text-xl font-bold text-red-500">
+                            {/* <span className="text-xl font-bold text-red-500">
                               *
-                            </span>
+                            </span> */}
                           </p>
                           <CharactericticsSelect
                             disabled={checkIfView === null ? false : true}
@@ -3969,9 +3969,9 @@ const CoachIntake = ({ user }: any) => {
                           <p className="text-sm my-1">
                             Please rate the characteristics/skills on which you
                             will rate yourself highly.{" "}
-                            <span className="text-xl font-bold text-red-500">
+                            {/* <span className="text-xl font-bold text-red-500">
                               *
-                            </span>
+                            </span> */}
                           </p>
                           <CharactericticsSelect
                             disabled={checkIfView === null ? false : true}
@@ -5485,7 +5485,7 @@ const CoachIntake = ({ user }: any) => {
                         <label className="text-sm text-gray-700">
                           We respect your data and privacy. Any data is handled
                           per the data security and privacy policy of the
-                          organization holding the platform license. Please
+                          organization holding the engine license. Please
                           contact your program administrator for removal
                           requests. Any AI assets created by the users are
                           considered the property of the organization the
@@ -5766,7 +5766,7 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
                       rate yourself near the lows.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
+                      {/* <span className="text-xl font-bold text-red-500">*</span> */}
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -5784,7 +5784,7 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
                       rate yourself highly.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
+                      {/* <span className="text-xl font-bold text-red-500">*</span> */}
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -6126,7 +6126,7 @@ const CoachIntake = ({ user }: any) => {
                         <label className="text-xs text-gray-700">
                           We respect your data and privacy. Any data is handled
                           per the data security and privacy policy of the
-                          organization holding the platform license. Please
+                          organization holding the engine license. Please
                           contact your program administrator for removal
                           requests. Any AI assets created by the users are
                           considered the property of the organization the
@@ -6321,7 +6321,7 @@ const CoachIntake = ({ user }: any) => {
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
                     rate yourself near the lows.{" "}
-                    <span className="text-xl font-bold text-red-500">*</span>
+                    {/* <span className="text-xl font-bold text-red-500">*</span> */}
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
@@ -6339,7 +6339,7 @@ const CoachIntake = ({ user }: any) => {
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
                     rate yourself highly.{" "}
-                    <span className="text-xl font-bold text-red-500">*</span>
+                    {/* <span className="text-xl font-bold text-red-500">*</span> */}
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
@@ -6370,7 +6370,7 @@ const CoachIntake = ({ user }: any) => {
                       <label className="text-xs text-gray-700">
                         We respect your data and privacy. Any data is handled
                         per the data security and privacy policy of the
-                        organization holding the platform license. Please
+                        organization holding the engine license. Please
                         contact your program administrator for removal requests.
                         Any AI assets created by the users are considered the
                         property of the organization the individuals are
