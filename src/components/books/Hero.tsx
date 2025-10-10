@@ -42,7 +42,7 @@ import React from "react";
 interface HeroProps {
   title: string;
   subTitle: string;
-  imageLink?: string;
+  imageLink?: string|null;
 }
 
 const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {

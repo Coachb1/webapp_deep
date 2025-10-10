@@ -796,6 +796,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
             'package_name': data.title,
             'package_description': data.sub_title || data.description || '',
             'image_link': data.image_link,
+            'jobaid_id': data.jobaid_uid
           },
           list_name: m.list_name || '',
           jobaid_id: data.jobaid_uid
