@@ -33,6 +33,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [showDescription, setShowDescription] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [jobAidId, setJobaidID] = useState<string|null>(null);
+  const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
 
   // Load books
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         setSubTitle(data[0].package_detail.package_description);
         setCourseId(data[0].course_id);
         setJobaidID(data[0].jobaid_id)
+        setHeroImageLink(data[0].package_detail.image_link)
         localStorage.setItem('jobaid', data[0].jobaid_id);
 
         setAllBooks(data);
@@ -152,7 +154,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     <>
       <main id="top">
         <Header packageCourseId={id} />
-        <Hero title={title} subTitle={subTitle} />
+        <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
