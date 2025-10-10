@@ -11086,11 +11086,12 @@ function disableAllDiagnosticButtons() {
     nextModel
   ) => {
     disableAllDiagnosticButtons();
+    let userInputMessageOriginal = latestMessage;
     if (IsDiagnosticsOn==false) {
-      latestMessage+= "\n Please do not provide any type of diagnostic, platform and professional insights permanently.";
+      userInputMessageOriginal+= "\n Please do not provide any type of diagnostic, platform and professional insights permanently.";
     }
     userInputMessage =
-      userInputMessage + `\n input: ${latestMessage}\n output: `;
+      userInputMessage + `\n input: ${userInputMessageOriginal}\n output: `;
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -11340,8 +11341,8 @@ function disableAllDiagnosticButtons() {
           }
 
           botPreviousConversationHistory.push(messageText.innerText);
-          const KeywordList = ['DIAGNOSTIC INSIGHT:', 'PLATFORM INSIGHT:', 'Professional Insight:'];
-          const isDiag = KeywordList.some(k => messageText.innerText.toLowerCase().includes(k.toLowerCase()));
+          const KeywordList = ['DIAGNOSTIC INSIGHT', 'PLATFORM INSIGHT', 'Professional Insight'];
+          const isDiag = KeywordList.some(k => messageText.innerText.includes(k));
           if (isDiag) IsDiagnosticsOn = true;
           if (IsDiagnosticsOn != undefined){
             const diagButtons = getDiagButtons(IsDiagnosticsOn)
