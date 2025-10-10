@@ -78,6 +78,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
   const desiredOrder = [
     "Idea Name",
     "Idea Details", 
+    "Idea Description",
     "Estimated Impact",
     "Category",
     "Collaborators Identfied",
