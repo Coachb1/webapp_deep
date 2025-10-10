@@ -153,7 +153,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   return (
     <>
       <main id="top">
-        <Header packageCourseId={id} />
+        <Header packageCourseId={id} jobaidId={jobAidId}/>
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
         {loading ? (

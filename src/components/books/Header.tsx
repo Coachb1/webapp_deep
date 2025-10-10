@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import { Input } from "@/components/books/ui/input";
 import { usePortalUser } from "./context/UserContext";
 import Link from "next/link";
 
-const Header = ({ packageCourseId }: { packageCourseId: string }) => {
+const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaidId: string|null }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [password, setPassword] = useState("");
   const { user } = usePortalUser(); // Assuming useUser is imported from context
@@ -70,20 +70,21 @@ const Header = ({ packageCourseId }: { packageCourseId: string }) => {
             </Button>
 
             {/* Idea Board Button */}
-            <Button
-              onClick={() => {
-                if (user?.email) {
-                  const jobaid_id = localStorage.getItem('jobaid');
-                  const url = `/library-bot/ideaboardReport/?jobaid=${jobaid_id}&email=${encodeURIComponent(
-                    user.email
-                  )}`;
-                  window.open(url, "_blank", "noopener,noreferrer");
-                }
-              }}
-              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
-            >
-              IdeaBoard
-            </Button>
+            {jobaidId && (
+              <Button
+                onClick={() => {
+                  if (user?.email) {
+                    const url = `/library-bot/ideaboardReport/?jobaid=${jobaidId}&email=${encodeURIComponent(
+                      user.email
+                    )}`;
+                    window.open(url, "_blank", "noopener,noreferrer");
+                  }
+                }}
+                className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
+              >
+                IdeaBoard
+              </Button>
+            )}
           </div>
         </div>
       </header>
