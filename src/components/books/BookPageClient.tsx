@@ -34,6 +34,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [jobAidId, setJobaidID] = useState<string|null>(null);
   const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
+  const [reportLink, setReportlink] = useState<string|null>(null);
 
   // Load books
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
         setCourseId(data[0].course_id);
         setJobaidID(data[0].jobaid_id)
         setHeroImageLink(data[0].package_detail.image_link)
+        setReportlink(data[0].package_detail.report_link);
         localStorage.setItem('jobaid', data[0].jobaid_id);
 
         setAllBooks(data);

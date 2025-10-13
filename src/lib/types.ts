@@ -1,5 +1,6 @@
 
 export interface Book {
+  report: string | undefined;
   id: string;
   title: string;
   author: string;

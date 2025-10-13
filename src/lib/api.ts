@@ -785,17 +785,20 @@ export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
           desc: m.description,
           audio: m.audio_link,
           img: m.image_link,
+          report: m.embed_link,
           course_id: course.uid,
           course_details: {
             'title': course.title,
             'desc': course.sub_title,
             'image_link': course.image_link,
+            'embed_link': course.embed_link
           },
           package_detail: {
             'package_id': data.uid,
             'package_name': data.title,
             'package_description': data.sub_title || data.description || '',
             'image_link': data.image_link,
+            'embed_link': data.embed_link,
             'jobaid_id': data.jobaid_uid
           },
           list_name: m.list_name || '',
