@@ -26,7 +26,8 @@ import {
   TestsType,
   UserInfoType,
   knowledgeBotJson,
-  Book
+  Book,
+  CoursePackage
 } from "./types";
 
 export const getClientUserInfo = async (
@@ -762,17 +763,31 @@ export const getCoursePackage = async (coursePackageId: string) => {
     return responseData
   } else {
     console.error('failed [getcoursepackage]', response)
-    return [];
+    return {
+      'package_id': '',
+      'package_name': '',
+      'package_description': '',
+      'image_link': '',
+      'jobaid_id': '',
+      'books': []
+    };
   }
 };
 
 
-export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
+export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage> => {
   try {
     const data = await getCoursePackage(coursePackageId);
 
-    if (!data?.courses) return [];
-    
+    const package_details = {
+      'package_id': data.uid,
+      'package_name': data.title,
+      'package_description': data.sub_title || data.description || '',
+      'image_link': data.image_link,
+      'jobaid_id': data.jobaid_uid,
+      'report_config': data.page_config || {},
+    };
+
     // Flatten all courses → modules → books
     const books: Book[] = data.courses.flatMap((course: any) =>
       course.modules
@@ -793,23 +808,28 @@ export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
             'image_link': course.image_link,
             'embed_link': course.embed_link
           },
-          package_detail: {
-            'package_id': data.uid,
-            'package_name': data.title,
-            'package_description': data.sub_title || data.description || '',
-            'image_link': data.image_link,
-            'embed_link': data.embed_link,
-            'jobaid_id': data.jobaid_uid
-          },
+          package_detail: package_details,
           list_name: m.list_name || '',
           jobaid_id: data.jobaid_uid
         }))
     );
     console.log('[fetchBooks] Books:', books);
-    return books;
+    const result = {
+      ...package_details,
+      ...{books: books}
+    };
+    return result;
   } catch (err) {
     console.error("Error fetching books:", err);
-    return [];
+    return {
+      package_id: '',
+      package_name: '',
+      package_description: '',
+      image_link: '',
+      jobaid_id: '',
+      report_config: {},
+      books: []
+    };
   }
 };
 

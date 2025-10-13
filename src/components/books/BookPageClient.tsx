@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import BookSection from "@/components/books/BookSection";
-import { Book } from "@/lib/types";
+import { Book, CoursePackage } from "@/lib/types";
 import { fetchBooks } from "@/lib/api";
 import BookDescription from "@/components/books/BookDescription";
 import Header from "@/components/books/Header";
@@ -34,26 +34,32 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [jobAidId, setJobaidID] = useState<string|null>(null);
   const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
-  const [reportLink, setReportlink] = useState<string|null>(null);
+  const [packageDetails, setPackageDetails] = useState<any>(null);
 
   // Load books
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        const data: Book[] = await fetchBooks(id);
-        console.log("[fetchBooks] Books:", data[0].package_detail);
-        if (!data || !data.length) return;
+        const data: CoursePackage = await fetchBooks(id);
+        if (!data) return;
 
-        setTitle(data[0].package_detail.package_name);
-        setSubTitle(data[0].package_detail.package_description);
-        setCourseId(data[0].course_id);
-        setJobaidID(data[0].jobaid_id)
-        setHeroImageLink(data[0].package_detail.image_link)
-        setReportlink(data[0].package_detail.report_link);
-        localStorage.setItem('jobaid', data[0].jobaid_id);
+        setTitle(data.package_name);
+        setSubTitle(data.package_description);
+        setCourseId(data.books[0].course_id);
+        setJobaidID(data.jobaid_id);
+        setHeroImageLink(data.image_link);
+        setPackageDetails({
+          package_id: data.package_id,
+          package_name: data.package_name,
+          package_description: data.package_description,
+          image_link: data.image_link,
+          jobaid_id: data.jobaid_id,
+          report_config: data.report_config || {},
+        });
+        localStorage.setItem('jobaid', data.jobaid_id);
 
-        setAllBooks(data);
-        setFilteredBooks(data);
+        setAllBooks(data.books);
+        setFilteredBooks(data.books);
       } catch (err) {
         console.error("Error fetching books:", err);
       } finally {
@@ -177,6 +183,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             email={user?.user_data?.email}
             all_books={allBooks}
             jobAidId={jobAidId}
+            packageDetails={packageDetails}
           />
         )}
       </main>

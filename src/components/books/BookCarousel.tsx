@@ -63,8 +63,15 @@ const handlePageChange = (page: number) => {
 
   return (
     <>
+      <div className="w-full max-w-6xl mx-auto px-4">
+        <h4 className="text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide text-blue-600 mb-4">
+          Our Library
+        </h4>
+      </div>
+
       {/* Carousel wrapper */}
       <div className="w-[95%] sm:w-[90%] max-w-[1000px] mx-auto">
+        
         <div className="flex flex-col items-center justify-center">
           {Array.from({ length: totalSlides }).map((_, slideIndex) => (
             <div

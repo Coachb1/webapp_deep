@@ -15,6 +15,8 @@ interface SearchFilterProps {
   books: Book[];
   viewMode: string;
   handleResetLibrary: () => void;
+  showFilters: boolean;
+  showSearchBar: boolean;
   clientDepartments?: string;
   clientExpertise?: string;
 }
@@ -28,6 +30,8 @@ const SearchFilter = ({
   handleResetLibrary,
   clientDepartments,
   clientExpertise,
+  showFilters,
+  showSearchBar,
 }: SearchFilterProps) => {
   const [activeButton, setActiveButton] = useState<"like" | "later" | null>(
     null
@@ -36,9 +40,15 @@ const SearchFilter = ({
   const [emergingPlayersChecked, setEmergingPlayersChecked] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("Filter");
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [filterCategories, setFilterCategories] = useState<FilterCategory[]>([]);
-  const [activeFilterDropdown, setActiveFilterDropdown] = useState<string | null>(null);
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
+  const [filterCategories, setFilterCategories] = useState<FilterCategory[]>(
+    []
+  );
+  const [activeFilterDropdown, setActiveFilterDropdown] = useState<
+    string | null
+  >(null);
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string>
+  >({});
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
 
   // Categories - MOVE HERE (before the useEffect)
@@ -51,35 +61,58 @@ const SearchFilter = ({
       (t) => t.charAt(0).toUpperCase() + t.slice(1)
     );
     return capitalized;
-  }, [books]);
+  }, []);
 
   // Initialize filter categories
   useEffect(() => {
-    setFilterCategories([
-      {
-        filterName: "Industry",
-        filterOptions: categories,
-      },
-      {
-        filterName: "Business Outcome",
-        filterOptions: [],
-      },
-      {
-        filterName: "Implementation Complexity",
-        filterOptions:
-          clientDepartments && clientDepartments !== ""
-            ? clientDepartments.split(",").map(d => d.trim())
-            : [],
-      },
-      {
-        filterName: "Unexpected Outcomes",
-        filterOptions:
-          clientExpertise && clientExpertise !== ""
-            ? clientExpertise.split(",").map(e => e.trim())
-            : [],
-      },
-    ]);
-  }, [clientDepartments, clientExpertise, categories]);
+    console.log("Initializing filter categories", {
+      clientDepartments,
+      clientExpertise,
+      categories,
+      showFilters,
+    });
+    if (showFilters) {
+      setFilterCategories([
+        {
+          filterName: "Industry",
+          filterOptions: categories,
+        },
+        {
+          filterName: "Business Outcome",
+          filterOptions: [
+            'Revenue Growth',
+            "Cost Reduction",
+            "Customer Experience",
+            "Risk Mitigation"
+          ],
+        },
+        {
+          filterName: "Implementation Complexity",
+          filterOptions:
+            clientDepartments && clientDepartments !== ""
+              ? clientDepartments.split(",").map((d) => d.trim())
+              : [
+                "Quick Wins",
+                "Strategic Initiatives",
+                "Transformational Plays"
+              ],
+        },
+        {
+          filterName: "Unexpected Outcomes",
+          filterOptions:
+            clientExpertise && clientExpertise !== ""
+              ? clientExpertise.split(",").map((e) => e.trim())
+              : [
+                "Technical Debt",
+                "Adoption Resistance",
+                "ROI Miscalculation",
+                "Integration & Scalability",
+                "Performance Issues"
+              ],
+        },
+      ]);
+    }
+  }, [clientDepartments, clientExpertise, categories, showFilters]);
 
   const handleLikeClick = () => {
     if (activeButton === "like") {
@@ -149,11 +182,11 @@ const SearchFilter = ({
 
   const handleIndustryToggle = (option: string) => {
     const newIndustries = selectedIndustries.includes(option)
-      ? selectedIndustries.filter(ind => ind !== option)
+      ? selectedIndustries.filter((ind) => ind !== option)
       : [...selectedIndustries, option];
-    
+
     setSelectedIndustries(newIndustries);
-    
+
     // Apply filter for each selected industry
     if (newIndustries.length > 0) {
       // Pass all industries to parent - parent should handle multi-filter logic
@@ -166,9 +199,9 @@ const SearchFilter = ({
   };
 
   const handleRemoveIndustry = (industry: string) => {
-    const newIndustries = selectedIndustries.filter(ind => ind !== industry);
+    const newIndustries = selectedIndustries.filter((ind) => ind !== industry);
     setSelectedIndustries(newIndustries);
-    
+
     if (newIndustries.length > 0) {
       onFilterChange(newIndustries.join(","));
     } else {
@@ -179,8 +212,8 @@ const SearchFilter = ({
   };
 
   const handleFilterSelect = (filterName: string, option: string) => {
-    // Skip if it's Industry - handled by checkboxes
-    if (filterName === "Industry") return;
+    // Skip if it's Industries - handled by checkboxes
+    if (filterName === "Industries") return;
 
     const newFilters = { ...selectedFilters };
     if (newFilters[filterName] === option) {
@@ -199,7 +232,6 @@ const SearchFilter = ({
     setSelectedFilters(newFilters);
     setActiveFilterDropdown(null);
   };
-
 
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 flex flex-col gap-4">
@@ -270,173 +302,190 @@ const SearchFilter = ({
       </div>
 
       {/* Filter Categories - Below Search Bar */}
-      <div ref={dropdownRef} className="flex flex-wrap gap-2 w-full items-center justify-center">
-        {filterCategories.map((category) => (
-          <div key={category.filterName} className="relative">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                setActiveFilterDropdown(
-                  activeFilterDropdown === category.filterName
-                    ? null
-                    : category.filterName
-                )
-              }
-              className={`flex items-center gap-2 border rounded-lg px-3 py-2 text-sm transition ${
-                (category.filterName === "Industry" && selectedIndustries.length > 0) || selectedFilters[category.filterName]
-                  ? "bg-[#00c193] text-white border-[#00c193]"
-                  : "bg-white text-gray-600 border-gray-300 hover:border-[#00c193]"
-              }`}
-            >
-              {category.filterName === "Industry" && selectedIndustries.length > 0
-                ? `${category.filterName} (${selectedIndustries.length})`
-                : selectedFilters[category.filterName] || category.filterName}
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`transition-transform ${
-                  activeFilterDropdown === category.filterName
-                    ? "rotate-180"
-                    : ""
-                }`}
-              >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </Button>
-
-            {activeFilterDropdown === category.filterName && (
-              <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
-                {category.filterOptions.map((option) => (
-                  <li
-                    key={option}
-                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${
-                      category.filterName === "Industry"
-                        ? "hover:bg-gray-50"
-                        : selectedFilters[category.filterName] === option
-                        ? "bg-[#00c193] text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                   onClick={(e) => {
-                      e.stopPropagation(); // prevent dropdown from closing
-                      if (category.filterName === "Industry") {
-                        handleIndustryToggle(option);
-                      } else {
-                        handleFilterSelect(category.filterName, option);
-                        setActiveFilterDropdown(null); // close only for single-select filters
-                      }
-                    }}
-
-                  >
-                    {category.filterName === "Industry" ? (
-                      <>
-                        <div className="relative flex items-center justify-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedIndustries.includes(option)}
-                            onChange={() => {}}
-                            className="w-5 h-5 rounded border-2 border-gray-300 appearance-none cursor-pointer checked:bg-blue-600 checked:border-blue-600 transition"
-                            style={{
-                              backgroundImage: selectedIndustries.includes(option)
-                                ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E\")"
-                                : "none",
-                              backgroundSize: "100% 100%",
-                              backgroundPosition: "center",
-                              backgroundRepeat: "no-repeat"
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm text-gray-700 font-medium">{option}</span>
-                      </>
-                    ) : (
-                      option
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
-
-        {/* Emerging Players Checkbox */}
-        <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow">
-          <input
-            type="checkbox"
-            id="emerging-players"
-            checked={emergingPlayersChecked}
-            onChange={(e) => setEmergingPlayersChecked(e.target.checked)}
-            className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
-          />
-          <label
-            htmlFor="emerging-players"
-            className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
+      {showFilters && (
+        <>
+          <div
+            ref={dropdownRef}
+            className="flex flex-wrap gap-2 w-full items-center justify-center"
           >
-            Emerging Players
-          </label>
-        </div>
-      </div>
-
-      {/* Selected Industries Tags */}
-      {selectedIndustries.length > 0 && (
-        <div className="flex flex-wrap gap-2 w-full items-center">
-          {selectedIndustries.map((industry) => (
-            <div
-              key={industry}
-              className="flex items-center gap-2 bg-[#D1FAE5] text-gray-800 px-4 py-2 rounded-full text-sm font-medium shadow-sm"
-            >
-              <div className="flex items-center gap-2">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className="text-blue-600"
+            {filterCategories.map((category) => (
+              <div key={category.filterName} className="relative">
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    setActiveFilterDropdown(
+                      activeFilterDropdown === category.filterName
+                        ? null
+                        : category.filterName
+                    )
+                  }
+                  disabled={
+                    category.filterOptions.length === 0
+                  }
+                  className={`flex items-center gap-2 border rounded-lg px-3 py-2 text-sm transition ${
+                    (category.filterName === "Industries" &&
+                      selectedIndustries.length > 0) ||
+                    selectedFilters[category.filterName]
+                      ? "bg-[#00c193] text-white border-[#00c193]"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-[#00c193]"
+                  }`}
                 >
-                  <rect
-                    x="3"
-                    y="3"
+                  {category.filterName === "Industries" &&
+                  selectedIndustries.length > 0
+                    ? `${category.filterName} (${selectedIndustries.length})`
+                    : selectedFilters[category.filterName] ||
+                      category.filterName}
+                  <svg
                     width="14"
                     height="14"
-                    rx="3"
-                    fill="#3B82F6"
-                  />
-                  <path
-                    d="M14.5 7L8.5 13L5.5 10"
-                    stroke="white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                  />
-                </svg>
-                <span>{industry}</span>
+                    className={`transition-transform ${
+                      activeFilterDropdown === category.filterName
+                        ? "rotate-180"
+                        : ""
+                    }`}
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </Button>
+
+                {activeFilterDropdown === category.filterName && (
+                  <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                    {category.filterOptions.map((option) => (
+                      <li
+                        key={option}
+                        className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${
+                          category.filterName === "Industries"
+                            ? "hover:bg-gray-50"
+                            : selectedFilters[category.filterName] === option
+                            ? "bg-[#00c193] text-white"
+                            : "hover:bg-gray-100"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent dropdown from closing
+                          if (category.filterName === "Industries") {
+                            handleIndustryToggle(option);
+                          } else {
+                            handleFilterSelect(category.filterName, option);
+                            setActiveFilterDropdown(null); // close only for single-select filters
+                          }
+                        }}
+                      >
+                        {category.filterName === "Industries" ? (
+                          <>
+                            <div className="relative flex items-center justify-center">
+                              <input
+                                type="checkbox"
+                                checked={selectedIndustries.includes(option)}
+                                onChange={() => {}}
+                                className="w-5 h-5 rounded border-2 border-gray-300 appearance-none cursor-pointer checked:bg-blue-600 checked:border-blue-600 transition"
+                                style={{
+                                  backgroundImage: selectedIndustries.includes(
+                                    option
+                                  )
+                                    ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E\")"
+                                    : "none",
+                                  backgroundSize: "100% 100%",
+                                  backgroundPosition: "center",
+                                  backgroundRepeat: "no-repeat",
+                                }}
+                              />
+                            </div>
+                            <span className="text-sm text-gray-700 font-medium">
+                              {option}
+                            </span>
+                          </>
+                        ) : (
+                          option
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              <button
-                onClick={() => handleRemoveIndustry(industry)}
-                className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition"
-                aria-label={`Remove ${industry}`}
+            ))}
+
+            {/* Emerging Players Checkbox */}
+            <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow">
+              <input
+                type="checkbox"
+                id="emerging-players"
+                checked={emergingPlayersChecked}
+                onChange={(e) => setEmergingPlayersChecked(e.target.checked)}
+                className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
+              />
+              <label
+                htmlFor="emerging-players"
+                className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+                Emerging Players
+              </label>
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Selected Industries Tags */}
+          {selectedIndustries.length > 0 && (
+            <div className="flex flex-wrap gap-2 w-full items-center">
+              {selectedIndustries.map((industry) => (
+                <div
+                  key={industry}
+                  className="flex items-center gap-2 bg-[#D1FAE5] text-gray-800 px-4 py-2 rounded-full text-sm font-medium shadow-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      className="text-blue-600"
+                    >
+                      <rect
+                        x="3"
+                        y="3"
+                        width="14"
+                        height="14"
+                        rx="3"
+                        fill="#3B82F6"
+                      />
+                      <path
+                        d="M14.5 7L8.5 13L5.5 10"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span>{industry}</span>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveIndustry(industry)}
+                    className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition"
+                    aria-label={`Remove ${industry}`}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
