@@ -1,5 +1,6 @@
 
 export interface Book {
+  report: string | undefined;
   id: string;
   title: string;
   author: string;
@@ -14,6 +15,18 @@ export interface Book {
   list_name: string;
 
 }
+
+export interface CoursePackage {
+  package_id: string;
+  package_name: string;
+  package_description: string;
+  image_link: string;
+  report_config: any;
+  jobaid_id: string;
+  books: Book[];
+}
+
+
 interface Recommendation {
   title: string;
   test_code: string;

@@ -26,6 +26,7 @@ interface BookSectionProps {
   email: string;
   all_books: Book[];
   jobAidId: string| null;
+  packageDetails: any;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -42,6 +43,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   email,
   all_books,
   jobAidId,
+  packageDetails,
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
@@ -54,6 +56,9 @@ const BookSection: React.FC<BookSectionProps> = ({
   const [viewMode, setViewMode] = useState<string>("all");
   const [likedBooks, setLikedBooks] = useState<Book[]>([]);
   const [laterBooks, setLaterBooks] = useState<Book[]>([]);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showLists, setShowLists] = useState<boolean>(false);
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
 
   const handleResetLibrary = () => {
     const randomId = Math.random().toString(36).substring(2, 10);
@@ -77,6 +82,14 @@ const BookSection: React.FC<BookSectionProps> = ({
     setFilteredBooks(filteredBooks);
     setCurrentSlide(0);
   }, [filteredBooks, setFilteredBooks, setCurrentSlide]);
+
+
+  useEffect(() => {
+    console.log('[package data:', packageDetails)
+    setShowFilters(packageDetails?.report_config?.show_filters ?? true);
+    setShowLists(packageDetails?.report_config?.show_lists ?? true);
+    setShowSearchBar(packageDetails?.report_config?.show_search ?? true);
+  }, [packageDetails]);
 
   // ✅ Fetch liked/later books once
   useEffect(() => {
@@ -109,9 +122,14 @@ const BookSection: React.FC<BookSectionProps> = ({
           books={books}
           viewMode={viewMode}
           handleResetLibrary={handleResetLibrary}
+          showFilters={showFilters}
+          showSearchBar={showSearchBar}
         />
-        <br />
-        <Carousel onFilterChange={onFilterChange} books={books} />
+        {showLists && <>
+          <br />
+          <Carousel onFilterChange={onFilterChange} books={books} />
+        </>}
+
       </div>
       {/* <PageRefresh onReset={handleResetLibrary}  /> */}
       <br />
