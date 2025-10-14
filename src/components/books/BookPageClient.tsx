@@ -87,7 +87,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       const author = book.author?.toLowerCase() || "";
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
-
+      
       return queries.some(
         (query) =>
           title.includes(query) ||
@@ -99,6 +99,50 @@ export default function BookPageClient({ id }: BookPageClientProps) {
 
     setFilteredBooks(filtered);
   };
+
+// it will get 'tag', 'list_name', 'business_outcome', 'implementation_complexity', 'unexpected_outcomes', and 'emerging_players' from the book object
+// and there will be AND filter applied on these fields.
+const handleMultipleSearch = (
+  tag?: string,
+  listName?: string,
+  businessOutcome?: string,
+  implementationComplexity?: string,
+  unexpectedOutcomes?: string,
+  emergingPlayers?: string
+) => {
+  // Normalize only when provided
+  const normalize = (val?: string) => val?.trim().toLowerCase() || null;
+
+  const normalized = {
+    tag: normalize(tag),
+    listName: normalize(listName),
+    businessOutcome: normalize(businessOutcome),
+    implementationComplexity: normalize(implementationComplexity),
+    unexpectedOutcomes: normalize(unexpectedOutcomes),
+    emergingPlayers: normalize(emergingPlayers),
+  };
+  console.log("Multiple search with filters:", normalized);
+
+  const filtered = allBooks.filter((book) => {
+    const bookTag = book.tag?.map((t: string) => t.toLowerCase()) || [];
+    const bookBusinessOutcome = book.business_outcome?.map((b: string) => b.toLowerCase()) || [];
+    const bookImplementationComplexity = book.implementation_complexity?.map((i: string) => i.toLowerCase()) || [];
+    const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
+    const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
+
+    return (
+      (!normalized.tag || bookTag.includes(normalized.tag)) &&
+      (!normalized.businessOutcome || bookBusinessOutcome.includes(normalized.businessOutcome)) &&
+      (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
+      (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
+      (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers)
+    );
+  });
+
+  // Update state
+  setFilteredBooks(filtered);
+};
+
 
   const handleFilterChange = (filter: string) => {
     const normalized = filter.trim().toLowerCase();
@@ -174,6 +218,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             currentSlide={currentSlide}
             onSlideChange={setCurrentSlide}
             onSearch={handleSearch}
+            onMultipleSearch={handleMultipleSearch}
             onFilterChange={handleFilterChange}
             onPlayBook={handlePlayBook}
             onOpenDescription={handleOpenDescription}
