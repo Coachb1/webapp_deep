@@ -5,6 +5,10 @@ export interface Book {
   title: string;
   author: string;
   tag: string[];
+  business_outcome: string[];
+  implementation_complexity: string[];
+  unexpected_outcomes: string[];
+  emerging_players: boolean;
   desc: string;
   img: string;
   audio: string;

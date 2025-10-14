@@ -17,6 +17,7 @@ interface BookSectionProps {
   currentSlide: number;
   onSlideChange: (index: number) => void;
   onSearch: (term: string) => void;
+  onMultipleSearch: (tag?: string, listName?: string, businessOutcome?: string, implementationComplexity?: string, unexpectedOutcomes?: string, emergingPlayers?: string) => void;
   onFilterChange: (filter: string) => void;
   onPlayBook: (book: Book, index: number) => void;
   onOpenDescription: (book: Book) => void;
@@ -34,6 +35,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   currentSlide,
   onSlideChange,
   onSearch,
+  onMultipleSearch,
   onFilterChange,
   onPlayBook,
   onOpenDescription,
@@ -56,7 +58,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   const [viewMode, setViewMode] = useState<string>("all");
   const [likedBooks, setLikedBooks] = useState<Book[]>([]);
   const [laterBooks, setLaterBooks] = useState<Book[]>([]);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [availableFilters, setAvailableFilters] = useState<string>("");
   const [showLists, setShowLists] = useState<boolean>(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
 
@@ -86,7 +88,7 @@ const BookSection: React.FC<BookSectionProps> = ({
 
   useEffect(() => {
     console.log('[package data:', packageDetails)
-    setShowFilters(packageDetails?.report_config?.show_filters ?? true);
+    setAvailableFilters(packageDetails?.report_config?.show_filters ?? []);
     setShowLists(packageDetails?.report_config?.show_lists ?? true);
     setShowSearchBar(packageDetails?.report_config?.show_search ?? true);
   }, [packageDetails]);
@@ -117,12 +119,13 @@ const BookSection: React.FC<BookSectionProps> = ({
       <div className="mt-12">
         <SearchFilter
           onSearch={onSearch}
+          onMultipleSearch={onMultipleSearch}
           onFilterChange={onFilterChange}
           setViewMode={setViewMode}
           books={books}
           viewMode={viewMode}
           handleResetLibrary={handleResetLibrary}
-          showFilters={showFilters}
+          availableFilters={availableFilters}
           showSearchBar={showSearchBar}
         />
         {showLists && <>
