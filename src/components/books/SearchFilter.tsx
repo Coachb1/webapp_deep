@@ -16,7 +16,8 @@ interface SearchFilterProps {
     businessOutcome?: string,
     implementationComplexity?: string,
     unexpectedOutcomes?: string,
-    emergingPlayers?: string
+    emergingPlayers?: string,
+    Function?: string
   ) => void;
   onFilterChange: (filter: string) => void;
   setViewMode: (index: string) => void;
@@ -89,6 +90,17 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Industry",
         filterOptions: categories,
+      });
+    }
+    if (availableFilters.includes("Function")) {
+      filterCategories.push({
+        filterName: "Function",
+        filterOptions: [
+          "Core Business",
+          "HR & Admin",
+          "Sales & Marketing",
+          "Customer Support & Logistics",
+        ],
       });
     }
     if (availableFilters.includes("Business Outcome")) {
@@ -246,6 +258,7 @@ const SearchFilter = ({
     onMultipleSearch(
       newFilters["Industry"],
       "",
+      newFilters["Function"],
       newFilters["Business Outcome"],
       newFilters["Implementation Complexity"],
       newFilters["Unexpected Outcomes"],
@@ -257,6 +270,7 @@ const SearchFilter = ({
     onMultipleSearch(
       selectedFilters["Industry"],
       "",
+      selectedFilters["Function"],
       selectedFilters["Business Outcome"],
       selectedFilters["Implementation Complexity"],
       selectedFilters["Unexpected Outcomes"],
@@ -327,7 +341,7 @@ const SearchFilter = ({
                 : "bg-[#00c193] text-white hover:bg-green-600"
             }`}
           >
-            Listen Later
+            Later
           </Button>
         </div>
       </div>

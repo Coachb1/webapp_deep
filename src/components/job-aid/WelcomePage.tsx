@@ -27,10 +27,10 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading, title, desc
   }
 
   return (
-    <div className="bg-transparent rounded-2xl shadow-none p-10 text-center max-w-xl w-full animate-[fadeInUp_0.8s_ease-out] mt-24 mx-auto">
+    <div className="bg-transparent rounded-2xl shadow-none p-10 text-center max-w-xl w-full animate-[fadeInUp_0.8s_ease-out] mt-2 mx-auto">
       <div className="flex flex-col items-center gap-8">
         {/* <h1 className="text-[2.2rem] font-bold text-gray-800 leading-tight mb-2 truncate"> */}
-        <h1 className="text-xl font-bold text-gray-800 leading-tight mb-2">
+        <h1 className="text-3xl font-bold text-gray-800 leading-tight mb-2">
           {title}
         </h1>
         <p className="text-sm text-gray-500 leading-relaxed max-w-md">

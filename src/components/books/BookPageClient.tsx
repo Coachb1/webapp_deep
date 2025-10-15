@@ -10,6 +10,7 @@ import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
 import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
+import CoachBotsWidget from "./CoachWidget";
 import { usePortalUser } from "./context/UserContext";
 
 interface BookPageClientProps {
@@ -108,7 +109,8 @@ const handleMultipleSearch = (
   businessOutcome?: string,
   implementationComplexity?: string,
   unexpectedOutcomes?: string,
-  emergingPlayers?: string
+  emergingPlayers?: string,
+  Function?: string
 ) => {
   // Normalize only when provided
   const normalize = (val?: string) => val?.trim().toLowerCase() || null;
@@ -261,6 +263,7 @@ const handleMultipleSearch = (
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}
+      <CoachBotsWidget up={showAudioPlayer} />
     </>
   );
 }
