@@ -122,6 +122,7 @@ const handleMultipleSearch = (
     implementationComplexity: normalize(implementationComplexity),
     unexpectedOutcomes: normalize(unexpectedOutcomes),
     emergingPlayers: normalize(emergingPlayers),
+    function: normalize(Function),
   };
   console.log("Multiple search with filters:", normalized);
 
@@ -131,13 +132,15 @@ const handleMultipleSearch = (
     const bookImplementationComplexity = book.implementation_complexity?.map((i: string) => i.toLowerCase()) || [];
     const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
     const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
+    const bookFunction = book.function?.map((f: string) => f.toLowerCase()) || [];
 
     return (
       (!normalized.tag || bookTag.includes(normalized.tag)) &&
       (!normalized.businessOutcome || bookBusinessOutcome.includes(normalized.businessOutcome)) &&
       (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
       (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
-      (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers)
+      (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers) &&
+      (!normalized.function || bookFunction.includes(normalized.function))
     );
   });
 

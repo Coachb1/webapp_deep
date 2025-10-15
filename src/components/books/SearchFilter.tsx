@@ -258,11 +258,13 @@ const SearchFilter = ({
     onMultipleSearch(
       newFilters["Industry"],
       "",
-      newFilters["Function"],
       newFilters["Business Outcome"],
       newFilters["Implementation Complexity"],
       newFilters["Unexpected Outcomes"],
+      "" , // Reset emerging players on other filter change
+      newFilters["Function"],
     );
+    console.log("Applied filters:", newFilters,newFilters["Function"]);
   };
 
   const handleEmergingPlayersToggle = () => {
@@ -270,11 +272,11 @@ const SearchFilter = ({
     onMultipleSearch(
       selectedFilters["Industry"],
       "",
-      selectedFilters["Function"],
       selectedFilters["Business Outcome"],
       selectedFilters["Implementation Complexity"],
       selectedFilters["Unexpected Outcomes"],
-      !emergingPlayersChecked ? "true" : "false"
+      !emergingPlayersChecked ? "true" : "false",
+      selectedFilters["Function"],
     );
   }
 

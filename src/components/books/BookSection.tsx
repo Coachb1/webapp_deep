@@ -152,7 +152,7 @@ const BookSection: React.FC<BookSectionProps> = ({
 
       <br />
       <br />
-      <CTA />
+      {/* <CTA /> */}
       {jobAidId && (
         <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
           <ConversationalForm
