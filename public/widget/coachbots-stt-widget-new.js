@@ -403,6 +403,8 @@ document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
 let isFlatWidget = window.location.pathname.includes('widget-container');
 
 let showBotSwitchMode = true;
+let showAudioInteractionButtonStt = true;
+let showSessionHistoryStt = true;
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -2149,7 +2151,7 @@ async function populateChatHistoryOptions(refresh = false) {
   }
 
   // 5. Show the dropdown wrapper
-  if (chathistorywrapper) {
+  if (chathistorywrapper && showSessionHistoryStt) {
     chathistorywrapper.style.display = "block";
   }
 
@@ -3228,6 +3230,7 @@ const getBotDetails2 = async (botId) => {
 
     if (botType === 'subject_specific_bot'){
       const mode_switch_button = document.getElementById('more-section')
+      showBotSwitchMode = false;
       if (mode_switch_button){
         mode_switch_button.style.display = 'none'
       }
@@ -9607,8 +9610,23 @@ async function getButtonControls(){
       showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
     }
 
+    if (ButtonControls?.bot_switch_button) {
+      showBotSwitchMode = ButtonControls?.bot_switch_button?.show === true;
+    }
+    if (ButtonControls?.audio_interaction_button) {
+      showAudioInteractionButtonStt = ButtonControls?.audio_interaction_button?.show === true;
+    }
+
     if (ButtonControls?.mode_button) {
       showModeButtonStt = ButtonControls?.mode_button?.show === true
+    }
+
+    if (ButtonControls?.session_history){
+      showSessionHistoryStt = ButtonControls?.session_history?.show === true;
+    }
+
+    if (showBotSwitchMode == false && showAudioInteractionButtonStt == false) {
+      showModeButtonStt = false;
     }
   }
 
@@ -9620,8 +9638,25 @@ async function getButtonControls(){
   if (snnipetConfigSTT.assessmentBtn ) {
     showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
   }
+
+
+  if (snnipetConfigSTT?.botSwitchButton) {
+    showBotSwitchMode = snnipetConfigSTT.botSwitchButton === 'true';
+  }
+  if (snnipetConfigSTT?.audioInteractionButton) {
+    showAudioInteractionButtonStt = snnipetConfigSTT.audioInteractionButton === 'true';
+  }
+  
   if (snnipetConfigSTT.modeBtn) {
     showModeButtonStt = snnipetConfigSTT.modeBtn === 'true';
+  }
+
+  if (showBotSwitchMode == false && showAudioInteractionButtonStt == false) {
+    showModeButtonStt = false;
+  }
+
+  if (snnipetConfigSTT?.sessionHistoryButton) {
+    showSessionHistoryStt = snnipetConfigSTT.sessionHistoryButton === 'true';
   }
 
   console.log(
@@ -9634,7 +9669,10 @@ async function getButtonControls(){
   const assessment_button = document.getElementById("assessment_button");
 
   const mode_button = document.getElementById("mode_button");
-
+  const switch_button = document.getElementById("more-button");
+  const audioButton = document.getElementById("audio-interaction");
+  const session_history = document.getElementById("chat-history-wrapper")
+  
   if (mindmap_button){
     mindmap_button.style.display = showMindmapButtonStt ? 'block': 'none'
   }
@@ -9647,7 +9685,18 @@ async function getButtonControls(){
     mode_button.style.display = showModeButtonStt ? 'block': 'none'
   }
 
-  
+  if (audioButton){
+    audioButton.style.display = showAudioInteractionButtonStt ? 'block': 'none'
+  }
+
+  if (switch_button) {
+    switch_button.style.display = showBotSwitchButtonStt ? 'block': 'none'
+  }
+
+  if (session_history) {
+    session_history.style.display = showSessionHistoryStt ? 'block': 'none'
+  }
+
 }
 
 function startModernTimer(seconds, onComplete) {
@@ -12018,7 +12067,7 @@ loadExternalModule().then(() => {
 
   <div id="more-menu" class='dropdown-menu'
     style="dispaly: none; max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
-    
+
     <!-- Mode Toggle inside dropdown -->
     <div id="more-section" style="display:${showBotSwitchMode? "flex": 'none'}; align-items:center; gap:10px;">
       <div class="toggle-wrapper">
@@ -12030,21 +12079,24 @@ loadExternalModule().then(() => {
         <span class="toggle-text">Sim</span>
       </div>
     </div>
-    <div id="audio-interaction" class="audio-interaction">
-  <p class="label" style="margin:0px;">🔊</p>
-  <div class="toggle-wrapper">
-    <span class="toggle-text">No</span>
-    <label class="switch">
-      <input type="checkbox" id="bot-audio-interaction-switch" />
-      <span class="slider"></span>
-    </label>
-    <span class="toggle-text">Yes</span>
-  </div>
-</div>
-  </div>
 
-  
-</div>
+    <!-- Audio Toggle inside dropdown -->
+
+    <div id="audio-interaction" class="audio-interaction">
+      <p class="label" style="margin:0px;">🔊</p>
+      <div class="toggle-wrapper">
+        <span class="toggle-text">No</span>
+        <label class="switch">
+          <input type="checkbox" id="bot-audio-interaction-switch" />
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-text">Yes</span>
+  </div>
+      </div>
+    </div>
+
+
+  </div>
 
 </div>
 
