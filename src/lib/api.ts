@@ -798,6 +798,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           author: m.author,
           tag: m.tag? m.tag?.split(',') : [],
           business_outcome: m.business_outcome? m.business_outcome.split(',') : [],
+          function: m.function? m.function.split(',') : [],
           implementation_complexity: m.implementation_complexity? m.implementation_complexity.split(',') : [],
           unexpected_outcomes: m.unexpected_outcome? m.unexpected_outcome.split(',') : [],
           emerging_players: m.emerging_player || true,

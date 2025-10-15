@@ -5,6 +5,7 @@ export interface Book {
   title: string;
   author: string;
   tag: string[];
+  function: string[];
   business_outcome: string[];
   implementation_complexity: string[];
   unexpected_outcomes: string[];

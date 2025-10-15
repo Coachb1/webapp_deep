@@ -30,30 +30,30 @@
 
 
 const CTA = () => {
-  return (
-    <section className="bg-[#fff0f2] border-y border-[#f0d9db] py-14 mt-4">
-      <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[1.1fr_1fr] items-center gap-8">
-        {/* Text Section */}
-        <div className="text-center md:text-left">
-          <h2 className="text-3xl sm:text-4xl lg:text-[41px] font-black text-[#0e3a3f] leading-tight mb-5">
-            Would you like to request a book innovation guide?
-          </h2>
-          <p className="text-[#0e3a3f] font-normal max-w-prose mx-auto md:mx-0 text-sm sm:text-base">
-            Request it via the chat widget.
-          </p>
-        </div>
+  // return (
+  //   <section className="bg-[#fff0f2] border-y border-[#f0d9db] py-14 mt-4">
+  //     <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[1.1fr_1fr] items-center gap-8">
+  //       {/* Text Section */}
+  //       <div className="text-center md:text-left">
+  //         <h2 className="text-3xl sm:text-4xl lg:text-[41px] font-black text-[#0e3a3f] leading-tight mb-5">
+  //           Would you like to request a book innovation guide?
+  //         </h2>
+  //         <p className="text-[#0e3a3f] font-normal max-w-prose mx-auto md:mx-0 text-sm sm:text-base">
+  //           Request it via the chat widget.
+  //         </p>
+  //       </div>
 
-        {/* Image Section */}
-        <div className="flex justify-center md:justify-end">
-          <img
-            src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1758006047/qv7wtviy89dy26pg2w2p.png"
-            alt="Reader illustration"
-            className="w-full h-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-[620px] rounded-lg object-cover md:ml-10"
-          />
-        </div>
-      </div>
-    </section>
-  );
+  //       {/* Image Section */}
+  //       <div className="flex justify-center md:justify-end">
+  //         <img
+  //           src="https://res.cloudinary.com/dtbl4jg02/image/upload/v1758006047/qv7wtviy89dy26pg2w2p.png"
+  //           alt="Reader illustration"
+  //           className="w-full h-auto max-w-xs sm:max-w-sm md:max-w-md lg:max-w-[620px] rounded-lg object-cover md:ml-10"
+  //         />
+  //       </div>
+  //     </div>
+  //   </section>
+  // );
 };
 
 export default CTA;

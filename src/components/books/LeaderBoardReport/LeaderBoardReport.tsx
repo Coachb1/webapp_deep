@@ -250,7 +250,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
             <FaTable />Activity Report
           </h2>
           <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
-            <FaArrowUp /> Ranked by Books Completed
+            <FaArrowUp /> Ranked by Report/Lesson count
           </span>
         </div>
 
@@ -273,7 +273,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
                       <FaEnvelope className="inline mr-2" /> Email
                     </th>
                     <th className="px-6 py-3 text-left">
-                      <FaBook className="inline mr-2" /> Last Completed Book
+                      <FaBook className="inline mr-2" /> Completed Lessons/Report
                     </th>
                     <th className="px-6 py-3 text-left">
                       <FaCalendar className="inline mr-2" /> Last Activity Date
@@ -283,7 +283,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
                 <tbody>
                   {currentRows.map((row, idx) => {
                     const lastBook =
-                      row.books[row.books.length - 1] || "No Books Completed";
+                      row.books[row.books.length - 1] || "No Case Completed";
                     const lastDate =
                       row.dates[row.dates.length - 1] || "No Date Available";
 

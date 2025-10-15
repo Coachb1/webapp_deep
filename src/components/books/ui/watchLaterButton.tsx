@@ -20,7 +20,7 @@ export default function WatchLaterButton({ isActive, onToggle }: WatchLaterButto
         className="text-xl cursor-pointer"
         aria-label="Watch later"
       />
-      <span className="text-sm">Listen Later</span>
+      <span className="text-sm">Later</span>
     </div>
   );
 }

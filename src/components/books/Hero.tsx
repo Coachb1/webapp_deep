@@ -53,7 +53,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
   };
 
   return (
-    <section className="bg-[#00c193] text-white py-14 md:py-18 lg:py-20">
+    <section className="bg-[#00c193] text-white py-14 md:py-18 lg:py-9">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
         {/* Text Section */}
         <div>

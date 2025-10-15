@@ -17,7 +17,7 @@ interface BookSectionProps {
   currentSlide: number;
   onSlideChange: (index: number) => void;
   onSearch: (term: string) => void;
-  onMultipleSearch: (tag?: string, listName?: string, businessOutcome?: string, implementationComplexity?: string, unexpectedOutcomes?: string, emergingPlayers?: string) => void;
+  onMultipleSearch: (tag?: string, listName?: string, businessOutcome?: string, implementationComplexity?: string, unexpectedOutcomes?: string, emergingPlayers?: string, Function?:string) => void;
   onFilterChange: (filter: string) => void;
   onPlayBook: (book: Book, index: number) => void;
   onOpenDescription: (book: Book) => void;
@@ -152,7 +152,7 @@ const BookSection: React.FC<BookSectionProps> = ({
 
       <br />
       <br />
-      <CTA />
+      {/* <CTA /> */}
       {jobAidId && (
         <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
           <ConversationalForm
