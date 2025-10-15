@@ -9669,7 +9669,7 @@ async function getButtonControls(){
   const assessment_button = document.getElementById("assessment_button");
 
   const mode_button = document.getElementById("mode_button");
-  const switch_button = document.getElementById("more-button");
+  const switch_button = document.getElementById("more-section");
   const audioButton = document.getElementById("audio-interaction");
   const session_history = document.getElementById("chat-history-wrapper")
   
@@ -9690,7 +9690,7 @@ async function getButtonControls(){
   }
 
   if (switch_button) {
-    switch_button.style.display = showBotSwitchButtonStt ? 'block': 'none'
+    switch_button.style.display = showBotSwitchMode ? 'block': 'none'
   }
 
   if (session_history) {
