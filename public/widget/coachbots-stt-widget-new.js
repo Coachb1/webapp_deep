@@ -9671,6 +9671,7 @@ async function getButtonControls(){
   const mode_button = document.getElementById("mode_button");
   const switch_button = document.getElementById("more-section");
   const audioButton = document.getElementById("audio-interaction");
+  console.log('audiobutton', audioButton, showAudioInteractionButtonStt)
   const session_history = document.getElementById("chat-history-wrapper")
   
   if (mindmap_button){
@@ -9855,7 +9856,7 @@ async function  updateAudioAllowed(initial, showToggel=true){
 
   const audiointeraction = document.getElementById("audio-interaction");
 
-  if (showToggel){
+  if (showToggel && showAudioInteractionButtonStt){
     audiointeraction.style.display = 'flex'
   } else{
   audiointeraction.style.display = 'none'
