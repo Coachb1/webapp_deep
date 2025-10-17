@@ -11214,11 +11214,12 @@ function disableAllDiagnosticButtons() {
       const RETRY_DELAY = 2000;   // 2s delay before retry
       let retries = 0;
       const MAX_RETRIES = 2;
+      let streamError = false;
 
       while (true) {
         let chunk;
         try {
-          chunk = await Promise.race([
+          chunk = await Promise.race([       
             reader.read(),
             new Promise((_, reject) =>
               setTimeout(() => reject(new Error("Stream timeout")), CHUNK_TIMEOUT)
@@ -11235,7 +11236,10 @@ function disableAllDiagnosticButtons() {
             continue; // try again without breaking
           } else {
             console.error("Max retries reached. Ending stream.");
-            break;
+            // Set flag to handle as error
+            streamError = true;
+            // Create a done chunk to trigger cleanup
+            chunk = { done: true, value: null };
           }
         }
 
@@ -11252,36 +11256,47 @@ function disableAllDiagnosticButtons() {
               indvMessage.remove();
             }
           });
+          console.log('stream Error', streamError)
+          // Handle stream error case
+          if (streamError) {
+            const errorMessage = document.createElement("p");
+            errorMessage.style.cssText = "color: #dc2626; font-weight: 600; margin-top: 8px; font-size: 14px;";
+            errorMessage.innerText = "⚠️ Something went wrong. The response could not be completed. Please try asking again.";
+            messageBubble.appendChild(errorMessage);
+            streamWithAudio = false;
+            
+          } else {
+            if (
+              messageText.innerText.toLowerCase().includes("I am sorry but") ||
+              messageText.innerText
+                .toLowerCase()
+                .includes("not something that I am familiar") ||
+              messageText.innerText.toLowerCase().includes("i cannot answer") ||
+              messageText.innerText.toLowerCase().includes("not familiar")
+            ) {
+              messageText.innerText +=
+                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+              if (streamWithAudio) {
+                text += " Please explain your question or comment in different words which I may be able to understand better.";
+              }
+            }
 
-          if (
-            messageText.innerText.toLowerCase().includes("I am sorry but") ||
-            messageText.innerText
-              .toLowerCase()
-              .includes("not something that I am familiar") ||
-            messageText.innerText.toLowerCase().includes("i cannot answer") ||
-            messageText.innerText.toLowerCase().includes("not familiar")
-          ) {
-            messageText.innerText +=
-              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
-            if (streamWithAudio) {
-              text += " Please explain your question or comment in different words which I may be able to understand better.";
+            if (botPreviousConversationHistory.includes(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+              if (streamWithAudio) {
+                text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
+              }
+            } else if (messageText.innerText === "" && botType !== "user_bot") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+
+                text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+              }
             }
           }
-
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
-            if (streamWithAudio) {
-              text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
-            }
-          } else if (messageText.innerText === "" && botType !== "user_bot") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-
-              text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
-            }
-          }
+          
           console.log("STREAMED MESSAGE 1 -> ", messageText.innerText);
 
           messageText.innerHTML =  parseMarkdown(messageText.innerText);
