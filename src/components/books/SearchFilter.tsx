@@ -450,6 +450,7 @@ const SearchFilter = ({
               Like
             </Button>
 
+<<<<<<< Updated upstream
             <Button
               onClick={handleLaterClick}
               className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${
@@ -457,6 +458,91 @@ const SearchFilter = ({
                   ? "bg-green-600 text-white"
                   : "bg-[#00c193] text-white hover:bg-green-600"
               }`}
+=======
+            {activeFilterDropdown === category.filterName && (
+              <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                {category.filterOptions.map((option) => (
+                  <li
+                    key={option}
+                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${
+                      category.filterName === "Industries"
+                        ? "hover:bg-gray-50"
+                        : selectedFilters[category.filterName] === option
+                        ? "bg-[#00c193] text-white"
+                        : "hover:bg-gray-100"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent dropdown from closing
+                      if (category.filterName === "Industries") {
+                        handleIndustryToggle(option);
+                      } else {
+                        handleFilterSelect(category.filterName, option);
+                        setActiveFilterDropdown(null); // close only for single-select filters
+                      }
+                    }}
+                  >
+                    {category.filterName === "Industries" ? (
+                      <>
+                        <div className="relative flex items-center justify-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedIndustries.includes(option)}
+                            onChange={() => {}}
+                            className="w-5 h-5 rounded border-2 border-gray-300 appearance-none cursor-pointer checked:bg-blue-600 checked:border-blue-600 transition"
+                            style={{
+                              backgroundImage: selectedIndustries.includes(
+                                option
+                              )
+                                ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E\")"
+                                : "none",
+                              backgroundSize: "100% 100%",
+                              backgroundPosition: "center",
+                              backgroundRepeat: "no-repeat",
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm text-gray-700 font-medium">
+                          {option}
+                        </span>
+                      </>
+                    ) : (
+                      option
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+
+        {/* Emerging Players Checkbox */}
+        {hasEmergingPlayers && (
+          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow">
+            <input
+              type="checkbox"
+              id="emerging-players"
+              checked={emergingPlayersChecked}
+              onChange={handleEmergingPlayersToggle}
+              className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
+            />
+            <label
+              htmlFor="emerging-players"
+            className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
+          >
+            Latest
+          </label>
+          </div>
+        )}
+      </div>
+
+      {/* Selected Industries Tags */}
+      {selectedIndustries.length > 0 && (
+        <div className="flex flex-wrap gap-2 w-full items-center">
+          {selectedIndustries.map((industry) => (
+            <div
+              key={industry}
+              className="flex items-center gap-2 bg-[#D1FAE5] text-gray-800 px-4 py-2 rounded-full text-sm font-medium shadow-sm"
+>>>>>>> Stashed changes
             >
               Listen Later
             </Button>
