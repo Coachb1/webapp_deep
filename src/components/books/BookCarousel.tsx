@@ -64,7 +64,7 @@ const handlePageChange = (page: number) => {
   return (
     <>
       <div className="w-full max-w-6xl mx-auto px-4">
-        <h4 className="text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide text-blue-600 mb-4">
+        <h4 className="text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide text-green-600 mb-4">
           Our Library
         </h4>
       </div>

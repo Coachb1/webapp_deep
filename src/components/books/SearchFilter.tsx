@@ -466,7 +466,7 @@ const SearchFilter = ({
               htmlFor="emerging-players"
             className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
           >
-            Emerging Players
+            Latest
           </label>
           </div>
         )}
