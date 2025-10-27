@@ -73,75 +73,92 @@ const SearchFilter = ({
     );
     return capitalized;
   }, []);
+  const functions = useMemo(() => {
+    const normalized = books.flatMap(
+      (book) => book.function?.map((f: string) => f.trim()) ?? []
+    );
+    return Array.from(new Set(normalized)).filter(Boolean);
+  }, [books]);
+
+  const businessOutcomes = useMemo(() => {
+    const normalized = books.flatMap(
+      (book) => book.business_outcome?.map((b: string) => b.trim()) ?? []
+    );
+    return Array.from(new Set(normalized)).filter(Boolean);
+  }, [books]);
+
+  const implementationComplexities = useMemo(() => {
+    const normalized = books.flatMap(
+      (book) =>
+        book.implementation_complexity?.map((c: string) => c.trim()) ?? []
+    );
+    return Array.from(new Set(normalized)).filter(Boolean);
+  }, [books]);
+
+  const unexpectedOutcomes = useMemo(() => {
+    const normalized = books.flatMap(
+      (book) => book.unexpected_outcomes?.map((u: string) => u.trim()) ?? []
+    );
+    return Array.from(new Set(normalized)).filter(Boolean);
+  }, [books]);
+
 
   // Initialize filter categories
   useEffect(() => {
-    console.log("Initializing filter categories", {
-      clientDepartments,
-      clientExpertise,
-      categories,
-      availableFilters,
+    
+  let filterCategories = [];
+
+  if (availableFilters.includes("Industry")) {
+    filterCategories.push({
+      filterName: "Industry",
+      filterOptions: categories,
     });
-    let filterCategories = [
-      
-    ];
+  }
+  if (availableFilters.includes("Function")) {
+    filterCategories.push({
+      filterName: "Function",
+      filterOptions: functions?.length > 0
+        ? functions
+        : [],
+    });
+  }
+  if (availableFilters.includes("Business Outcome")) {
+    filterCategories.push({
+      filterName: "Business Outcome",
+      filterOptions: businessOutcomes?.length > 0
+        ? businessOutcomes
+        : [],
+    });
+  }
+  if (availableFilters.includes("Implementation Complexity")) {
+    filterCategories.push({
+      filterName: "Implementation Complexity",
+      filterOptions: implementationComplexities?.length > 0
+        ? implementationComplexities
+        : [],
+    });
+  }
+  if (availableFilters.includes("Unexpected Outcomes")) {
+    filterCategories.push({
+      filterName: "Unexpected Outcomes",
+      filterOptions: unexpectedOutcomes?.length > 0
+        ? unexpectedOutcomes
+        : [],
+    });
+  }
 
-    if (availableFilters.includes("Industry")) {
-      filterCategories.push({
-        filterName: "Industry",
-        filterOptions: categories,
-      });
-    }
-    if (availableFilters.includes("Function")) {
-      filterCategories.push({
-        filterName: "Function",
-        filterOptions: [
-          "Core Business",
-          "HR & Admin",
-          "Sales & Marketing",
-          "Customer Support & Logistics",
-        ],
-      });
-    }
-    if (availableFilters.includes("Business Outcome")) {
-      filterCategories.push({
-        filterName: "Business Outcome",
-        filterOptions: [
-          "Revenue Growth",
-          "Cost Reduction",
-          "Customer Experience",
-          "Risk Mitigation",
-        ],
-      });
-    }
-    if (availableFilters.includes("Implementation Complexity")) {
-      filterCategories.push({
-        filterName: "Implementation Complexity",
-        filterOptions:
-          clientDepartments && clientDepartments !== ""
-            ? clientDepartments.split(",").map((d) => d.trim())
-            : ["Quick Wins", "Strategic Initiatives", "Transformational Plays"],
-      });
-    }
-    if (availableFilters.includes("Unexpected Outcomes")) {
-      filterCategories.push({
-        filterName: "Unexpected Outcomes",
-        filterOptions:
-          clientExpertise && clientExpertise !== ""
-            ? clientExpertise.split(",").map((e) => e.trim())
-            : [
-                "Technical Debt",
-                "Adoption Resistance",
-                "ROI Miscalculation",
-                "Integration & Scalability",
-                "Performance Issues",
-              ],
-      });
-    }
+  setFilterCategories(filterCategories);
+  setHasEmergingPlayers(availableFilters.includes("Emerging Players"));
+}, [
+  availableFilters,
+  categories,
+  functions,
+  businessOutcomes,
+  implementationComplexities,
+  unexpectedOutcomes,
+]);
 
-    setFilterCategories(filterCategories);
-    setHasEmergingPlayers(availableFilters.includes('Emerging Players'))
-  }, [clientDepartments, clientExpertise, categories, availableFilters]);
+
 
   const handleLikeClick = () => {
     if (activeButton === "like") {
