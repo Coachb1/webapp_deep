@@ -402,9 +402,9 @@ const createLink = (url, text) => {
 document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
 let isFlatWidget = window.location.pathname.includes('widget-container');
 
-let showBotSwitchMode = true;
+let showBotSwitchMode = false;
 let showAudioInteractionButtonStt = true;
-let showSessionHistoryStt = true;
+let showSessionHistoryStt = false;
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -3130,10 +3130,10 @@ async function populateDropdown(menuId ) {
     let items = [];
     if (menuId === "mindmap-menu") {
       items = MindMapLinks || [];
-      enableDisablebuttons("mindmap-btn", items.length === 0);
+      // enableDisablebuttons("mindmap-btn", items.length === 0);
     } else if (menuId === "assessment-menu") {
       items = AssessmentLinks || [];
-      enableDisablebuttons("assessment-btn", items.length === 0);
+      // enableDisablebuttons("assessment-btn", items.length === 0);
     }
 
     items.forEach(item => {
@@ -3701,8 +3701,8 @@ const getBotDetails2 = async (botId) => {
       intializeBotsetup()
       
     } else {
-      enableDisablebuttons("assessment-btn", true);
-      enableDisablebuttons("mindmap-btn", true);
+      // enableDisablebuttons("assessment-btn", true);
+      // enableDisablebuttons("mindmap-btn", true);
     }
 
       // show the buttons if coaching bot.
@@ -9599,19 +9599,31 @@ function formatTime(seconds) {
 
 async function getButtonControls(){
   // first we check client one then snnipet one, snnipet one override client one
+  
+  if (botId !== undefined) {
+    showBotSwitchMode = true;
+    showSessionHistoryStt = true;
+  }
   if (clientuserInformationSTT?.button_controlls){
     const ButtonControls = clientuserInformationSTT?.button_controlls
 
     console.log('butttoncontroll', ButtonControls)
-    if (ButtonControls?.mindmap_button) {
-      showMindmapButtonStt = ButtonControls?.mindmap_button?.show === true
-    }
-    if (ButtonControls?.assessment_button) {
-      showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
-    }
 
-    if (ButtonControls?.bot_switch_button) {
-      showBotSwitchMode = ButtonControls?.bot_switch_button?.show === true;
+
+    if (botId !== undefined ) {
+      if (ButtonControls?.bot_switch_button) {
+        showBotSwitchMode = ButtonControls?.bot_switch_button?.show === true;
+      }
+      if (ButtonControls?.session_history){
+        showSessionHistoryStt = ButtonControls?.session_history?.show === true;
+      }
+
+      if (ButtonControls?.mindmap_button) {
+        showMindmapButtonStt = ButtonControls?.mindmap_button?.show === true
+      }
+      if (ButtonControls?.assessment_button) {
+        showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
+      }
     }
     if (ButtonControls?.audio_interaction_button) {
       showAudioInteractionButtonStt = ButtonControls?.audio_interaction_button?.show === true;
@@ -9621,28 +9633,30 @@ async function getButtonControls(){
       showModeButtonStt = ButtonControls?.mode_button?.show === true
     }
 
-    if (ButtonControls?.session_history){
-      showSessionHistoryStt = ButtonControls?.session_history?.show === true;
-    }
 
-    if (showBotSwitchMode == false && showAudioInteractionButtonStt == false) {
-      showModeButtonStt = false;
-    }
   }
 
 
   // now checking snnipetconfigstt
-  if (snnipetConfigSTT.mindmapBtn) {
-    showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
-  }
-  if (snnipetConfigSTT.assessmentBtn ) {
-    showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
-  }
 
 
-  if (snnipetConfigSTT?.botSwitchButton) {
-    showBotSwitchMode = snnipetConfigSTT.botSwitchButton === 'true';
+  if (botId !== undefined ) {
+    if (snnipetConfigSTT?.botSwitchButton) {
+      showBotSwitchMode = snnipetConfigSTT.botSwitchButton === 'true';
+    }
+
+    if (snnipetConfigSTT?.sessionHistoryButton) {
+      showSessionHistoryStt = snnipetConfigSTT.sessionHistoryButton === 'true';
+    }
+
+    if (snnipetConfigSTT.mindmapBtn) {
+      showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
+    }
+    if (snnipetConfigSTT.assessmentBtn ) {
+      showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
+    }
   }
+
   if (snnipetConfigSTT?.audioInteractionButton) {
     showAudioInteractionButtonStt = snnipetConfigSTT.audioInteractionButton === 'true';
   }
@@ -9651,19 +9665,19 @@ async function getButtonControls(){
     showModeButtonStt = snnipetConfigSTT.modeBtn === 'true';
   }
 
+
+
   if (showBotSwitchMode == false && showAudioInteractionButtonStt == false) {
     showModeButtonStt = false;
   }
 
-  if (snnipetConfigSTT?.sessionHistoryButton) {
-    showSessionHistoryStt = snnipetConfigSTT.sessionHistoryButton === 'true';
-  }
 
   console.log(
+    'buttt',
     showMindmapButtonStt,
     showAssessmentButtonStt,
     showModeButtonStt
-    )
+    );
 
   const mindmap_button = document.getElementById("mindmap_button");
   const assessment_button = document.getElementById("assessment_button");
