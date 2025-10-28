@@ -36,7 +36,7 @@ export default function CoachBotWidget({ up }: { up: boolean }) {
     <>
       <Script
         id="coachbots-script"
-        src="https://playground.coachbots.com/widget/coachbots-stt-widget-new.js"
+        src="/widget/coachbots-stt-widget-new.js"
         defer
         strategy="afterInteractive"
       />

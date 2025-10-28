@@ -1949,7 +1949,7 @@ const feedbackBotInitialFlow = async (flow) => {
 };
 async function getResponseStyleList() {
   try {
-    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/`, {
+    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/?client_name=${clientNameStt || sttWidgetClientId}`, {
       method: "GET",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
@@ -3131,8 +3131,12 @@ async function populateDropdown(menuId ) {
     if (menuId === "mindmap-menu") {
       items = MindMapLinks || [];
       // enableDisablebuttons("mindmap-btn", items.length === 0);
+      const mindmapBtn = document.getElementById("mindmap-btn");
+      mindmapBtn.style.display = "none";
     } else if (menuId === "assessment-menu") {
       items = AssessmentLinks || [];
+      const assessmentBtn = document.getElementById("assessment-btn");
+      assessmentBtn.style.display = "none";
       // enableDisablebuttons("assessment-btn", items.length === 0);
     }
 
@@ -3699,10 +3703,9 @@ const getBotDetails2 = async (botId) => {
     // }
     if(window.user) {
       intializeBotsetup()
-      
     } else {
-      // enableDisablebuttons("assessment-btn", true);
-      // enableDisablebuttons("mindmap-btn", true);
+      enableDisablebuttons("assessment-btn", true);
+      enableDisablebuttons("mindmap-btn", true);
     }
 
       // show the buttons if coaching bot.
@@ -12385,9 +12388,7 @@ function adjustHeaderLayout() {
     header.style.flexDirection = "row";
   }
 }
-if (!window.user){
-  enableDisablebuttons('more-btn', true)
-}
+
 
 window.addEventListener("load", adjustHeaderLayout);
 window.addEventListener("resize", adjustHeaderLayout);
@@ -12777,6 +12778,10 @@ const customMicButton = document.getElementById("startMicBtn");
         </button>
       </div>
     </div>`;
+  }
+
+  if (!window.user){
+    enableDisablebuttons('more-btn', true)
   }
   // if botid is null or notdefined show other message
   console.log(botId, snnipetConfigSTT?.createBotSheetUrl, 'snnipet')
