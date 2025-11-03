@@ -9,9 +9,11 @@ interface QuestionFlowProps {
   totalQuestions: number;
   onContinue: (answer: string) => void;
   onIgnore: () => void;
+  onGoBack?: () => void;
   error?: string;
   currentAnswer?: string;
   suggestions?: string; // Suggestions for the current question
+  showBackButton?: boolean;
 }
 
 const QuestionFlow: React.FC<QuestionFlowProps> = ({
@@ -20,9 +22,11 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
   totalQuestions,
   onContinue,
   onIgnore,
+  onGoBack,
   error,
   currentAnswer,
-  suggestions
+  suggestions,
+  showBackButton
 }) => {
   const [answer, setAnswer] = useState<string>(currentAnswer || "");
   const [showError, setShowError] = useState(false);
@@ -138,6 +142,27 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
     >
       {/* Header */}
       <div className="mb-8">
+        {showBackButton && (
+          <button
+            onClick={onGoBack}
+            className="mb-4 px-4 py-2 text-sm font-medium bg-[#00c193] text-white rounded flex items-center gap-2 hover:bg-[#00b084] transition-colors"
+          >
+            <svg 
+              className="w-4 h-4" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back
+          </button>
+        )}
         <div className="w-full h-2 bg-gray-200 rounded overflow-hidden mb-4">
           <div
             className="h-full bg-[#00c193] transition-all duration-300"
