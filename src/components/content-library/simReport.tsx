@@ -177,51 +177,53 @@ const LeaderBoardReport: React.FC = () => {
 
   // ADD THIS FUNCTION HERE
   const downloadReport = (format: 'csv' | 'xlsx') => {
-  // ✅ Flatten user sessions into individual rows
-  const exportData = groupedData.flatMap((user, idx) => {
-    const sessions = user.test_attempt_session_list || [];
+    // ✅ Flatten user sessions into individual rows
+    const exportData = groupedData.flatMap((user, idx) => {
+      const sessions = user.test_attempt_session_list || [];
 
-    if (sessions.length === 0) {
-      // No sessions — still one row for this user
-      return [
-        {
-          Rank: idx + 1,
-          Name: user.name,
-          Email: user.email,
-          "Session Title": "No Sessions Completed",
-          "Session Date": "No Date Available",
-          "Session Report Link": "No Link Available",
-        },
-      ];
-    }
+      if (sessions.length === 0) {
+        // No sessions — still one row for this user
+        return [
+          {
+            Rank: idx + 1,
+            Name: user.name,
+            Email: user.email,
+            "Session Title": "No Sessions Completed",
+            "Session Date": "No Date Available",
+            "Session Report Link": "No Link Available",
+            "Session Score": "No Score Available",
+          },
+        ];
+      }
 
-    // Create one row per session
-    return sessions.map((s: any, sessionIdx: number) => ({
-      Rank: idx + 1,
-      Name: user.name,
-      Email: user.email,
-      "Total Sessions Completed": sessions.length,
-      "Session Title": s.title || `Session ${sessionIdx + 1}`,
-      "Session Date": s.date || "No Date Available",
-      "Session Report Link": s.report_link || s.link || "No Link Available",
+      // Create one row per session
+      return sessions.map((s: any, sessionIdx: number) => ({
+        Rank: idx + 1,
+        Name: user.name,
+        Email: user.email,
+        "Total Sessions Completed": sessions.length,
+        "Session Title": s.title || `Session ${sessionIdx + 1}`,
+        "Session Date": s.date || "No Date Available",
+        "Session Score": s.avg_score !== undefined ? Number(s.avg_score).toFixed(1) : "No Score Available",
+        "Session Report Link": s.report_link || s.link || "No Link Available",
+      }));
+    });
+
+    // ✅ Generate Excel or CSV
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Session Report");
+
+    // Auto column width
+    const colWidths = Object.keys(exportData[0] || {}).map((key) => ({
+      wch: Math.max(25, key.length + 2),
     }));
-  });
+    ws["!cols"] = colWidths;
 
-  // ✅ Generate Excel or CSV
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Session Report");
-
-  // Auto column width
-  const colWidths = Object.keys(exportData[0] || {}).map((key) => ({
-    wch: Math.max(25, key.length + 2),
-  }));
-  ws["!cols"] = colWidths;
-
-  const timestamp = new Date().toISOString().split("T")[0];
-  const filename = `session_report_${timestamp}.${format}`;
-  XLSX.writeFile(wb, filename, { bookType: format === "csv" ? "csv" : "xlsx" });
-};
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `session_report_${timestamp}.${format}`;
+    XLSX.writeFile(wb, filename, { bookType: format === "csv" ? "csv" : "xlsx" });
+  };
 
 
 
@@ -314,86 +316,91 @@ const LeaderBoardReport: React.FC = () => {
               <table className="w-full text-sm">
                 <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-3 text-left">
+                    <th className="px-6 py-3 text-left whitespace-nowrap">
                       <FaTrophy className="inline mr-2" /> Rank
                     </th>
-                    <th className="px-6 py-3 text-left">
+                    <th className="px-6 py-3 text-left whitespace-nowrap">
                       <FaUser className="inline mr-2" /> Name
                     </th>
-                    <th className="px-6 py-3 text-left">
+                    <th className="px-6 py-3 text-left whitespace-nowrap">
                       <FaEnvelope className="inline mr-2" /> Email
                     </th>
-                    <th className="px-6 py-3 text-left">
-                      <FaBook className="inline mr-2" /> Completed Sessions/Report
+                    <th className="px-6 py-3 text-left whitespace-nowrap">
+                      <FaBook className="inline mr-2" /> Completed Sessions
                     </th>
-                    <th className="px-6 py-3 text-left">
-                      <FaCalendar className="inline mr-2" /> Last Activity Date
+                    <th className="px-6 py-3 text-left whitespace-nowrap">
+                      <FaCalendar className="inline mr-2" /> Last Activity
                     </th>
+                    <th className="px-6 py-3 text-left whitespace-nowrap">Score</th>
+                    <th className="px-6 py-3 text-left whitespace-nowrap">Link</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentRows.map((row, idx) => {
-                    const lastBook =
-                      (Array.isArray(row.books) && row.books.length > 0
-                        ? row.books[row.books.length - 1]
-                        : "No Case Completed");
-                    const lastDate =
-                      (Array.isArray(row.dates) && row.dates.length > 0
-                        ? row.dates[row.dates.length - 1]
-                        : "No Date Available");
+                  {currentRows.map((user, idx) => {
+                    const rank = startIndex + idx + 1;
+                    const sessions = user.test_attempt_session_list || [];
 
+                    // If no sessions — still display user with fallback values
+                    if (sessions.length === 0) {
+                      return (
+                        <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                          <td className="px-6 py-4 font-bold text-gray-900">#{rank}</td>
+                          <td className="px-6 py-4 font-semibold text-gray-900">{user.name}</td>
+                          <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                          <td className="px-6 py-4 text-gray-600">No Sessions</td>
+                          <td className="px-6 py-4 text-gray-600">—</td>
+                          <td className="px-6 py-4 text-gray-600">—</td>
+                          <td className="px-6 py-4 text-gray-600">—</td>
+                        </tr>
+                      );
+                    }
 
-                    return (
-                      <tr
-                        key={idx}
-                        className="border-b border-gray-200 hover:bg-gray-50 transition"
-                      >
-                        <td className="px-6 py-4 font-bold text-gray-900">
-                          #{startIndex + idx + 1}
-                        </td>
-                        <td className="px-6 py-4 font-semibold text-gray-900">
-                          {row.name}
-                        </td>
-                        <td className="px-6 py-4 text-gray-600">{row.email}</td>
+                    // ✅ For users with sessions → each session gets its own row + full user info
+                    return sessions.map((session: any, sIdx: number) => (
+                      <tr key={`${idx}-${sIdx}`} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                        {/* Rank on every row */}
+                        <td className="px-6 py-4 font-bold text-gray-900">#{rank}</td>
+
+                        {/* Repeat name */}
+                        <td className="px-6 py-4 font-semibold text-gray-900">{user.name}</td>
+
+                        {/* Repeat email */}
+                        <td className="px-6 py-4 text-gray-600">{user.email}</td>
+
+                        {/* Session Title */}
                         <td className="px-6 py-4 text-gray-800">
-                          {row.test_attempt_session_list?.length > 0 ? (
-                            <>
-                              <div className="font-semibold flex items-center gap-2">
-                                {truncateText(
-                                  row.test_attempt_session_list[row.test_attempt_session_list.length - 1].title,
-                                  30
-                                )}
-
-                                {/* Show “View Report” if only one session */}
-                                {row.test_attempt_session_list.length === 1 ? (
-                                  <a
-                                    href={row.test_attempt_session_list[0].link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#00c193] text-xs underline"
-                                  >
-                                    View Report
-                                  </a>
-                                ) : (
-                                  // Show “View all” if more than one session
-                                  <button
-                                    onClick={() => setSelectedUser(row)}
-                                    className="text-[#00c193] text-xs underline"
-                                  >
-                                    View all ({row.test_attempt_session_list.length})
-                                  </button>
-                                )}
-                              </div>
-                            </>
-                          ) : (
-                            <div>No Sessions</div>
-                          )}
-
+                          {truncateText(session.title || "No Title", 20)}
                         </td>
 
-                        <td className="px-6 py-4 text-gray-600">{lastDate}</td>
+                        {/* Date */}
+                        <td className="px-6 py-4 text-gray-600">
+                          {session.date || "No Date"}
+                        </td>
+
+                        {/* ✅ Score Column */}
+                        <td className="px-6 py-4 text-gray-800">
+                          {session.avg_score !== undefined ? Number(session.avg_score).toFixed(1)  : "—"}
+                        </td>
+
+
+                        {/* ✅ Link Column */}
+                        <td className="px-6 py-4">
+                          {session.link ? (
+                            <a 
+                              href={session.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="inline-block bg-[#00c193] hover:bg-[#00a87f] text-white text-xs font-semibold px-3 py-1.5 rounded-md whitespace-nowrap transition-colors duration-200"
+                            >
+                              View Report
+                            </a>
+                          ) : (
+                            "No Link"
+                          )}
+                        </td>
+
                       </tr>
-                    );
+                    ));
                   })}
                 </tbody>
               </table>
