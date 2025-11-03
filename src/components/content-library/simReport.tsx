@@ -47,7 +47,7 @@ export const getClientActivityReport = async (backend: string, clientName: strin
     }
 
     const response = await fetch(
-      `http://127.0.0.1:8001/api/v1/accounts/client-participant-report-data/?client_name=${clientName}`,
+      `${backend}/accounts/client-participant-report-data/?client_name=${clientName}`,
       {
         method: "GET",
         headers: {
