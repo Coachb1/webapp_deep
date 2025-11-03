@@ -242,7 +242,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 
             `}
           >
-            Continue
+            {questionNumber==totalQuestions?"Submit":"Continue"}
           </button>
 
           {/* Uncomment if you want Ignore back */}
