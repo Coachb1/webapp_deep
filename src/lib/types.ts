@@ -383,6 +383,8 @@ export interface UserInfoType {
   is_active?: boolean;
   leaderboard_report_protected?: boolean;
   leaderboard_report_password?: string;
+  snnipetConfig?: any;
+  libraryBotConfig?: any;
 }
 
 export interface PositionedUserTypes {

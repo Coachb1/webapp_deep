@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { usePortalUser } from "./context/UserContext";
+import { ActionsPerMonth } from "@/lib/api";
 
 interface HeroProps {
   title: string;
@@ -9,11 +11,40 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
+  // State to manage user loading status
+  const {user, userInfo} = usePortalUser();
+  const [showBadge, setShowBadge] = useState(false);
+  const [completedTransformations, setCompletedTransformations]  = useState(0);
+  const [completedCases, setCompletedCases] = useState(0);
+
   const scrollToSection = () => {
     document
       .getElementById("section")
       ?.scrollIntoView({ behavior: "smooth" });
   };
+
+    useEffect(() => {
+    // Show badge if user has admin access
+    if (userInfo?.libraryBotConfig?.show_certification_badge === true) {
+      setShowBadge(true);
+    } else {
+      setShowBadge(false);
+    }
+
+
+    async function getLibActions(userId:string){
+      const data = await ActionsPerMonth(userId);
+      if (data.jobaid_sessions_created){
+        setCompletedTransformations(data.jobaid_sessions_created);
+      }
+      if (data.modules_completed){
+        setCompletedCases(data.modules_completed);
+      }
+    }
+    if (user?.user_data?.uid){
+      getLibActions(user?.user_data?.uid)
+    }
+  }, [userInfo]);
 
   return (
     <>
@@ -45,6 +76,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
       </section>
 
       {/* Progress Section */}
+      { showBadge && (
       <section className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Title Section */}
@@ -60,28 +92,27 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
             <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Case Progress this Month</h3>
               <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                <span className="text-yellow-400">★</span>
-                <span className="text-yellow-400">★</span>
-                <span className="text-yellow-400">★</span>
-                <span className="text-gray-200">★</span>
-                <span className="text-gray-200">★</span>
+                {Array.from({ length: Math.min(completedCases, 5) }).map((_, i) => (
+                  <span key={i} className="text-yellow-400">★</span>
+                ))}
               </div>
-              <p className="mt-3 text-center text-gray-600">3/5 cases completed this month</p>
+              <p className="mt-3 text-center text-gray-600">{Math.min(completedCases, 5)}/5 cases completed this month</p>
             </div>
 
             {/* Transformation Logs Card */}
             <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Tranformation Logs this Month</h3>
               <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                <span className="text-yellow-400">★</span>
-                <span className="text-yellow-400">★</span>
-                <span className="text-gray-200">★</span>
+                {Array.from({ length: Math.min(completedTransformations, 3) }).map((_, i) => (
+                  <span key={i} className="text-yellow-400">★</span>
+                ))}
               </div>
-              <p className="mt-3 text-center text-gray-600">1/3 transformations logs this month</p>
+              <p className="mt-3 text-center text-gray-600">{Math.min(completedTransformations, 3)}/3 transformations logs this month</p>
             </div>
           </div>
         </div>
       </section>
+      )}
     </>
   );
 };

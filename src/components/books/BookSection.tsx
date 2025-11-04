@@ -52,7 +52,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   console.log("Name:", name);
   console.log("Email:", email);
   const pathname = usePathname();
-  const { user } = usePortalUser();
+  const { user, userInfo, loading } = usePortalUser();
   const userId = user?.user_data?.uid || null;
 
   const [viewMode, setViewMode] = useState<string>("all");
@@ -117,6 +117,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
+        {!loading && (
         <SearchFilter
           onSearch={onSearch}
           onMultipleSearch={onMultipleSearch}
@@ -127,7 +128,8 @@ const BookSection: React.FC<BookSectionProps> = ({
           handleResetLibrary={handleResetLibrary}
           availableFilters={availableFilters}
           showSearchBar={showSearchBar}
-        />
+          defaultFilters={userInfo.libraryBotConfig?.default_filters || {}}
+        />)}
         {showLists && <>
           <br />
           <Carousel onFilterChange={onFilterChange} books={books} />
@@ -137,6 +139,7 @@ const BookSection: React.FC<BookSectionProps> = ({
       {/* <PageRefresh onReset={handleResetLibrary}  /> */}
       <br />
       <br />
+      {!loading&&(
       <BookCarousel
         books={books}
         currentSlide={currentSlide}
@@ -149,6 +152,7 @@ const BookSection: React.FC<BookSectionProps> = ({
         laterBooks={laterBooks}
         setViewMode={setViewMode}
       />
+)}
 
       <br />
       <br />

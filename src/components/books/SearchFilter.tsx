@@ -26,6 +26,7 @@ interface SearchFilterProps {
   handleResetLibrary: () => void;
   availableFilters: string;
   showSearchBar: boolean;
+  defaultFilters: Record<string, string>;
   clientDepartments?: string;
   clientExpertise?: string;
 }
@@ -42,6 +43,7 @@ const SearchFilter = ({
   clientExpertise,
   availableFilters,
   showSearchBar,
+  defaultFilters
 }: SearchFilterProps) => {
   const [activeButton, setActiveButton] = useState<"like" | "later" | null>(
     null
@@ -78,14 +80,14 @@ const SearchFilter = ({
       (book) => book.function?.map((f: string) => f.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
-  }, [books]);
+  }, []);
 
   const businessOutcomes = useMemo(() => {
     const normalized = books.flatMap(
       (book) => book.business_outcome?.map((b: string) => b.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
-  }, [books]);
+  }, []);
 
   const implementationComplexities = useMemo(() => {
     const normalized = books.flatMap(
@@ -93,14 +95,14 @@ const SearchFilter = ({
         book.implementation_complexity?.map((c: string) => c.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
-  }, [books]);
+  }, []);
 
   const unexpectedOutcomes = useMemo(() => {
     const normalized = books.flatMap(
       (book) => book.unexpected_outcomes?.map((u: string) => u.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
-  }, [books]);
+  }, []);
 
 
   // Initialize filter categories
@@ -261,6 +263,8 @@ const SearchFilter = ({
     // Skip if it's Industries - handled by checkboxes
     if (filterName === "Industries") return;
 
+    console.log("handlefilterselect")
+
     const newFilters = { ...selectedFilters };
     console.log("Selected filter:", filterName, "Option:", option, selectedFilters);
     if (newFilters[filterName] === option) {
@@ -296,6 +300,53 @@ const SearchFilter = ({
       selectedFilters["Function"],
     );
   }
+
+    useEffect(() => {
+    // On mount, apply default filters if defaults
+    
+    const defaultSelectedFilters: Record<string, string> = {};
+
+    // Industry take from defaults
+    if (defaultFilters["industry"]?.length > 0) {
+      defaultSelectedFilters["Industry"] = defaultFilters["industry"];
+    }
+    
+    // Other filters
+    if (defaultFilters["business_outcome"]?.length > 0) {
+      defaultSelectedFilters["Business Outcome"] = defaultFilters["business_outcome"];
+    }
+    if (defaultFilters["implementation_complexity"]?.length > 0) {
+      defaultSelectedFilters["Implementation Complexity"] = defaultFilters["implementation_complexity"];
+    }
+    if (defaultFilters["unexpected_outcomes"]?.length > 0) {
+      defaultSelectedFilters["Unexpected Outcomes"] = defaultFilters["unexpected_outcomes"];
+    }
+    if (defaultFilters["function"]?.length > 0) {
+      defaultSelectedFilters["Function"] = defaultFilters["function"];
+    }
+    let defaultEmergingPlayers= ""
+    if (defaultFilters['emerging_players'].length >0 ){
+      defaultEmergingPlayers = defaultFilters["emerging_players"] === "true" ? "true" : "false"
+      setEmergingPlayersChecked(defaultEmergingPlayers === "true"? true: false);
+    }
+
+    
+    // apply defaults to visible UI state
+    setSelectedFilters(defaultSelectedFilters);
+    setActiveFilterDropdown(null);
+
+    console.log('[Applying default filters on mount:', defaultSelectedFilters, defaultEmergingPlayers);
+    onMultipleSearch(
+      defaultSelectedFilters?.['Industry'] || "",
+      "",
+      defaultSelectedFilters?.["Business Outcome"] || "",
+      defaultSelectedFilters?.["Implementation Complexity"]|| "",
+      defaultSelectedFilters?.["Unexpected Outcomes"] || "",
+      defaultEmergingPlayers,
+      defaultSelectedFilters?.["Function"] || ""
+    );
+    // run once on mount
+  }, []);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 flex flex-col gap-4">
