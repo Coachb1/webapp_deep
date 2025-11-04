@@ -1949,7 +1949,7 @@ const feedbackBotInitialFlow = async (flow) => {
 };
 async function getResponseStyleList() {
   try {
-    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/?client_name=${clientNameStt || sttWidgetClientId}`, {
+    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/?client_name=${clientuserInformationSTT.client_name}`, {
       method: "GET",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
@@ -3190,6 +3190,111 @@ function intializeBotsetup(maxAttempts = 99, delay = 1000) {
   }, delay);
 }
 
+async function waitForClientData(retryInterval = 500) {
+
+  console.log(clientuserInformationSTT)
+  if (!(clientuserInformationSTT)) {
+    console.log("Waiting for client data...");
+    setTimeout(() => waitForClientData(retryInterval), retryInterval);
+  } else {
+    console.log("Client data available:", clientNameStt, sttWidgetClientId, clientuserInformationSTT);
+
+   styleMap = await getResponseStyleList()
+
+  function convertTextToOriginalFormat(displayText) {
+    return styleMap[displayText] || displayText;
+  }
+
+  function convertTextToCorrectFormat(backendValue) {
+    const reverseMap = Object.fromEntries(
+      Object.entries(styleMap).map(([k, v]) => [v, k])
+    );
+    return reverseMap[backendValue] || backendValue;
+  }
+
+
+  // If not valid, default to "icf_aligned_coach"
+  const allowedValues = Object.values(styleMap);
+  if (!allowedValues.includes(selectedResponseType)) {
+    selectedResponseType = "icf_aligned_coach";
+
+    // Send default immediately if needed
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedResponseType,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  }
+
+
+  // Create dropdown
+  const select = document.createElement("select");
+  select.id = "style-selector";
+  select.style.cssText = `
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  `;
+
+  // Add default option
+  // const defaultOption = document.createElement("option");
+  // defaultOption.textContent = "Select Style";
+  // defaultOption.value = "";
+  // defaultOption.disabled = true;
+  // if (!selectedResponseType) defaultOption.selected = true;
+  // select.appendChild(defaultOption);
+
+  // Add style options with pre-selected logic
+  for (const label in styleMap) {
+    const value = styleMap[label];
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    if (selectedResponseType === value) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  // Handle selection change
+  select.addEventListener("change", () => {
+    const selectedValue = select.value;
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedValue,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  });
+
+  // Inject into #response-style
+  const container = document.getElementById("response-style");
+  container.innerHTML = ""; // clear if re-rendering
+  container.appendChild(select);
+  container.style.display = "block";
+    }
+  }
+
 const getBotDetails2 = async (botId) => {
   try {
     if (window.user) {
@@ -3466,102 +3571,6 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(endSessionButton);
     }
     console.log("buttons : ", buttons);
-  if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
-
-   styleMap = await getResponseStyleList()
-
-  function convertTextToOriginalFormat(displayText) {
-    return styleMap[displayText] || displayText;
-  }
-
-  function convertTextToCorrectFormat(backendValue) {
-    const reverseMap = Object.fromEntries(
-      Object.entries(styleMap).map(([k, v]) => [v, k])
-    );
-    return reverseMap[backendValue] || backendValue;
-  }
-
-
-  // If not valid, default to "icf_aligned_coach"
-  const allowedValues = Object.values(styleMap);
-  if (!allowedValues.includes(selectedResponseType)) {
-    selectedResponseType = "icf_aligned_coach";
-
-    // Send default immediately if needed
-    if (participantId2) {
-      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: participantId2,
-          response_style: selectedResponseType,
-        }),
-      }).then((res) => res.json()).then(() => {});
-    }
-  }
-
-
-  // Create dropdown
-  const select = document.createElement("select");
-  select.id = "style-selector";
-  select.style.cssText = `
-    font-size: 12px;
-    padding: 4px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-left: 8px;
-    cursor: pointer;
-    vertical-align: middle;
-    min-width: 160px;
-  `;
-
-  // Add default option
-  // const defaultOption = document.createElement("option");
-  // defaultOption.textContent = "Select Style";
-  // defaultOption.value = "";
-  // defaultOption.disabled = true;
-  // if (!selectedResponseType) defaultOption.selected = true;
-  // select.appendChild(defaultOption);
-
-  // Add style options with pre-selected logic
-  for (const label in styleMap) {
-    const value = styleMap[label];
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = label;
-    if (selectedResponseType === value) {
-      option.selected = true;
-    }
-    select.appendChild(option);
-  }
-
-  // Handle selection change
-  select.addEventListener("change", () => {
-    const selectedValue = select.value;
-    if (participantId2) {
-      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: participantId2,
-          response_style: selectedValue,
-        }),
-      }).then((res) => res.json()).then(() => {});
-    }
-  });
-
-  // Inject into #response-style
-  const container = document.getElementById("response-style");
-  container.innerHTML = ""; // clear if re-rendering
-  container.appendChild(select);
-  container.style.display = "block";
-}
 
 
     // if (!["user_bot",'deep_dive'].includes(botType)) {
@@ -3703,6 +3712,9 @@ const getBotDetails2 = async (botId) => {
     // }
     if(window.user) {
       intializeBotsetup()
+      if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+            await waitForClientData();
+      }
     } else {
       enableDisablebuttons("assessment-btn", true);
       enableDisablebuttons("mindmap-btn", true);
@@ -13334,7 +13346,11 @@ const customMicButton = document.getElementById("startMicBtn");
                 if(window.user) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
                   console.log('selectedResponseType ', selectedResponseType)
-                  await updateResponseStyle("icf_aligned_coach");
+                    if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+                      await updateResponseStyle("icf_aligned_coach");
+                      waitForClientData();
+                    }
+
 
                   populateDropdown("mindmap-menu");
                   populateDropdown("assessment-menu");
