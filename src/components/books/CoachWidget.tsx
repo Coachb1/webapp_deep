@@ -3,7 +3,7 @@
 import Script from "next/script";
 import { useEffect } from "react";
 
-export default function CoachBotWidget({ up }: { up: boolean }) {
+export default function CoachBotWidget({botId='avatar-bot-4837d-coachbot-master-coach--multi-modal-professional-development', clientId = "First-Demo",up }: { botId:string, clientId:string, up: boolean }) {
   useEffect(() => {
     // Keep checking until the widget is injected
     const interval = setInterval(() => {
@@ -44,12 +44,9 @@ export default function CoachBotWidget({ up }: { up: boolean }) {
       {/* Widget container */}
       <div
         className="coachbots-coachscribe"
-        data-bot-id="avatar-bot-4837d-coachbot-master-coach--multi-modal-professional-development"
-        data-client-id="First-Demo"
-        data-allow-audio-interaction="true"
+        data-bot-id={botId}
+        data-client-id={clientId}
         data-welcome-message="Welcome to our Multi-Modal AI Coaching Agent. Let's get started!"
-        data-is-bussiness-email="false"
-        data-is-report-buttons="true"
         data-widget-image-link="https://storage.googleapis.com/publicvid/Book%20Library/Untitled%20design%20(10).png"
         data-widget-height="96px"
         data-widget-width="96px"

@@ -18,10 +18,10 @@ interface BookPageClientProps {
 }
 
 export default function BookPageClient({ id }: BookPageClientProps) {
-  const { user } = usePortalUser();
+  const { user, userInfo, loading } = usePortalUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [LibraryLoading, setLoading] = useState(true);
   const [title, setTitle] = useState<string>("Business Book Insights");
   const [subTitle, setSubTitle] = useState<string>(
     "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
@@ -69,6 +69,10 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     };
     loadBooks();
   }, [id]);
+
+  useEffect(() => {
+    console.log('userInfo updated:', userInfo.libraryBotConfig?.bot_config?.coaching?.show, loading);
+  }, [userInfo]);
 
   const handleSearch = (searchTerm: string) => {
     const queryStr = searchTerm.trim();
@@ -208,12 +212,12 @@ const handleMultipleSearch = (
   };
 
   return (
-    <>
+      <>
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId}/>
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
-        {loading ? (
+        {LibraryLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
           </div>
@@ -266,7 +270,13 @@ const handleMultipleSearch = (
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}
-      <CoachBotsWidget up={showAudioPlayer} />
+      {!loading && userInfo?.libraryBotConfig?.bot_config?.coaching?.show === true &&(
+        <CoachBotsWidget 
+          clientId={userInfo.clientName || "First-Demo"}
+          botId = {userInfo?.libraryBotConfig?.bot_config?.coaching.show === true ? userInfo?.libraryBotConfig?.bot_config?.coaching.bot_id : "avatar-bot-4837d-coachbot-master-coach--multi-modal-professional-development"}
+          up={showAudioPlayer} 
+        />
+        )}
     </>
   );
 }

@@ -93,7 +93,9 @@ export const getClientUserInfo = async (
               helpText: data.data.user_info[0].help_text,
               leaderboard_report_password: data.data.user_info[0].leaderboard_report_password,
               leaderboard_report_protected: data.data.user_info[0].leaderboard_report_protected,
-              is_active: data.data.user_info[0].is_active
+              is_active: data.data.user_info[0].is_active,
+              snnipetConfig: data.data.user_info[0].bot_config,
+              libraryBotConfig: data.data.user_info[0].library_bot_config,
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -1025,4 +1027,33 @@ export const getcourseModuleLikesAndSaveLater = async(courseId:string, userId:st
   }
 };
 
+export const ActionsPerMonth = async(userId:string)=>{
+  try{
+    if (  !userId) {
+      console.error("[ActionsPerMonth] Missing required parameters : ", userId);
+      return null;
+    }
 
+    const response = await fetch(`${baseURL}/accounts/actions-per-month/?&user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[ActionsPerMonth] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[ActionsPerMonth] Success:", responseData);
+    return responseData;
+
+
+  } catch (error){
+    console.error("[ActionsPerMonth] got error: ", error);
+    return {}
+  }
+}
