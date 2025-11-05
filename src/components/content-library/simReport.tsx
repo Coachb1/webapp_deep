@@ -106,7 +106,7 @@ const LeaderBoardReport: React.FC = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5;
+  const rowsPerPage = 20;
 
   useEffect(() => {
     checkAuth();
@@ -228,10 +228,41 @@ const LeaderBoardReport: React.FC = () => {
 
 
 
-  // Pagination logic
-  const totalPages = Math.ceil(groupedData.length / rowsPerPage);
+
+
+  // 2) flatten all sessions into rows, preserving rank order
+  const allRows = groupedData.flatMap((user: any, userIdx: number) => {
+    const rank = userIdx + 1;
+    const sessions = user.test_attempt_session_list || [];
+
+    if (sessions.length === 0) {
+      return [
+        {
+          rank,
+          name: user.name,
+          email: user.email,
+          title: "No Sessions Completed",
+          date: "—",
+          avg_score: "—",
+          link: null,
+        },
+      ];
+    }
+
+    return sessions.map((session: any, sIdx: number) => ({
+      rank,
+      name: user.name,
+      email: user.email,
+      title: session.title || `Session ${sIdx + 1}`,
+      date: session.date || "No Date",
+      avg_score: session.avg_score !== undefined ? Number(session.avg_score).toFixed(1) : "—",
+      link: session.link || session.report_link || null,
+    }));
+  });
+
+  const totalPages = Math.max(1, Math.ceil(allRows.length / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentRows = groupedData.slice(startIndex, startIndex + rowsPerPage);
+  const currentRows = allRows.slice(startIndex, startIndex + rowsPerPage);
 
   // If not authenticated, show password modal
   if (!isAuthenticated) {
@@ -336,120 +367,104 @@ const LeaderBoardReport: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentRows.map((user, idx) => {
-                    const rank = startIndex + idx + 1;
-                    const sessions = user.test_attempt_session_list || [];
-
-                    // If no sessions — still display user with fallback values
-                    if (sessions.length === 0) {
-                      return (
-                        <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                          <td className="px-6 py-4 font-bold text-gray-900">#{rank}</td>
-                          <td className="px-6 py-4 font-semibold text-gray-900">{user.name}</td>
-                          <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                          <td className="px-6 py-4 text-gray-600">No Sessions</td>
-                          <td className="px-6 py-4 text-gray-600">—</td>
-                          <td className="px-6 py-4 text-gray-600">—</td>
-                          <td className="px-6 py-4 text-gray-600">—</td>
-                        </tr>
-                      );
-                    }
-
-                    // ✅ For users with sessions → each session gets its own row + full user info
-                    return sessions.map((session: any, sIdx: number) => (
-                      <tr key={`${idx}-${sIdx}`} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                        {/* Rank on every row */}
-                        <td className="px-6 py-4 font-bold text-gray-900">#{rank}</td>
-
-                        {/* Repeat name */}
-                        <td className="px-6 py-4 font-semibold text-gray-900">{user.name}</td>
-
-                        {/* Repeat email */}
-                        <td className="px-6 py-4 text-gray-600">{user.email}</td>
-
-                        {/* Session Title */}
-                        <td className="px-6 py-4 text-gray-800">
-                          {truncateText(session.title || "No Title", 20)}
-                        </td>
-
-                        {/* Date */}
-                        <td className="px-6 py-4 text-gray-600">
-                          {session.date || "No Date"}
-                        </td>
-
-                        {/* ✅ Score Column */}
-                        <td className="px-6 py-4 text-gray-800">
-                          {session.avg_score !== undefined ? Number(session.avg_score).toFixed(1)  : "—"}
-                        </td>
-
-
-                        {/* ✅ Link Column */}
-                        <td className="px-6 py-4">
-                          {session.link ? (
-                            <a 
-                              href={session.link} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="inline-block bg-[#00c193] hover:bg-[#00a87f] text-white text-xs font-semibold px-3 py-1.5 rounded-md whitespace-nowrap transition-colors duration-200"
-                            >
-                              View Report
-                            </a>
-                          ) : (
-                            "No Link"
-                          )}
-                        </td>
-
-                      </tr>
-                    ));
-                  })}
+                  {currentRows.map((row, idx) => (
+                    <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                      <td className="px-6 py-4 font-bold text-gray-900">#{row.rank}</td>
+                      <td className="px-6 py-4 font-semibold text-gray-900">{row.name}</td>
+                      <td className="px-6 py-4 text-gray-600">{row.email}</td>
+                      <td className="px-6 py-4 text-gray-800">{truncateText(row.title, 20)}</td>
+                      <td className="px-6 py-4 text-gray-600">{row.date}</td>
+                      <td className="px-6 py-4 text-gray-800">{row.avg_score}</td>
+                      <td className="px-6 py-4">
+                        {row.link ? (
+                          <a
+                            href={row.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block bg-[#00c193] hover:bg-[#00a87f] text-white text-xs font-semibold px-3 py-1.5 rounded-md whitespace-nowrap transition-colors duration-200"
+                          >
+                            View Report
+                          </a>
+                        ) : (
+                          "No Link"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
+
               </table>
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex justify-center items-center gap-2 p-6">
-              {/* Prev Button */}
-              <button
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-full font-bold ${currentPage === 1
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "bg-[#00c193] text-white hover:brightness-95"
-                  }`}
-              >
-                Prev
-              </button>
+<div className="flex justify-center items-center gap-2 p-6">
+  {/* Prev Button */}
+  <button
+    onClick={() => setCurrentPage(currentPage - 1)}
+    disabled={currentPage === 1}
+    className={`px-4 py-2 rounded-full font-bold ${
+      currentPage === 1
+        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+        : "bg-[#00c193] text-white hover:brightness-95"
+    }`}
+  >
+    Prev
+  </button>
 
-              {/* Page Numbers */}
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-full font-semibold transition 
-        ${currentPage === i + 1
-                      ? "bg-[#00c193] text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+  {/* Page Numbers with ellipses */}
+  {(() => {
+    const totalButtons = [];
+    const maxVisible = 5; // show max 5 numbered buttons + ellipses
 
-              {/* Next Button */}
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-full font-medium transition 
-      ${currentPage === totalPages
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-[#00c193] text-white hover:bg-[#00a87f]"
-                  }`}
-              >
-                Next
-              </button>
-            </div>
+    for (let i = 1; i <= totalPages; i++) {
+      const isFirst = i === 1;
+      const isLast = i === totalPages;
+      const isNear =
+        i >= currentPage - 1 && i <= currentPage + 1; // show around current
+
+      if (isFirst || isLast || isNear) {
+        totalButtons.push(
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i)}
+            className={`w-9 h-9 flex items-center justify-center rounded-full font-semibold transition ${
+              currentPage === i
+                ? "bg-[#00c193] text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {i}
+          </button>
+        );
+      } else if (
+        (i === 2 && currentPage > 3) ||
+        (i === totalPages - 1 && currentPage < totalPages - 2)
+      ) {
+        totalButtons.push(
+          <span key={`dots-${i}`} className="px-2 text-gray-400 select-none">
+            ...
+          </span>
+        );
+      }
+    }
+
+    return totalButtons;
+  })()}
+
+  {/* Next Button */}
+  <button
+    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+    disabled={currentPage === totalPages}
+    className={`px-4 py-2 rounded-full font-medium transition ${
+      currentPage === totalPages
+        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+        : "bg-[#00c193] text-white hover:bg-[#00a87f]"
+    }`}
+  >
+    Next
+  </button>
+</div>
+
           </>
         )}
 
