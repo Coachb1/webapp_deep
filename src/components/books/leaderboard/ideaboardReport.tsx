@@ -15,6 +15,7 @@ export interface RowData {
   qna: Record<string, string>;
   likes: number;
   liked: boolean;
+  keyOrder: string[];
 }
 
 interface IdeaboardPageProps {
@@ -66,34 +67,8 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
         console.log("Fetched report data:", data);
         const mapped = mapApiToRows(data);
         setRows(mapped);
+        setQnaKeys(mapped[0]?.keyOrder || [])
 
-       if (data.length > 0) {
-  const allKeys = new Set<string>();
-
-  data.forEach((item: any) => {
-    Object.keys(item.qna || {}).forEach(key => allKeys.add(key));
-  });
-
-  // Define the desired order
-  const desiredOrder = [
-    "Idea Name",
-    "Idea Details", 
-    "Idea Description",
-    "Estimated Impact",
-    "Category",
-    "Collaborators Identfied",
-    "Innovation Rating",
-    "Risks"
-  ];
-
-  // Sort keys based on desired order
-  const sortedKeys = desiredOrder.filter(key => allKeys.has(key));
-  
-  // Add any remaining keys that weren't in the desired order
-  const remainingKeys = Array.from(allKeys).filter(key => !desiredOrder.includes(key));
-  
-  setQnaKeys([...sortedKeys, ...remainingKeys]);
-}
       } catch (err: any) {
         console.error("Error fetching data:", err);
         setError(err.message || "Something went wrong");
@@ -110,11 +85,18 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
     return apiData.map((item) => ({
       id: item.id,
       uid: item.uid || item.session_id,
-      qna: item.qna || {},
+      // Q&A object (question: answer)
+      qna:
+        item.ordered_qna?.reduce((acc: Record<string, string>, q: any) => {
+          acc[q.question] = q.answer;
+          return acc;
+        }, {}) || {},
+      // Ordered question keys for display
+      keyOrder: item.ordered_qna?.map((q: any) => q.question) || [],
+      // Other fields
       risks: item.generated_report_data?.["2_behavioral_map"]?.["1_fear_or_risk"] || "-",
-      likes:  item.like_count ?? 0,
-      liked:  item.liked_by ? item.liked_by.includes(userEmail) : false
-
+      likes: item.like_count ?? 0,
+      liked: item.liked_by ? item.liked_by.includes(userEmail) : false,
     }));
   };
 
@@ -157,6 +139,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
       setRows(mapped);
+      setQnaKeys(mapped[0]?.keyOrder || [])
     } catch (err) {
       console.error("Like API failed:", err);
       // rollback if API fails
