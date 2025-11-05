@@ -3,13 +3,14 @@
 
 import { useState, useEffect } from "react";
 import BookSection from "@/components/books/BookSection";
-import { Book } from "@/lib/types";
+import { Book, CoursePackage } from "@/lib/types";
 import { fetchBooks } from "@/lib/api";
 import BookDescription from "@/components/books/BookDescription";
 import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
 import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
+import CoachBotsWidget from "./CoachWidget";
 import { usePortalUser } from "./context/UserContext";
 
 interface BookPageClientProps {
@@ -17,10 +18,10 @@ interface BookPageClientProps {
 }
 
 export default function BookPageClient({ id }: BookPageClientProps) {
-  const { user } = usePortalUser();
+  const { user, userInfo, loading } = usePortalUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [LibraryLoading, setLoading] = useState(true);
   const [title, setTitle] = useState<string>("Business Book Insights");
   const [subTitle, setSubTitle] = useState<string>(
     "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
@@ -34,24 +35,32 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [jobAidId, setJobaidID] = useState<string|null>(null);
   const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
+  const [packageDetails, setPackageDetails] = useState<any>(null);
 
   // Load books
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        const data: Book[] = await fetchBooks(id);
-        console.log("[fetchBooks] Books:", data[0].package_detail);
-        if (!data || !data.length) return;
+        const data: CoursePackage = await fetchBooks(id);
+        if (!data) return;
 
-        setTitle(data[0].package_detail.package_name);
-        setSubTitle(data[0].package_detail.package_description);
-        setCourseId(data[0].course_id);
-        setJobaidID(data[0].jobaid_id)
-        setHeroImageLink(data[0].package_detail.image_link)
-        localStorage.setItem('jobaid', data[0].jobaid_id);
+        setTitle(data.package_name);
+        setSubTitle(data.package_description);
+        setCourseId(data.books[0].course_id);
+        setJobaidID(data.jobaid_id);
+        setHeroImageLink(data.image_link);
+        setPackageDetails({
+          package_id: data.package_id,
+          package_name: data.package_name,
+          package_description: data.package_description,
+          image_link: data.image_link,
+          jobaid_id: data.jobaid_id,
+          report_config: data.report_config || {},
+        });
+        localStorage.setItem('jobaid', data.jobaid_id);
 
-        setAllBooks(data);
-        setFilteredBooks(data);
+        setAllBooks(data.books);
+        setFilteredBooks(data.books);
       } catch (err) {
         console.error("Error fetching books:", err);
       } finally {
@@ -60,6 +69,10 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     };
     loadBooks();
   }, [id]);
+
+  useEffect(() => {
+    console.log('userInfo updated:', userInfo.libraryBotConfig?.bot_config?.coaching?.show, loading);
+  }, [userInfo]);
 
   const handleSearch = (searchTerm: string) => {
     const queryStr = searchTerm.trim();
@@ -79,7 +92,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       const author = book.author?.toLowerCase() || "";
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
-
+      
       return queries.some(
         (query) =>
           title.includes(query) ||
@@ -91,6 +104,54 @@ export default function BookPageClient({ id }: BookPageClientProps) {
 
     setFilteredBooks(filtered);
   };
+
+// it will get 'tag', 'list_name', 'business_outcome', 'implementation_complexity', 'unexpected_outcomes', and 'emerging_players' from the book object
+// and there will be AND filter applied on these fields.
+const handleMultipleSearch = (
+  tag?: string,
+  listName?: string,
+  businessOutcome?: string,
+  implementationComplexity?: string,
+  unexpectedOutcomes?: string,
+  emergingPlayers?: string,
+  Function?: string
+) => {
+  // Normalize only when provided
+  const normalize = (val?: string) => val?.trim().toLowerCase() || null;
+
+  const normalized = {
+    tag: normalize(tag),
+    listName: normalize(listName),
+    businessOutcome: normalize(businessOutcome),
+    implementationComplexity: normalize(implementationComplexity),
+    unexpectedOutcomes: normalize(unexpectedOutcomes),
+    emergingPlayers: normalize(emergingPlayers),
+    function: normalize(Function),
+  };
+  console.log("Multiple search with filters:", normalized);
+
+  const filtered = allBooks.filter((book) => {
+    const bookTag = book.tag?.map((t: string) => t.toLowerCase()) || [];
+    const bookBusinessOutcome = book.business_outcome?.map((b: string) => b.toLowerCase()) || [];
+    const bookImplementationComplexity = book.implementation_complexity?.map((i: string) => i.toLowerCase()) || [];
+    const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
+    const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
+    const bookFunction = book.function?.map((f: string) => f.toLowerCase()) || [];
+
+    return (
+      (!normalized.tag || bookTag.includes(normalized.tag)) &&
+      (!normalized.businessOutcome || bookBusinessOutcome.includes(normalized.businessOutcome)) &&
+      (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
+      (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
+      (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers) &&
+      (!normalized.function || bookFunction.includes(normalized.function))
+    );
+  });
+
+  // Update state
+  setFilteredBooks(filtered);
+};
+
 
   const handleFilterChange = (filter: string) => {
     const normalized = filter.trim().toLowerCase();
@@ -151,12 +212,12 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   };
 
   return (
-    <>
+      <>
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId}/>
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
-        {loading ? (
+        {LibraryLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
           </div>
@@ -166,6 +227,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             currentSlide={currentSlide}
             onSlideChange={setCurrentSlide}
             onSearch={handleSearch}
+            onMultipleSearch={handleMultipleSearch}
             onFilterChange={handleFilterChange}
             onPlayBook={handlePlayBook}
             onOpenDescription={handleOpenDescription}
@@ -175,6 +237,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
             email={user?.user_data?.email}
             all_books={allBooks}
             jobAidId={jobAidId}
+            packageDetails={packageDetails}
           />
         )}
       </main>
@@ -207,6 +270,13 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}
+      {!loading && userInfo?.libraryBotConfig?.bot_config?.coaching?.show === true &&(
+        <CoachBotsWidget 
+          clientId={userInfo.clientName || "First-Demo"}
+          botId = {userInfo?.libraryBotConfig?.bot_config?.coaching.show === true ? userInfo?.libraryBotConfig?.bot_config?.coaching.bot_id : "avatar-bot-4837d-coachbot-master-coach--multi-modal-professional-development"}
+          up={showAudioPlayer} 
+        />
+        )}
     </>
   );
 }

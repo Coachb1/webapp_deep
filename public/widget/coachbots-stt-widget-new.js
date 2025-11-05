@@ -402,7 +402,9 @@ const createLink = (url, text) => {
 document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
 let isFlatWidget = window.location.pathname.includes('widget-container');
 
-let showBotSwitchMode = true;
+let showBotSwitchMode = false;
+let showAudioInteractionButtonStt = true;
+let showSessionHistoryStt = false;
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -1947,7 +1949,7 @@ const feedbackBotInitialFlow = async (flow) => {
 };
 async function getResponseStyleList() {
   try {
-    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/`, {
+    const res = await fetch(`${baseURL2}/coaching-conversations/get-response-style-list/?client_name=${clientuserInformationSTT.client_name}`, {
       method: "GET",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
@@ -2149,7 +2151,7 @@ async function populateChatHistoryOptions(refresh = false) {
   }
 
   // 5. Show the dropdown wrapper
-  if (chathistorywrapper) {
+  if (chathistorywrapper && showSessionHistoryStt) {
     chathistorywrapper.style.display = "block";
   }
 
@@ -3128,10 +3130,14 @@ async function populateDropdown(menuId ) {
     let items = [];
     if (menuId === "mindmap-menu") {
       items = MindMapLinks || [];
-      enableDisablebuttons("mindmap-btn", items.length === 0);
+      // enableDisablebuttons("mindmap-btn", items.length === 0);
+      const mindmapBtn = document.getElementById("mindmap-btn");
+      mindmapBtn.style.display = "none";
     } else if (menuId === "assessment-menu") {
       items = AssessmentLinks || [];
-      enableDisablebuttons("assessment-btn", items.length === 0);
+      const assessmentBtn = document.getElementById("assessment-btn");
+      assessmentBtn.style.display = "none";
+      // enableDisablebuttons("assessment-btn", items.length === 0);
     }
 
     items.forEach(item => {
@@ -3184,6 +3190,111 @@ function intializeBotsetup(maxAttempts = 99, delay = 1000) {
   }, delay);
 }
 
+async function waitForClientData(retryInterval = 500) {
+
+  console.log(clientuserInformationSTT)
+  if (!(clientuserInformationSTT)) {
+    console.log("Waiting for client data...");
+    setTimeout(() => waitForClientData(retryInterval), retryInterval);
+  } else {
+    console.log("Client data available:", clientNameStt, sttWidgetClientId, clientuserInformationSTT);
+
+   styleMap = await getResponseStyleList()
+
+  function convertTextToOriginalFormat(displayText) {
+    return styleMap[displayText] || displayText;
+  }
+
+  function convertTextToCorrectFormat(backendValue) {
+    const reverseMap = Object.fromEntries(
+      Object.entries(styleMap).map(([k, v]) => [v, k])
+    );
+    return reverseMap[backendValue] || backendValue;
+  }
+
+
+  // If not valid, default to "icf_aligned_coach"
+  const allowedValues = Object.values(styleMap);
+  if (!allowedValues.includes(selectedResponseType)) {
+    selectedResponseType = "icf_aligned_coach";
+
+    // Send default immediately if needed
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedResponseType,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  }
+
+
+  // Create dropdown
+  const select = document.createElement("select");
+  select.id = "style-selector";
+  select.style.cssText = `
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 160px;
+  `;
+
+  // Add default option
+  // const defaultOption = document.createElement("option");
+  // defaultOption.textContent = "Select Style";
+  // defaultOption.value = "";
+  // defaultOption.disabled = true;
+  // if (!selectedResponseType) defaultOption.selected = true;
+  // select.appendChild(defaultOption);
+
+  // Add style options with pre-selected logic
+  for (const label in styleMap) {
+    const value = styleMap[label];
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    if (selectedResponseType === value) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  // Handle selection change
+  select.addEventListener("change", () => {
+    const selectedValue = select.value;
+    if (participantId2) {
+      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: participantId2,
+          response_style: selectedValue,
+        }),
+      }).then((res) => res.json()).then(() => {});
+    }
+  });
+
+  // Inject into #response-style
+  const container = document.getElementById("response-style");
+  container.innerHTML = ""; // clear if re-rendering
+  container.appendChild(select);
+  container.style.display = "block";
+    }
+  }
+
 const getBotDetails2 = async (botId) => {
   try {
     if (window.user) {
@@ -3228,6 +3339,7 @@ const getBotDetails2 = async (botId) => {
 
     if (botType === 'subject_specific_bot'){
       const mode_switch_button = document.getElementById('more-section')
+      showBotSwitchMode = false;
       if (mode_switch_button){
         mode_switch_button.style.display = 'none'
       }
@@ -3459,102 +3571,6 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(endSessionButton);
     }
     console.log("buttons : ", buttons);
-  if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
-
-   styleMap = await getResponseStyleList()
-
-  function convertTextToOriginalFormat(displayText) {
-    return styleMap[displayText] || displayText;
-  }
-
-  function convertTextToCorrectFormat(backendValue) {
-    const reverseMap = Object.fromEntries(
-      Object.entries(styleMap).map(([k, v]) => [v, k])
-    );
-    return reverseMap[backendValue] || backendValue;
-  }
-
-
-  // If not valid, default to "icf_aligned_coach"
-  const allowedValues = Object.values(styleMap);
-  if (!allowedValues.includes(selectedResponseType)) {
-    selectedResponseType = "icf_aligned_coach";
-
-    // Send default immediately if needed
-    if (participantId2) {
-      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: participantId2,
-          response_style: selectedResponseType,
-        }),
-      }).then((res) => res.json()).then(() => {});
-    }
-  }
-
-
-  // Create dropdown
-  const select = document.createElement("select");
-  select.id = "style-selector";
-  select.style.cssText = `
-    font-size: 12px;
-    padding: 4px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-left: 8px;
-    cursor: pointer;
-    vertical-align: middle;
-    min-width: 160px;
-  `;
-
-  // Add default option
-  // const defaultOption = document.createElement("option");
-  // defaultOption.textContent = "Select Style";
-  // defaultOption.value = "";
-  // defaultOption.disabled = true;
-  // if (!selectedResponseType) defaultOption.selected = true;
-  // select.appendChild(defaultOption);
-
-  // Add style options with pre-selected logic
-  for (const label in styleMap) {
-    const value = styleMap[label];
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = label;
-    if (selectedResponseType === value) {
-      option.selected = true;
-    }
-    select.appendChild(option);
-  }
-
-  // Handle selection change
-  select.addEventListener("change", () => {
-    const selectedValue = select.value;
-    if (participantId2) {
-      fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: participantId2,
-          response_style: selectedValue,
-        }),
-      }).then((res) => res.json()).then(() => {});
-    }
-  });
-
-  // Inject into #response-style
-  const container = document.getElementById("response-style");
-  container.innerHTML = ""; // clear if re-rendering
-  container.appendChild(select);
-  container.style.display = "block";
-}
 
 
     // if (!["user_bot",'deep_dive'].includes(botType)) {
@@ -3696,7 +3712,9 @@ const getBotDetails2 = async (botId) => {
     // }
     if(window.user) {
       intializeBotsetup()
-      
+      if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+            await waitForClientData();
+      }
     } else {
       enableDisablebuttons("assessment-btn", true);
       enableDisablebuttons("mindmap-btn", true);
@@ -9596,45 +9614,95 @@ function formatTime(seconds) {
 
 async function getButtonControls(){
   // first we check client one then snnipet one, snnipet one override client one
+  
+  if (botId !== undefined) {
+    showBotSwitchMode = true;
+    showSessionHistoryStt = true;
+  }
   if (clientuserInformationSTT?.button_controlls){
     const ButtonControls = clientuserInformationSTT?.button_controlls
 
     console.log('butttoncontroll', ButtonControls)
-    if (ButtonControls?.mindmap_button) {
-      showMindmapButtonStt = ButtonControls?.mindmap_button?.show === true
+
+
+    if (botId !== undefined ) {
+      if (ButtonControls?.bot_switch_button) {
+        showBotSwitchMode = ButtonControls?.bot_switch_button?.show === true;
+      }
+      if (ButtonControls?.session_history){
+        showSessionHistoryStt = ButtonControls?.session_history?.show === true;
+      }
+
+      if (ButtonControls?.mindmap_button) {
+        showMindmapButtonStt = ButtonControls?.mindmap_button?.show === true
+      }
+      if (ButtonControls?.assessment_button) {
+        showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
+      }
     }
-    if (ButtonControls?.assessment_button) {
-      showAssessmentButtonStt = ButtonControls?.assessment_button?.show === true
+    if (ButtonControls?.audio_interaction_button) {
+      showAudioInteractionButtonStt = ButtonControls?.audio_interaction_button?.show === true;
     }
 
     if (ButtonControls?.mode_button) {
       showModeButtonStt = ButtonControls?.mode_button?.show === true
     }
+
+
   }
 
 
   // now checking snnipetconfigstt
-  if (snnipetConfigSTT.mindmapBtn) {
-    showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
+
+
+  if (botId !== undefined ) {
+    if (snnipetConfigSTT?.botSwitchButton) {
+      showBotSwitchMode = snnipetConfigSTT.botSwitchButton === 'true';
+    }
+
+    if (snnipetConfigSTT?.sessionHistoryButton) {
+      showSessionHistoryStt = snnipetConfigSTT.sessionHistoryButton === 'true';
+    }
+
+    if (snnipetConfigSTT.mindmapBtn) {
+      showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
+    }
+    if (snnipetConfigSTT.assessmentBtn ) {
+      showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
+    }
   }
-  if (snnipetConfigSTT.assessmentBtn ) {
-    showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
+
+  if (snnipetConfigSTT?.audioInteractionButton) {
+    showAudioInteractionButtonStt = snnipetConfigSTT.audioInteractionButton === 'true';
   }
+  
   if (snnipetConfigSTT.modeBtn) {
     showModeButtonStt = snnipetConfigSTT.modeBtn === 'true';
   }
 
+
+
+  if (showBotSwitchMode == false && showAudioInteractionButtonStt == false) {
+    showModeButtonStt = false;
+  }
+
+
   console.log(
+    'buttt',
     showMindmapButtonStt,
     showAssessmentButtonStt,
     showModeButtonStt
-    )
+    );
 
   const mindmap_button = document.getElementById("mindmap_button");
   const assessment_button = document.getElementById("assessment_button");
 
   const mode_button = document.getElementById("mode_button");
-
+  const switch_button = document.getElementById("more-section");
+  const audioButton = document.getElementById("audio-interaction");
+  console.log('audiobutton', audioButton, showAudioInteractionButtonStt)
+  const session_history = document.getElementById("chat-history-wrapper")
+  
   if (mindmap_button){
     mindmap_button.style.display = showMindmapButtonStt ? 'block': 'none'
   }
@@ -9647,7 +9715,18 @@ async function getButtonControls(){
     mode_button.style.display = showModeButtonStt ? 'block': 'none'
   }
 
-  
+  if (audioButton){
+    audioButton.style.display = showAudioInteractionButtonStt ? 'block': 'none'
+  }
+
+  if (switch_button) {
+    switch_button.style.display = showBotSwitchMode ? 'block': 'none'
+  }
+
+  if (session_history) {
+    session_history.style.display = showSessionHistoryStt ? 'block': 'none'
+  }
+
 }
 
 function startModernTimer(seconds, onComplete) {
@@ -9806,7 +9885,7 @@ async function  updateAudioAllowed(initial, showToggel=true){
 
   const audiointeraction = document.getElementById("audio-interaction");
 
-  if (showToggel){
+  if (showToggel && showAudioInteractionButtonStt){
     audiointeraction.style.display = 'flex'
   } else{
   audiointeraction.style.display = 'none'
@@ -11164,11 +11243,12 @@ function disableAllDiagnosticButtons() {
       const RETRY_DELAY = 2000;   // 2s delay before retry
       let retries = 0;
       const MAX_RETRIES = 2;
+      let streamError = false;
 
       while (true) {
         let chunk;
         try {
-          chunk = await Promise.race([
+          chunk = await Promise.race([       
             reader.read(),
             new Promise((_, reject) =>
               setTimeout(() => reject(new Error("Stream timeout")), CHUNK_TIMEOUT)
@@ -11185,7 +11265,10 @@ function disableAllDiagnosticButtons() {
             continue; // try again without breaking
           } else {
             console.error("Max retries reached. Ending stream.");
-            break;
+            // Set flag to handle as error
+            streamError = true;
+            // Create a done chunk to trigger cleanup
+            chunk = { done: true, value: null };
           }
         }
 
@@ -11202,36 +11285,47 @@ function disableAllDiagnosticButtons() {
               indvMessage.remove();
             }
           });
+          console.log('stream Error', streamError)
+          // Handle stream error case
+          if (streamError) {
+            const errorMessage = document.createElement("p");
+            errorMessage.style.cssText = "color: #dc2626; font-weight: 600; margin-top: 8px; font-size: 14px;";
+            errorMessage.innerText = "⚠️ Something went wrong. The response could not be completed. Please try asking again.";
+            messageBubble.appendChild(errorMessage);
+            streamWithAudio = false;
+            
+          } else {
+            if (
+              messageText.innerText.toLowerCase().includes("I am sorry but") ||
+              messageText.innerText
+                .toLowerCase()
+                .includes("not something that I am familiar") ||
+              messageText.innerText.toLowerCase().includes("i cannot answer") ||
+              messageText.innerText.toLowerCase().includes("not familiar")
+            ) {
+              messageText.innerText +=
+                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+              if (streamWithAudio) {
+                text += " Please explain your question or comment in different words which I may be able to understand better.";
+              }
+            }
 
-          if (
-            messageText.innerText.toLowerCase().includes("I am sorry but") ||
-            messageText.innerText
-              .toLowerCase()
-              .includes("not something that I am familiar") ||
-            messageText.innerText.toLowerCase().includes("i cannot answer") ||
-            messageText.innerText.toLowerCase().includes("not familiar")
-          ) {
-            messageText.innerText +=
-              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
-            if (streamWithAudio) {
-              text += " Please explain your question or comment in different words which I may be able to understand better.";
+            if (botPreviousConversationHistory.includes(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+              if (streamWithAudio) {
+                text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
+              }
+            } else if (messageText.innerText === "" && botType !== "user_bot") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+
+                text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+              }
             }
           }
-
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
-            if (streamWithAudio) {
-              text += "If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session."
-            }
-          } else if (messageText.innerText === "" && botType !== "user_bot") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-
-              text += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
-            }
-          }
+          
           console.log("STREAMED MESSAGE 1 -> ", messageText.innerText);
 
           messageText.innerHTML =  parseMarkdown(messageText.innerText);
@@ -12018,7 +12112,7 @@ loadExternalModule().then(() => {
 
   <div id="more-menu" class='dropdown-menu'
     style="dispaly: none; max-height: 250px; overflow-y: auto; display:none; position:absolute; margin-top:10px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); border-radius:6px; padding:8px; min-width:160px; z-index:1000;">
-    
+
     <!-- Mode Toggle inside dropdown -->
     <div id="more-section" style="display:${showBotSwitchMode? "flex": 'none'}; align-items:center; gap:10px;">
       <div class="toggle-wrapper">
@@ -12030,21 +12124,24 @@ loadExternalModule().then(() => {
         <span class="toggle-text">Sim</span>
       </div>
     </div>
-    <div id="audio-interaction" class="audio-interaction">
-  <p class="label" style="margin:0px;">🔊</p>
-  <div class="toggle-wrapper">
-    <span class="toggle-text">No</span>
-    <label class="switch">
-      <input type="checkbox" id="bot-audio-interaction-switch" />
-      <span class="slider"></span>
-    </label>
-    <span class="toggle-text">Yes</span>
-  </div>
-</div>
-  </div>
 
-  
-</div>
+    <!-- Audio Toggle inside dropdown -->
+
+    <div id="audio-interaction" class="audio-interaction">
+      <p class="label" style="margin:0px;">🔊</p>
+      <div class="toggle-wrapper">
+        <span class="toggle-text">No</span>
+        <label class="switch">
+          <input type="checkbox" id="bot-audio-interaction-switch" />
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-text">Yes</span>
+  </div>
+      </div>
+    </div>
+
+
+  </div>
 
 </div>
 
@@ -12303,9 +12400,7 @@ function adjustHeaderLayout() {
     header.style.flexDirection = "row";
   }
 }
-if (!window.user){
-  enableDisablebuttons('more-btn', true)
-}
+
 
 window.addEventListener("load", adjustHeaderLayout);
 window.addEventListener("resize", adjustHeaderLayout);
@@ -12695,6 +12790,10 @@ const customMicButton = document.getElementById("startMicBtn");
         </button>
       </div>
     </div>`;
+  }
+
+  if (!window.user){
+    enableDisablebuttons('more-btn', true)
   }
   // if botid is null or notdefined show other message
   console.log(botId, snnipetConfigSTT?.createBotSheetUrl, 'snnipet')
@@ -13247,7 +13346,11 @@ const customMicButton = document.getElementById("startMicBtn");
                 if(window.user) {
                   if (!["feedback_bot", "deep_dive", "user_bot"].includes(botType)) populateChatHistoryOptions(); 
                   console.log('selectedResponseType ', selectedResponseType)
-                  await updateResponseStyle("icf_aligned_coach");
+                    if (["avatar_bot"].includes(botType) && botScenarioCase === "icons_by_ai") {
+                      await updateResponseStyle("icf_aligned_coach");
+                      waitForClientData();
+                    }
+
 
                   populateDropdown("mindmap-menu");
                   populateDropdown("assessment-menu");

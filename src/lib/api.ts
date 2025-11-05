@@ -26,7 +26,8 @@ import {
   TestsType,
   UserInfoType,
   knowledgeBotJson,
-  Book
+  Book,
+  CoursePackage
 } from "./types";
 
 export const getClientUserInfo = async (
@@ -92,7 +93,9 @@ export const getClientUserInfo = async (
               helpText: data.data.user_info[0].help_text,
               leaderboard_report_password: data.data.user_info[0].leaderboard_report_password,
               leaderboard_report_protected: data.data.user_info[0].leaderboard_report_protected,
-              is_active: data.data.user_info[0].is_active
+              is_active: data.data.user_info[0].is_active,
+              snnipetConfig: data.data.user_info[0].bot_config,
+              libraryBotConfig: data.data.user_info[0].library_bot_config,
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -762,17 +765,31 @@ export const getCoursePackage = async (coursePackageId: string) => {
     return responseData
   } else {
     console.error('failed [getcoursepackage]', response)
-    return [];
+    return {
+      'package_id': '',
+      'package_name': '',
+      'package_description': '',
+      'image_link': '',
+      'jobaid_id': '',
+      'books': []
+    };
   }
 };
 
 
-export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
+export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage> => {
   try {
     const data = await getCoursePackage(coursePackageId);
 
-    if (!data?.courses) return [];
-    
+    const package_details = {
+      'package_id': data.uid,
+      'package_name': data.title,
+      'package_description': data.sub_title || data.description || '',
+      'image_link': data.image_link,
+      'jobaid_id': data.jobaid_uid,
+      'report_config': data.page_config || {},
+    };
+
     // Flatten all courses → modules → books
     const books: Book[] = data.courses.flatMap((course: any) =>
       course.modules
@@ -782,31 +799,44 @@ export const fetchBooks = async (coursePackageId: string): Promise<Book[]> => {
           title: m.title,
           author: m.author,
           tag: m.tag? m.tag?.split(',') : [],
+          business_outcome: m.business_outcome? m.business_outcome.split(',') : [],
+          function: m.function? m.function.split(',') : [],
+          implementation_complexity: m.implementation_complexity? m.implementation_complexity.split(',') : [],
+          unexpected_outcomes: m.unexpected_outcome? m.unexpected_outcome.split(',') : [],
+          emerging_players: m.emerging_player,
           desc: m.description,
           audio: m.audio_link,
           img: m.image_link,
+          report: m.embed_link,
           course_id: course.uid,
           course_details: {
             'title': course.title,
             'desc': course.sub_title,
             'image_link': course.image_link,
+            'embed_link': course.embed_link
           },
-          package_detail: {
-            'package_id': data.uid,
-            'package_name': data.title,
-            'package_description': data.sub_title || data.description || '',
-            'image_link': data.image_link,
-            'jobaid_id': data.jobaid_uid
-          },
+          package_detail: package_details,
           list_name: m.list_name || '',
           jobaid_id: data.jobaid_uid
         }))
     );
     console.log('[fetchBooks] Books:', books);
-    return books;
+    const result = {
+      ...package_details,
+      ...{books: books}
+    };
+    return result;
   } catch (err) {
     console.error("Error fetching books:", err);
-    return [];
+    return {
+      package_id: '',
+      package_name: '',
+      package_description: '',
+      image_link: '',
+      jobaid_id: '',
+      report_config: {},
+      books: []
+    };
   }
 };
 
@@ -997,4 +1027,33 @@ export const getcourseModuleLikesAndSaveLater = async(courseId:string, userId:st
   }
 };
 
+export const ActionsPerMonth = async(userId:string)=>{
+  try{
+    if (  !userId) {
+      console.error("[ActionsPerMonth] Missing required parameters : ", userId);
+      return null;
+    }
 
+    const response = await fetch(`${baseURL}/accounts/actions-per-month/?&user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("[ActionsPerMonth] Failed:", response.statusText);
+      return null;
+    }
+
+    const responseData = await response.json();
+    console.log("[ActionsPerMonth] Success:", responseData);
+    return responseData;
+
+
+  } catch (error){
+    console.error("[ActionsPerMonth] got error: ", error);
+    return {}
+  }
+}

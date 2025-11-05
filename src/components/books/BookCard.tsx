@@ -34,6 +34,7 @@ const BookCard: React.FC<BookCardProps> = ({
   const [progress, setProgress] = useState<number>(0);  // percentage
   const [status, setStatus] = useState<string>("in-progress"); // or "finished"
   const [completedDate, setCompletedDate] = useState<string | null>(null);
+  const [isReadModalOpen, setIsReadModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user_id || !book.id) return;
@@ -99,6 +100,7 @@ const BookCard: React.FC<BookCardProps> = ({
   };
 
   return (
+    <>
     <article className="shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
       {/* Book Cover */}
       <img
@@ -145,6 +147,12 @@ const BookCard: React.FC<BookCardProps> = ({
         >
           {book.tag[0]}
         </a>
+        <button
+          onClick={() => setIsReadModalOpen(true)}
+          className="ml-2 px-3 py-1 rounded-full bg-[#00c193] text-white text-xs font-semibold hover:bg-[#00b281] transition"
+        >
+          Report
+        </button>
         <p
           className="text-gray-700 text-sm mb-4 line-clamp-2"
           title={book.desc}
@@ -174,7 +182,7 @@ const BookCard: React.FC<BookCardProps> = ({
                hover:bg-[#00b281] transition shrink-0 ml-auto"
           onClick={onMore}
         >
-          More
+          Summary
         </button>
       </div>
 
@@ -215,6 +223,38 @@ const BookCard: React.FC<BookCardProps> = ({
 
 
     </article>
+    {/* Read Modal with iframe */}
+    {isReadModalOpen && (
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        onClick={() => setIsReadModalOpen(false)}
+      >
+        <div 
+          className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center p-4 border-b">
+            <h3 className="text-xl font-bold text-gray-800">{book.title}</h3>
+            <button
+              onClick={() => setIsReadModalOpen(false)}
+              className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-hidden">
+            <iframe
+              src={book.report}
+              className="w-full h-full border-0"
+              title={`Read ${book.title}`}
+              allow="fullscreen"
+            />
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 };
 

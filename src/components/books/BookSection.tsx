@@ -17,6 +17,7 @@ interface BookSectionProps {
   currentSlide: number;
   onSlideChange: (index: number) => void;
   onSearch: (term: string) => void;
+  onMultipleSearch: (tag?: string, listName?: string, businessOutcome?: string, implementationComplexity?: string, unexpectedOutcomes?: string, emergingPlayers?: string, Function?:string) => void;
   onFilterChange: (filter: string) => void;
   onPlayBook: (book: Book, index: number) => void;
   onOpenDescription: (book: Book) => void;
@@ -26,6 +27,7 @@ interface BookSectionProps {
   email: string;
   all_books: Book[];
   jobAidId: string| null;
+  packageDetails: any;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -33,6 +35,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   currentSlide,
   onSlideChange,
   onSearch,
+  onMultipleSearch,
   onFilterChange,
   onPlayBook,
   onOpenDescription,
@@ -42,18 +45,22 @@ const BookSection: React.FC<BookSectionProps> = ({
   email,
   all_books,
   jobAidId,
+  packageDetails,
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
   console.log("Name:", name);
   console.log("Email:", email);
   const pathname = usePathname();
-  const { user } = usePortalUser();
+  const { user, userInfo, loading } = usePortalUser();
   const userId = user?.user_data?.uid || null;
 
   const [viewMode, setViewMode] = useState<string>("all");
   const [likedBooks, setLikedBooks] = useState<Book[]>([]);
   const [laterBooks, setLaterBooks] = useState<Book[]>([]);
+  const [availableFilters, setAvailableFilters] = useState<string>("");
+  const [showLists, setShowLists] = useState<boolean>(false);
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
 
   const handleResetLibrary = () => {
     const randomId = Math.random().toString(36).substring(2, 10);
@@ -77,6 +84,14 @@ const BookSection: React.FC<BookSectionProps> = ({
     setFilteredBooks(filteredBooks);
     setCurrentSlide(0);
   }, [filteredBooks, setFilteredBooks, setCurrentSlide]);
+
+
+  useEffect(() => {
+    console.log('[package data:', packageDetails)
+    setAvailableFilters(packageDetails?.report_config?.show_filters ?? []);
+    setShowLists(packageDetails?.report_config?.show_lists ?? true);
+    setShowSearchBar(packageDetails?.report_config?.show_search ?? true);
+  }, [packageDetails]);
 
   // ✅ Fetch liked/later books once
   useEffect(() => {
@@ -102,20 +117,29 @@ const BookSection: React.FC<BookSectionProps> = ({
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
+        {!loading && (
         <SearchFilter
           onSearch={onSearch}
+          onMultipleSearch={onMultipleSearch}
           onFilterChange={onFilterChange}
           setViewMode={setViewMode}
           books={books}
           viewMode={viewMode}
           handleResetLibrary={handleResetLibrary}
-        />
-        <br />
-        <Carousel onFilterChange={onFilterChange} books={books} />
+          availableFilters={availableFilters}
+          showSearchBar={showSearchBar}
+          defaultFilters={userInfo.libraryBotConfig?.default_filters || {}}
+        />)}
+        {showLists && <>
+          <br />
+          <Carousel onFilterChange={onFilterChange} books={books} />
+        </>}
+
       </div>
       {/* <PageRefresh onReset={handleResetLibrary}  /> */}
       <br />
       <br />
+      {!loading&&(
       <BookCarousel
         books={books}
         currentSlide={currentSlide}
@@ -128,10 +152,11 @@ const BookSection: React.FC<BookSectionProps> = ({
         laterBooks={laterBooks}
         setViewMode={setViewMode}
       />
+)}
 
       <br />
       <br />
-      <CTA />
+      {/* <CTA /> */}
       {jobAidId && (
         <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
           <ConversationalForm

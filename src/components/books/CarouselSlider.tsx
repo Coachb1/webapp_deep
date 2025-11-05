@@ -247,9 +247,9 @@ export default function Carousel({ onFilterChange, books }: CarouselProps) {
         </button>
       </div>
 
-      <h4 className="text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide text-blue-600 mt-6">
+      {/* <h4 className="text-sm sm:text-base md:text-lg font-bold uppercase tracking-wide text-blue-600 mt-6">
         Our Library
-      </h4>
+      </h4> */}
     </div>
   );
 }

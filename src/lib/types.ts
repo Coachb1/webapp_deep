@@ -1,9 +1,15 @@
 
 export interface Book {
+  report: string | undefined;
   id: string;
   title: string;
   author: string;
   tag: string[];
+  function: string[];
+  business_outcome: string[];
+  implementation_complexity: string[];
+  unexpected_outcomes: string[];
+  emerging_players: boolean;
   desc: string;
   img: string;
   audio: string;
@@ -14,6 +20,18 @@ export interface Book {
   list_name: string;
 
 }
+
+export interface CoursePackage {
+  package_id: string;
+  package_name: string;
+  package_description: string;
+  image_link: string;
+  report_config: any;
+  jobaid_id: string;
+  books: Book[];
+}
+
+
 interface Recommendation {
   title: string;
   test_code: string;
@@ -365,6 +383,8 @@ export interface UserInfoType {
   is_active?: boolean;
   leaderboard_report_protected?: boolean;
   leaderboard_report_password?: string;
+  snnipetConfig?: any;
+  libraryBotConfig?: any;
 }
 
 export interface PositionedUserTypes {
