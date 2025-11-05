@@ -92,8 +92,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
             <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Case Progress this Month</h3>
               <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                {Array.from({ length: Math.min(completedCases, 5) }).map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} className={i < Math.min(completedCases, 5) ? "text-yellow-400" : "text-gray-200"}>★</span>
                 ))}
               </div>
               <p className="mt-3 text-center text-gray-600">{Math.min(completedCases, 5)}/5 cases completed this month</p>
@@ -103,8 +103,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
             <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Tranformation Logs this Month</h3>
               <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                {Array.from({ length: Math.min(completedTransformations, 3) }).map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <span key={i} className={i < Math.min(completedTransformations, 3) ? "text-yellow-400" : "text-gray-200"}>★</span>
                 ))}
               </div>
               <p className="mt-3 text-center text-gray-600">{Math.min(completedTransformations, 3)}/3 transformations logs this month</p>
