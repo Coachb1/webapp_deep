@@ -325,7 +325,7 @@ const SearchFilter = ({
       defaultSelectedFilters["Function"] = defaultFilters["function"];
     }
     let defaultEmergingPlayers= ""
-    if (defaultFilters['emerging_players'].length >0 ){
+    if (defaultFilters['emerging_players']?.length >0 ){
       defaultEmergingPlayers = defaultFilters["emerging_players"] === "true" ? "true" : "false"
       setEmergingPlayersChecked(defaultEmergingPlayers === "true"? true: false);
     }
