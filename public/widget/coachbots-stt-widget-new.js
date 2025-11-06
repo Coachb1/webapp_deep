@@ -101,6 +101,8 @@ style.textContent = `
   align-items: center;
   width: fit-content;
   font-size: 14px;
+  flex-wrap: nowrap !important;  
+  white-space: nowrap !important; 
 }
 
 .audio-interaction .label {
@@ -108,7 +110,7 @@ style.textContent = `
 }
 
 .toggle-wrapper {
-  display: flex;
+  display: inline-flex !important;
   align-items: center;
   gap: 4px;
   margin-left: 5px;
@@ -12136,8 +12138,8 @@ loadExternalModule().then(() => {
           <span class="slider"></span>
         </label>
         <span class="toggle-text">Yes</span>
-  </div>
       </div>
+    </div>
     </div>
 
 
