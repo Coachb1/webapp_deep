@@ -657,6 +657,8 @@ let showDiagnosticButtonStt = true;
 let NumberConversationFordiagButton = 3;
 let IntakeTypeSTT='individual_only';
 let IsDiagnosticsOn;
+let BotconversationPerMonth=0;
+let systemBotconversationLimit=0;
 
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
@@ -918,6 +920,7 @@ const initialiseUserSTT = async () => {
       participantId2 = data.uid;
       userId2 = data.uid;
       userRole2 = data.role;
+      ConvPerMonth(userId2)
 
       clientAllowAudioInteraction2 = data.client_allow_audio_interactions;
       userAllowAudioInteraction2 = data.user_allow_audio_interactions;
@@ -945,8 +948,10 @@ const initialiseUserSTT = async () => {
               console.log('calling getbuttoncontrolls')
               getButtonControls();
             }
+            if (data.data.user_info[0]?.ui_information) {
+
             allowPastingAtClientLevelStt =
-              data.data.user_info[0].ui_information.allow_paste_answer;
+              data.data.user_info[0]?.ui_information.allow_paste_answer;
 
             clientBasedBotHeaderText =
               data.data.user_info[0].ui_information.header;
@@ -980,6 +985,7 @@ const initialiseUserSTT = async () => {
 
               instructionsPaneList.innerHTML = list;
             }
+          }
           }
         })
         .catch((err) => {
@@ -1044,6 +1050,7 @@ const createUserSTT = async (user_name, user_email) => {
       participantId2 = data.uid;
       userId2 = data.uid;
       userRole2 = data.role;
+      ConvPerMonth(userId2);
 
       clientAllowAudioInteraction2 = data.client_allow_audio_interactions;
       userAllowAudioInteraction2 = data.user_allow_audio_interactions;
@@ -1066,6 +1073,8 @@ const createUserSTT = async (user_name, user_email) => {
           if (!data.data.user_info[0].msg) {
             clientuserInformationSTT = data.data.user_info[0];
             getButtonControls();
+
+            if (data.data.user_info[0]?.ui_information){
 
             allowPastingAtClientLevelStt =
               data.data.user_info[0].ui_information.allow_paste_answer;
@@ -1101,6 +1110,7 @@ const createUserSTT = async (user_name, user_email) => {
                 });
 
               instructionsPaneList.innerHTML = list;
+            }
             }
           }
         })
@@ -4570,6 +4580,7 @@ async function handleFaqButtonClick(question) {
   } else {
     // something_else => begin_session
     if (question == "something_else") {
+
       //end session due to inactivity :- row 708
       if (botId && botType !== "user_bot") {
         if (isBotInitialized === true) {
@@ -4587,6 +4598,22 @@ async function handleFaqButtonClick(question) {
       if (optedBeginSession) {
         console.log("===> yes optedBeginSession");
         return;
+      }
+
+      console.log('limits', {systemBotconversationLimit, BotconversationPerMonth})
+
+      if (systemBotconversationLimit > 0 & BotconversationPerMonth >= systemBotconversationLimit){
+        appendMessage2(
+          `
+            <div style="border-radius: 1px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;">
+              ⚠️ You've reached your monthly conversation limit.<br/>
+              <strong>Please contact your administrator.</strong>
+            </div>
+          `
+        )
+
+        return;
+
       }
       if (botType === 'avatar_bot' && botScenarioCase === 'icons_by_ai' ){
 
@@ -5381,7 +5408,7 @@ function sendBotTranscript2() {
   return;
 }
 
-function handleEndConversation(isInActive) {
+function handleEndConversation(isInActive, message) {
   console.log("end conversation clicked");
   if (isInActive === true) {
     appendMessage2(
@@ -5393,7 +5420,12 @@ function handleEndConversation(isInActive) {
         "<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>"
       );
     } else {
-      appendMessage2(`<b>Your session has completed. Your session summary, if enabled,  will be emailed to you. Now, you can start new session by clicking "Begin session".</b>`)
+      if (message){
+        appendMessage2(message)
+
+      }else{
+        appendMessage2(`<b>Your session has completed. Your session summary, if enabled,  will be emailed to you. Now, you can start new session by clicking "Begin session".</b>`)
+      }
     }
   }
 
@@ -10046,6 +10078,45 @@ async function toggleBotSwitch(type_of_bot){
     }
   };
 
+  const ConvPerMonth = async(userId)=>{
+    try{
+      if (  !userId) {
+        console.error("[ConvPerMonth] Missing required parameters : ", userId);
+        return null;
+      }
+  
+      const response = await fetch(`${baseURL2}/coaching-conversations/conversation-per-month/?user_id=${userId}&bot_id=${botId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        console.error("[ConvPerMonth] Failed:", response.statusText);
+        return null;
+      }
+  
+      const responseData = await response.json();
+      console.log("[ConvPerMonth] Success:", responseData);
+
+      if (responseData.conversation_per_month){
+        BotconversationPerMonth = responseData.conversation_per_month;
+      };
+      if (responseData.system_conversation_limit){
+        systemBotconversationLimit = responseData.system_conversation_limit;
+      }
+      return responseData;
+  
+  
+    } catch (error){
+      console.error("[ConvPerMonth] got error: ", error);
+      return {}
+    }
+  }
+  
+
   // get session status
   const getSessionStatusStt = async (session_id) => {
     const url = `${baseURL2}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
@@ -11329,7 +11400,7 @@ function disableAllDiagnosticButtons() {
           console.log("STREAMED MESSAGE 1 -> ", messageText.innerText);
 
           messageText.innerHTML =  parseMarkdown(messageText.innerText);
-
+          BotconversationPerMonth += 1;
      
           if (streamWithAudio) {
             const encodedText = encodeURIComponent(cleanTextForAudio(text));
@@ -12992,6 +13063,24 @@ const customMicButton = document.getElementById("startMicBtn");
           // get latest message
           let latestMessage = body.messages[body.messages.length - 1].text;
 
+          if (botId != undefined && optedBeginSession){
+            console.log('limits', {systemBotconversationLimit, BotconversationPerMonth})
+
+            if (systemBotconversationLimit > 0 & BotconversationPerMonth >= systemBotconversationLimit){
+              signals.onResponse({
+                html: `
+                  <div style="border-radius: 1px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;">
+                    ⚠️ You've reached your monthly conversation limit.<br/>
+                    <strong>Please contact your administrator.</strong>
+                  </div>
+                `
+              })
+
+              if (botPreviousConversationHistory.length > 0) handleEndConversation(null, `<b>Your session has ended. Your session summary, if enabled, will be emailed to you. Now, you can start new session by clicking "Begin session".</b>`);
+              return;
+
+            }
+          }
           // fetch report for a test code
           if (FetchTestCodeReportStt) {
             const code = latestMessage?.trim();
