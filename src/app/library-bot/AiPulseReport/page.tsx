@@ -10,7 +10,7 @@ export default function Page({ searchParams }: BookPageProps) {
   return (
     <UserProvider>
       <UserInfoGate>
-        <AiPulseReport />
+        <AiPulseReport packageCourseId={searchParams.package_course_id} />
       </UserInfoGate>
     </UserProvider>
   );

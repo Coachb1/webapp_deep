@@ -52,10 +52,10 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
           {/* Text Section */}
           <div>
-            <h1 className="font-['Playfair_Display',serif] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[47px] leading-tight">
+            <h1 className="font-['Playfair_Display',serif] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[36px] leading-tight">
             {title}
             </h1>
-          <p className="text-gray-100 mt-4 text-base sm:text-lg">{subTitle}</p>
+          <p className="text-gray-100 mt-4 text-base sm:text-lg lg:text-[16px]">{subTitle}</p>
             <button
               onClick={scrollToSection}
               className="mt-6 inline-block bg-[whitesmoke] text-[#00c193] px-5 py-3 rounded-lg font-bold shadow-[0_8px_16px_rgba(255,107,107,0.25)] border-none cursor-pointer hover:opacity-90 transition"
