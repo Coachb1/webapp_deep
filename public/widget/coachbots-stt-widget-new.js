@@ -9698,10 +9698,10 @@ async function getButtonControls(){
       showSessionHistoryStt = snnipetConfigSTT.sessionHistoryButton === 'true';
     }
 
-    if (snnipetConfigSTT.mindmapBtn) {
+    if (snnipetConfigSTT?.mindmapBtn) {
       showMindmapButtonStt = snnipetConfigSTT.mindmapBtn === 'true';
     }
-    if (snnipetConfigSTT.assessmentBtn ) {
+    if (snnipetConfigSTT?.assessmentBtn ) {
       showAssessmentButtonStt = snnipetConfigSTT.assessmentBtn === 'true'
     }
   }
@@ -9710,7 +9710,7 @@ async function getButtonControls(){
     showAudioInteractionButtonStt = snnipetConfigSTT.audioInteractionButton === 'true';
   }
   
-  if (snnipetConfigSTT.modeBtn) {
+  if (snnipetConfigSTT?.modeBtn) {
     showModeButtonStt = snnipetConfigSTT.modeBtn === 'true';
   }
 
