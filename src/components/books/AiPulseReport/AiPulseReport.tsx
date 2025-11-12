@@ -28,7 +28,7 @@ interface AIPluseReportProps {
 const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
   const { userInfo } = usePortalUser();
 
-  const [data, setData] = useState<ActivityData[]>([]); // ✅ your API data
+  const [data, setData] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +49,6 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
     day: "numeric",
   });
 
-  // ✅ Fetch report data from backend API
   const fetchReportData = async () => {
     if (!userInfo.clientName) return;
 
@@ -63,7 +62,6 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
       if (!res.ok) throw new Error("Failed to fetch data");
 
       const result = await res.json();
-      console.log(result, "data");
       setData(result.data || []);
     } catch (err) {
       console.error("Error fetching report data:", err);
@@ -73,19 +71,18 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
     }
   };
 
-  // ✅ Load data on mount
   useEffect(() => {
     fetchReportData();
   }, [packageCourseId, userInfo.clientName]);
 
-  // Sorting logic
   const handleSort = (column: keyof ActivityData) => {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
     } else {
       setSortColumn(column);
       setSortDirection("desc");
     }
+    setCurrentPage(1);
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -103,12 +100,25 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
       : bStr.localeCompare(aStr);
   });
 
-  // Pagination
-  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+  // --- Pagination (always start from 1) ---
+  const rawTotalPages = Math.ceil(sortedData.length / rowsPerPage); // could be 0
+  const totalPages = Math.max(1, rawTotalPages);
+
+  useEffect(() => {
+    setCurrentPage((p) => {
+      if (rawTotalPages === 0) return 1;
+      return Math.min(Math.max(1, p), rawTotalPages);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortedData.length, rowsPerPage, rawTotalPages]);
+
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedData = sortedData.slice(startIndex, startIndex + rowsPerPage);
 
-  // Popup functions
+  const hasData = sortedData.length > 0;
+  const canPrev = hasData && currentPage > 1;
+  const canNext = hasData && currentPage < rawTotalPages;
+
   const handleShowMoreEmails = (emails: string[], caseName: string) => {
     setSelectedEmails(emails);
     setSelectedCase(caseName);
@@ -116,12 +126,10 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
   };
   const handleClosePopup = () => setShowEmailPopup(false);
 
-  // ✅ Refresh button handler
   const handleRefresh = () => {
     fetchReportData();
   };
 
-  // Export
   const downloadReport = (format: "csv" | "xlsx") => {
     const exportData = sortedData.map((row, idx) => ({
       Rank: idx + 1,
@@ -281,11 +289,12 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
                             (sortDirection === "asc" ? "↑" : "↓")}
                         </div>
                       </th>
+                      {/* Updated Business Outcome header: prevent wrapping and give more room */}
                       <th
-                        className="px-6 py-3 text-left text-xs font-bold text-gray-800 cursor-pointer uppercase w-[15%]"
+                        className="px-6 py-3 text-left text-xs font-bold text-gray-800 cursor-pointer uppercase w-[18%] min-w-[140px]"
                         onClick={() => handleSort("businessOutcome")}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
                           <svg
                             className="w-4 h-4"
                             viewBox="0 0 24 24"
@@ -316,11 +325,7 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                             <polyline points="14 2 14 8 20 8"></polyline>
                           </svg>
-                          <div className="text-center">
-                            Discussion
-                            <br />
-                            Requests
-                          </div>
+                          <div className="text-center">DiscussionRequests</div>
                           {sortColumn === "discussionRequests" &&
                             (sortDirection === "asc" ? "↑" : "↓")}
                         </div>
@@ -343,50 +348,41 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedData.map((row, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-gray-100 hover:bg-gray-50 transition"
-                      >
-                        <td className="px-6 py-4 font-medium text-gray-500">
-                          {row.case}
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {row.industry}
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {row.function}
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {row.businessOutcome}
-                        </td>
-                        <td className="px-6 py-4 text-center font-semibold text-gray-500">
-                          {row.discussionRequests}
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          <div className="flex flex-wrap gap-1 items-center">
-                            {row.requestUsers.length > 0 && (
-                              <span className="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs">
-                                {row.requestUsers[0]}
-                              </span>
-                            )}
-                            {row.requestUsers.length > 1 && (
-                              <button
-                                onClick={() =>
-                                  handleShowMoreEmails(
-                                    row.requestUsers,
-                                    row.case
-                                  )
-                                }
-                                className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-semibold hover:bg-blue-100 transition"
-                              >
-                                +{row.requestUsers.length - 1} more
-                              </button>
-                            )}
-                          </div>
+                    {paginatedData.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-gray-500 font-medium">
+                          {hasData ? <span>No items on this page.</span> : <span>No data found.</span>}
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      paginatedData.map((row, index) => (
+                        <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                          <td className="px-6 py-4 font-medium text-gray-500">{row.case}</td>
+                          <td className="px-6 py-4 text-gray-500">{row.industry}</td>
+                          <td className="px-6 py-4 text-gray-500">{row.function}</td>
+                          {/* Updated businessOutcome body cell: single-line with ellipsis when too long */}
+                          <td
+                            className="px-6 py-4 text-gray-500 whitespace-nowrap overflow-hidden"
+                            style={{ textOverflow: "ellipsis", maxWidth: 300 }}
+                          >
+                            {row.businessOutcome}
+                          </td>
+                          <td className="px-6 py-4 text-center font-semibold text-gray-500">{row.discussionRequests}</td>
+                          <td className="px-6 py-4 text-gray-500">
+                            <div className="flex flex-wrap gap-1 items-center">
+                              {row.requestUsers.length > 0 && (
+                                <span className="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs">{row.requestUsers[0]}</span>
+                              )}
+                              {row.requestUsers.length > 1 && (
+                                <button onClick={() => handleShowMoreEmails(row.requestUsers, row.case)} className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-semibold hover:bg-blue-100 transition">
+                                  +{row.requestUsers.length - 1} more
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -394,12 +390,10 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
               {/* Pagination */}
               <div className="flex justify-center items-center gap-3 mt-6">
                 <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={!canPrev}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   className={`px-6 py-2 rounded-full font-semibold transition ${
-                    currentPage === 1
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    !canPrev ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
                   Prev
@@ -408,12 +402,10 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
                   {currentPage}
                 </button>
                 <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={!canNext}
+                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                   className={`px-6 py-2 rounded-full font-semibold transition ${
-                    currentPage === totalPages
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    !canNext ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
                   Next
@@ -425,13 +417,7 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
           {/* Footer */}
           <div className="flex items-center justify-between mt-6 pt-6 border-t text-sm text-gray-600">
             <div className="flex items-center gap-2">
-              <svg
-                className="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
                 <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -440,13 +426,7 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
               Generated: {currentDate}
             </div>
             <div className="flex items-center gap-2">
-              <svg
-                className="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
@@ -458,33 +438,21 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
 
       {/* Email Popup Modal */}
       {showEmailPopup && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={handleClosePopup}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleClosePopup}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="bg-emerald-500 p-4 flex items-center justify-between">
               <div>
                 <h3 className="text-white font-bold text-lg">Request Users</h3>
                 <p className="text-white text-sm opacity-90">{selectedCase}</p>
               </div>
-              <button
-                onClick={handleClosePopup}
-                className="text-white hover:bg-white/20 rounded-full p-2 transition"
-              >
+              <button onClick={handleClosePopup} className="text-white hover:bg-white/20 rounded-full p-2 transition">
                 <FaTimes size={20} />
               </button>
             </div>
             <div className="p-6 max-h-96 overflow-y-auto">
               <div className="space-y-2">
                 {selectedEmails.map((email, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
-                  >
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                     <div className="bg-emerald-100 rounded-full p-2">
                       <FaEnvelope className="text-emerald-600" size={16} />
                     </div>
@@ -494,10 +462,7 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
               </div>
             </div>
             <div className="bg-gray-50 p-4 flex justify-end">
-              <button
-                onClick={handleClosePopup}
-                className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition"
-              >
+              <button onClick={handleClosePopup} className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition">
                 Close
               </button>
             </div>
