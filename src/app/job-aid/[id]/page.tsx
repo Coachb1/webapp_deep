@@ -1,6 +1,13 @@
 import ConversationalForm from "@/components/job-aid/ConversationalForm";
 import Navbar from "@/components/job-aid/navbar";
+import { constructMetadata } from "@/lib/utils";
 import React from "react";
+
+
+export const metadata = constructMetadata({
+  title: "JobAid - Coachbot",
+});
+
 
 interface JobAidPageProps {
   params: { id: string };

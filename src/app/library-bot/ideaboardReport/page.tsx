@@ -1,4 +1,11 @@
 import { IdeaBoardReport } from "@/components/books/leaderboard/ideaboardReport";
+import { constructMetadata } from "@/lib/utils";
+
+
+export const metadata = constructMetadata({
+  title: "IdeaBoard - Coachbot",
+});
+
 
 interface IdeaboardPageProps {
   searchParams: { email: string, 
