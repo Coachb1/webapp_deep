@@ -52,10 +52,10 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
           {/* Text Section */}
           <div>
-            <h1 className="font-['Playfair_Display',serif] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[47px] leading-tight">
+            <h1 className="font-['Playfair_Display',serif] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[36px] leading-tight">
             {title}
             </h1>
-          <p className="text-gray-100 mt-4 text-base sm:text-lg">{subTitle}</p>
+          <p className="text-gray-100 mt-4 text-base sm:text-lg lg:text-[16px]">{subTitle}</p>
             <button
               onClick={scrollToSection}
               className="mt-6 inline-block bg-[whitesmoke] text-[#00c193] px-5 py-3 rounded-lg font-bold shadow-[0_8px_16px_rgba(255,107,107,0.25)] border-none cursor-pointer hover:opacity-90 transition"
@@ -92,8 +92,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
             <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Case Progress this Month</h3>
               <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                {Array.from({ length: Math.min(completedCases, 5) }).map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} className={i < Math.min(completedCases, 5) ? "text-yellow-400" : "text-gray-200"}>★</span>
                 ))}
               </div>
               <p className="mt-3 text-center text-gray-600">{Math.min(completedCases, 5)}/5 cases completed this month</p>
@@ -103,8 +103,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
             <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Tranformation Logs this Month</h3>
               <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                {Array.from({ length: Math.min(completedTransformations, 3) }).map((_, i) => (
-                  <span key={i} className="text-yellow-400">★</span>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <span key={i} className={i < Math.min(completedTransformations, 3) ? "text-yellow-400" : "text-gray-200"}>★</span>
                 ))}
               </div>
               <p className="mt-3 text-center text-gray-600">{Math.min(completedTransformations, 3)}/3 transformations logs this month</p>

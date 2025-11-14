@@ -69,6 +69,21 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
               LeaderBoard
             </Button>
 
+            {/* AI Pulse Report btn */}
+            <Button
+              onClick={() => {
+                if (packageCourseId) {
+                  const url = `/library-bot/AiPulseReport/?package_course_id=${encodeURIComponent(
+                    packageCourseId
+                  )}`;
+                  window.open(url, "_blank", "noopener,noreferrer");
+                }
+              }}
+              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
+            >
+              AI Pulse Report
+            </Button>
+
             {/* Idea Board Button */}
             {jobaidId && (
               <Button
