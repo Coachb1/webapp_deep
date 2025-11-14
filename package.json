@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.1",
-    "@anthropic-ai/sdk": "^0.17.1",
+    "@anthropic-ai/sdk": "^0.68.0",
     "@google/generative-ai": "^0.3.1",
     "@kinde-oss/kinde-auth-nextjs": "^2.0.10",
     "@radix-ui/react-accordion": "^1.1.2",
