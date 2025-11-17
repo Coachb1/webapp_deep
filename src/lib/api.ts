@@ -804,6 +804,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           implementation_complexity: m.implementation_complexity? m.implementation_complexity.split(',') : [],
           unexpected_outcomes: m.unexpected_outcome? m.unexpected_outcome.split(',') : [],
           emerging_players: m.emerging_player,
+          start_up: m.start_up,
           desc: m.description,
           audio: m.audio_link,
           img: m.image_link,

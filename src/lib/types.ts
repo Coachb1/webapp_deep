@@ -10,6 +10,7 @@ export interface Book {
   implementation_complexity: string[];
   unexpected_outcomes: string[];
   emerging_players: boolean;
+  start_up: boolean;
   desc: string;
   img: string;
   audio: string;
