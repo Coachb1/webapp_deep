@@ -114,7 +114,8 @@ const handleMultipleSearch = (
   implementationComplexity?: string,
   unexpectedOutcomes?: string,
   emergingPlayers?: string,
-  Function?: string
+  Function?: string,
+  startUp?: string
 ) => {
   // Normalize only when provided
   const normalize = (val?: string) => val?.trim().toLowerCase() || null;
@@ -127,6 +128,7 @@ const handleMultipleSearch = (
     unexpectedOutcomes: normalize(unexpectedOutcomes),
     emergingPlayers: normalize(emergingPlayers),
     function: normalize(Function),
+    startUp: normalize(startUp),
   };
   console.log("Multiple search with filters:", normalized);
 
@@ -137,6 +139,7 @@ const handleMultipleSearch = (
     const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
     const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
     const bookFunction = book.function?.map((f: string) => f.toLowerCase()) || [];
+    const bookStartUp = String(book.start_up || "").toLowerCase();
 
     return (
       (!normalized.tag || bookTag.includes(normalized.tag)) &&
@@ -144,7 +147,8 @@ const handleMultipleSearch = (
       (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
       (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
       (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers) &&
-      (!normalized.function || bookFunction.includes(normalized.function))
+      (!normalized.function || bookFunction.includes(normalized.function)) &&
+      (!normalized.startUp || bookStartUp === normalized.startUp)
     );
   });
 

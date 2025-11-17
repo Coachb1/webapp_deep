@@ -17,7 +17,8 @@ interface SearchFilterProps {
     implementationComplexity?: string,
     unexpectedOutcomes?: string,
     emergingPlayers?: string,
-    Function?: string
+    Function?: string,
+    startUp?: string
   ) => void;
   onFilterChange: (filter: string) => void;
   setViewMode: (index: string) => void;
@@ -50,8 +51,10 @@ const SearchFilter = ({
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [emergingPlayersChecked, setEmergingPlayersChecked] = useState(false);
+  const [startUpChecked, setStartUpChecked] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("Filter");
   const [hasEmergingPlayers, setHasEmergingPlayers] = useState(false);
+  const [hasStartUp, setHasStartUp] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [filterCategories, setFilterCategories] = useState<FilterCategory[]>(
     []
@@ -151,6 +154,7 @@ const SearchFilter = ({
 
   setFilterCategories(filterCategories);
   setHasEmergingPlayers(availableFilters.includes("Emerging Players"));
+  setHasStartUp(availableFilters.includes("Start Up"));
 }, [
   availableFilters,
   categories,
@@ -197,6 +201,7 @@ const SearchFilter = ({
       onFilterChange("");
       setViewMode("all");
       setEmergingPlayersChecked(false);
+      setStartUpChecked(false);
     }
   }, [viewMode]);
 
@@ -282,22 +287,32 @@ const SearchFilter = ({
       newFilters["Business Outcome"],
       newFilters["Implementation Complexity"],
       newFilters["Unexpected Outcomes"],
-      "" , // Reset emerging players on other filter change
+      emergingPlayersChecked ? "true" : "", 
       newFilters["Function"],
+      startUpChecked ? "true" : ""
     );
     console.log("Applied filters:", newFilters,newFilters["Function"]);
   };
 
-  const handleEmergingPlayersToggle = () => {
-    setEmergingPlayersChecked(!emergingPlayersChecked);
+  const handleCheckboxToggle = (category:string) => {
+    let emergingPlayer = emergingPlayersChecked;
+    let startUp = startUpChecked;
+    if (category === "Latest"){
+      emergingPlayer = !emergingPlayersChecked;
+      setEmergingPlayersChecked(!emergingPlayersChecked);
+    } else if (category === "Start Up"){
+      startUp = !startUpChecked;
+      setStartUpChecked(!startUpChecked);
+    }
     onMultipleSearch(
       selectedFilters["Industry"],
       "",
       selectedFilters["Business Outcome"],
       selectedFilters["Implementation Complexity"],
       selectedFilters["Unexpected Outcomes"],
-      !emergingPlayersChecked ? "true" : "false",
+      emergingPlayer ? "true" : "",
       selectedFilters["Function"],
+      startUp ? "true" : ""
     );
   }
 
@@ -326,9 +341,15 @@ const SearchFilter = ({
     }
     let defaultEmergingPlayers= ""
     if (defaultFilters['emerging_players']?.length >0 ){
-      defaultEmergingPlayers = defaultFilters["emerging_players"] === "true" ? "true" : "false"
-      setEmergingPlayersChecked(defaultEmergingPlayers === "true"? true: false);
+      defaultEmergingPlayers = defaultFilters["emerging_players"] === "true" ? "true" : ""
+      defaultEmergingPlayers === "true" && setEmergingPlayersChecked(true);
     }
+    let defaultStartUp = ""
+    if (defaultFilters['start_up']?.length >0 ){
+      defaultStartUp = defaultFilters["start_up"] === "true" ? "true" : ""
+      defaultStartUp === "true" &&  setStartUpChecked(true) 
+    }
+
 
     
     // apply defaults to visible UI state
@@ -343,7 +364,8 @@ const SearchFilter = ({
       defaultSelectedFilters?.["Implementation Complexity"]|| "",
       defaultSelectedFilters?.["Unexpected Outcomes"] || "",
       defaultEmergingPlayers,
-      defaultSelectedFilters?.["Function"] || ""
+      defaultSelectedFilters?.["Function"] || "",
+      defaultStartUp
     );
     // run once on mount
   }, []);
@@ -527,7 +549,7 @@ const SearchFilter = ({
               type="checkbox"
               id="emerging-players"
               checked={emergingPlayersChecked}
-              onChange={handleEmergingPlayersToggle}
+              onChange={()=> handleCheckboxToggle('Latest')}
               className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
             />
             <label
@@ -535,6 +557,23 @@ const SearchFilter = ({
             className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
           >
             Latest
+          </label>
+          </div>
+        )}
+        {hasStartUp && (
+          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow">
+            <input
+              type="checkbox"
+              id="start-up"
+              checked={startUpChecked}
+              onChange={()=> handleCheckboxToggle('Start Up')}
+              className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
+            />
+            <label
+              htmlFor="start-up"
+            className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
+          >
+            Start Up
           </label>
           </div>
         )}
