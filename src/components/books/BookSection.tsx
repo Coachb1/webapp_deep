@@ -129,6 +129,7 @@ const BookSection: React.FC<BookSectionProps> = ({
           availableFilters={availableFilters}
           showSearchBar={showSearchBar}
           defaultFilters={userInfo.libraryBotConfig?.default_filters || {}}
+          allBooks={all_books}
         />)}
         {showLists && <>
           <br />

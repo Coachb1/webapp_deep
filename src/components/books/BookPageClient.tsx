@@ -84,7 +84,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
 
     const queries = queryStr
       .split(",")
-      .map((q) => q.trim().toLowerCase())
+      .map((q) => q.trim().toLowerCase().trim())
       .filter((f) => f.length > 0);
 
     const filtered = allBooks.filter((book) => {
@@ -92,13 +92,13 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       const author = book.author?.toLowerCase() || "";
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
+      const key_words = book.keywords?.map((k) => k.toLowerCase().trim()) || [];
       
       return queries.some(
         (query) =>
           title.includes(query) ||
           author === query ||
-          listName === query ||
-          tags.some((tag) => tag === query)
+          key_words.some((keyword) => keyword === query)
       );
     });
 

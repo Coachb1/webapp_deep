@@ -805,6 +805,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           unexpected_outcomes: m.unexpected_outcome? m.unexpected_outcome.split(',') : [],
           emerging_players: m.emerging_player,
           start_up: m.start_up,
+          keywords: m.key_words,
           desc: m.description,
           audio: m.audio_link,
           img: m.image_link,

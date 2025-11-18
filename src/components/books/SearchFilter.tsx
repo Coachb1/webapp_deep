@@ -30,6 +30,7 @@ interface SearchFilterProps {
   defaultFilters: Record<string, string>;
   clientDepartments?: string;
   clientExpertise?: string;
+  allBooks: Book[];
 }
 
 const SearchFilter = ({
@@ -44,18 +45,23 @@ const SearchFilter = ({
   clientExpertise,
   availableFilters,
   showSearchBar,
-  defaultFilters
+  defaultFilters,
+  allBooks
 }: SearchFilterProps) => {
   const [activeButton, setActiveButton] = useState<"like" | "later" | null>(
     null
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number>(-1);
   const [emergingPlayersChecked, setEmergingPlayersChecked] = useState(false);
   const [startUpChecked, setStartUpChecked] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("Filter");
   const [hasEmergingPlayers, setHasEmergingPlayers] = useState(false);
   const [hasStartUp, setHasStartUp] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
   const [filterCategories, setFilterCategories] = useState<FilterCategory[]>(
     []
   );
@@ -69,7 +75,7 @@ const SearchFilter = ({
 
   // Categories - MOVE HERE (before the useEffect)
   const categories = useMemo(() => {
-    const normalized = books.flatMap(
+    const normalized = allBooks.flatMap(
       (book) => book.tag?.map((t: string) => t.toLowerCase().trim()) ?? []
     );
     const unique = Array.from(new Set(normalized));
@@ -78,22 +84,61 @@ const SearchFilter = ({
     );
     return capitalized;
   }, []);
+
+  // Build a list of suggestion candidates from books (titles, authors, list_names, tags, keywords)
+  const suggestionCandidates = useMemo(() => {
+    const items: string[] = [];
+    console.log
+    allBooks.forEach((book) => {
+      if (book.title) items.push(book.title.trim());
+      if (book.author) items.push(book.author.trim());
+      // if (book.list_name) items.push(book.list_name.trim());
+      // if (Array.isArray(book.tag)) items.push(...book.tag.map((t) => t.trim()));
+      if (Array.isArray(book.keywords)) items.push(...book.keywords.map((k) => k.trim()));
+    });
+    const normalized = items
+      .filter(Boolean)
+      .map((s) => s)
+      .filter((v, i, a) => a.indexOf(v) === i);
+    return normalized;
+    
+  }, []);
+
+  // Update suggestions as searchTerm changes
+  useEffect(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+
+    const matched = suggestionCandidates
+      .filter((cand) => cand.toLowerCase().includes(q))
+      .slice(0, 8); // limit suggestions
+
+    setSuggestions(matched);
+    setShowSuggestions(matched.length > 0);
+    setActiveSuggestionIndex(-1);
+  }, [searchTerm]);
+  
   const functions = useMemo(() => {
-    const normalized = books.flatMap(
+    const normalized = allBooks.flatMap(
       (book) => book.function?.map((f: string) => f.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
   }, []);
 
   const businessOutcomes = useMemo(() => {
-    const normalized = books.flatMap(
+    const normalized = allBooks.flatMap(
       (book) => book.business_outcome?.map((b: string) => b.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
   }, []);
 
   const implementationComplexities = useMemo(() => {
-    const normalized = books.flatMap(
+    const normalized = allBooks.flatMap(
       (book) =>
         book.implementation_complexity?.map((c: string) => c.trim()) ?? []
     );
@@ -101,7 +146,7 @@ const SearchFilter = ({
   }, []);
 
   const unexpectedOutcomes = useMemo(() => {
-    const normalized = books.flatMap(
+    const normalized = allBooks.flatMap(
       (book) => book.unexpected_outcomes?.map((u: string) => u.trim()) ?? []
     );
     return Array.from(new Set(normalized)).filter(Boolean);
@@ -224,12 +269,31 @@ const SearchFilter = ({
       alert("Please enter a search term to find books.");
       return;
     }
+    setShowSuggestions(false);
     onSearch(searchTerm);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSearch();
+      // If a suggestion is active, choose it
+      if (activeSuggestionIndex >= 0 && suggestions[activeSuggestionIndex]) {
+        const chosen = suggestions[activeSuggestionIndex];
+        setSearchTerm(chosen);
+        setShowSuggestions(false);
+        onSearch(chosen);
+      } else {
+        handleSearch();
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!showSuggestions) return;
+      setActiveSuggestionIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!showSuggestions) return;
+      setActiveSuggestionIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
     }
   };
 
@@ -383,14 +447,48 @@ const SearchFilter = ({
 
         {/* Search */}
         <div className="flex items-center gap-2 bg-white rounded-full px-3 py-2 shadow border border-gray-200 w-full sm:max-w-md">
-          <Input
-            type="text"
-            placeholder="What are you looking for?"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleKeyPress}
-            className="flex-grow border-none focus:ring-0 text-base sm:text-sm"
-          />
+          <div className="relative flex-grow" ref={suggestionsRef}>
+            <Input
+              type="text"
+              placeholder="What are you looking for?"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onFocus={() => { if (suggestions.length>0) setShowSuggestions(true); }}
+              className="w-full border-none focus:ring-0 text-base sm:text-sm"
+              aria-autocomplete="list"
+              aria-haspopup="true"
+              aria-expanded={showSuggestions}
+            />
+
+            {/* Suggestions dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute left-0 right-0 z-30 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-56 overflow-auto">
+                {suggestions.map((sugg, idx) => (
+                  <li
+                    key={sugg + idx}
+                    role="option"
+                    aria-selected={activeSuggestionIndex === idx}
+                    className={`px-3 py-2 cursor-pointer text-sm hover:bg-gray-100 flex items-center justify-between ${
+                      activeSuggestionIndex === idx ? "bg-[#D1FAE5]" : ""
+                    }`}
+                    onMouseDown={(e) => {
+                      // prevent input blur before click
+                      e.preventDefault();
+                    }}
+                    onClick={() => {
+                      setSearchTerm(sugg);
+                      setShowSuggestions(false);
+                      onSearch(sugg);
+                    }}
+                    onMouseEnter={() => setActiveSuggestionIndex(idx)}
+                  >
+                    <span className="truncate">{sugg}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <Button
             onClick={handleSearch}
             className="flex items-center justify-center bg-[#00c193] hover:bg-green-600 rounded-full w-10 h-10 transition"
