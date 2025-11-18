@@ -11,6 +11,7 @@ export interface Book {
   unexpected_outcomes: string[];
   emerging_players: boolean;
   start_up: boolean;
+  keywords: string[];
   desc: string;
   img: string;
   audio: string;
