@@ -29,6 +29,7 @@ interface UserReport {
 
 const PASSWORD = "demobook#12345";
 const EXPIRY_HOURS = 24;
+const protectedPage = false;
 
 const fetchLeaderBoardReportData = async (
   backend: string,
@@ -101,7 +102,7 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }
   }, [isAuthenticated]);
 
   const checkAuth = () => {
-    if (!userInfo.leaderboard_report_protected) {
+    if (!userInfo.leaderboard_report_protected || !protectedPage) {
       setIsAuthenticated(true);
       return;
     }
