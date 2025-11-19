@@ -1,6 +1,7 @@
 import BookPageClient from "@/components/books/BookPageClient";
 import { UserProvider } from "@/components/books/context/UserContext";
 import UserInfoGate from "@/components/books/Userinfogate";
+import UserInfoWall from "@/components/books/UserLoginWall";
 import "@/index.css";
 import { constructMetadata } from "@/lib/utils";
 
@@ -15,9 +16,9 @@ interface BookPageProps {
 export default function Page({ params }: BookPageProps) {
   return (
     <UserProvider>
-      <UserInfoGate>
+      <UserInfoWall>
         <BookPageClient id={params.id} />
-      </UserInfoGate>
+      </UserInfoWall>
     </UserProvider>
   );
 }

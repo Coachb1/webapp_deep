@@ -10,7 +10,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
-import { emptyData, getTestMappings, getUserTestMappings } from "@/lib/utils";
+import { baseURL, emptyData, getTestMappings, getUserTestMappings } from "@/lib/utils";
 import {
   getClientUserInfo,
   getRequestedTests,
@@ -170,13 +170,45 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    let token: string | null = null;
+    if (pathname.includes('library-bot')) {
+      token = localStorage.getItem("access_token");
+      if (!token) {
+        setLoading(false);
+        return;
 
-    fetch("/api/session", { headers: { Authorization: `Bearer ${token}` } })
+        
+      }
+
+    fetch(`${baseURL}/accounts/me/`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then(async (data) => {
+        console.log("User data from session:", data);
+        
+        const newUser = { given_name: data.name, email: data.email };
+
+        (window as any).user = newUser;
+
+        const fullUser = {
+          ...newUser,
+          user_data: data,
+        };
+      console.log("Setting user:", fullUser);
+      setUser(fullUser);
+
+      await refreshUserData(fullUser);
+
+      })
+      .finally(() => setLoading(false));
+      
+    } else {
+      token = localStorage.getItem("jwt_token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      console.log(pathname)
+      fetch("/api/session", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then(async (data) => {
         setUser(data.user);
@@ -184,6 +216,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         await fetchUserData(data.user);
       })
       .finally(() => setLoading(false));
+    }
+    
+
+    
   }, []);
 
   const value = useMemo(

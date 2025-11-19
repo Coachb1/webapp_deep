@@ -1,6 +1,7 @@
 import { UserProvider } from "@/components/books/context/UserContext";
 import LeaderBoardReport from "@/components/books/LeaderBoardReport/LeaderBoardReport";
 import UserInfoGate from "@/components/books/Userinfogate";
+import UserInfoWall from "@/components/books/UserLoginWall";
 import { constructMetadata } from "@/lib/utils";
 
 export const metadata = constructMetadata({
@@ -15,9 +16,9 @@ interface BookPageProps {
 export default function Page({ searchParams }: BookPageProps) {
   return (
     <UserProvider>
-      <UserInfoGate>
+      <UserInfoWall>
         <LeaderBoardReport packageCourseId={searchParams.package_course_id} />
-      </UserInfoGate>
+      </UserInfoWall>
     </UserProvider>
   );
 }
