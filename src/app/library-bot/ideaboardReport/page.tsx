@@ -1,6 +1,4 @@
-import { usePortalUser, UserProvider } from "@/components/books/context/UserContext";
 import { IdeaBoardReport } from "@/components/books/leaderboard/ideaboardReport";
-import UserInfoGate from "@/components/books/Userinfogate";
 import { constructMetadata } from "@/lib/utils";
 
 
