@@ -37,7 +37,7 @@ const ProtectedSection: React.FC<ProtectedSectionProps> = ({
 
   const handleLogin = () => {
     if (password === correctPassword) {
-      const expiresAt = Date.now() + 1 * 60 * 1000; // 1 min
+      const expiresAt = Date.now() + expiryHours * 60 * 60 * 1000; // 24 hours
       localStorage.setItem("reportAuth", JSON.stringify({ expiresAt }));
       onUnlock();
       setError("");
