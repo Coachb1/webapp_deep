@@ -329,19 +329,14 @@ const SearchFilter = ({
   // };
 
   const handleFilterSelect = (filterName: string, option: string) => {
-    // if (filterName === "Industry") return;
-
-    // Start fresh – but keep Industry
     const newFilters: Record<string, string> = {
       Industry: selectedFilters["Industry"] || "",
     };
 
-    // Toggle logic
-    if (selectedFilters[filterName] !== option) {
-      newFilters[filterName] = option;
-    }
+    // Apply current dropdown selection
+    newFilters[filterName] = option;
 
-    // NEW: clear checkboxes when selecting filters
+    // ❗ Auto-clear checkboxes when selecting any second-row filter
     setEmergingPlayersChecked(false);
     setStartUpChecked(false);
 
@@ -354,40 +349,49 @@ const SearchFilter = ({
       newFilters["Business Outcome"] || "",
       newFilters["Implementation Complexity"] || "",
       newFilters["Unexpected Outcomes"] || "",
-      "", // emerging players removed
+      "",  // ← clear checkbox value
       newFilters["Function"] || "",
-      "" // startup removed
+      ""   // ← clear checkbox value
     );
   };
 
 
+
   const handleCheckboxToggle = (category: string) => {
-  if (category === "Latest") {
-    setEmergingPlayersChecked(true);
-    setStartUpChecked(false); // auto uncheck
-  } else if (category === "Start Up") {
-    setStartUpChecked(true);
-    setEmergingPlayersChecked(false); // auto uncheck
-  }
+    // Toggle logic
+    let newEmerging = emergingPlayersChecked;
+    let newStartup = startUpChecked;
 
-  const newFilters = {
-    Industry: selectedFilters["Industry"] || "",
+    if (category === "Latest") {
+      newEmerging = !emergingPlayersChecked;
+      newStartup = false;
+      setEmergingPlayersChecked(newEmerging);
+      setStartUpChecked(false);
+    } else if (category === "Start Up") {
+      newStartup = !startUpChecked;
+      newEmerging = false;
+      setStartUpChecked(newStartup);
+      setEmergingPlayersChecked(false);
+    }
+
+    // ❗ CLEAR all dropdowns except Industry
+    const newFilters: Record<string, string> = {
+      Industry: selectedFilters["Industry"] || "",
+    };
+
+    setSelectedFilters(newFilters); // clear dropdown values
+
+    onMultipleSearch(
+      newFilters["Industry"] || "",
+      "",
+      "", // Business Outcome cleared
+      "", // Implementation Complexity cleared
+      "", // Unexpected Outcomes cleared
+      newEmerging ? "true" : "",
+      "", // Function cleared
+      newStartup ? "true" : ""
+    );
   };
-  setSelectedFilters(newFilters);
-
-  onMultipleSearch(
-    newFilters["Industry"] || "",
-    "",
-    "",
-    "",
-    "",
-    category === "Latest" ? "true" : "",
-    "",
-    category === "Start Up" ? "true" : ""
-  );
-};
-
-
 
   useEffect(() => {
     // On mount, apply default filters if defaults
@@ -590,12 +594,17 @@ const SearchFilter = ({
                   {category.filterOptions.map((option) => (
                     <li
                       key={option}
-                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                      onClick={() => handleFilterSelect("Industry", option)}
-
+                      className={`px-4 py-2 text-sm cursor-pointer
+                      ${selectedFilters[category.filterName] === option
+                          ? "bg-[#1ED3A6] text-white"
+                          : "hover:bg-gray-100"
+                        }
+                        `}
+                      onClick={() => handleFilterSelect(category.filterName, option)}
                     >
                       {option}
                     </li>
+
                   ))}
                 </ul>
               )}
@@ -649,11 +658,17 @@ const SearchFilter = ({
                   {category.filterOptions.map((option) => (
                     <li
                       key={option}
-                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      className={`px-4 py-2 text-sm cursor-pointer
+                      ${selectedFilters[category.filterName] === option
+                          ? "bg-[#1ED3A6] text-white"
+                          : "hover:bg-gray-100"
+                        }
+                        `}
                       onClick={() => handleFilterSelect(category.filterName, option)}
                     >
                       {option}
                     </li>
+
                   ))}
                 </ul>
               )}
