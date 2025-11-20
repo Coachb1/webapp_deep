@@ -30,6 +30,8 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
   const [client, setClientData] = useState<UserInfoType|null>(null);
   const [clientLoading, setClientLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isProtected, setIsProtected] = useState(false);
+  const [correctPassword, setCorrectPassword] = useState("");
 
 
   const [rows, setRows] = useState<RowData[]>([]);
@@ -68,6 +70,17 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
         given_name: "",
         'email': userEmail
       });
+      console.log("Fetched client data:", client);
+      if (client.libraryBotConfig && Object.keys(client.libraryBotConfig).length > 0) {
+          console.log("Using libraryBotConfig for protection settings");
+          setIsProtected(client?.libraryBotConfig?.ideaboard_report_protected);
+          setCorrectPassword(client?.libraryBotConfig?.ideaboard_report_password || "");
+      } else {
+        console.log("Using universal settings for protection");
+        setIsProtected(client.universalPageConfig?.protected);
+        setCorrectPassword(client.universalPageConfig?.password || ""); 
+      }
+
       setClientData(client);
     } catch (error) {
       console.error("Error fetching client data:", error);
@@ -231,8 +244,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   if (!isAuthenticated) {
     return (
       <ProtectedSection
-        isProtected={!!client?.libraryBotConfig?.leaderboard_report_protected}
-        correctPassword={client?.libraryBotConfig?.leaderboard_report_password}
+        isProtected={isProtected}
+        correctPassword={correctPassword}
         clientLoading={clientLoading}
         onUnlock={() => setIsAuthenticated(true)}
       />
