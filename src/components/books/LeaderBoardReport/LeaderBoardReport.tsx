@@ -16,9 +16,10 @@ import {
   FaTimes,
   FaLock,
 } from "react-icons/fa";
-import { usePortalUser } from "../context/UserContext";
-import * as XLSX from 'xlsx'; 
-
+import * as XLSX from "xlsx";
+import { UserInfoType } from "@/lib/types";
+import { getClientbyClientId } from "@/lib/api";
+import ProtectedSection from "../protectedSection";
 
 interface UserReport {
   name: string;
@@ -27,7 +28,6 @@ interface UserReport {
   dates: string[];
 }
 
-const PASSWORD = "demobook#12345";
 const EXPIRY_HOURS = 24;
 
 const fetchLeaderBoardReportData = async (
@@ -39,6 +39,7 @@ const fetchLeaderBoardReportData = async (
       `${backend}/courses/course-report/?package_course_id=${packageCourseID}`
     );
     const data = await res.json();
+    console.log("fetchLeaderBoardReportData", data);
 
     return data.results.map((user: any) => ({
       name: user.name,
@@ -64,28 +65,57 @@ const fetchLeaderBoardReportData = async (
 
 interface LeaderBoardReportProps {
   packageCourseId: string;
+  client_id: string;
 }
 
-const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }) => {
-  const {userInfo} = usePortalUser();
-  console.log(userInfo, 'clientbookreport')
+const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
+  packageCourseId,
+  client_id,
+}) => {
+  const [clientData, setClientData] = useState<UserInfoType | null>(null);
   const [data, setData] = useState<UserReport[]>([]);
   const [date, setDate] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [clientLoading, setClientLoading] = useState(true);
 
   // Password state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isProtected, setIsProtected] = useState(false);
+  const [correctPassword, setCorrectPassword] = useState("");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
   useEffect(() => {
-    checkAuth();
+    const fetchClientData = async () => {
+      try {
+        setClientLoading(true);
+        const client = await getClientbyClientId(client_id);
+        console.log("Client data fetched:", client);
+        if (client.libraryBotConfig && Object.keys(client.libraryBotConfig).length > 0) {
+          console.log("Using libraryBotConfig for protection settings");
+          setIsProtected(client?.libraryBotConfig?.leaderboard_report_protected);
+          setCorrectPassword(client?.libraryBotConfig?.leaderboard_report_password || "");
+        } else {
+          console.log("Using universal settings for protection");
+          setIsProtected(client.universalPageConfig?.protected);
+          setCorrectPassword(client.universalPageConfig?.password || ""); 
+        }
+        setClientData(client);
+      } catch (error) {
+        console.error("Error fetching client data:", error);
+      } finally {
+        setClientLoading(false);
+      }
+    };
+
+    fetchClientData();
   }, []);
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -100,37 +130,6 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }
     }
   }, [isAuthenticated]);
 
-  const checkAuth = () => {
-    if (!userInfo.leaderboard_report_protected) {
-      setIsAuthenticated(true);
-      return;
-    }
-    const stored = localStorage.getItem("reportAuth");
-    if (stored) {
-      const { expiresAt } = JSON.parse(stored);
-      if (new Date().getTime() < expiresAt) {
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem("reportAuth");
-      }
-    }
-  };
-
-  const handleLogin = () => {
-    
-    if (password === userInfo.leaderboard_report_password) {
-      const expiresAt =
-        new Date().getTime() + EXPIRY_HOURS * 60 * 60 * 1000; // 24 hrs
-      localStorage.setItem(
-        "reportAuth",
-        JSON.stringify({ expiresAt: expiresAt })
-      );
-      setIsAuthenticated(true);
-      setError("");
-    } else {
-      setError("Incorrect password. Try again.");
-    }
-  };
 
   const loadData = async () => {
     setLoading(true);
@@ -141,69 +140,59 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({ packageCourseId }
 
   const refreshData = () => loadData();
 
+  // ADD THIS FUNCTION HERE
+  const downloadReport = (format: "csv" | "xlsx") => {
+    // Prepare data for export
+    const exportData = groupedData.map((user, idx) => ({
+      Rank: idx + 1,
+      Name: user.name,
+      Email: user.email,
+      "Total Books Completed": user.books.length,
+      "Last Completed Book":
+        user.books[user.books.length - 1] || "No Books Completed",
+      "Last Activity Date":
+        user.dates[user.dates.length - 1] || "No Date Available",
+      "All Completed Books": user.books.join(", ") || "None",
+    }));
 
-// ADD THIS FUNCTION HERE
-const downloadReport = (format: 'csv' | 'xlsx') => {
-  // Prepare data for export
-  const exportData = groupedData.map((user, idx) => ({
-    'Rank': idx + 1,
-    'Name': user.name,
-    'Email': user.email,
-    'Total Books Completed': user.books.length,
-    'Last Completed Book': user.books[user.books.length - 1] || 'No Books Completed',
-    'Last Activity Date': user.dates[user.dates.length - 1] || 'No Date Available',
-    'All Completed Books': user.books.join(', ') || 'None',
-  }));
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData);
 
-  // Create worksheet
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  
-  // Create workbook
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'LeaderBoard Report');
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "LeaderBoard Report");
 
-  // Generate filename with timestamp
-  const timestamp = new Date().toISOString().split('T')[0];
-  const filename = `leaderboard_report_${timestamp}.${format}`;
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `leaderboard_report_${timestamp}.${format}`;
 
-  // Download file
-  XLSX.writeFile(wb, filename, { bookType: format === 'csv' ? 'csv' : 'xlsx' });
-};
+    // Download file
+    XLSX.writeFile(wb, filename, {
+      bookType: format === "csv" ? "csv" : "xlsx",
+    });
+  };
 
   // Sort by number of books (descending)
-  const groupedData = [...data].sort(
-    (a, b) => b.books.length - a.books.length
-  );
+  const groupedData = [...data].sort((a, b) => b.books.length - a.books.length);
 
   // Pagination logic
   const totalPages = Math.ceil(groupedData.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const currentRows = groupedData.slice(startIndex, startIndex + rowsPerPage);
 
-  // If not authenticated, show password modal
+  console.log("Client Data:", clientData, isAuthenticated);
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
-          <FaLock className="mx-auto text-5xl text-gray-700 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Protected Report</h2>
-          <p className="text-gray-600 mb-4">Enter the access password:</p>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-[#00c193]"
-            placeholder="Enter password"
-          />
-          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-          <button
-            onClick={handleLogin}
-            className="w-full bg-[#00c193] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#00a87f] transition"
-          >
-            Unlock
-          </button>
-        </div>
-      </div>
+      <ProtectedSection
+        isProtected={
+          isProtected
+        }
+        correctPassword={
+          correctPassword
+        }
+        clientLoading={clientLoading}
+        onUnlock={() => setIsAuthenticated(true)}
+      />
     );
   }
 
@@ -216,30 +205,28 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
             <h1 className="text-3xl font-extrabold flex items-center gap-2">
               <FaChartLine /> LeaderBoard Report
             </h1>
-            <p className="opacity-90 text-lg">
-              Learning leaders Dashboard
-            </p>
+            <p className="opacity-90 text-lg">Learning leaders Dashboard</p>
           </div>
           <div className="flex gap-2">
-          <button
-            onClick={() => downloadReport('csv')}
-            className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
-          >
-            <FaTable /> CSV
-          </button>
-          <button
-            onClick={() => downloadReport('xlsx')}
-            className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
-          >
-            <FaTable /> Excel
-          </button>
-          <button
-            onClick={refreshData}
-            className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
-          >
-            <FaSyncAlt /> Refresh
-          </button>
-        </div>
+            <button
+              onClick={() => downloadReport("csv")}
+              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+            >
+              <FaTable /> CSV
+            </button>
+            <button
+              onClick={() => downloadReport("xlsx")}
+              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+            >
+              <FaTable /> Excel
+            </button>
+            <button
+              onClick={refreshData}
+              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+            >
+              <FaSyncAlt /> Refresh
+            </button>
+          </div>
         </div>
       </div>
 
@@ -247,7 +234,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-900">
-            <FaTable />Activity Report
+            <FaTable />
+            Activity Report
           </h2>
           <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
             <FaArrowUp /> Ranked by Report/Lesson count
@@ -273,7 +261,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
                       <FaEnvelope className="inline mr-2" /> Email
                     </th>
                     <th className="px-6 py-3 text-left">
-                      <FaBook className="inline mr-2" /> Completed Lessons/Report
+                      <FaBook className="inline mr-2" /> Completed
+                      Lessons/Report
                     </th>
                     <th className="px-6 py-3 text-left">
                       <FaCalendar className="inline mr-2" /> Last Activity Date

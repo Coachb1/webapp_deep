@@ -10,6 +10,8 @@ export interface Book {
   implementation_complexity: string[];
   unexpected_outcomes: string[];
   emerging_players: boolean;
+  start_up: boolean;
+  keywords: string[];
   desc: string;
   img: string;
   audio: string;
@@ -367,6 +369,7 @@ export interface AllUserDataType {
 }
 
 export interface UserInfoType {
+  clientId?: string;
   clientName: string;
   isDemoUser: boolean;
   isRestricted: boolean;
@@ -381,10 +384,10 @@ export interface UserInfoType {
   } | null;
   helpText: any;
   is_active?: boolean;
-  leaderboard_report_protected?: boolean;
-  leaderboard_report_password?: string;
   snnipetConfig?: any;
   libraryBotConfig?: any;
+  portalPageConfig?: any;
+  universalPageConfig?: any
 }
 
 export interface PositionedUserTypes {

@@ -6,9 +6,8 @@ import { Button } from "@/components/books/ui/buttonn";
 import { usePathname } from "next/navigation";
 
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC<{ clientId?: string }> = ({ clientId }) => {
   const pathname = usePathname();
-
   // 🚫 Hide Navbar on /portal/simReport
   if (pathname === "/portal/simReport") {
     return null;
@@ -25,21 +24,22 @@ const Navbar: React.FC = () => {
             height={180}
             className="w-44 h-44 md:w-44 md:h-44 object-contain"
           />
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
-            {/* Leader Board Button */}
-            <Button
-              onClick={() => {
-                
-                  const url = `/portal/simReport`;
-                  window.open(url, "_blank", "noopener,noreferrer");
-                
-              }}
-              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
-            >
-              Report
-            </Button>
+          {pathname.includes("portal") && clientId && (
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+              {/* Leader Board Button */}
+              <Button
+                onClick={() => {
+                    const url = `/portal/simReport/?client_id=${clientId}`;
+                    window.open(url, "_blank", "noopener,noreferrer");
+                  
+                }}
+                className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
+              >
+                Report
+              </Button>
 
-          </div>
+            </div>
+           )}
         </div>
         
       </div>

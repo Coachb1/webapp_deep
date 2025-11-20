@@ -7,6 +7,9 @@ import IdeaBoardTable from "./IdeaBoardTable";
 import IdeaBoardPagination from "./IdeaBoardPagination";
 import IdeaBoardModal from "./IdeaboardModel";
 import * as XLSX from 'xlsx';
+import { UserInfoType } from "@/lib/types";
+import { getClientUserInfo } from "@/lib/api";
+import ProtectedSection from "../protectedSection";
 
 // Row type
 export interface RowData {
@@ -24,6 +27,13 @@ interface IdeaboardPageProps {
 }
 
 export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmail }) => {
+  const [client, setClientData] = useState<UserInfoType|null>(null);
+  const [clientLoading, setClientLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isProtected, setIsProtected] = useState(false);
+  const [correctPassword, setCorrectPassword] = useState("");
+
+
   const [rows, setRows] = useState<RowData[]>([]);
   const [qnaKeys, setQnaKeys] = useState<string[]>([]);
   const [currentDate, setCurrentDate] = useState("");
@@ -49,10 +59,39 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
     );
   }, []);
 
-
-  // Fetch data
   useEffect(() => {
-    if (!jobaid) return;
+  const fetchClientData = async () => {
+    try {
+      setClientLoading(true);
+      const client = await getClientUserInfo(userEmail, {
+        id: "",
+        picture: "",
+        family_name: "",
+        given_name: "",
+        'email': userEmail
+      });
+      console.log("Fetched client data:", client);
+      if (client.libraryBotConfig && Object.keys(client.libraryBotConfig).length > 0) {
+          console.log("Using libraryBotConfig for protection settings");
+          setIsProtected(client?.libraryBotConfig?.ideaboard_report_protected);
+          setCorrectPassword(client?.libraryBotConfig?.ideaboard_report_password || "");
+      } else {
+        console.log("Using universal settings for protection");
+        setIsProtected(client.universalPageConfig?.protected);
+        setCorrectPassword(client.universalPageConfig?.password || ""); 
+      }
+
+      setClientData(client);
+    } catch (error) {
+      console.error("Error fetching client data:", error);
+    } finally {
+      setClientLoading(false);
+    }
+  };
+
+  fetchClientData();
+}, []);
+
 
     const fetchData = async () => {
       setLoading(true);
@@ -76,7 +115,9 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
         setLoading(false);
       }
     };
-
+  // Fetch data
+  useEffect(() => {
+    if (!jobaid) return;
     fetchData();
   }, [jobaid]);
 
@@ -200,6 +241,25 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
     currentPage * rowsPerPage
   );
 
+  if (!isAuthenticated) {
+    return (
+      <ProtectedSection
+        isProtected={isProtected}
+        correctPassword={correctPassword}
+        clientLoading={clientLoading}
+        onUnlock={() => setIsAuthenticated(true)}
+      />
+    );
+  }
+
+
+  const refreshData = async () => {
+    setLoading(true);
+    setError(null);
+    await fetchData();
+    setLoading(false);
+  };
+
   return (
     <div className="max-w-[1400px] mx-auto p-6 min-h-screen bg-white font-inter">
       {/* Header */}
@@ -226,7 +286,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
               <FaTable /> Excel
             </button>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => refreshData()}
               className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
             >
               <FaSyncAlt /> Refresh

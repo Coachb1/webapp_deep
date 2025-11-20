@@ -8,10 +8,24 @@ export const metadata = constructMetadata({
 
 
 interface IdeaboardPageProps {
-  searchParams: { email: string, 
+  searchParams: { 
+    email: string, 
     jobaid:string };
 }
 
 export default function Page({ searchParams }: IdeaboardPageProps) {
-  return <IdeaBoardReport userEmail={searchParams.email} jobaid={searchParams.jobaid} />;
+  const { email, jobaid } = searchParams;
+
+  // Validate query params
+  if (!email || !jobaid) {
+    return (
+      <div className="p-6 text-red-500 font-semibold">
+        Invalid parameters provided.  
+        <br />
+        Expected: <b>?email=yourmail&jobaid=xyz</b>
+      </div>
+    );
+  }
+
+  return <IdeaBoardReport userEmail={email} jobaid={jobaid} />;
 }

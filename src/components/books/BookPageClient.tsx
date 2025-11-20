@@ -84,7 +84,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
 
     const queries = queryStr
       .split(",")
-      .map((q) => q.trim().toLowerCase())
+      .map((q) => q.trim().toLowerCase().trim())
       .filter((f) => f.length > 0);
 
     const filtered = allBooks.filter((book) => {
@@ -92,13 +92,13 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       const author = book.author?.toLowerCase() || "";
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
+      const key_words = book.keywords?.map((k) => k.toLowerCase().trim()) || [];
       
       return queries.some(
         (query) =>
           title.includes(query) ||
           author === query ||
-          listName === query ||
-          tags.some((tag) => tag === query)
+          key_words.some((keyword) => keyword === query)
       );
     });
 
@@ -114,7 +114,8 @@ const handleMultipleSearch = (
   implementationComplexity?: string,
   unexpectedOutcomes?: string,
   emergingPlayers?: string,
-  Function?: string
+  Function?: string,
+  startUp?: string
 ) => {
   // Normalize only when provided
   const normalize = (val?: string) => val?.trim().toLowerCase() || null;
@@ -127,6 +128,7 @@ const handleMultipleSearch = (
     unexpectedOutcomes: normalize(unexpectedOutcomes),
     emergingPlayers: normalize(emergingPlayers),
     function: normalize(Function),
+    startUp: normalize(startUp),
   };
   console.log("Multiple search with filters:", normalized);
 
@@ -137,6 +139,7 @@ const handleMultipleSearch = (
     const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
     const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
     const bookFunction = book.function?.map((f: string) => f.toLowerCase()) || [];
+    const bookStartUp = String(book.start_up || "").toLowerCase();
 
     return (
       (!normalized.tag || bookTag.includes(normalized.tag)) &&
@@ -144,7 +147,8 @@ const handleMultipleSearch = (
       (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
       (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
       (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers) &&
-      (!normalized.function || bookFunction.includes(normalized.function))
+      (!normalized.function || bookFunction.includes(normalized.function)) &&
+      (!normalized.startUp || bookStartUp === normalized.startUp)
     );
   });
 

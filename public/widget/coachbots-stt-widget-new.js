@@ -404,6 +404,7 @@ const createLink = (url, text) => {
 document.head.appendChild(createLink("https://www.coachbots.com", "CoachBot"));
 let isFlatWidget = window.location.pathname.includes('widget-container');
 
+let coachingBotResponseMetaData = {};
 let showBotSwitchMode = false;
 let showAudioInteractionButtonStt = true;
 let showSessionHistoryStt = false;
@@ -10956,6 +10957,10 @@ async function toggleBotSwitch(type_of_bot){
   let calledOnceError = 0;
 
 async function callLLM(userInputMessage) {
+  const staticPrompt = coachingBotResponseMetaData?.prompt_meta_data?.prompt || "";
+  const userINput = coachingBotResponseMetaData?.prompt_meta_data?.user_data || "";
+  console.log("staticPrompt", {staticPrompt, userINput, coachingBotResponseMetaData});
+  coachingBotResponseMetaData = {};
   for (let i = 0; i < LLMOrder.providers.length; i++) {
     let provider = LLMOrder.providers[i] || 'gemini';
     let models = LLMOrder.models[provider] || [];
@@ -10982,14 +10987,25 @@ async function callLLM(userInputMessage) {
             systemInstructions: LLMsystemInstructions,
           };
         } 
-        else if (provider === 'anthropic') {
-          apiURL = `${LLMBaseURl}/api/anthropic`;
-          bodyData = {
-            userInput: userInputMessage,
-            selectedModel,
-            systemInstructions: LLMsystemInstructions,
-          };
-        } 
+        else if (provider.includes('anthropic')){
+          console.info('Anthropic model selected', provider === 'caching_anthropic' && userINput.length > 0 && staticPrompt.length > 0, userINput.length, staticPrompt.length);
+          if (provider === 'caching_anthropic' && userINput.length > 0 && staticPrompt.length > 0) {
+            
+            apiURL = `${LLMBaseURl}/api/anthropic`;
+            bodyData = {
+              userInput: userINput,
+              selectedModel: selectedModel,
+              caching: true,
+              system_instruction: staticPrompt};
+          } else {
+            apiURL = `${LLMBaseURl}/api/anthropic`;
+            bodyData = {
+              userInput: userInputMessage,
+              selectedModel: selectedModel,
+              systemInstructions: LLMsystemInstructions};
+          } 
+        }
+
         else {
           console.error("Unknown model type:", provider);
           continue;
@@ -14092,6 +14108,7 @@ const customMicButton = document.getElementById("startMicBtn");
                 }
               );
               const responseData = await response.json();
+              coachingBotResponseMetaData = responseData.coach_message_metadata;
               console.log(
                 "Response from Coaching submit response : ",
                 responseData

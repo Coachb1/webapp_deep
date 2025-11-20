@@ -69,46 +69,57 @@ const handlePageChange = (page: number) => {
         </h4>
       </div>
 
-      {/* Carousel wrapper */}
-      <div className="w-[95%] sm:w-[90%] max-w-[1000px] mx-auto">
-        
-        <div className="flex flex-col items-center justify-center">
-          {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-            <div
-              key={slideIndex}
-              className={`${
-                slideIndex === currentSlide ? "block" : "hidden"
-              } w-full`}
-            >
-              {/* Responsive grid of books */}
-              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                {getBooksForSlide(slideIndex).map((book, index) => (
-                  <BookCard
-                    key={book.id ?? index}
-                    book={book}
-                    onPlay={() => onPlayBook(book, index)}
-                    onMore={() => onOpenDescription(book)}
-                    setLaterBooks={setLaterBooks}
-                    setLikedBooks={setLikedBooks}
-                    likedBooks={likedBooks}
-                    laterBooks={laterBooks}
-                    setViewMode={setViewMode}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+      {/* No books available message */}
+      {books.length === 0 ? (
+        <div className="w-[95%] sm:w-[90%] max-w-[1000px] mx-auto py-12">
+          <div className="flex items-center justify-center">
+            <p className="text-center text-gray-500 text-lg">No data available</p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Carousel wrapper */}
+          <div className="w-[95%] sm:w-[90%] max-w-[1000px] mx-auto">
+            
+            <div className="flex flex-col items-center justify-center">
+              {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                <div
+                  key={slideIndex}
+                  className={`${
+                    slideIndex === currentSlide ? "block" : "hidden"
+                  } w-full`}
+                >
+                  {/* Responsive grid of books */}
+                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {getBooksForSlide(slideIndex).map((book, index) => (
+                      <BookCard
+                        key={book.id ?? index}
+                        book={book}
+                        onPlay={() => onPlayBook(book, index)}
+                        onMore={() => onOpenDescription(book)}
+                        setLaterBooks={setLaterBooks}
+                        setLikedBooks={setLikedBooks}
+                        likedBooks={likedBooks}
+                        laterBooks={laterBooks}
+                        setViewMode={setViewMode}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      {/* Pagination */}
-      <div ref={paginationRef}>
-        <Pagination
-          totalSlides={totalSlides}
-          currentSlide={currentSlide}
-          onPageChange={handlePageChange}
-        />
-      </div>
+          {/* Pagination */}
+          <div ref={paginationRef}>
+            <Pagination
+              totalSlides={totalSlides}
+              currentSlide={currentSlide}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </>
+      )}
     </>
   );
 };
