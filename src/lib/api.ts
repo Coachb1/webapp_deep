@@ -96,6 +96,11 @@ export const getClientUserInfo = async (
               is_active: data.data.user_info[0].is_active,
               snnipetConfig: data.data.user_info[0].universal_bot_config,
               libraryBotConfig: data.data.user_info[0].library_bot_config,
+              portalPageConfig: data.data.user_info[0].portal_page_config,
+              universalPageConfig: {
+                "protected": data.data.user_info[0].leaderboard_report_protected,
+                "password": data.data.user_info[0].leaderboard_report_password
+              }
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -162,6 +167,11 @@ export const getClientbyClientId = async (
             is_active: data.data.only_client_data.is_active,
             snnipetConfig: data.data.only_client_data.bot_config,
             libraryBotConfig: data.data.only_client_data.library_bot_config,
+            portalPageConfig: data.data.only_client_data.portal_page_config,
+            universalPageConfig: {
+              "protected": data.data.only_client_data.leaderboard_report_protected,
+              "password": data.data.only_client_data.leaderboard_report_password
+            }
           };
         } else {
           throw new Error("Failed to fetch client information");

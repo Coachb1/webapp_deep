@@ -83,6 +83,8 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isProtected, setIsProtected] = useState(false);
+  const [correctPassword, setCorrectPassword] = useState("");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,6 +96,15 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
         setClientLoading(true);
         const client = await getClientbyClientId(client_id);
         console.log("Client data fetched:", client);
+        if (client.libraryBotConfig && Object.keys(client.libraryBotConfig).length > 0) {
+          console.log("Using libraryBotConfig for protection settings");
+          setIsProtected(client?.libraryBotConfig?.leaderboard_report_protected);
+          setCorrectPassword(client?.libraryBotConfig?.leaderboard_report_password || "");
+        } else {
+          console.log("Using universal settings for protection");
+          setIsProtected(client.universalPageConfig?.protected);
+          setCorrectPassword(client.universalPageConfig?.password || ""); 
+        }
         setClientData(client);
       } catch (error) {
         console.error("Error fetching client data:", error);
@@ -105,12 +116,6 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
     fetchClientData();
   }, []);
 
-  // 👉 RUN checkAuth only AFTER clientData is loaded
-  useEffect(() => {
-    if (clientData) {
-      checkAuth();
-    }
-  }, [clientData]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -125,21 +130,6 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
     }
   }, [isAuthenticated]);
 
-  const checkAuth = () => {
-    if (!clientData?.libraryBotConfig?.leaderboard_report_protected) {
-      setIsAuthenticated(true);
-      return;
-    }
-    const stored = localStorage.getItem("reportAuth");
-    if (stored) {
-      const { expiresAt } = JSON.parse(stored);
-      if (new Date().getTime() < expiresAt) {
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem("reportAuth");
-      }
-    }
-  };
 
   const loadData = async () => {
     setLoading(true);
@@ -195,10 +185,10 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
     return (
       <ProtectedSection
         isProtected={
-          !!clientData?.libraryBotConfig?.leaderboard_report_protected
+          isProtected
         }
         correctPassword={
-          clientData?.libraryBotConfig?.leaderboard_report_password
+          correctPassword
         }
         clientLoading={clientLoading}
         onUnlock={() => setIsAuthenticated(true)}

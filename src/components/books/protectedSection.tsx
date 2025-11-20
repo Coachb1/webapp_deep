@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { FaLock } from "react-icons/fa";
 
@@ -18,12 +19,17 @@ const ProtectedSection: React.FC<ProtectedSectionProps> = ({
   clientLoading,
   onUnlock,
 }) => {
+  const pathname = usePathname();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const AuthToken = `reportAuth_${pathname}`;
+
+  console.log("ProtectedSection rendered with isProtected:", isProtected);
+
   useEffect(() => {
 
-    const stored = localStorage.getItem("reportAuth");
+    const stored = localStorage.getItem(AuthToken);
     if (stored) {
       const { expiresAt } = JSON.parse(stored);
       if (new Date().getTime() < expiresAt) {
@@ -38,7 +44,7 @@ const ProtectedSection: React.FC<ProtectedSectionProps> = ({
   const handleLogin = () => {
     if (password === correctPassword) {
       const expiresAt = Date.now() + expiryHours * 60 * 60 * 1000; // 24 hours
-      localStorage.setItem("reportAuth", JSON.stringify({ expiresAt }));
+      localStorage.setItem(AuthToken, JSON.stringify({ expiresAt }));
       onUnlock();
       setError("");
     } else {
@@ -62,7 +68,7 @@ const ProtectedSection: React.FC<ProtectedSectionProps> = ({
   }
 
   // 2️⃣ If not protected → automatically unlock
-  if (!isProtected) return null;
+  if (!isProtected) onUnlock();
 
   // 3️⃣ Show password screen
   return (

@@ -33,6 +33,8 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
   const [clientLoading, setClientLoading] = useState(true);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isProtected, setIsProtected] = useState(false);
+  const [correctPassword, setCorrectPassword] = useState("");
 
 
   const [data, setData] = useState<ActivityData[]>([]);
@@ -83,6 +85,16 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
     try {
       setClientLoading(true);
       const client = await getClientbyClientId(clientId);
+      console.log("Fetched client data:", client);
+      if (client.libraryBotConfig && Object.keys(client.libraryBotConfig).length > 0) {
+          console.log("Using libraryBotConfig for protection settings");
+          setIsProtected(client?.libraryBotConfig?.ai_pulse_report_protected);
+          setCorrectPassword(client?.libraryBotConfig?.ai_pulse_report_password || "");
+        } else {
+          console.log("Using universal settings for protection");
+          setIsProtected(client.universalPageConfig?.protected);
+          setCorrectPassword(client.universalPageConfig?.password || ""); 
+        }
       setClientData(client);
     } catch (error) {
       console.error("Error fetching client data:", error);
@@ -182,8 +194,8 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
   if (!isAuthenticated) {
     return (
       <ProtectedSection
-        isProtected={!!client?.libraryBotConfig?.leaderboard_report_protected}
-        correctPassword={client?.libraryBotConfig?.leaderboard_report_password}
+        isProtected={isProtected}
+        correctPassword={correctPassword}
         clientLoading={clientLoading}
         onUnlock={() => setIsAuthenticated(true)}
       />

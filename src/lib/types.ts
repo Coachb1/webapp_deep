@@ -386,6 +386,8 @@ export interface UserInfoType {
   is_active?: boolean;
   snnipetConfig?: any;
   libraryBotConfig?: any;
+  portalPageConfig?: any;
+  universalPageConfig?: any
 }
 
 export interface PositionedUserTypes {

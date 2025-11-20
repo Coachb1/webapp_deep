@@ -96,6 +96,9 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
   const [client, setClientData] = useState<UserInfoType|null>(null);
   const [clientLoading, setClientLoading] = useState(true);
 
+  const [isProtected, setIsProtected] = useState(false);
+  const [correctPassword, setCorrectPassword] = useState("");
+  
   const [data, setData] = useState<UserReport[]>([]);
   const [date, setDate] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserReport | null>(null);
@@ -115,9 +118,19 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
     const fetchClientData = async () => {
       try {
         setClientLoading(true);
-        const client = await getClientbyClientId(client_id);
-        setClientName(client.clientName);
-        setClientData(client);
+        const clientdata = await getClientbyClientId(client_id);
+        console.log("Fetched client data:", clientdata);
+        setClientName(clientdata.clientName);
+        if (clientdata.portalPageConfig && Object.keys(clientdata.portalPageConfig).length > 0) {
+          console.log("Using portalPageConfig for protection settings");
+          setIsProtected(clientdata?.portalPageConfig?.simulation_report_protected);
+          setCorrectPassword(clientdata?.portalPageConfig?.simulation_report_password || "");
+        } else {
+          console.log("Using simulation_report settings for protection");
+          setIsProtected(clientdata.universalPageConfig?.protected);
+          setCorrectPassword(clientdata.universalPageConfig?.password || ""); 
+        }
+        setClientData(clientdata);
       } catch (error) {
         console.error("Error fetching client data:", error);
       } finally {
@@ -128,9 +141,6 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
     fetchClientData();
   }, []);
 
-  useEffect(() => {
-    if (client) checkAuth();
-  }, [client]);
 
   useEffect(() => {
     if (!isAuthenticated || !client?.clientName) return;
@@ -144,23 +154,7 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
     );
   }, [isAuthenticated, client]);
 
-  const checkAuth = () => {
-    if (client && !client?.libraryBotConfig?.leaderboard_report_protected) {
-      console.debug('not proteced')
-      setIsAuthenticated(true);
-      return;
-    }
-    const stored = localStorage.getItem("reportAuth");
-    if (stored) {
-      const { expiresAt } = JSON.parse(stored);
-      if (new Date().getTime() < expiresAt) {
-        console.debug('expired')
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem("reportAuth");
-      }
-    }
-  };
+  
 
 
   const loadData = async () => {
@@ -276,8 +270,8 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
   if (!isAuthenticated) {
     return (
       <ProtectedSection
-        isProtected={!!client?.libraryBotConfig?.leaderboard_report_protected}
-        correctPassword={client?.libraryBotConfig?.leaderboard_report_password}
+        isProtected={isProtected}
+        correctPassword={correctPassword}
         clientLoading={clientLoading}
         onUnlock={() => setIsAuthenticated(true)}
       />
