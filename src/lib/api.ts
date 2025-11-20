@@ -73,7 +73,9 @@ export const getClientUserInfo = async (
 
           if (clientInfoResponse.ok) {
             const data = await clientInfoResponse.json();
+            console.info("getClientUserInfo", data.data.user_info[0]);
             return {
+              clientId: data.data.user_info[0].client_id,
               clientName: data.data.user_info[0].client_name,
               isDemoUser: data.data.user_info[0].is_demo_user,
               isRestricted: data.data.user_info[0].is_restricted,
@@ -91,10 +93,8 @@ export const getClientUserInfo = async (
                 tagLine: data.data.user_info[0].tag_line,
               },
               helpText: data.data.user_info[0].help_text,
-              leaderboard_report_password: data.data.user_info[0].leaderboard_report_password,
-              leaderboard_report_protected: data.data.user_info[0].leaderboard_report_protected,
               is_active: data.data.user_info[0].is_active,
-              snnipetConfig: data.data.user_info[0].bot_config,
+              snnipetConfig: data.data.user_info[0].universal_bot_config,
               libraryBotConfig: data.data.user_info[0].library_bot_config,
             };
           } else {
@@ -117,6 +117,71 @@ export const getClientUserInfo = async (
     return emptyData;
   }
 };
+
+export const getClientbyClientId = async (
+  clientID: string | null | undefined,
+): Promise<UserInfoType> => {
+  if (clientID !== null && clientID !== undefined) {
+    let attempt = 0;
+    const maxRetries = 1;
+
+    while (attempt <= maxRetries) {
+      try {
+        const clientInfoResponse = await fetch(
+          `${baseURL}/accounts/get-client-information/?for=only_client_data&client_id=${clientID}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        );
+
+        if (clientInfoResponse.ok) {
+          const data = await clientInfoResponse.json();
+          console.info("getClientbyClientId", data);
+          return {
+            clientId: data.data.only_client_data.uid,
+            clientName: data.data.only_client_data.client_name,
+            isDemoUser: data.data.only_client_data.demo_ids,
+            isRestricted: data.data.only_client_data.restricted_ids,
+            clientExpertise: parseStringList(
+              data.data.only_client_data.coach_expertise
+            ),
+            clientDepartments: parseStringList(
+              data.data.only_client_data.departments
+            ),
+            restrictedPages: data.data.only_client_data.restricted_pages,
+            restrictedFeatures: data.data.only_client_data.restricted_features,
+            headings: {
+              heading: data.data.only_client_data.heading,
+              subHeading: data.data.only_client_data.sub_heading,
+              tagLine: data.data.only_client_data.tag_line,
+            },
+            helpText: data.data.only_client_data.help_text,
+            is_active: data.data.only_client_data.is_active,
+            snnipetConfig: data.data.only_client_data.bot_config,
+            libraryBotConfig: data.data.only_client_data.library_bot_config,
+          };
+        } else {
+          throw new Error("Failed to fetch client information");
+        }
+
+      } catch (error) {
+        console.error(`Attempt ${attempt + 1} failed:`, error);
+        if (attempt >= maxRetries) {
+          return emptyData;
+        }
+      }
+      attempt++;
+    }
+    console.error(`All attempts failed.`);
+    return emptyData;
+  } else {
+    return emptyData;
+  }
+};
+
 
 export const getDirectoryProfiles = async (
   userEmail: string | null | undefined,
@@ -804,7 +869,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           implementation_complexity: m.implementation_complexity? m.implementation_complexity.split(',') : [],
           unexpected_outcomes: m.unexpected_outcome? m.unexpected_outcome.split(',') : [],
           emerging_players: m.emerging_player,
-          start_up: m.start_up,
+          start_up: m.startup,
           keywords: m.key_words,
           desc: m.description,
           audio: m.audio_link,

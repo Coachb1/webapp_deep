@@ -369,6 +369,7 @@ export interface AllUserDataType {
 }
 
 export interface UserInfoType {
+  clientId?: string;
   clientName: string;
   isDemoUser: boolean;
   isRestricted: boolean;
@@ -383,8 +384,6 @@ export interface UserInfoType {
   } | null;
   helpText: any;
   is_active?: boolean;
-  leaderboard_report_protected?: boolean;
-  leaderboard_report_password?: string;
   snnipetConfig?: any;
   libraryBotConfig?: any;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { getClientbyClientId } from "@/lib/api";
+import { UserInfoType } from "@/lib/types";
 import { baseURL } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import {
@@ -10,7 +12,7 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import * as XLSX from "xlsx";
-import { usePortalUser } from "../context/UserContext";
+import ProtectedSection from "../protectedSection";
 
 interface ActivityData {
   case: string;
@@ -23,10 +25,15 @@ interface ActivityData {
 
 interface AIPluseReportProps {
   packageCourseId: string;
+  clientId: string;
 }
 
-const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
-  const { userInfo } = usePortalUser();
+const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId }) => {
+  const [client, setClientData] = useState<UserInfoType|null>(null);
+  const [clientLoading, setClientLoading] = useState(true);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
 
   const [data, setData] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,14 +57,14 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
   });
 
   const fetchReportData = async () => {
-    if (!userInfo.clientName) return;
+    if (!client?.clientName) return;
 
     setLoading(true);
     setError(null);
 
     try {
       const res = await fetch(
-        `${baseURL}/courses/ai-pulse-report-data/?package_course_id=${packageCourseId}&client_name=${userInfo.clientName}`
+        `${baseURL}/courses/ai-pulse-report-data/?package_course_id=${packageCourseId}&client_name=${client?.clientName}`
       );
       if (!res.ok) throw new Error("Failed to fetch data");
 
@@ -72,8 +79,26 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
   };
 
   useEffect(() => {
-    fetchReportData();
-  }, [packageCourseId, userInfo.clientName]);
+  const fetchClientData = async () => {
+    try {
+      setClientLoading(true);
+      const client = await getClientbyClientId(clientId);
+      setClientData(client);
+    } catch (error) {
+      console.error("Error fetching client data:", error);
+    } finally {
+      setClientLoading(false);
+    }
+  };
+
+  fetchClientData();
+}, []);
+
+
+  useEffect(() => {
+  if (isAuthenticated && client) fetchReportData();
+}, [client, isAuthenticated]);
+
 
   const handleSort = (column: keyof ActivityData) => {
     if (sortColumn === column) {
@@ -152,6 +177,19 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId }) => {
       bookType: format === "csv" ? "csv" : "xlsx",
     });
   };
+
+  // If not authenticated → show ProtectedSection UI
+  if (!isAuthenticated) {
+    return (
+      <ProtectedSection
+        isProtected={!!client?.libraryBotConfig?.leaderboard_report_protected}
+        correctPassword={client?.libraryBotConfig?.leaderboard_report_password}
+        clientLoading={clientLoading}
+        onUnlock={() => setIsAuthenticated(true)}
+      />
+    );
+  }
+
 
   return (
     <div className="max-w-[1400px] mx-auto p-6 min-h-screen bg-white font-inter">
