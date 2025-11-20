@@ -37,7 +37,7 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
   const handlePasswordSubmit = (packageCourseId: string) => {
     // if (password === "bookdemo#12345") {
     const newWindow = window.open(
-      `/library-bot/leaderBoardReport/?package_course_id=${packageCourseId}`,
+      `/library-bot/leaderBoardReport/?package_course_id=${packageCourseId}&client_id=${userInfo.clientId}`,
       "_blank",
       "noopener,noreferrer"
     );
@@ -103,7 +103,8 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
                 if (packageCourseId) {
                   const url = `/library-bot/leaderBoardReport/?package_course_id=${encodeURIComponent(
                     packageCourseId
-                  )}`;
+                  )}&client_id=${encodeURIComponent(userInfo.clientId || "")}`;
+                  // Open in a new tab with no referrer
                   window.open(url, "_blank", "noopener,noreferrer");
                 }
               }}
@@ -120,7 +121,7 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
                 if (packageCourseId) {
                   const url = `/library-bot/AiPulseReport/?package_course_id=${encodeURIComponent(
                     packageCourseId
-                  )}`;
+                  )}&client_id=${encodeURIComponent(userInfo.clientId || "")}`;
                   window.open(url, "_blank", "noopener,noreferrer");
                 }
               }}

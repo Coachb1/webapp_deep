@@ -65,7 +65,16 @@ const MainLayoutComponent = ({
     );
   }
 
-  if (pathname.includes("/portal")) {
+  if (pathname.includes("/portal") ) {
+    if (pathname.includes("/portal/simReport")){
+      return (
+        <html lang="en" className="bg-white">
+          <body className={font.className}>
+            <div className="z-[999]">{children}</div>
+          </body>
+        </html>
+      );
+    }
     return (
       <HelpModeProvider>
         <PortalPageLayout>

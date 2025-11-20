@@ -4,10 +4,12 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "@/components/books/ui/buttonn";
 import { usePathname } from "next/navigation";
+import { usePortalUser } from "../books/context/UserContext";
 
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const {userInfo} = usePortalUser();
 
   // 🚫 Hide Navbar on /portal/simReport
   if (pathname === "/portal/simReport") {
@@ -29,8 +31,7 @@ const Navbar: React.FC = () => {
             {/* Leader Board Button */}
             <Button
               onClick={() => {
-                
-                  const url = `/portal/simReport`;
+                  const url = `/portal/simReport/?client_id=${userInfo?.clientId}`;
                   window.open(url, "_blank", "noopener,noreferrer");
                 
               }}

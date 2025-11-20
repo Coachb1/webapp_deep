@@ -10,15 +10,11 @@ export const metadata = constructMetadata({
 
 
 interface BookPageProps {
-  searchParams: { package_course_id: string };
+  searchParams: { package_course_id: string; client_id: string };
 }
 
 export default function Page({ searchParams }: BookPageProps) {
   return (
-    <UserProvider>
-      <UserInfoWall>
-        <LeaderBoardReport packageCourseId={searchParams.package_course_id} />
-      </UserInfoWall>
-    </UserProvider>
+    <LeaderBoardReport packageCourseId={searchParams.package_course_id} client_id={searchParams.client_id} />
   );
 }
