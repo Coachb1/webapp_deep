@@ -71,7 +71,7 @@ const SearchFilter = ({
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string>
   >({});
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  // const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
 
   // Categories - MOVE HERE (before the useEffect)
   const categories = useMemo(() => {
@@ -101,7 +101,7 @@ const SearchFilter = ({
       .map((s) => s)
       .filter((v, i, a) => a.indexOf(v) === i);
     return normalized;
-    
+
   }, []);
 
   // Update suggestions as searchTerm changes
@@ -122,7 +122,7 @@ const SearchFilter = ({
     setShowSuggestions(matched.length > 0);
     setActiveSuggestionIndex(-1);
   }, [searchTerm]);
-  
+
   const functions = useMemo(() => {
     const normalized = allBooks.flatMap(
       (book) => book.function?.map((f: string) => f.trim()) ?? []
@@ -155,59 +155,59 @@ const SearchFilter = ({
 
   // Initialize filter categories
   useEffect(() => {
-    
-  let filterCategories = [];
 
-  if (availableFilters.includes("Industry")) {
-    filterCategories.push({
-      filterName: "Industry",
-      filterOptions: categories,
-    });
-  }
-  if (availableFilters.includes("Function")) {
-    filterCategories.push({
-      filterName: "Function",
-      filterOptions: functions?.length > 0
-        ? functions
-        : [],
-    });
-  }
-  if (availableFilters.includes("Business Outcome")) {
-    filterCategories.push({
-      filterName: "Business Outcome",
-      filterOptions: businessOutcomes?.length > 0
-        ? businessOutcomes
-        : [],
-    });
-  }
-  if (availableFilters.includes("Implementation Complexity")) {
-    filterCategories.push({
-      filterName: "Implementation Complexity",
-      filterOptions: implementationComplexities?.length > 0
-        ? implementationComplexities
-        : [],
-    });
-  }
-  if (availableFilters.includes("Unexpected Outcomes")) {
-    filterCategories.push({
-      filterName: "Unexpected Outcomes",
-      filterOptions: unexpectedOutcomes?.length > 0
-        ? unexpectedOutcomes
-        : [],
-    });
-  }
+    let filterCategories = [];
 
-  setFilterCategories(filterCategories);
-  setHasEmergingPlayers(availableFilters.includes("Emerging Players"));
-  setHasStartUp(availableFilters.includes("Start Up"));
-}, [
-  availableFilters,
-  categories,
-  functions,
-  businessOutcomes,
-  implementationComplexities,
-  unexpectedOutcomes,
-]);
+    if (availableFilters.includes("Industry")) {
+      filterCategories.push({
+        filterName: "Industry",
+        filterOptions: categories,
+      });
+    }
+    if (availableFilters.includes("Function")) {
+      filterCategories.push({
+        filterName: "Function",
+        filterOptions: functions?.length > 0
+          ? functions
+          : [],
+      });
+    }
+    if (availableFilters.includes("Business Outcome")) {
+      filterCategories.push({
+        filterName: "Business Outcome",
+        filterOptions: businessOutcomes?.length > 0
+          ? businessOutcomes
+          : [],
+      });
+    }
+    if (availableFilters.includes("Implementation Complexity")) {
+      filterCategories.push({
+        filterName: "Implementation Complexity",
+        filterOptions: implementationComplexities?.length > 0
+          ? implementationComplexities
+          : [],
+      });
+    }
+    if (availableFilters.includes("Unexpected Outcomes")) {
+      filterCategories.push({
+        filterName: "Unexpected Outcomes",
+        filterOptions: unexpectedOutcomes?.length > 0
+          ? unexpectedOutcomes
+          : [],
+      });
+    }
+
+    setFilterCategories(filterCategories);
+    setHasEmergingPlayers(availableFilters.includes("Emerging Players"));
+    setHasStartUp(availableFilters.includes("Start Up"));
+  }, [
+    availableFilters,
+    categories,
+    functions,
+    businessOutcomes,
+    implementationComplexities,
+    unexpectedOutcomes,
+  ]);
 
 
 
@@ -241,7 +241,7 @@ const SearchFilter = ({
       setSearchTerm("");
       setSelectedFilter("Filter");
       setSelectedFilters({});
-      setSelectedIndustries([]);
+      // setSelectedIndustries([]);
       setActiveFilterDropdown(null);
       onFilterChange("");
       setViewMode("all");
@@ -297,99 +297,108 @@ const SearchFilter = ({
     }
   };
 
-  const handleIndustryToggle = (option: string) => {
-    const newIndustries = selectedIndustries.includes(option)
-      ? selectedIndustries.filter((ind) => ind !== option)
-      : [...selectedIndustries, option];
+  // const handleIndustryToggle = (option: string) => {
+  //   const newIndustries = selectedIndustries.includes(option)
+  //     ? selectedIndustries.filter((ind) => ind !== option)
+  //     : [...selectedIndustries, option];
 
-    setSelectedIndustries(newIndustries);
+  //   setSelectedIndustries(newIndustries);
 
-    // Apply filter for each selected industry
-    if (newIndustries.length > 0) {
-      // Pass all industries to parent - parent should handle multi-filter logic
-      onFilterChange(newIndustries.join(","));
-    } else {
-      onSearch("");
-      onFilterChange("");
-      setSearchTerm("");
-    }
-  };
+  //   // Apply filter for each selected industry
+  //   if (newIndustries.length > 0) {
+  //     // Pass all industries to parent - parent should handle multi-filter logic
+  //     onFilterChange(newIndustries.join(","));
+  //   } else {
+  //     onSearch("");
+  //     onFilterChange("");
+  //     setSearchTerm("");
+  //   }
+  // };
 
-  const handleRemoveIndustry = (industry: string) => {
-    const newIndustries = selectedIndustries.filter((ind) => ind !== industry);
-    setSelectedIndustries(newIndustries);
+  // const handleRemoveIndustry = (industry: string) => {
+  //   const newIndustries = selectedIndustries.filter((ind) => ind !== industry);
+  //   setSelectedIndustries(newIndustries);
 
-    if (newIndustries.length > 0) {
-      onFilterChange(newIndustries.join(","));
-    } else {
-      onSearch("");
-      onFilterChange("");
-      setSearchTerm("");
-    }
-  };
+  //   if (newIndustries.length > 0) {
+  //     onFilterChange(newIndustries.join(","));
+  //   } else {
+  //     onSearch("");
+  //     onFilterChange("");
+  //     setSearchTerm("");
+  //   }
+  // };
 
   const handleFilterSelect = (filterName: string, option: string) => {
-    // Skip if it's Industries - handled by checkboxes
-    if (filterName === "Industries") return;
+    // if (filterName === "Industry") return;
 
-    console.log("handlefilterselect")
+    // Start fresh – but keep Industry
+    const newFilters: Record<string, string> = {
+      Industry: selectedFilters["Industry"] || "",
+    };
 
-    const newFilters = { ...selectedFilters };
-    console.log("Selected filter:", filterName, "Option:", option, selectedFilters);
-    if (newFilters[filterName] === option) {
-      // Deselecting - clear filter
-      delete newFilters[filterName];
-    } else {
-      // Selecting - apply filter
+    // Toggle logic
+    if (selectedFilters[filterName] !== option) {
       newFilters[filterName] = option;
     }
+
+    // NEW: clear checkboxes when selecting filters
+    setEmergingPlayersChecked(false);
+    setStartUpChecked(false);
+
     setSelectedFilters(newFilters);
     setActiveFilterDropdown(null);
+
     onMultipleSearch(
-      newFilters["Industry"],
+      newFilters["Industry"] || "",
       "",
-      newFilters["Business Outcome"],
-      newFilters["Implementation Complexity"],
-      newFilters["Unexpected Outcomes"],
-      emergingPlayersChecked ? "true" : "", 
-      newFilters["Function"],
-      startUpChecked ? "true" : ""
+      newFilters["Business Outcome"] || "",
+      newFilters["Implementation Complexity"] || "",
+      newFilters["Unexpected Outcomes"] || "",
+      "", // emerging players removed
+      newFilters["Function"] || "",
+      "" // startup removed
     );
-    console.log("Applied filters:", newFilters,newFilters["Function"]);
   };
 
-  const handleCheckboxToggle = (category:string) => {
-    let emergingPlayer = emergingPlayersChecked;
-    let startUp = startUpChecked;
-    if (category === "Latest"){
-      emergingPlayer = !emergingPlayersChecked;
-      setEmergingPlayersChecked(!emergingPlayersChecked);
-    } else if (category === "Start Up"){
-      startUp = !startUpChecked;
-      setStartUpChecked(!startUpChecked);
-    }
-    onMultipleSearch(
-      selectedFilters["Industry"],
-      "",
-      selectedFilters["Business Outcome"],
-      selectedFilters["Implementation Complexity"],
-      selectedFilters["Unexpected Outcomes"],
-      emergingPlayer ? "true" : "",
-      selectedFilters["Function"],
-      startUp ? "true" : ""
-    );
+
+  const handleCheckboxToggle = (category: string) => {
+  if (category === "Latest") {
+    setEmergingPlayersChecked(true);
+    setStartUpChecked(false); // auto uncheck
+  } else if (category === "Start Up") {
+    setStartUpChecked(true);
+    setEmergingPlayersChecked(false); // auto uncheck
   }
 
-    useEffect(() => {
+  const newFilters = {
+    Industry: selectedFilters["Industry"] || "",
+  };
+  setSelectedFilters(newFilters);
+
+  onMultipleSearch(
+    newFilters["Industry"] || "",
+    "",
+    "",
+    "",
+    "",
+    category === "Latest" ? "true" : "",
+    "",
+    category === "Start Up" ? "true" : ""
+  );
+};
+
+
+
+  useEffect(() => {
     // On mount, apply default filters if defaults
-    
+
     const defaultSelectedFilters: Record<string, string> = {};
 
     // Industry take from defaults
     if (defaultFilters["industry"]?.length > 0) {
       defaultSelectedFilters["Industry"] = defaultFilters["industry"];
     }
-    
+
     // Other filters
     if (defaultFilters["business_outcome"]?.length > 0) {
       defaultSelectedFilters["Business Outcome"] = defaultFilters["business_outcome"];
@@ -403,19 +412,19 @@ const SearchFilter = ({
     if (defaultFilters["function"]?.length > 0) {
       defaultSelectedFilters["Function"] = defaultFilters["function"];
     }
-    let defaultEmergingPlayers= ""
-    if (defaultFilters['emerging_players']?.length >0 ){
+    let defaultEmergingPlayers = ""
+    if (defaultFilters['emerging_players']?.length > 0) {
       defaultEmergingPlayers = defaultFilters["emerging_players"] === "true" ? "true" : ""
       defaultEmergingPlayers === "true" && setEmergingPlayersChecked(true);
     }
     let defaultStartUp = ""
-    if (defaultFilters['start_up']?.length >0 ){
+    if (defaultFilters['start_up']?.length > 0) {
       defaultStartUp = defaultFilters["start_up"] === "true" ? "true" : ""
-      defaultStartUp === "true" &&  setStartUpChecked(true) 
+      defaultStartUp === "true" && setStartUpChecked(true)
     }
 
 
-    
+
     // apply defaults to visible UI state
     setSelectedFilters(defaultSelectedFilters);
     setActiveFilterDropdown(null);
@@ -425,7 +434,7 @@ const SearchFilter = ({
       defaultSelectedFilters?.['Industry'] || "",
       "",
       defaultSelectedFilters?.["Business Outcome"] || "",
-      defaultSelectedFilters?.["Implementation Complexity"]|| "",
+      defaultSelectedFilters?.["Implementation Complexity"] || "",
       defaultSelectedFilters?.["Unexpected Outcomes"] || "",
       defaultEmergingPlayers,
       defaultSelectedFilters?.["Function"] || "",
@@ -454,7 +463,7 @@ const SearchFilter = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyPress}
-              onFocus={() => { if (suggestions.length>0) setShowSuggestions(true); }}
+              onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
               className="w-full border-none focus:ring-0 text-base sm:text-sm"
               aria-autocomplete="list"
               aria-haspopup="true"
@@ -469,9 +478,8 @@ const SearchFilter = ({
                     key={sugg + idx}
                     role="option"
                     aria-selected={activeSuggestionIndex === idx}
-                    className={`px-3 py-2 cursor-pointer text-sm hover:bg-gray-100 flex items-center justify-between ${
-                      activeSuggestionIndex === idx ? "bg-[#D1FAE5]" : ""
-                    }`}
+                    className={`px-3 py-2 cursor-pointer text-sm hover:bg-gray-100 flex items-center justify-between ${activeSuggestionIndex === idx ? "bg-[#D1FAE5]" : ""
+                      }`}
                     onMouseDown={(e) => {
                       // prevent input blur before click
                       e.preventDefault();
@@ -514,22 +522,20 @@ const SearchFilter = ({
         <div className="flex gap-2 items-center">
           <Button
             onClick={handleLikeClick}
-            className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${
-              activeButton === "like"
-                ? "bg-green-600 text-white"
-                : "bg-[#00c193] text-white hover:bg-green-600"
-            }`}
+            className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${activeButton === "like"
+              ? "bg-green-600 text-white"
+              : "bg-[#00c193] text-white hover:bg-green-600"
+              }`}
           >
             Like
           </Button>
 
           <Button
             onClick={handleLaterClick}
-            className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${
-              activeButton === "later"
-                ? "bg-green-600 text-white"
-                : "bg-[#00c193] text-white hover:bg-green-600"
-            }`}
+            className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${activeButton === "later"
+              ? "bg-green-600 text-white"
+              : "bg-[#00c193] text-white hover:bg-green-600"
+              }`}
           >
             Let's Discuss
           </Button>
@@ -537,148 +543,149 @@ const SearchFilter = ({
       </div>
 
       {/* Filter Categories - Below Search Bar */}
-      <div
-        ref={dropdownRef}
-        className="flex flex-wrap gap-2 w-full items-center justify-center"
-      >
-        {filterCategories.map((category) => (
-          <div key={category.filterName} className="relative">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                setActiveFilterDropdown(
-                  activeFilterDropdown === category.filterName
-                    ? null
-                    : category.filterName
-                )
-              }
-              disabled={category.filterOptions.length === 0}
-              className={`flex items-center gap-2 border rounded-lg px-3 py-2 text-sm transition ${
-                (category.filterName === "Industries" &&
-                  selectedIndustries.length > 0) ||
-                selectedFilters[category.filterName]
-                  ? "bg-[#00c193] text-white border-[#00c193]"
-                  : "bg-white text-gray-600 border-gray-300 hover:border-[#00c193]"
-              }`}
-            >
-              {category.filterName === "Industries" &&
-              selectedIndustries.length > 0
-                ? `${category.filterName} (${selectedIndustries.length})`
-                : selectedFilters[category.filterName] || category.filterName}
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`transition-transform ${
-                  activeFilterDropdown === category.filterName
-                    ? "rotate-180"
-                    : ""
-                }`}
+      {/* ===== TOP BAR WITH INDUSTRY ONLY ===== */}
+      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-4 justify-center">
+        {filterCategories
+          .filter((c) => c.filterName === "Industry")
+          .map((category) => (
+            <div key={category.filterName} className="relative">
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  setActiveFilterDropdown(
+                    activeFilterDropdown === category.filterName
+                      ? null
+                      : category.filterName
+                  )
+                }
+                className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
+                ${selectedFilters[category.filterName]
+                    ? "bg-[#00c193] text-white border-[#00c193]"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+                  }
+                  `}
               >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </Button>
+                {selectedFilters["Industry"] || category.filterName}
 
-            {activeFilterDropdown === category.filterName && (
-              <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
-                {category.filterOptions.map((option) => (
-                  <li
-                    key={option}
-                    className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition ${
-                      category.filterName === "Industries"
-                        ? "hover:bg-gray-50"
-                        : selectedFilters[category.filterName] === option
-                        ? "bg-[#00c193] text-white"
-                        : "hover:bg-gray-100"
+
+
+                {/* ▼ DROPDOWN ARROW */}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className={`transition-transform ${activeFilterDropdown === category.filterName ? "rotate-180" : ""
                     }`}
-                    onClick={(e) => {
-                      e.stopPropagation(); // prevent dropdown from closing
-                      if (category.filterName === "Industries") {
-                        handleIndustryToggle(option);
-                      } else {
-                        handleFilterSelect(category.filterName, option);
-                        setActiveFilterDropdown(null); // close only for single-select filters
-                      }
-                    }}
-                  >
-                    {category.filterName === "Industries" ? (
-                      <>
-                        <div className="relative flex items-center justify-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedIndustries.includes(option)}
-                            onChange={() => {}}
-                            className="w-5 h-5 rounded border-2 border-gray-300 appearance-none cursor-pointer checked:bg-blue-600 checked:border-blue-600 transition"
-                            style={{
-                              backgroundImage: selectedIndustries.includes(
-                                option
-                              )
-                                ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E\")"
-                                : "none",
-                              backgroundSize: "100% 100%",
-                              backgroundPosition: "center",
-                              backgroundRepeat: "no-repeat",
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm text-gray-700 font-medium">
-                          {option}
-                        </span>
-                      </>
-                    ) : (
-                      option
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </Button>
 
-        {/* Emerging Players Checkbox */}
-        {hasEmergingPlayers && (
-          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow">
-            <input
-              type="checkbox"
-              id="emerging-players"
-              checked={emergingPlayersChecked}
-              onChange={()=> handleCheckboxToggle('Latest')}
-              className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
-            />
-            <label
-              htmlFor="emerging-players"
-            className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
-          >
-            Latest
-          </label>
-          </div>
-        )}
-        {hasStartUp && (
-          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow">
-            <input
-              type="checkbox"
-              id="start-up"
-              checked={startUpChecked}
-              onChange={()=> handleCheckboxToggle('Start Up')}
-              className="w-4 h-4 accent-[#00c193] cursor-pointer rounded"
-            />
-            <label
-              htmlFor="start-up"
-            className="text-sm font-medium text-gray-700 cursor-pointer whitespace-nowrap"
-          >
-            Start Up
-          </label>
-          </div>
-        )}
+
+              {activeFilterDropdown === category.filterName && (
+                <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                  {category.filterOptions.map((option) => (
+                    <li
+                      key={option}
+                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleFilterSelect("Industry", option)}
+
+                    >
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
       </div>
 
+      {/* ===== SECOND ROW WITH ALL OTHER FILTERS ===== */}
+      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex flex-wrap items-center gap-3 justify-center">
+
+        {filterCategories
+          .filter((c) => c.filterName !== "Industry")
+          .map((category) => (
+            <div key={category.filterName} className="relative">
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  setActiveFilterDropdown(
+                    activeFilterDropdown === category.filterName
+                      ? null
+                      : category.filterName
+                  )
+                }
+                className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
+                ${selectedFilters[category.filterName]
+                    ? "bg-[#00c193] text-white border-[#00c193]"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+                  }
+                  `}
+              >
+                {selectedFilters[category.filterName] || category.filterName}
+
+                {/* ▼ DROPDOWN ARROW */}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className={`transition-transform ${activeFilterDropdown === category.filterName ? "rotate-180" : ""
+                    }`}
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </Button>
+
+
+              {activeFilterDropdown === category.filterName && (
+                <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                  {category.filterOptions.map((option) => (
+                    <li
+                      key={option}
+                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleFilterSelect(category.filterName, option)}
+                    >
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+
+        {/* Latest checkbox */}
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            checked={emergingPlayersChecked}
+            onChange={() => handleCheckboxToggle("Latest")}
+            className="w-4 h-4 accent-[#00c193]"
+          />
+          Latest
+        </label>
+
+        {/* Start Up checkbox */}
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            checked={startUpChecked}
+            onChange={() => handleCheckboxToggle("Start Up")}
+            className="w-4 h-4 accent-[#00c193]"
+          />
+          Start Up
+        </label>
+      </div>
+
+
       {/* Selected Industries Tags */}
-      {selectedIndustries.length > 0 && (
+      {/* {selectedIndustries.length > 0 && (
         <div className="flex flex-wrap gap-2 w-full items-center">
           {selectedIndustries.map((industry) => (
             <div
@@ -733,7 +740,7 @@ const SearchFilter = ({
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 };
