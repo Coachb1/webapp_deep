@@ -22,9 +22,9 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [LibraryLoading, setLoading] = useState(true);
-  const [title, setTitle] = useState<string>("Business Book Insights");
+  const [title, setTitle] = useState<string>("TransformationIQ: AI-Powered Analyst for Value Acceleration");
   const [subTitle, setSubTitle] = useState<string>(
-    "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
+    "The AI research and implementation intelligence engine powered by the world's largest case repository."
   );
   const [courseId, setCourseId] = useState("");
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);

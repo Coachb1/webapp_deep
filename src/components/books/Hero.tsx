@@ -67,7 +67,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
           {/* Image Section */}
           <div className="flex justify-center md:justify-end">
             <img
-              src={imageLink || "/images/Top-1.jpg"}
+              src={imageLink || "https://storage.googleapis.com/publicvid/Case%20Study/WhatsApp%20Image%202025-10-14%20at%2011.39.38_475117de.jpg"}
               alt="Hero Art"
               className="w-[200px] sm:w-[240px] md:w-[280px] lg:w-[320px] rounded-md shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
             />
