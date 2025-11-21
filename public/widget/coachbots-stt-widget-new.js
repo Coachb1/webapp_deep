@@ -9647,9 +9647,8 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-async function getButtonControls(){
+async function getButtonControls(type_of_widget){
   // first we check client one then snnipet one, snnipet one override client one
-  
   if (botId !== undefined) {
     showBotSwitchMode = true;
     showSessionHistoryStt = true;
@@ -9728,6 +9727,9 @@ async function getButtonControls(){
     showAssessmentButtonStt,
     showModeButtonStt
     );
+  if (type_of_widget === 'simulation' && showSessionHistoryStt){
+    showSessionHistoryStt = false;
+  }
 
   const mindmap_button = document.getElementById("mindmap_button");
   const assessment_button = document.getElementById("assessment_button");
@@ -12476,9 +12478,7 @@ loadExternalModule().then(() => {
 
 
   toggleBotSwitch(type_of_widget);
-  if (type_of_widget){
-    getButtonControls();
-  }
+  
 
 function adjustHeaderLayout() {
   const header = document.getElementById("bot-header-logo-2");
@@ -12658,6 +12658,10 @@ const customMicButton = document.getElementById("startMicBtn");
   }
   console.log(botId, 'botid')
 
+  if (type_of_widget){
+    getButtonControls(type_of_widget);
+  }
+
   console.log('bot widget botId2', botId)
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId); 
@@ -12665,7 +12669,7 @@ const customMicButton = document.getElementById("startMicBtn");
   } else {
     if (isFlatWidget) addReportButtons();
 
-    if (Object.keys(snnipetConfigSTT).length > 0) {
+    if (snnipetConfigSTT?.isReportButtons) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
         console.log('showing report buttons');
         const _ = addReportButtons();

@@ -38,7 +38,7 @@ export default function CoachBotWidget({botId='avatar-bot-4837d-coachbot-master-
         id="coachbots-script"
         src="/widget/coachbots-stt-widget-new.js"
         defer
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
 
       {/* Widget container */}
