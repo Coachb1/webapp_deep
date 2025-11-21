@@ -181,8 +181,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
 
     fetch(`${baseURL}/accounts/me/`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 403) {
+          console.log("Access token expired");
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          setUser(null);
+          (window as any).user = null;
+          setLoading(false);
+          return null;
+        }
+        return res.json();
+      })
       .then(async (data) => {
+        if (!data) return; // Token was expired
         console.log("User data from session:", data);
         
         const newUser = { given_name: data.name, email: data.email };
@@ -196,7 +208,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       console.log("Setting user:", fullUser);
       setUser(fullUser);
 
-      await refreshUserData(fullUser);
+      await fetchUserData(fullUser);
 
       })
       .finally(() => setLoading(false));

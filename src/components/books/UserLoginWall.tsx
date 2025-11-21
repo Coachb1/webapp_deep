@@ -57,6 +57,13 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
             };
           console.log("Setting user:", fullUser);
           setUser(fullUser);
+        } else if (res.status === 403) {
+          // Token expired or invalid
+          console.log("Access token expired or invalid");
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          setUser(null);
+          (window as any).user = null;
         }
       } catch (e) {
         console.error("Session check failed:", e);
@@ -126,7 +133,12 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
         headers: { Authorization: `Bearer ${data.access}` },
       });
 
-      if (!userRes.ok) throw new Error("Failed to load user");
+      if (!userRes.ok) {
+        if (userRes.status === 403) {
+          throw new Error("Token invalid or expired");
+        }
+        throw new Error("Failed to load user");
+      }
 
       const userData = await userRes.json();
       console.log("✅ User data:", userData);
@@ -172,7 +184,7 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
             ) : (
               <>
                 {loading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-2xl">
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-2xl z-50">
                     <div className="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
