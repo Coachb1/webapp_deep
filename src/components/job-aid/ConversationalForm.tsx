@@ -232,10 +232,16 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   };
 
   const handleGoBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-    }
-  };
+  if (currentQuestionIndex === 0) {
+    // ⭐ Go to main/welcome page
+    setCurrentStep("welcome");
+    return;
+  }
+
+  // ⭐ Normal back action
+  setCurrentQuestionIndex(prev => prev - 1);
+};
+
 
   const handleValidation = async (
     answers: Record<string, string>,
@@ -301,7 +307,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           onContinue={handleContinue}
           onIgnore={handleIgnore}
           onGoBack={handleGoBack}
-          showBackButton={currentQuestionIndex > 0}
+          showBackButton={true}
           error={questionErrors[questions[currentQuestionIndex]?.id]}
           currentAnswer={answers[questions[currentQuestionIndex]?.question]}
           suggestions={suggestions[questions[currentQuestionIndex]?.id]}
