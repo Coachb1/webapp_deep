@@ -29,12 +29,20 @@ const BookCard: React.FC<BookCardProps> = ({
   laterBooks,
 }) => {
 
-  const { user } = usePortalUser()
+  const { user, userInfo } = usePortalUser()
   const user_id = user?.user_data?.uid;
   const [progress, setProgress] = useState<number>(0);  // percentage
   const [status, setStatus] = useState<string>("in-progress"); // or "finished"
   const [completedDate, setCompletedDate] = useState<string | null>(null);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
+  const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
+
+  useEffect(()=>{
+    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature 
+      && book?.transform_iq?.overview && book?.transform_iq?.roles){
+      setShowTransformIQ(userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature?.show === true);
+    }
+  }, [userInfo])
 
   useEffect(() => {
     if (!user_id || !book.id) return;
@@ -182,7 +190,7 @@ const BookCard: React.FC<BookCardProps> = ({
                hover:bg-[#00b281] transition shrink-0 ml-auto"
           onClick={onMore}
         >
-          Summary
+          {showTransformIQ? "Transform IQ" : "Summary"}
         </button>
       </div>
 

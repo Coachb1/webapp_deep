@@ -36,6 +36,14 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [jobAidId, setJobaidID] = useState<string|null>(null);
   const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
   const [packageDetails, setPackageDetails] = useState<any>(null);
+  const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
+  
+  useEffect(()=>{
+    console.info('transformiq', userInfo.libraryBotConfig)
+    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature){
+      setShowTransformIQ(userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature?.show === true);
+    }
+  }, [userInfo])
 
   // Load books
   useEffect(() => {
@@ -271,6 +279,7 @@ const handleMultipleSearch = (
       <BookDescription
         book={selectedBook}
         onClose={handleCloseDescription}
+        isTransFormIQ={showTransformIQ}
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}

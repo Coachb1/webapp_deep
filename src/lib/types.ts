@@ -20,6 +20,7 @@ export interface Book {
   course_details: Record<string, any>;
   package_detail: Record<string, any>;
   list_name: string;
+  transform_iq?: Record<string, any>;
 
 }
 
