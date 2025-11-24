@@ -182,7 +182,7 @@ const BookCard: React.FC<BookCardProps> = ({
                hover:bg-[#00b281] transition shrink-0 ml-auto"
           onClick={onMore}
         >
-          Transform IQ
+          Summary
         </button>
       </div>
 

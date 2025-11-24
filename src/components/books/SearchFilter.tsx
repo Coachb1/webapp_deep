@@ -161,14 +161,17 @@ const SearchFilter = ({
     if (availableFilters.includes("Industry")) {
       filterCategories.push({
         filterName: "Industry",
-        filterOptions: categories,
+        filterOptions: categories?.length > 0
+        ? categories.length > 1 ? ["ALL", ...categories] : categories
+        : []
+        ,
       });
     }
     if (availableFilters.includes("Function")) {
       filterCategories.push({
         filterName: "Function",
         filterOptions: functions?.length > 0
-          ? functions
+          ? functions.length > 1 ? ["ALL", ...functions] : functions
           : [],
       });
     }
@@ -176,7 +179,7 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Business Outcome",
         filterOptions: businessOutcomes?.length > 0
-          ? businessOutcomes
+          ? businessOutcomes.length > 1 ? ["ALL", ...businessOutcomes] : businessOutcomes
           : [],
       });
     }
@@ -184,7 +187,7 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Implementation Complexity",
         filterOptions: implementationComplexities?.length > 0
-          ? implementationComplexities
+          ? implementationComplexities.length > 1 ? ["ALL", ...implementationComplexities] : implementationComplexities
           : [],
       });
     }
@@ -192,7 +195,7 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Unexpected Outcomes",
         filterOptions: unexpectedOutcomes?.length > 0
-          ? unexpectedOutcomes
+          ? unexpectedOutcomes.length > 1 ? ["ALL", ...unexpectedOutcomes] : unexpectedOutcomes
           : [],
       });
     }
@@ -259,9 +262,15 @@ const SearchFilter = ({
       ) {
         setActiveFilterDropdown(null);
       }
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   // Close search suggestions on outside click
   useEffect(() => {
@@ -323,6 +332,11 @@ const SearchFilter = ({
     setSearchTerm("");     // 🔥 reset search box
     onSearch("");          // clear search results
     let newFilters = { ...selectedFilters };
+
+    if (option === "ALL") {
+      // Remove this filter from selected filters
+      newFilters[filterName] = "ALL";
+    }
 
     // --- TOGGLE BEHAVIOR ---
     // If user clicks the same selected option → unselect it
