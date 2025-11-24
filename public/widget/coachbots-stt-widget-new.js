@@ -96,7 +96,8 @@ style.textContent = `
       font: 16px Arial;
     }
 
-    .audio-interaction {
+.audio-interaction {
+  margin-top: 10px;
   display: flex;
   align-items: center;
   width: fit-content;
@@ -106,7 +107,12 @@ style.textContent = `
 }
 
 .audio-interaction .label {
-  font-size: 20px;
+  font-size: 16px;          
+  line-height: 0;              
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block;
+  vertical-align: middle;       
 }
 
 .toggle-wrapper {
@@ -114,12 +120,16 @@ style.textContent = `
   align-items: center;
   gap: 4px;
   margin-left: 5px;
+  vertical-align: middle;     
 }
 
 .toggle-text {
   font-size: 14px;
   font-weight: bold;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
+  line-height: normal;
+  margin: 0;
+  padding: 0;
 }
 
 /* Switch styling */
