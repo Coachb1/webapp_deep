@@ -886,6 +886,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           img: m.image_link,
           report: m.embed_link,
           course_id: course.uid,
+          transform_iq: m.transform_iq,
           course_details: {
             'title': course.title,
             'desc': course.sub_title,
