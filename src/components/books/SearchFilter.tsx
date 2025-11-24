@@ -161,14 +161,17 @@ const SearchFilter = ({
     if (availableFilters.includes("Industry")) {
       filterCategories.push({
         filterName: "Industry",
-        filterOptions: categories,
+        filterOptions: categories?.length > 0
+        ? categories.length > 1 ? ["ALL", ...categories] : categories
+        : []
+        ,
       });
     }
     if (availableFilters.includes("Function")) {
       filterCategories.push({
         filterName: "Function",
         filterOptions: functions?.length > 0
-          ? functions
+          ? functions.length > 1 ? ["ALL", ...functions] : functions
           : [],
       });
     }
@@ -176,7 +179,7 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Business Outcome",
         filterOptions: businessOutcomes?.length > 0
-          ? businessOutcomes
+          ? businessOutcomes.length > 1 ? ["ALL", ...businessOutcomes] : businessOutcomes
           : [],
       });
     }
@@ -184,7 +187,7 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Implementation Complexity",
         filterOptions: implementationComplexities?.length > 0
-          ? implementationComplexities
+          ? implementationComplexities.length > 1 ? ["ALL", ...implementationComplexities] : implementationComplexities
           : [],
       });
     }
@@ -192,7 +195,7 @@ const SearchFilter = ({
       filterCategories.push({
         filterName: "Unexpected Outcomes",
         filterOptions: unexpectedOutcomes?.length > 0
-          ? unexpectedOutcomes
+          ? unexpectedOutcomes.length > 1 ? ["ALL", ...unexpectedOutcomes] : unexpectedOutcomes
           : [],
       });
     }
@@ -259,9 +262,29 @@ const SearchFilter = ({
       ) {
         setActiveFilterDropdown(null);
       }
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  // Close search suggestions on outside click
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
   const handleSearch = () => {
@@ -269,6 +292,13 @@ const SearchFilter = ({
       alert("Please enter a search term to find books.");
       return;
     }
+    // 🔥 Reset filters whenever search runs
+    setSelectedFilters({});
+    setEmergingPlayersChecked(false);
+    setStartUpChecked(false);
+    setActiveFilterDropdown(null);
+
+    onMultipleSearch("", "", "", "", "", "", "", "");
     setShowSuggestions(false);
     onSearch(searchTerm);
   };
@@ -297,48 +327,60 @@ const SearchFilter = ({
     }
   };
 
-  // const handleIndustryToggle = (option: string) => {
-  //   const newIndustries = selectedIndustries.includes(option)
-  //     ? selectedIndustries.filter((ind) => ind !== option)
-  //     : [...selectedIndustries, option];
-
-  //   setSelectedIndustries(newIndustries);
-
-  //   // Apply filter for each selected industry
-  //   if (newIndustries.length > 0) {
-  //     // Pass all industries to parent - parent should handle multi-filter logic
-  //     onFilterChange(newIndustries.join(","));
-  //   } else {
-  //     onSearch("");
-  //     onFilterChange("");
-  //     setSearchTerm("");
-  //   }
-  // };
-
-  // const handleRemoveIndustry = (industry: string) => {
-  //   const newIndustries = selectedIndustries.filter((ind) => ind !== industry);
-  //   setSelectedIndustries(newIndustries);
-
-  //   if (newIndustries.length > 0) {
-  //     onFilterChange(newIndustries.join(","));
-  //   } else {
-  //     onSearch("");
-  //     onFilterChange("");
-  //     setSearchTerm("");
-  //   }
-  // };
 
   const handleFilterSelect = (filterName: string, option: string) => {
-    const newFilters: Record<string, string> = {
-      Industry: selectedFilters["Industry"] || "",
-    };
+    setSearchTerm("");     // 🔥 reset search box
+    onSearch("");          // clear search results
+    let newFilters = { ...selectedFilters };
 
-    // Apply current dropdown selection
-    newFilters[filterName] = option;
+    if (option === "ALL") {
+      // Remove this filter from selected filters
+      newFilters[filterName] = "ALL";
+    }
 
-    // ❗ Auto-clear checkboxes when selecting any second-row filter
-    setEmergingPlayersChecked(false);
-    setStartUpChecked(false);
+    // --- TOGGLE BEHAVIOR ---
+    // If user clicks the same selected option → unselect it
+    if (newFilters[filterName] === option) {
+      // Industry special case → just clear industry, keep second-box filters
+      if (filterName === "Industry") {
+        newFilters["Industry"] = "";
+      } else {
+        // For second-box filters, only clear that filter
+        delete newFilters[filterName];
+      }
+
+      setSelectedFilters(newFilters);
+      setActiveFilterDropdown(null);
+
+      onMultipleSearch(
+        newFilters["Industry"] || "",
+        "",
+        newFilters["Business Outcome"] || "",
+        newFilters["Implementation Complexity"] || "",
+        newFilters["Unexpected Outcomes"] || "",
+        emergingPlayersChecked ? "true" : "",
+        newFilters["Function"] || "",
+        startUpChecked ? "true" : ""
+      );
+
+      return; // STOP HERE
+    }
+
+    // --- NORMAL SELECTION LOGIC ---
+    if (filterName === "Industry") {
+      // change industry but DO NOT clear second-box selections
+      newFilters["Industry"] = option;
+    } else {
+      // selecting a second-box filter clears all other second-box filters
+      newFilters = {
+        Industry: selectedFilters["Industry"] || "",
+        [filterName]: option,
+      };
+
+      // Clear checkboxes on second-box select
+      setEmergingPlayersChecked(false);
+      setStartUpChecked(false);
+    }
 
     setSelectedFilters(newFilters);
     setActiveFilterDropdown(null);
@@ -349,15 +391,17 @@ const SearchFilter = ({
       newFilters["Business Outcome"] || "",
       newFilters["Implementation Complexity"] || "",
       newFilters["Unexpected Outcomes"] || "",
-      "",  // ← clear checkbox value
+      "", // Emerging Players
       newFilters["Function"] || "",
-      ""   // ← clear checkbox value
+      ""  // StartUp
     );
   };
 
-
-
   const handleCheckboxToggle = (category: string) => {
+    setSearchTerm("");
+    onSearch("");
+    setShowSuggestions(false);
+
     // Toggle logic
     let newEmerging = emergingPlayersChecked;
     let newStartup = startUpChecked;
@@ -465,7 +509,15 @@ const SearchFilter = ({
               type="text"
               placeholder="What are you looking for?"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+
+                // 🔥 Clear filters on typing
+                setSelectedFilters({});
+                setEmergingPlayersChecked(false);
+                setStartUpChecked(false);
+                onMultipleSearch("", "", "", "", "", "", "", "");
+              }}
               onKeyDown={handleKeyPress}
               onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
               className="w-full border-none focus:ring-0 text-base sm:text-sm"
@@ -547,215 +599,160 @@ const SearchFilter = ({
       </div>
 
       {/* Filter Categories - Below Search Bar */}
-      {/* ===== TOP BAR WITH INDUSTRY ONLY ===== */}
-      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-4 justify-center">
-        {filterCategories
-          .filter((c) => c.filterName === "Industry")
-          .map((category) => (
-            <div key={category.filterName} className="relative">
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  setActiveFilterDropdown(
-                    activeFilterDropdown === category.filterName
-                      ? null
-                      : category.filterName
-                  )
-                }
-                className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
-                ${selectedFilters[category.filterName]
-                    ? "bg-[#00c193] text-white border-[#00c193]"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+      <div ref={dropdownRef} className="relative w-full">
+        {/* ===== TOP BAR WITH INDUSTRY ONLY ===== */}
+
+        <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-4 justify-center mb-4">
+          {filterCategories
+            .filter((c) => c.filterName === "Industry")
+            .map((category) => (
+              <div key={category.filterName} className="relative">
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    setActiveFilterDropdown(
+                      activeFilterDropdown === category.filterName
+                        ? null
+                        : category.filterName
+                    )
                   }
-                  `}
-              >
-                {selectedFilters["Industry"] || category.filterName}
-
-
-
-                {/* ▼ DROPDOWN ARROW */}
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className={`transition-transform ${activeFilterDropdown === category.filterName ? "rotate-180" : ""
-                    }`}
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </Button>
-
-
-              {activeFilterDropdown === category.filterName && (
-                <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
-                  {category.filterOptions.map((option) => (
-                    <li
-                      key={option}
-                      className={`px-4 py-2 text-sm cursor-pointer
-                      ${selectedFilters[category.filterName] === option
-                          ? "bg-[#1ED3A6] text-white"
-                          : "hover:bg-gray-100"
-                        }
-                        `}
-                      onClick={() => handleFilterSelect(category.filterName, option)}
-                    >
-                      {option}
-                    </li>
-
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-      </div>
-
-      {/* ===== SECOND ROW WITH ALL OTHER FILTERS ===== */}
-      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex flex-wrap items-center gap-3 justify-center">
-
-        {filterCategories
-          .filter((c) => c.filterName !== "Industry")
-          .map((category) => (
-            <div key={category.filterName} className="relative">
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  setActiveFilterDropdown(
-                    activeFilterDropdown === category.filterName
-                      ? null
-                      : category.filterName
-                  )
-                }
-                className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
+                  className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
                 ${selectedFilters[category.filterName]
-                    ? "bg-[#00c193] text-white border-[#00c193]"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
-                  }
+                      ? "bg-[#00c193] text-white border-[#00c193]"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+                    }
                   `}
-              >
-                {selectedFilters[category.filterName] || category.filterName}
-
-                {/* ▼ DROPDOWN ARROW */}
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className={`transition-transform ${activeFilterDropdown === category.filterName ? "rotate-180" : ""
-                    }`}
                 >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </Button>
+                  {selectedFilters["Industry"] || category.filterName}
 
 
-              {activeFilterDropdown === category.filterName && (
-                <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
-                  {category.filterOptions.map((option) => (
-                    <li
-                      key={option}
-                      className={`px-4 py-2 text-sm cursor-pointer
-                      ${selectedFilters[category.filterName] === option
-                          ? "bg-[#1ED3A6] text-white"
-                          : "hover:bg-gray-100"
-                        }
-                        `}
-                      onClick={() => handleFilterSelect(category.filterName, option)}
-                    >
-                      {option}
-                    </li>
 
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-
-        {/* Latest checkbox */}
-        <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input
-            type="checkbox"
-            checked={emergingPlayersChecked}
-            onChange={() => handleCheckboxToggle("Latest")}
-            className="w-4 h-4 accent-[#00c193]"
-          />
-          Latest
-        </label>
-
-        {/* Start Up checkbox */}
-        <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input
-            type="checkbox"
-            checked={startUpChecked}
-            onChange={() => handleCheckboxToggle("Start Up")}
-            className="w-4 h-4 accent-[#00c193]"
-          />
-          Start Up
-        </label>
-      </div>
-
-
-      {/* Selected Industries Tags */}
-      {/* {selectedIndustries.length > 0 && (
-        <div className="flex flex-wrap gap-2 w-full items-center">
-          {selectedIndustries.map((industry) => (
-            <div
-              key={industry}
-              className="flex items-center gap-2 bg-[#D1FAE5] text-gray-800 px-4 py-2 rounded-full text-sm font-medium shadow-sm"
-            >
-              <div className="flex items-center gap-2">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className="text-blue-600"
-                >
-                  <rect
-                    x="3"
-                    y="3"
+                  {/* ▼ DROPDOWN ARROW */}
+                  <svg
                     width="14"
                     height="14"
-                    rx="3"
-                    fill="#3B82F6"
-                  />
-                  <path
-                    d="M14.5 7L8.5 13L5.5 10"
-                    stroke="white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
                     strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span>{industry}</span>
+                    className={`transition-transform ${activeFilterDropdown === category.filterName ? "rotate-180" : ""
+                      }`}
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </Button>
+
+
+                {activeFilterDropdown === category.filterName && (
+                  <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                    {category.filterOptions.map((option) => (
+                      <li
+                        key={option}
+                        className={`px-4 py-2 text-sm cursor-pointer
+                      ${selectedFilters[category.filterName] === option
+                            ? "bg-[#1ED3A6] text-white"
+                            : "hover:bg-gray-100"
+                          }
+                        `}
+                        onClick={() => handleFilterSelect(category.filterName, option)}
+                      >
+                        {option}
+                      </li>
+
+                    ))}
+                  </ul>
+                )}
               </div>
-              <button
-                onClick={() => handleRemoveIndustry(industry)}
-                className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition"
-                aria-label={`Remove ${industry}`}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          ))}
+            ))}
         </div>
-      )} */}
+
+        {/* ===== SECOND ROW WITH ALL OTHER FILTERS ===== */}
+        <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex flex-wrap items-center gap-3 justify-center">
+
+          {filterCategories
+            .filter((c) => c.filterName !== "Industry")
+            .map((category) => (
+              <div key={category.filterName} className="relative">
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    setActiveFilterDropdown(
+                      activeFilterDropdown === category.filterName
+                        ? null
+                        : category.filterName
+                    )
+                  }
+                  className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
+                ${selectedFilters[category.filterName]
+                      ? "bg-[#00c193] text-white border-[#00c193]"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+                    }
+                  `}
+                >
+                  {selectedFilters[category.filterName] || category.filterName}
+
+                  {/* ▼ DROPDOWN ARROW */}
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className={`transition-transform ${activeFilterDropdown === category.filterName ? "rotate-180" : ""
+                      }`}
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </Button>
+
+
+                {activeFilterDropdown === category.filterName && (
+                  <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                    {category.filterOptions.map((option) => (
+                      <li
+                        key={option}
+                        className={`px-4 py-2 text-sm cursor-pointer
+                      ${selectedFilters[category.filterName] === option
+                            ? "bg-[#1ED3A6] text-white"
+                            : "hover:bg-gray-100"
+                          }
+                        `}
+                        onClick={() => handleFilterSelect(category.filterName, option)}
+                      >
+                        {option}
+                      </li>
+
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+
+          {/* Latest checkbox */}
+          <label className="flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={emergingPlayersChecked}
+              onChange={() => handleCheckboxToggle("Latest")}
+              className="w-4 h-4 accent-[#00c193]"
+            />
+            Latest
+          </label>
+
+          {/* Start Up checkbox */}
+          <label className="flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={startUpChecked}
+              onChange={() => handleCheckboxToggle("Start Up")}
+              className="w-4 h-4 accent-[#00c193]"
+            />
+            Start Up
+          </label>
+        </div>
+      </div>
+
     </div>
   );
 };

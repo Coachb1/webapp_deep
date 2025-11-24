@@ -407,17 +407,17 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
                     ) : (
                       paginatedData.map((row, index) => (
                         <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                          <td className="px-6 py-4 font-medium text-gray-500">{row.case}</td>
-                          <td className="px-6 py-4 text-gray-500">{row.industry}</td>
-                          <td className="px-6 py-4 text-gray-500">{row.function}</td>
+                          <td className="px-6 py-4 font-medium text-gray-500">{row.case || "-"}</td>
+                          <td className="px-6 py-4 text-gray-500">{row.industry || "-"}</td>
+                          <td className="px-6 py-4 text-gray-500">{row.function || "-"}</td>
                           {/* Updated businessOutcome body cell: single-line with ellipsis when too long */}
                           <td
                             className="px-6 py-4 text-gray-500 whitespace-nowrap overflow-hidden"
                             style={{ textOverflow: "ellipsis", maxWidth: 300 }}
                           >
-                            {row.businessOutcome}
+                            {row.businessOutcome || "-"}
                           </td>
-                          <td className="px-6 py-4 text-center font-semibold text-gray-500">{row.discussionRequests}</td>
+                          <td className="px-6 py-4 text-center font-semibold text-gray-500">{row.discussionRequests ?? "-"}</td>
                           <td className="px-6 py-4 text-gray-500">
                             <div className="flex flex-wrap gap-1 items-center">
                               {row.requestUsers.length > 0 && (

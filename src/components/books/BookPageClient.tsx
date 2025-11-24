@@ -261,8 +261,7 @@ const handleMultipleSearch = (
             <span className="font-semibold">CoachBoT</span>. All rights reserved.
           </p>
           <p className="text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
-            Copyright for all books belongs to their respective authors and
-            publishers. We encourage you to buy and read actual books.
+            Cases curated through independent research, verification, and third-party data sources.
           </p>
         </div>
       </footer>
