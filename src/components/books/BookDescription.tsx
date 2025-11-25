@@ -62,9 +62,12 @@ const BookDescription = ({ book, onClose, isTransFormIQ=false }: BookDescription
               </div>
 
               <span className="font-semibold">Transform IQ Overview</span>
-              <div className="border border-gray-300 rounded-lg p-3 bg-gray-50 text-sm sm:text-base text-gray-700 leading-relaxed mb-4">
+              <div className="border border-gray-300 rounded-lg p-3 bg-gray-50 
+                text-sm sm:text-base text-gray-700 leading-relaxed mb-4
+                h-56 overflow-y-auto white-space: pre-line">
                 {book.transform_iq?.overview}
               </div>
+
 
               {/* Transform IQ Role */}
               {/* Transform IQ Role */}
@@ -93,18 +96,21 @@ const BookDescription = ({ book, onClose, isTransFormIQ=false }: BookDescription
                 </div>
 
                 {/* Role Description Box */}
-                <div className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 text-gray-700 leading-relaxed">
+                <div className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 
+                text-gray-700 leading-relaxed 
+                h-56 overflow-y-auto">
                   {selectedRole ? (
                     <div>
                       <span className="font-semibold">{selectedRole} Overview</span>
-                      <p className="mt-1 text-sm">
+                      <br />
                         {book.transform_iq?.roles[selectedRole]}
-                      </p>
+                      
                     </div>
                   ) : (
                     "Please select a role."
                   )}
                 </div>
+
               </div>
 
             </div>
