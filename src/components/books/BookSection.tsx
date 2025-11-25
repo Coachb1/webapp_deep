@@ -11,6 +11,7 @@ import { getcourseModuleLikesAndSaveLater } from "@/lib/api"; // 👈 make sure 
 import Carousel from "./CarouselSlider";
 import PageRefresh from "./PageRefreshProp";
 import { usePortalUser } from "./context/UserContext";
+import { ActionsPerMonth } from "@/lib/api";
 
 interface BookSectionProps {
   books: Book[];
@@ -61,6 +62,9 @@ const BookSection: React.FC<BookSectionProps> = ({
   const [availableFilters, setAvailableFilters] = useState<string>("");
   const [showLists, setShowLists] = useState<boolean>(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
+  const [showBadge, setShowBadge] = useState(false);
+  const [completedTransformations, setCompletedTransformations]  = useState(0);
+  const [completedCases, setCompletedCases] = useState(0);
 
   const handleResetLibrary = () => {
     const randomId = Math.random().toString(36).substring(2, 10);
@@ -113,7 +117,28 @@ const BookSection: React.FC<BookSectionProps> = ({
 
     fetchLikesAndLater();
   }, []);
+useEffect(() => {
+    // Show badge if user has admin access
+    if (userInfo?.libraryBotConfig?.show_certification_badge === true) {
+      setShowBadge(true);
+    } else {
+      setShowBadge(false);
+    }
 
+
+    async function getLibActions(userId:string){
+      const data = await ActionsPerMonth(userId);
+      if (data.jobaid_sessions_created){
+        setCompletedTransformations(data.jobaid_sessions_created);
+      }
+      if (data.modules_completed){
+        setCompletedCases(data.modules_completed);
+      }
+    }
+    if (user?.user_data?.uid){
+      getLibActions(user?.user_data?.uid)
+    }
+  }, [userInfo]);
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
@@ -168,7 +193,46 @@ const BookSection: React.FC<BookSectionProps> = ({
           />
         </div>
       )}
+      {/* Progress Section */}
+      { showBadge && (
+      <section className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Title Section */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Master the case library. Earn a verifiable credential: Certified Transformation leader</h2>
+            <p className="text-lg text-gray-600 max-w-[90%] xl:max-w-[80%] mx-auto">
+              Awarded to leaders who demonstrate consistent mastery of real-world case patterns while logging innovation ideas. Earn this verifiable badge by deeply analyzing 5+ cases and/or logging two transformation project ideas every month. 
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Case Progress Card */}
+            <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
+              <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Case Progress this Month</h3>
+              <div className="flex items-center justify-center space-x-3 text-4xl my-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} className={i < Math.min(completedCases, 5) ? "text-yellow-400" : "text-gray-200"}>★</span>
+                ))}
+              </div>
+              <p className="mt-3 text-center text-gray-600">{Math.min(completedCases, 5)}/5 cases completed this month</p>
+            </div>
+
+            {/* Transformation Logs Card */}
+            <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
+              <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Tranformation Logs this Month</h3>
+              <div className="flex items-center justify-center space-x-3 text-4xl my-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <span key={i} className={i < Math.min(completedTransformations, 3) ? "text-yellow-400" : "text-gray-200"}>★</span>
+                ))}
+              </div>
+              <p className="mt-3 text-center text-gray-600">{Math.min(completedTransformations, 3)}/3 transformations logs this month</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      )}
     </section>
+    
   );
 };
 
