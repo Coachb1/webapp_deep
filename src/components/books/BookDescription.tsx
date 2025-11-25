@@ -62,8 +62,10 @@ const BookDescription = ({ book, onClose, isTransFormIQ=false }: BookDescription
               </div>
 
               <span className="font-semibold">Transform IQ Overview</span>
-              <div className="border border-gray-300 rounded-lg p-3 bg-gray-50 text-sm sm:text-base text-gray-700 leading-relaxed mb-4">
-                {book.transform_iq?.overview}
+              <div className="border border-gray-300 rounded-lg p-3 bg-gray-50 
+                              text-sm sm:text-base text-gray-700 leading-relaxed mb-4
+                              h-40 overflow-y-auto white-space: pre-line">              
+                <AdvMarkdownHandler content={book.transform_iq?.overview} />
               </div>
 
               {/* Transform IQ Role */}
@@ -93,13 +95,13 @@ const BookDescription = ({ book, onClose, isTransFormIQ=false }: BookDescription
                 </div>
 
                 {/* Role Description Box */}
-                <div className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 text-gray-700 leading-relaxed">
+                <div className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 
+                text-gray-700 leading-relaxed 
+                h-40 overflow-y-auto">
                   {selectedRole ? (
                     <div>
-                      <span className="font-semibold">{selectedRole} Overview</span>
-                      <p className="mt-1 text-sm">
-                        {book.transform_iq?.roles[selectedRole]}
-                      </p>
+                      {/* <span className="font-semibold">{selectedRole} Overview</span> */}
+                      <AdvMarkdownHandler content={book.transform_iq?.roles[selectedRole]} />
                     </div>
                   ) : (
                     "Please select a role."
