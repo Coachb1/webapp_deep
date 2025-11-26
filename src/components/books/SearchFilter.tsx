@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/books/ui/buttonn";
 import { Input } from "@/components/books/ui/input";
 import { Book } from "@/lib/types";
 import { usePortalUser } from "./context/UserContext";
+import { debounce } from "lodash";
 
 interface FilterCategory {
   filterName: string;
@@ -62,6 +63,7 @@ const SearchFilter = ({
   const [selectedFilter, setSelectedFilter] = useState("Filter");
   const [hasEmergingPlayers, setHasEmergingPlayers] = useState(false);
   const [hasStartUp, setHasStartUp] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const [filterCategories, setFilterCategories] = useState<FilterCategory[]>(
@@ -74,7 +76,20 @@ const SearchFilter = ({
     Record<string, string>
   >({});
   const [showSecondFilter, setShowSecondFilter] = useState(true);
-  // const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+
+  // Debounced search
+  const debouncedSearch = useRef(
+    debounce((term: string) => {
+      onSearch(term);
+    }, 300)
+  ).current;
+
+  // Cleanup debounce
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   // Categories - MOVE HERE (before the useEffect)
   const categories = useMemo(() => {
@@ -114,6 +129,7 @@ const SearchFilter = ({
       setSuggestions([]);
       setShowSuggestions(false);
       setActiveSuggestionIndex(-1);
+      debouncedSearch(""); // Clear search immediately
       return;
     }
 
@@ -124,7 +140,9 @@ const SearchFilter = ({
     setSuggestions(matched);
     setShowSuggestions(matched.length > 0);
     setActiveSuggestionIndex(-1);
-  }, [searchTerm]);
+        // Use debounced search instead of immediate
+    debouncedSearch(searchTerm);
+  }, [searchTerm, suggestionCandidates, debouncedSearch]);
 
   const functions = useMemo(() => {
     const normalized = allBooks.flatMap(
@@ -225,7 +243,7 @@ const SearchFilter = ({
 
 
 
-  const handleLikeClick = () => {
+  const handleLikeClick = useCallback(() => {
     if (activeButton === "like") {
       setActiveButton(null);
       onSearch("");
@@ -234,9 +252,9 @@ const SearchFilter = ({
       setActiveButton("like");
       setViewMode("liked");
     }
-  };
+  }, [activeButton, onSearch, setViewMode]);
 
-  const handleLaterClick = () => {
+  const handleLaterClick = useCallback(() => {
     if (activeButton === "later") {
       setActiveButton(null);
       onSearch("");
@@ -245,24 +263,40 @@ const SearchFilter = ({
       setActiveButton("later");
       setViewMode("later");
     }
-  };
+  }, [activeButton, onSearch, setViewMode]);
+
+  // Optimized Reset handling
+  const handleResetLibraryOptimized = useCallback(() => {
+    setIsResetting(true);
+    
+    // Batch all state updates
+    setActiveButton(null);
+
+    setSearchTerm("");
+    setSelectedFilter("Filter");
+    setSelectedFilters({});
+    // setSelectedIndustries([]);
+    setActiveFilterDropdown(null);
+    setEmergingPlayersChecked(false);
+    setStartUpChecked(false);
+    setShowSuggestions(false);
+    
+    // Use setTimeout to ensure state updates are batched
+    setTimeout(() => {
+      onSearch("");
+      onFilterChange("");
+      onMultipleSearch("", "", "", "", "", "", "", "");
+      setViewMode("all");
+      setIsResetting(false);
+    }, 0);
+  }, [onSearch, onFilterChange, onMultipleSearch, setViewMode]);
 
   // Reset handling
   useEffect(() => {
     if (viewMode.includes("reset-")) {
-      setActiveButton(null);
-      onSearch("");
-      setSearchTerm("");
-      setSelectedFilter("Filter");
-      setSelectedFilters({});
-      // setSelectedIndustries([]);
-      setActiveFilterDropdown(null);
-      onFilterChange("");
-      setViewMode("all");
-      setEmergingPlayersChecked(false);
-      setStartUpChecked(false);
+      handleResetLibraryOptimized();
     }
-  }, [viewMode]);
+  }, [viewMode, handleResetLibraryOptimized]);
 
   // Dropdown close on outside click
   useEffect(() => {
@@ -285,7 +319,7 @@ const SearchFilter = ({
   }, []);
 
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (searchTerm.trim() === "") {
       alert("Please enter a search term to find books.");
       return;
@@ -299,7 +333,7 @@ const SearchFilter = ({
     onMultipleSearch("", "", "", "", "", "", "", "");
     setShowSuggestions(false);
     onSearch(searchTerm);
-  };
+  }, [searchTerm, onSearch, onMultipleSearch]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -326,7 +360,7 @@ const SearchFilter = ({
   };
 
 
-  const handleFilterSelect = (filterName: string, option: string) => {
+  const handleFilterSelect = useCallback((filterName: string, option: string) => {
     setSearchTerm("");     // 🔥 reset search box
     onSearch("");          // clear search results
     let newFilters = { ...selectedFilters };
@@ -393,9 +427,9 @@ const SearchFilter = ({
       newFilters["Function"] || "",
       ""  // StartUp
     );
-  };
+  }, [selectedFilters, emergingPlayersChecked, startUpChecked, onSearch, onMultipleSearch]);
 
-  const handleCheckboxToggle = (category: string) => {
+  const handleCheckboxToggle = useCallback((category: string) => {
     setSearchTerm("");
     onSearch("");
     setShowSuggestions(false);
@@ -433,11 +467,17 @@ const SearchFilter = ({
       "", // Function cleared
       newStartup ? "true" : ""
     );
-  };
+  }, [emergingPlayersChecked, startUpChecked, selectedFilters, onSearch, onMultipleSearch]);
 
   useEffect(() => {
-    // On mount, apply default filters if defaults
+   // Only apply defaults on initial mount and if we have default filters
+    const shouldApplyDefaults = 
+      Object.keys(defaultFilters).length > 0 && 
+      Object.keys(selectedFilters).length === 0 &&
+      !emergingPlayersChecked &&
+      !startUpChecked;
 
+    if (shouldApplyDefaults) {
     const defaultSelectedFilters: Record<string, string> = {};
 
     // Industry take from defaults
@@ -474,29 +514,34 @@ const SearchFilter = ({
     setSelectedFilters(defaultSelectedFilters);
     setActiveFilterDropdown(null);
 
-    console.log('[Applying default filters on mount:', defaultSelectedFilters, defaultEmergingPlayers);
-    onMultipleSearch(
-      defaultSelectedFilters?.['Industry'] || "",
-      "",
-      defaultSelectedFilters?.["Business Outcome"] || "",
-      defaultSelectedFilters?.["Implementation Complexity"] || "",
-      defaultSelectedFilters?.["Unexpected Outcomes"] || "",
-      defaultEmergingPlayers,
-      defaultSelectedFilters?.["Function"] || "",
-      defaultStartUp
-    );
-    // run once on mount
-  }, []);
+      console.log('[Applying default filters on mount:', defaultSelectedFilters, defaultEmergingPlayers);
+      
+      // Use requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        onMultipleSearch(
+          defaultSelectedFilters?.['Industry'] || "",
+          "",
+          defaultSelectedFilters?.["Business Outcome"] || "",
+          defaultSelectedFilters?.["Implementation Complexity"] || "",
+          defaultSelectedFilters?.["Unexpected Outcomes"] || "",
+          defaultEmergingPlayers,
+          defaultSelectedFilters?.["Function"] || "",
+          defaultStartUp
+        );
+      });
+    }
+  }, [defaultFilters, availableFilters]); // Only depend on defaultFilters and availableFilters
 
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
         {/* Reset */}
         <Button
-          className="px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md bg-[#00c193] text-white hover:bg-green-600 transition"
-          onClick={handleResetLibrary}
+          className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md bg-[#00c193] text-white hover:bg-green-600 transition ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          onClick={handleResetLibraryOptimized}
+          disabled={isResetting}
         >
-          Reset
+          {isResetting ? 'Resetting...' : 'Reset'}
         </Button>
 
         {/* Search */}

@@ -116,7 +116,9 @@ const BookSection: React.FC<BookSectionProps> = ({
     };
 
     fetchLikesAndLater();
-  }, []);
+
+  }, [userId]);
+
 useEffect(() => {
     // Show badge if user has admin access
     if (userInfo?.libraryBotConfig?.show_certification_badge === true) {
@@ -124,7 +126,6 @@ useEffect(() => {
     } else {
       setShowBadge(false);
     }
-
 
     async function getLibActions(userId:string){
       const data = await ActionsPerMonth(userId);
@@ -139,6 +140,7 @@ useEffect(() => {
       getLibActions(user?.user_data?.uid)
     }
   }, [userInfo]);
+  
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
