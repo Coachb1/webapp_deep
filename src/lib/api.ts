@@ -823,9 +823,13 @@ export const getIDPs = async (userId: string) => {
   }
 };
 
-export const getCoursePackage = async (coursePackageId: string) => {
+export const getCoursePackage = async (coursePackageId: string, userId?:string) => {
+  let url = `${baseURL}/courses/course-package/?package_id=${coursePackageId}`;
+  if (userId){
+    url += `&user_id_for_progress=${userId}`
+  }
   const response = await fetch(
-    `${baseURL}/courses/course-package/?package_id=${coursePackageId}`,
+    url,
     {
       method: "GET",
       headers: {
@@ -852,9 +856,9 @@ export const getCoursePackage = async (coursePackageId: string) => {
 };
 
 
-export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage> => {
+export const fetchBooks = async (coursePackageId: string, userId?: string): Promise<CoursePackage> => {
   try {
-    const data = await getCoursePackage(coursePackageId);
+    const data = await getCoursePackage(coursePackageId, userId);
 
     const package_details = {
       'package_id': data.uid,
@@ -895,7 +899,8 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           },
           package_detail: package_details,
           list_name: m.list_name || '',
-          jobaid_id: data.jobaid_uid
+          jobaid_id: data.jobaid_uid,
+          userProgress: m.progress
         }))
     );
     console.log('[fetchBooks] Books:', books);

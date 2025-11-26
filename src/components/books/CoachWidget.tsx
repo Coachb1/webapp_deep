@@ -32,6 +32,8 @@ export default function CoachBotWidget({botId='avatar-bot-4837d-coachbot-master-
     return () => clearInterval(interval);
   }, [up]);
 
+  if (!(window as any).user) return;
+
   return (
     <>
       <Script

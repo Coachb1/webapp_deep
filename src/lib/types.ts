@@ -21,7 +21,7 @@ export interface Book {
   package_detail: Record<string, any>;
   list_name: string;
   transform_iq?: Record<string, any>;
-
+  userProgress?: Record<string, any>;
 }
 
 export interface CoursePackage {
