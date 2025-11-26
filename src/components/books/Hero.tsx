@@ -16,8 +16,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
 
   // ⭐ All categories with links
   const foundationalconceptsTabs = [
-  { name: "Fine-Tuning", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/Fine-Tuning.html" },
-  { name: "RAG Systems", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/RAG%20Systems.html" },
+  { name: "Fine-Tuning", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/fine%20tuning%202.html" },
+  { name: "RAG Systems", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/Rag%20system%20new.html" },
   { name: "Embeddings", link: "" },
   { name: "Knowledge Graphs", link: "" },
   { name: "MLOps", link: "" },
@@ -28,8 +28,8 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
 ];
 
 const enterpriseAIconceptsTabs = [
-  { name: "AI Governance", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/AI%20Governance.html" },
-  { name: "AI Risk", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/AI%20Risk.html" },
+  { name: "AI Governance", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/ai%20governance%202.html" },
+  { name: "AI Risk", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/ai%20risk%20(2).html" },
   { name: "Data Quality", link: "" },
   { name: "AI Scalability", link: "" },
   { name: "Automation Pipelines", link: "" },
