@@ -134,6 +134,13 @@ const AudioPlayer = ({
         completion,
         playedPercentage
       ).catch(console.error);
+      book.userProgress = book.userProgress || {};
+      book.userProgress.completed_in_percentage = completion
+      book.userProgress.audio_played = playedPercentage
+      if (playedPercentage >= completedThreshold) {
+        book.userProgress.status = "completed";
+        book.userProgress.end_time = new Date().toISOString();
+      }
     }
   };
 

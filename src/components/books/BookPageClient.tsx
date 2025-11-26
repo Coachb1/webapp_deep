@@ -12,6 +12,7 @@ import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
 import CoachBotsWidget from "./CoachWidget";
 import { usePortalUser } from "./context/UserContext";
+import { LibraryPageLoader } from "./Loaders";
 
 interface BookPageClientProps {
   id: string;
@@ -22,9 +23,9 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [LibraryLoading, setLoading] = useState(true);
-  const [title, setTitle] = useState<string>("TransformationIQ: AI-Powered Analyst for Value Acceleration");
-  const [subTitle, setSubTitle] = useState<string>(
-    "The AI research and implementation intelligence engine powered by the world's largest case repository."
+  const [title, setTitle] = useState<string|null>(null);
+  const [subTitle, setSubTitle] = useState<string|null>(
+    null
   );
   const [courseId, setCourseId] = useState("");
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
@@ -48,8 +49,9 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   // Load books
   useEffect(() => {
     const loadBooks = async () => {
+      if (!user?.user_data?.uid) return;
       try {
-        const data: CoursePackage = await fetchBooks(id);
+        const data: CoursePackage = await fetchBooks(id, user?.user_data?.uid);
         if (!data) return;
 
         setTitle(data.package_name);
@@ -76,7 +78,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       }
     };
     loadBooks();
-  }, [id]);
+  }, [id, user?.user_data?.uid]);
 
   useEffect(() => {
     console.log('userInfo updated:', userInfo.libraryBotConfig?.bot_config?.coaching?.show, loading);
@@ -161,6 +163,7 @@ const handleMultipleSearch = (
   });
 
   // Update state
+  console.info('filter', filtered)
   setFilteredBooks(filtered);
 };
 
@@ -229,10 +232,8 @@ const handleMultipleSearch = (
         <Header packageCourseId={id} jobaidId={jobAidId}/>
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
-        {LibraryLoading && loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
-          </div>
+        {LibraryLoading || loading ? (
+          <LibraryPageLoader/>
         ) : (
           <BookSection
             books={filteredBooks}
@@ -279,6 +280,7 @@ const handleMultipleSearch = (
         book={selectedBook}
         onClose={handleCloseDescription}
         isTransFormIQ={showTransformIQ}
+        clientName={userInfo.clientName}
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}

@@ -48,7 +48,8 @@ const BookCard: React.FC<BookCardProps> = ({
     if (!user_id || !book.id) return;
 
     const fetchProgress = async () => {
-      const data = await getModuleCompletion(user_id, book.id);
+      // const data = await getModuleCompletion(user_id, book.id);
+      const data = book.userProgress;
 
       if (data) {
         setProgress(data.completed_in_percentage || 0);
@@ -73,8 +74,7 @@ const BookCard: React.FC<BookCardProps> = ({
     };
 
     fetchProgress();
-  }, [user_id, book.id]);
-
+  }, [user_id, book.id, book.userProgress?.completed_in_percentage]);
 
 
 

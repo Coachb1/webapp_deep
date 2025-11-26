@@ -144,7 +144,6 @@ useEffect(() => {
   return (
     <section className="other-reads" id="section">
       <div className="mt-12">
-        {!loading && (
         <SearchFilter
           onSearch={onSearch}
           onMultipleSearch={onMultipleSearch}
@@ -157,7 +156,7 @@ useEffect(() => {
           showSearchBar={showSearchBar}
           defaultFilters={userInfo.libraryBotConfig?.default_filters || {}}
           allBooks={all_books}
-        />)}
+        />
         {showLists && <>
           <br />
           <Carousel onFilterChange={onFilterChange} books={books} />
@@ -167,7 +166,6 @@ useEffect(() => {
       {/* <PageRefresh onReset={handleResetLibrary}  /> */}
       <br />
       <br />
-      {!loading&&(
       <BookCarousel
         books={books}
         currentSlide={currentSlide}
@@ -180,7 +178,6 @@ useEffect(() => {
         laterBooks={laterBooks}
         setViewMode={setViewMode}
       />
-)}
 
       <br />
       <br />

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { usePortalUser } from "./context/UserContext";
+import { HeroLoader } from "./Loaders";
 
 interface HeroProps {
-  title: string;
-  subTitle: string;
+  title: string | null;
+  subTitle: string | null;
   imageLink?: string | null;
 }
 
@@ -44,6 +45,15 @@ const enterpriseAIconceptsTabs = [
     document.getElementById("section")?.scrollIntoView({ behavior: "smooth" });
   };
 
+
+  // ⭐ LOADER CHECK
+  const isLoading = !title && !subTitle;
+
+  if (isLoading) {
+    return <HeroLoader />;
+  }
+
+
   return (
     <>
       {/* Hero Section */}
@@ -62,7 +72,7 @@ const enterpriseAIconceptsTabs = [
               onClick={scrollToSection}
               className="mt-6 inline-block bg-[whitesmoke] text-[#00c193] px-5 py-3 rounded-lg font-bold shadow-[0_8px_16px_rgba(255,107,107,0.25)] hover:opacity-90 transition"
             >
-              View Library
+              Let's Go
             </button>
           </div>
 
