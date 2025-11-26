@@ -112,7 +112,7 @@ const BookSection: React.FC<BookSectionProps> = ({
     };
 
     fetchLikesAndLater();
-  }, []);
+  }, [userId]);
 
   return (
     <section className="other-reads" id="section">
