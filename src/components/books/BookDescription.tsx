@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import { Book } from "@/lib/types";
 import { useState } from "react";
+import AdvMarkdownHandler from "../MarkdownAdvance";
 
 interface BookDescriptionProps {
   book: Book | null;
