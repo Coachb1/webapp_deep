@@ -14,32 +14,45 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
   // ⭐ Selected tab for popup
   const [selectedTab, setSelectedTab] = useState<any>(null);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
+
 
   // ⭐ All categories with links
   const foundationalconceptsTabs = [
-  { name: "Fine-Tuning", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/fine%20tuning%202.html" },
-  { name: "RAG Systems", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/Rag%20system%20new.html" },
-  { name: "Embeddings", link: "" },
-  { name: "Knowledge Graphs", link: "" },
-  { name: "MLOps", link: "" },
-  { name: "Prompt Engineering", link: "" },
-  { name: "Multi-Agent Systems", link: "" },
-  { name: "LLM Safety", link: "" },
-  { name: "Model Evaluation", link: "" },
-];
+    {
+      name: "Fine-Tuning",
+      links: [
+        "https://cdn.coachbots.com/Case%20Study/Enterprise/fine%20tuning%202.html",
+        "https://secondary-link.com/fine-tuning-extra.html"
+      ]
+    },
+    {
+      name: "RAG Systems",
+      links: [
+        "https://storage.googleapis.com/publicvid/Case%20Study/Enterprise/RAG%20Final.html",
+        "https://storage.googleapis.com/publicvid/Case%20Study/Enterprise/Rag%20deep%20dive%20final.html"
+      ]
+    },
+  ];
 
-const enterpriseAIconceptsTabs = [
-  { name: "AI Governance", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/ai%20governance%202.html" },
-  { name: "AI Risk", link: "https://cdn.coachbots.com/Case%20Study/Enterprise/ai%20risk%20(2).html" },
-  { name: "Data Quality", link: "" },
-  { name: "AI Scalability", link: "" },
-  { name: "Automation Pipelines", link: "" },
-  { name: "Predictive Analytics", link: "" },
-  { name: "Causal Inference", link: "" },
-  { name: "Digital Twins", link: "" },
-  { name: "Personalization Engines", link: "" },
-  { name: "Workflow Orchestration", link: "" },
-];
+
+  const enterpriseAIconceptsTabs = [
+    {
+      name: "Fine-Tuning",
+      links: [
+        "https://cdn.coachbots.com/Case%20Study/Enterprise/fine%20tuning%202.html",
+        "https://secondary-link.com/fine-tuning-extra.html"
+      ]
+    },
+    {
+      name: "RAG Systems",
+      links: [
+        "https://storage.googleapis.com/publicvid/Case%20Study/Enterprise/RAG%20Final.html",
+        "https://secondary-link.com/rag-advanced.html"
+      ]
+    },
+  ];
+
 
   const scrollToSection = () => {
     document.getElementById("section")?.scrollIntoView({ behavior: "smooth" });
@@ -102,8 +115,10 @@ const enterpriseAIconceptsTabs = [
                 key={tab.name}
                 onClick={() => {
                   setSelectedTab(tab);
+                  setPageIndex(0);
                   setIsReadModalOpen(true);
                 }}
+
                 className="px-4 py-2 rounded-md border text-sm bg-gray-100 border-gray-300"
               >
                 {tab.name}
@@ -126,8 +141,10 @@ const enterpriseAIconceptsTabs = [
                 key={tab.name}
                 onClick={() => {
                   setSelectedTab(tab);
+                  setPageIndex(0);
                   setIsReadModalOpen(true);
                 }}
+
                 className="px-4 py-2 rounded-md border text-sm bg-gray-100 border-gray-300"
               >
                 {tab.name}
@@ -139,38 +156,55 @@ const enterpriseAIconceptsTabs = [
 
       {/* ⭐ POPUP MODAL */}
       {isReadModalOpen && selectedTab && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          onClick={() => setIsReadModalOpen(false)}
-        >
-          <div
-            className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col shadow-xl"
-            onClick={(e) => e.stopPropagation()}
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    onClick={() => setIsReadModalOpen(false)}
+  >
+    <div
+      className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col shadow-xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex justify-between items-center p-4 border-b">
+        
+        <h3 className="text-xl font-bold text-gray-800">
+          {selectedTab.name}
+        </h3>
+
+        <div className="flex items-center gap-4">
+
+          {/* Toggle button */}
+          {selectedTab.links?.length > 1 && (
+            <button
+              onClick={() => setPageIndex(pageIndex === 0 ? 1 : 0)}
+              className="bg-[#00c193] text-white px-4 py-2 rounded-md text-sm hover:bg-gray-700"
+            >
+              {pageIndex === 0 ? "Transform IQ" : "Overview"}
+            </button>
+          )}
+
+          {/* Close button */}
+          <button
+            onClick={() => setIsReadModalOpen(false)}
+            className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
           >
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-xl font-bold text-gray-800">
-                {selectedTab.name}
-              </h3>
-
-              <button
-                onClick={() => setIsReadModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-hidden">
-              <iframe
-                src={selectedTab.link}
-                className="w-full h-full border-0"
-                title={selectedTab.name}
-                allow="fullscreen"
-              />
-            </div>
-          </div>
+            ×
+          </button>
         </div>
-      )}
+
+      </div>
+
+      <div className="flex-1 overflow-hidden">
+        <iframe
+          src={selectedTab.links[pageIndex]}
+          className="w-full h-full border-0"
+          title={selectedTab.name}
+          allow="fullscreen"
+        />
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 };
