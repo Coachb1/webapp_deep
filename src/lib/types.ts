@@ -369,6 +369,19 @@ export interface AllUserDataType {
   userProfileId?: string;
 }
 
+export interface CaseItem {
+  id: number;
+  tab_name: string;
+  embed_link: string;
+  transform_iq?: string;
+}
+
+export interface CollectionBlock {
+  id: number;
+  collection_name: string;
+  case_items: CaseItem[];
+}
+
 export interface UserInfoType {
   clientId?: string;
   clientName: string;
@@ -388,7 +401,8 @@ export interface UserInfoType {
   snnipetConfig?: any;
   libraryBotConfig?: any;
   portalPageConfig?: any;
-  universalPageConfig?: any
+  universalPageConfig?: any;
+  collections?: CollectionBlock[] | null;
 }
 
 export interface PositionedUserTypes {

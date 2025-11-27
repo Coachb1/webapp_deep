@@ -100,7 +100,8 @@ export const getClientUserInfo = async (
               universalPageConfig: {
                 "protected": data.data.user_info[0].leaderboard_report_protected,
                 "password": data.data.user_info[0].leaderboard_report_password
-              }
+              },
+              collections: data.data.user_info[0].collections
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -171,7 +172,8 @@ export const getClientbyClientId = async (
             universalPageConfig: {
               "protected": data.data.only_client_data.leaderboard_report_protected,
               "password": data.data.only_client_data.leaderboard_report_password
-            }
+            },
+            collections: data.data.only_client_data.collection_name
           };
         } else {
           throw new Error("Failed to fetch client information");

@@ -13,6 +13,7 @@ import TinyTalkWidget from "./TinyTalk";
 import CoachBotsWidget from "./CoachWidget";
 import { usePortalUser } from "./context/UserContext";
 import { LibraryPageLoader } from "./Loaders";
+import ConceptsViewer from "./ConceptTabCollections";
 
 interface BookPageClientProps {
   id: string;
@@ -231,6 +232,7 @@ const handleMultipleSearch = (
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId}/>
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
+        <ConceptsViewer/>
 
         {LibraryLoading || loading ? (
           <LibraryPageLoader/>
