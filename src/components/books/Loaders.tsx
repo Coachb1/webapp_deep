@@ -81,3 +81,29 @@ export const HeroLoader = () => (
     </div>
   </section>
 );
+
+
+export const ConceptsBoxLoader = () => {
+  return (
+    <div className="w-full flex justify-center mt-10 px-4 animate-pulse">
+      <div className="relative bg-white border rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
+
+        {/* Title placeholder */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-[6px] rounded-xl shadow bg-gray-300 w-52 h-7" />
+
+        {/* Tab pill loaders */}
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8">
+
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-10 w-36 bg-gray-200 rounded-md border border-gray-300"
+            />
+          ))}
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
