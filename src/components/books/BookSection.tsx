@@ -80,6 +80,8 @@ const BookSection: React.FC<BookSectionProps> = ({
       list = likedBooks;
     } else if (viewMode === "later") {
       list = laterBooks;
+    } else if (viewMode === 'reset'){
+      list = all_books
     }
     return list;
   }, [books, viewMode, likedBooks, laterBooks]);

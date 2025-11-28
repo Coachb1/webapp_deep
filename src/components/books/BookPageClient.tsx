@@ -89,7 +89,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     const queryStr = searchTerm.trim();
 
     if (!queryStr) {
-      setFilteredBooks(allBooks);
+      // setFilteredBooks(allBooks);
       return;
     }
 
@@ -173,7 +173,7 @@ const handleMultipleSearch = (
     const normalized = filter.trim().toLowerCase();
 
     if (!normalized || normalized === "filter") {
-      setFilteredBooks(allBooks);
+      // setFilteredBooks(allBooks);
       return;
     }
 
