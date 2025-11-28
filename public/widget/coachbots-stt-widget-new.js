@@ -12677,7 +12677,7 @@ const customMicButton = document.getElementById("startMicBtn");
     const _ = getBotDetails2(botId); 
     toggleBotSwitch('coaching')
   } else {
-    if (isFlatWidget) addReportButtons();
+    // if (isFlatWidget) addReportButtons();
 
     if (snnipetConfigSTT?.isReportButtons) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
