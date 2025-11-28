@@ -368,6 +368,7 @@ const SearchFilter = ({
   const handleFilterSelect = useCallback((filterName: string, option: string) => {
     setSearchTerm("");     // 🔥 reset search box
     onSearch("");          // clear search results
+    setActiveButton(null); // clear like/later buttion
     let newFilters = { ...selectedFilters };
 
     if (option === "ALL") {
@@ -563,6 +564,8 @@ const SearchFilter = ({
                 setSelectedFilters({});
                 setEmergingPlayersChecked(false);
                 setStartUpChecked(false);
+                setActiveButton(null); // clear like/later buttion
+
               }}
               onKeyDown={handleKeyPress}
               onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
