@@ -245,21 +245,34 @@ const SearchFilter = ({
 
   const handleLikeClick = useCallback(() => {
     if (activeButton === "like") {
+      setViewMode("reset");
       setActiveButton(null);
-      onSearch("");
-      setViewMode("all");
     } else {
+      setSearchTerm("");
+      setSelectedFilters({});
+      setActiveFilterDropdown(null);
+      setEmergingPlayersChecked(false);
+      setStartUpChecked(false);
+      setShowSuggestions(false);
+      
       setActiveButton("like");
       setViewMode("liked");
+
     }
   }, [activeButton, onSearch, setViewMode]);
 
   const handleLaterClick = useCallback(() => {
     if (activeButton === "later") {
       setActiveButton(null);
-      onSearch("");
-      setViewMode("all");
+      setViewMode("reset");
     } else {
+      setSearchTerm("");
+      setSelectedFilters({});
+      setActiveFilterDropdown(null);
+      setEmergingPlayersChecked(false);
+      setStartUpChecked(false);
+      setShowSuggestions(false);
+
       setActiveButton("later");
       setViewMode("later");
     }
@@ -286,18 +299,11 @@ const SearchFilter = ({
       onSearch("");
       onFilterChange("");
       onMultipleSearch("", "", "", "", "", "", "", "");
-      setViewMode("all");
       setIsResetting(false);
     }, 0);
   }, [onSearch, onFilterChange, onMultipleSearch, setViewMode]);
 
-  // Reset handling
-  useEffect(() => {
-    if (viewMode.includes("reset-")) {
-      handleResetLibraryOptimized();
-    }
-  }, [viewMode, handleResetLibraryOptimized]);
-
+ 
   // Dropdown close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -330,7 +336,6 @@ const SearchFilter = ({
     setStartUpChecked(false);
     setActiveFilterDropdown(null);
 
-    onMultipleSearch("", "", "", "", "", "", "", "");
     setShowSuggestions(false);
     onSearch(searchTerm);
   }, [searchTerm, onSearch, onMultipleSearch]);
@@ -363,6 +368,7 @@ const SearchFilter = ({
   const handleFilterSelect = useCallback((filterName: string, option: string) => {
     setSearchTerm("");     // 🔥 reset search box
     onSearch("");          // clear search results
+    setActiveButton(null); // clear like/later buttion
     let newFilters = { ...selectedFilters };
 
     if (option === "ALL") {
@@ -558,7 +564,8 @@ const SearchFilter = ({
                 setSelectedFilters({});
                 setEmergingPlayersChecked(false);
                 setStartUpChecked(false);
-                onMultipleSearch("", "", "", "", "", "", "", "");
+                setActiveButton(null); // clear like/later buttion
+
               }}
               onKeyDown={handleKeyPress}
               onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
