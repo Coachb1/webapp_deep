@@ -12,6 +12,8 @@ import AudioPlayer from "@/components/books/AudioPlayer";
 import TinyTalkWidget from "./TinyTalk";
 import CoachBotsWidget from "./CoachWidget";
 import { usePortalUser } from "./context/UserContext";
+import { LibraryPageLoader } from "./Loaders";
+import ConceptsViewer from "./ConceptTabCollections";
 
 interface BookPageClientProps {
   id: string;
@@ -22,9 +24,9 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [LibraryLoading, setLoading] = useState(true);
-  const [title, setTitle] = useState<string>("Business Book Insights");
-  const [subTitle, setSubTitle] = useState<string>(
-    "Engaging conversations, deep dives, takeaways, and coaching around the best business books."
+  const [title, setTitle] = useState<string|null>(null);
+  const [subTitle, setSubTitle] = useState<string|null>(
+    null
   );
   const [courseId, setCourseId] = useState("");
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
@@ -36,12 +38,21 @@ export default function BookPageClient({ id }: BookPageClientProps) {
   const [jobAidId, setJobaidID] = useState<string|null>(null);
   const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
   const [packageDetails, setPackageDetails] = useState<any>(null);
+  const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
+  
+  useEffect(()=>{
+    console.info('transformiq', userInfo.libraryBotConfig)
+    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature){
+      setShowTransformIQ(userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature?.show === true);
+    }
+  }, [userInfo])
 
   // Load books
   useEffect(() => {
     const loadBooks = async () => {
+      if (!user?.user_data?.uid) return;
       try {
-        const data: CoursePackage = await fetchBooks(id);
+        const data: CoursePackage = await fetchBooks(id, user?.user_data?.uid);
         if (!data) return;
 
         setTitle(data.package_name);
@@ -68,7 +79,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
       }
     };
     loadBooks();
-  }, [id]);
+  }, [id, user?.user_data?.uid]);
 
   useEffect(() => {
     console.log('userInfo updated:', userInfo.libraryBotConfig?.bot_config?.coaching?.show, loading);
@@ -78,7 +89,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
     const queryStr = searchTerm.trim();
 
     if (!queryStr) {
-      setFilteredBooks(allBooks);
+      // setFilteredBooks(allBooks);
       return;
     }
 
@@ -153,6 +164,7 @@ const handleMultipleSearch = (
   });
 
   // Update state
+  console.info('filter', filtered)
   setFilteredBooks(filtered);
 };
 
@@ -161,7 +173,7 @@ const handleMultipleSearch = (
     const normalized = filter.trim().toLowerCase();
 
     if (!normalized || normalized === "filter") {
-      setFilteredBooks(allBooks);
+      // setFilteredBooks(allBooks);
       return;
     }
 
@@ -220,11 +232,10 @@ const handleMultipleSearch = (
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId}/>
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
+        <ConceptsViewer/>
 
-        {LibraryLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
-          </div>
+        {LibraryLoading || loading ? (
+          <LibraryPageLoader/>
         ) : (
           <BookSection
             books={filteredBooks}
@@ -253,8 +264,7 @@ const handleMultipleSearch = (
             <span className="font-semibold">CoachBoT</span>. All rights reserved.
           </p>
           <p className="text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
-            Copyright for all books belongs to their respective authors and
-            publishers. We encourage you to buy and read actual books.
+            Cases curated through independent research, verification, and third-party data sources.
           </p>
         </div>
       </footer>
@@ -271,6 +281,8 @@ const handleMultipleSearch = (
       <BookDescription
         book={selectedBook}
         onClose={handleCloseDescription}
+        isTransFormIQ={showTransformIQ}
+        clientName={userInfo.clientName}
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}

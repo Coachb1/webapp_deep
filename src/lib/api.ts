@@ -100,7 +100,8 @@ export const getClientUserInfo = async (
               universalPageConfig: {
                 "protected": data.data.user_info[0].leaderboard_report_protected,
                 "password": data.data.user_info[0].leaderboard_report_password
-              }
+              },
+              collections: data.data.user_info[0].collections
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -171,7 +172,8 @@ export const getClientbyClientId = async (
             universalPageConfig: {
               "protected": data.data.only_client_data.leaderboard_report_protected,
               "password": data.data.only_client_data.leaderboard_report_password
-            }
+            },
+            collections: data.data.only_client_data.collection_name
           };
         } else {
           throw new Error("Failed to fetch client information");
@@ -823,9 +825,13 @@ export const getIDPs = async (userId: string) => {
   }
 };
 
-export const getCoursePackage = async (coursePackageId: string) => {
+export const getCoursePackage = async (coursePackageId: string, userId?:string) => {
+  let url = `${baseURL}/courses/course-package/?package_id=${coursePackageId}`;
+  if (userId){
+    url += `&user_id_for_progress=${userId}`
+  }
   const response = await fetch(
-    `${baseURL}/courses/course-package/?package_id=${coursePackageId}`,
+    url,
     {
       method: "GET",
       headers: {
@@ -852,9 +858,9 @@ export const getCoursePackage = async (coursePackageId: string) => {
 };
 
 
-export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage> => {
+export const fetchBooks = async (coursePackageId: string, userId?: string): Promise<CoursePackage> => {
   try {
-    const data = await getCoursePackage(coursePackageId);
+    const data = await getCoursePackage(coursePackageId, userId);
 
     const package_details = {
       'package_id': data.uid,
@@ -886,6 +892,7 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           img: m.image_link,
           report: m.embed_link,
           course_id: course.uid,
+          transform_iq: m.transform_iq,
           course_details: {
             'title': course.title,
             'desc': course.sub_title,
@@ -894,7 +901,8 @@ export const fetchBooks = async (coursePackageId: string): Promise<CoursePackage
           },
           package_detail: package_details,
           list_name: m.list_name || '',
-          jobaid_id: data.jobaid_uid
+          jobaid_id: data.jobaid_uid,
+          userProgress: m.progress
         }))
     );
     console.log('[fetchBooks] Books:', books);

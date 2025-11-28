@@ -96,7 +96,8 @@ style.textContent = `
       font: 16px Arial;
     }
 
-    .audio-interaction {
+.audio-interaction {
+  margin-top: 10px;
   display: flex;
   align-items: center;
   width: fit-content;
@@ -106,7 +107,12 @@ style.textContent = `
 }
 
 .audio-interaction .label {
-  font-size: 20px;
+  font-size: 16px;          
+  line-height: 0;              
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block;
+  vertical-align: middle;       
 }
 
 .toggle-wrapper {
@@ -114,12 +120,16 @@ style.textContent = `
   align-items: center;
   gap: 4px;
   margin-left: 5px;
+  vertical-align: middle;     
 }
 
 .toggle-text {
   font-size: 14px;
   font-weight: bold;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
+  line-height: normal;
+  margin: 0;
+  padding: 0;
 }
 
 /* Switch styling */
@@ -9647,9 +9657,8 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-async function getButtonControls(){
+async function getButtonControls(type_of_widget){
   // first we check client one then snnipet one, snnipet one override client one
-  
   if (botId !== undefined) {
     showBotSwitchMode = true;
     showSessionHistoryStt = true;
@@ -9728,6 +9737,9 @@ async function getButtonControls(){
     showAssessmentButtonStt,
     showModeButtonStt
     );
+  if (type_of_widget === 'simulation' && showSessionHistoryStt){
+    showSessionHistoryStt = false;
+  }
 
   const mindmap_button = document.getElementById("mindmap_button");
   const assessment_button = document.getElementById("assessment_button");
@@ -12476,9 +12488,7 @@ loadExternalModule().then(() => {
 
 
   toggleBotSwitch(type_of_widget);
-  if (type_of_widget){
-    getButtonControls();
-  }
+  
 
 function adjustHeaderLayout() {
   const header = document.getElementById("bot-header-logo-2");
@@ -12658,14 +12668,18 @@ const customMicButton = document.getElementById("startMicBtn");
   }
   console.log(botId, 'botid')
 
+  if (type_of_widget){
+    getButtonControls(type_of_widget);
+  }
+
   console.log('bot widget botId2', botId)
   if (botId || snnipetConfigSTT?.createBotSheetUrl != undefined) {
     const _ = getBotDetails2(botId); 
     toggleBotSwitch('coaching')
   } else {
-    if (isFlatWidget) addReportButtons();
+    // if (isFlatWidget) addReportButtons();
 
-    if (Object.keys(snnipetConfigSTT).length > 0) {
+    if (snnipetConfigSTT?.isReportButtons) {
       if (snnipetConfigSTT?.isReportButtons === 'true') {
         console.log('showing report buttons');
         const _ = addReportButtons();
