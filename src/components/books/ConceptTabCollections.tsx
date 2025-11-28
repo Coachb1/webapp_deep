@@ -42,7 +42,9 @@ const ConceptsViewer = () => {
   return (
     <>
       {/* ---------------- COLLECTION BLOCKS ---------------- */}
-      {data.map((block) => (
+      {data
+      .filter(block => block.case_items && block.case_items.length > 0)
+      .map((block) => (
         <div key={block.id} className="w-full flex justify-center mt-10 px-4">
           <div className="relative bg-white border rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
             {/* Collection name */}

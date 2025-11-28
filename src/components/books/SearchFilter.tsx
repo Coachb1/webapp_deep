@@ -644,7 +644,7 @@ const SearchFilter = ({
       <div ref={dropdownRef} className="relative w-full">
         {/* ===== TOP BAR WITH INDUSTRY ONLY ===== */}
         {filterCategories
-            .filter((c) => c.filterName === "Industry").length > 0 &&
+            .filter((c) => c.filterName === "Industry" && c.filterOptions.length > 0).length > 0 &&
         <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-4 justify-center mb-4">
           {filterCategories
             .filter((c) => c.filterName === "Industry")
@@ -659,6 +659,7 @@ const SearchFilter = ({
                         : category.filterName
                     )
                   }
+                  disabled = {category.filterOptions.length === 0}
                   className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
                 ${selectedFilters[category.filterName]
                       ? "bg-[#00c193] text-white border-[#00c193]"
@@ -727,6 +728,7 @@ const SearchFilter = ({
                           : category.filterName
                       )
                     }
+                    disabled = {category.filterOptions.length === 0}
                     className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
                   ${selectedFilters[category.filterName]
                         ? "bg-[#00c193] text-white border-[#00c193]"
