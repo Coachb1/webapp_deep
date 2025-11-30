@@ -428,12 +428,19 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             Home
           </button>
         ) : (
-          <button
-            onClick={handleRestart}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
-          >
-            Start Over
-          </button>
+        <button
+          onClick={handleRestart}
+          className="
+            w-full bg-gray-200 border border-[#00c193] 
+            px-8 py-4 text-sm font-medium text-gray-800 
+            shadow-sm transition-all duration-300 
+            hover:border-[#00c193] hover:shadow-md 
+            sm:w-auto
+          "
+          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+        >
+          Start Over
+        </button>
         )}
       </div>
     );

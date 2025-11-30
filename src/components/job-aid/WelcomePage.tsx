@@ -38,12 +38,13 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading, title, desc
         <button
           onClick={onStart}
           disabled={isDisabled}
-          className="bg-[#00c193] text-white px-10 py-4 text-lg font-semibold 
+          className="bg-white border border-[#00c193] text-black px-10 py-4 text-lg font-semibold 
                      cursor-pointer transition-all duration-300 
-                     shadow-[0_10px_30px_rgba(186,255,236,0.3)] min-w-[200px] 
+                     shadow-sm min-w-[200px] 
                      disabled:opacity-70 disabled:cursor-not-allowed
-                     hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(226,237,231,0.4)] 
+                     hover:bg-gray-300
                      active:translate-y-0"
+                    style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
         >
           Start
         </button>
