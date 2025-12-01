@@ -263,7 +263,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   return (
     <div className="max-w-[1400px] mx-auto p-6 min-h-screen bg-white font-inter">
       {/* Header */}
-      <div className="bg-[#00c193] rounded-2xl p-6 mb-8 text-white">
+      <div className="bg-gray-200 border-2 border-[#00c193] p-6 mb-8 text-black"
+      style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-extrabold flex items-center gap-2">
@@ -275,19 +276,22 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
           <div className="flex gap-2">
             <button
               onClick={() => downloadReport('csv')}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> CSV
             </button>
             <button
               onClick={() => downloadReport('xlsx')}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> Excel
             </button>
             <button
               onClick={() => refreshData()}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaSyncAlt /> Refresh
             </button>
@@ -296,7 +300,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white shadow-xl border border-gray-200 overflow-hidden"
+      style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="p-6 border-b border-gray-200 bg-white flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <FaTable />Activity Report

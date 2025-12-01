@@ -206,7 +206,8 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
   return (
     <div className="max-w-[1400px] mx-auto p-6 min-h-screen bg-white font-inter">
       {/* Header */}
-      <div className="bg-[#00c193] rounded-2xl p-6 mb-8 text-white">
+      <div className="bg-gray-200 border-2 border-[#00c193] p-6 mb-8 text-black"
+      style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-extrabold flex items-center gap-2">
@@ -217,19 +218,22 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
           <div className="flex gap-2">
             <button
               onClick={() => downloadReport("csv")}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> CSV
             </button>
             <button
               onClick={() => downloadReport("xlsx")}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> Excel
             </button>
             <button
               onClick={() => handleRefresh()}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaSyncAlt /> Refresh
             </button>
@@ -238,7 +242,8 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
       </div>
 
       {/* Activity Report Section */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white shadow-xl border border-gray-200 overflow-hidden"
+      style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -274,7 +279,8 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
             </div>
           ) : (
             <>
-              <div className="border rounded-lg overflow-hidden overflow-x-auto">
+              <div className="border overflow-hidden overflow-x-auto"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                 <table className="w-full min-w-[1200px]">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-200">
@@ -421,10 +427,12 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
                           <td className="px-6 py-4 text-gray-500">
                             <div className="flex flex-wrap gap-1 items-center">
                               {row.requestUsers.length > 0 && (
-                                <span className="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs">{row.requestUsers[0]}</span>
+                                <span className="inline-block bg-emerald-50 text-emerald-700 px-2 py-1 text-xs"
+                                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>{row.requestUsers[0]}</span>
                               )}
                               {row.requestUsers.length > 1 && (
-                                <button onClick={() => handleShowMoreEmails(row.requestUsers, row.case)} className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-semibold hover:bg-blue-100 transition">
+                                <button onClick={() => handleShowMoreEmails(row.requestUsers, row.case)} className="inline-block bg-blue-50 text-blue-700 px-2 py-1 text-xs font-semibold hover:bg-blue-100 transition"
+                                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                                   +{row.requestUsers.length - 1} more
                                 </button>
                               )}
@@ -442,21 +450,24 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
                 <button
                   disabled={!canPrev}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className={`px-6 py-2 rounded-full font-semibold transition ${
-                    !canPrev ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  className={`px-6 py-2 font-semibold transition border border-[#00c193] ${
+                    !canPrev ? "bg-white text-gray-400 cursor-not-allowed" : "bg-white text-black hover:bg-gray-300"
                   }`}
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                 >
                   Prev
                 </button>
-                <button className="w-10 h-10 rounded-full font-semibold bg-emerald-500 text-white shadow-md">
+                <button className="w-10 h-10 font-semibold bg-white border border-[#00c193] text-black shadow-sm"
+                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                   {currentPage}
                 </button>
                 <button
                   disabled={!canNext}
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                  className={`px-6 py-2 rounded-full font-semibold transition ${
-                    !canNext ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  className={`px-6 py-2 font-semibold transition border border-[#00c193] ${
+                    !canNext ? "bg-white text-gray-400 cursor-not-allowed" : "bg-white text-black hover:bg-gray-300"
                   }`}
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                 >
                   Next
                 </button>
@@ -489,21 +500,25 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
       {/* Email Popup Modal */}
       {showEmailPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleClosePopup}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-emerald-500 p-4 flex items-center justify-between">
+          <div className="bg-white shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-[#00c193]"
+          style={{ borderRadius: 'calc(var(--radius) - 6px)' }} onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gray-200 border-b-2 border-[#00c193] p-4 flex items-center justify-between">
               <div>
-                <h3 className="text-white font-bold text-lg">Request Users</h3>
-                <p className="text-white text-sm opacity-90">{selectedCase}</p>
+                <h3 className="text-black font-bold text-lg">Request Users</h3>
+                <p className="text-black text-sm opacity-90">{selectedCase}</p>
               </div>
-              <button onClick={handleClosePopup} className="text-white hover:bg-white/20 rounded-full p-2 transition">
+              <button onClick={handleClosePopup} className="text-black hover:bg-white/20 p-2 transition"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                 <FaTimes size={20} />
               </button>
             </div>
             <div className="p-6 max-h-96 overflow-y-auto">
               <div className="space-y-2">
                 {selectedEmails.map((email, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <div className="bg-emerald-100 rounded-full p-2">
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 transition"
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
+                    <div className="bg-emerald-100 p-2"
+                    style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                       <FaEnvelope className="text-emerald-600" size={16} />
                     </div>
                     <span className="text-gray-700 text-sm">{email}</span>
@@ -512,7 +527,8 @@ const AIPluseReport: React.FC<AIPluseReportProps> = ({ packageCourseId, clientId
               </div>
             </div>
             <div className="bg-gray-50 p-4 flex justify-end">
-              <button onClick={handleClosePopup} className="bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition">
+              <button onClick={handleClosePopup} className="bg-white border border-[#00c193] text-black px-6 py-2 font-semibold hover:bg-gray-300 transition"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                 Close
               </button>
             </div>
