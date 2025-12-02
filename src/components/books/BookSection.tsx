@@ -150,7 +150,7 @@ const BookSection: React.FC<BookSectionProps> = ({
     <section className="other-reads" id="section">
       {/* ⭐ Prompt Job Aid Section (Top) */}
       {promptJobAidId && (
-        <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg">
+        <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg mt-10">
           <ConversationalForm
             job_aid_id={promptJobAidId}
             isEmailSection={false}

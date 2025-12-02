@@ -40,6 +40,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   // const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
   const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
   const [isReport, setIsReport] = useState<boolean>(true);
+  const [isPromptGenerator, setIsPromptGenerator] = useState<boolean>(false);
+
   const [copied, setCopied] = useState<boolean>(false);
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>(
     {}
@@ -49,6 +51,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [generatedPrompt, setGeneratedPrompt] = useState<string>("");
+  const [showLoader, setShowLoader] = useState(true);
 
   // Import JobAid type from the correct location
   const [jobAid, setJobAid] = useState<JobAid | null>(null);
@@ -70,6 +73,11 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         console.log("validatioan", data?.is_validation);
         setIsValidation(data?.is_validation);
         setIsReport(data?.is_report);
+        setIsPromptGenerator(
+          data.is_prompt_generation !== undefined
+            ? data.is_prompt_generation
+            : data?.job_aid_type === "prompt_generator"
+        );
       } catch (err: any) {
         setError(err.message ?? "Failed to fetch job aid.");
       } finally {
@@ -111,11 +119,6 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       //   id: String(q.id),
       // }));
       // setQuestions(normalizedQuestions);
-      const handleCopy = () => {
-        navigator.clipboard.writeText(generatedPrompt);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      };
       setCurrentStep("questions");
       setCurrentQuestionIndex(0);
       setAnswers({});
@@ -127,9 +130,10 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     }
   };
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatedPrompt);
-    alert("Copied to clipboard!");
-  };
+        navigator.clipboard.writeText(generatedPrompt);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
 
   const handleContinue = async (answer: string) => {
     const currentQ = questions[currentQuestionIndex];
@@ -150,8 +154,15 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         if (isEmailSection) {
           setCurrentStep("email");
         } else {
-          await handleValidation(updatedAnswers, email, name);
-          setCurrentStep("completed");
+          if (showLoader){
+            setLoading(true);
+            setCurrentStep("loading");
+            await handleValidation(updatedAnswers, email, name);
+            setLoading(false);
+          } else {
+            await handleValidation(updatedAnswers, email, name);
+            setCurrentStep("completed");
+          }
         }
       }
       return;
@@ -236,8 +247,15 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       if (isEmailSection) {
         setCurrentStep("email");
       } else {
-        await handleValidation(answers, email, name);
-        setCurrentStep("completed");
+        if (showLoader){
+          setLoading(true);
+          setCurrentStep("loading");
+          await handleValidation(answers, email, name);
+          setLoading(false);
+        } else {
+          await handleValidation(answers, email, name);
+          setCurrentStep("completed");
+        }
       }
     }
   };
@@ -323,6 +341,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           error={questionErrors[questions[currentQuestionIndex]?.id]}
           currentAnswer={answers[questions[currentQuestionIndex]?.question]}
           suggestions={suggestions[questions[currentQuestionIndex]?.id]}
+          isValidataion={isValidation}
         />
       </div>
     );
@@ -375,6 +394,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           {isReport
             ? "⏳ Generating Your Report..."
+            : isPromptGenerator ?
+              "⏳ Generating Prompt..."
             : "⏳ Submitting..."}
         </h2>
         <div className="flex justify-center">
@@ -383,6 +404,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         <p className="text-gray-600 mt-4 text-lg text-center">
           {isReport
             ? "Please wait while we prepare your personalized Management Action Planner."
+            : isPromptGenerator 
+            ? "Please wait while we are generating your Prompt."
             : "Please wait while we submit your form"}
         </p>
       </div>
@@ -460,6 +483,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         )}
 
         {/* Restart or redirect button */}
+        <div className="mt-10"></div>
+
         {redirectURL ? (
           <button
             onClick={() => (window.location.href = redirectURL)}

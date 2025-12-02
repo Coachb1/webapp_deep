@@ -65,22 +65,25 @@ export const LibraryPageLoader = () => {
 
 
 export const HeroLoader = () => (
-  <section className="bg-[#00c193] text-white py-14 md:py-18 lg:py-9">
+  <section className="bg-white border border-[#00c193] py-14 md:py-18 lg:py-9">
     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
 
+      {/* Left skeleton */}
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-2/3 bg-white/30 rounded" />
-        <div className="h-4 w-3/4 bg-white/20 rounded" />
-        <div className="h-10 w-40 bg-white/30 rounded mt-6" />
+        <div className="h-8 w-2/3 bg-gray-200 rounded" />
+        <div className="h-4 w-3/4 bg-gray-200 rounded" />
+        <div className="h-10 w-32 bg-gray-300 rounded mt-6" />
       </div>
 
+      {/* Right image skeleton */}
       <div className="flex justify-center md:justify-end">
-        <div className="w-[200px] sm:w-[240px] md:w-[280px] lg:w-[320px] h-[200px] bg-white/20 rounded-md animate-pulse" />
+        <div className="w-[200px] sm:w-[240px] md:w-[280px] lg:w-[320px] h-[200px] bg-gray-200 rounded-md border border-[#00c193] shadow-md animate-pulse" />
       </div>
 
     </div>
   </section>
 );
+
 
 
 export const ConceptsBoxLoader = () => {
