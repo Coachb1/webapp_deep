@@ -46,9 +46,9 @@ const ConceptsViewer = () => {
       .filter(block => block.case_items && block.case_items.length > 0)
       .map((block) => (
         <div key={block.id} className="w-full flex justify-center mt-10 px-4">
-          <div className="relative bg-white border rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
+          <div className="relative bg-white border border-[#00c193] rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
             {/* Collection name */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00c193] text-white text-sm font-medium px-5 py-[6px] rounded-xl shadow">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-200 border border-[#00c193] text-black text-sm font-medium px-5 py-[6px] shadow-sm transition-all duration-300 hover:bg-gray-300"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
               {block.collection_name}
             </div>
 
@@ -62,7 +62,7 @@ const ConceptsViewer = () => {
                     setPageIndex(0);
                     setIsReadModalOpen(true);
                   }}
-                  className="px-4 py-2 rounded-md border text-sm bg-gray-100 border-gray-300 hover:bg-gray-200"
+                  className="px-4 py-2 rounded-md border text-sm bg-gray-100 border-[#00c193] hover:bg-gray-200"
                 >
                   {item.tab_name}
                 </button>
@@ -94,7 +94,7 @@ const ConceptsViewer = () => {
                 {selectedTab.transform_iq && (
                   <button
                     onClick={() => setPageIndex(pageIndex === 0 ? 1 : 0)}
-                    className="bg-[#00c193] text-white px-4 py-2 rounded-md text-sm hover:bg-gray-700"
+                    className="w-full bg-gray-200 border border-[#00c193] px-6 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                   >
                     {pageIndex === 0 ? "Transform IQ" : "Overview"}
                   </button>

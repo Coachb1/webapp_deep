@@ -108,7 +108,8 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
                   window.open(url, "_blank", "noopener,noreferrer");
                 }
               }}
-              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
+
+              className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300 sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               {LeaderBoardButtonLabel}
             </Button>
@@ -125,7 +126,7 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
                   window.open(url, "_blank", "noopener,noreferrer");
                 }
               }}
-              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
+             className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300 sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               {AiPulseButtonLabel}
             </Button>
@@ -143,7 +144,7 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
                     window.open(url, "_blank", "noopener,noreferrer");
                   }
                 }}
-                className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473] sm:w-auto"
+                className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300 sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
               >
                 {IdeaBoardButtonLabel}
               </Button>

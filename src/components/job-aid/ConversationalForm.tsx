@@ -352,7 +352,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold text-lg transition-all
+            className={`bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
+              hover:border-[#00c193] hover:shadow-md sm:w-auto
                 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             Submit
@@ -418,18 +419,20 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center w-full max-w-xl">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">📊 View Your Report</h3>
               <a
-                href={reportUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold transition-all"
-              >
+                  href={reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-gray-200 text-gray-800 font-semibold px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto"
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}    
+                >  
                 Open Report
               </a>
             </div>
           </>
         ) : (
           // 🔹 No report or prompt → Simple completion message
-          <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 text-center">
+          <div className="bg-gray-100 border border-[#00c193] rounded-xl p-6 mb-6 text-center">
             <h3 className="text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
             <p className="text-gray-600">
               Your responses were submitted successfully.
@@ -441,14 +444,28 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         {redirectURL ? (
           <button
             onClick={() => (window.location.href = redirectURL)}
-            className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+            className="
+                        w-full bg-gray-200 border border-[#00c193] 
+                        px-8 py-4 text-sm font-medium text-gray-800 
+                        shadow-sm transition-all duration-300 
+                        hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto
+                      "
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Home
           </button>
         ) : (
           <button
             onClick={handleRestart}
-            className="mt-8 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+            className="
+            w-full bg-gray-200 border border-[#00c193] 
+            px-8 py-4 text-sm font-medium text-gray-800 
+            shadow-sm transition-all duration-300 
+            hover:border-[#00c193] hover:shadow-md 
+            sm:w-auto
+          "
+          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Start Over
           </button>
