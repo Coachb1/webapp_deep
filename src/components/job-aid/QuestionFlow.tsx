@@ -210,9 +210,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
             <button
               onClick={handleIgnore}
               disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}
-              className={`ml-4 bg-[#00c193] text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-700
-                  ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}
-                  `}
+              className={`ml-4 bg-gray-200 border border-[#00c193] px-3 py-1 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300  hover:border-[#00c193] hover:shadow-md rounded-md
+              ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed hover:bg-gray-200 hover:text-gray-800" : ""}`}
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               Ignore
             </button>

@@ -410,7 +410,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           )
         ) : (
           // ❌ Non Job Aid → Friendly message
-          <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center">
+          <div className="bg-gray-100 border border-[#00c193] rounded-xl p-6 mb-6 text-center">
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
               ✅ Completed!
             </h3>
