@@ -40,7 +40,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   // const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
   const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
   const [isReport, setIsReport] = useState<boolean>(true);
-
+  const [copied, setCopied] = useState<boolean>(false);
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>(
     {}
   );
@@ -111,6 +111,11 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       //   id: String(q.id),
       // }));
       // setQuestions(normalizedQuestions);
+      const handleCopy = () => {
+        navigator.clipboard.writeText(generatedPrompt);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
       setCurrentStep("questions");
       setCurrentQuestionIndex(0);
       setAnswers({});
@@ -291,6 +296,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     setName("");
   };
 
+
   // --- UI Rendering ---
   if (currentStep === "welcome") {
     return (
@@ -396,17 +402,30 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             </p>
 
             {/* Styled Box */}
-            <div className="w-full max-w-2xl bg-gray-100 border border-gray-300 rounded-xl p-6 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md">
+            <div className="w-full max-w-[90rem] bg-gray-100 border border-gray-300 rounded-xl p-6 pt-10 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md relative">
+              {/* Copy Button - Top Right */}
+              <button
+                onClick={handleCopy}
+                className="absolute top-4 right-4 bg-transparent hover:bg-gray-100 text-gray-800 p-0.5 rounded-lg transition-all"
+                title={copied ? 'Copied!' : 'Copy to clipboard'}
+              >
+                {copied ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </>
+                )}
+              </button>
+
               <AdvMarkdownHandler content={generatedPrompt} />
             </div>
-
-            {/* Copy Button */}
-            <button
-              onClick={handleCopy}
-              className="mt-6 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold rounded-lg transition-all"
-            >
-              📋 Copy Prompt
-            </button>
           </>
         ) : reportUrl ? (
           // 🟩 Standard Report Mode
