@@ -852,6 +852,7 @@ export const getCoursePackage = async (coursePackageId: string, userId?:string) 
       'package_description': '',
       'image_link': '',
       'jobaid_id': '',
+      'prompt_job_aid_uid': '',
       'books': []
     };
   }
@@ -868,6 +869,7 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
       'package_description': data.sub_title || data.description || '',
       'image_link': data.image_link,
       'jobaid_id': data.jobaid_uid,
+      'prompt_job_aid_uid': data.prompt_job_aid_uid,
       'report_config': data.page_config || {},
     };
 
@@ -902,6 +904,7 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
           package_detail: package_details,
           list_name: m.list_name || '',
           jobaid_id: data.jobaid_uid,
+          prompt_job_aid_uid: data.prompt_job_aid_uid,
           userProgress: m.progress
         }))
     );
@@ -919,6 +922,7 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
       package_description: '',
       image_link: '',
       jobaid_id: '',
+      prompt_job_aid_uid: '',
       report_config: {},
       books: []
     };

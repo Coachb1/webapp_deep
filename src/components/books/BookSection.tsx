@@ -18,7 +18,7 @@ interface BookSectionProps {
   currentSlide: number;
   onSlideChange: (index: number) => void;
   onSearch: (term: string) => void;
-  onMultipleSearch: (tag?: string, listName?: string, businessOutcome?: string, implementationComplexity?: string, unexpectedOutcomes?: string, emergingPlayers?: string, Function?:string, startUp?: string) => void;
+  onMultipleSearch: (tag?: string, listName?: string, businessOutcome?: string, implementationComplexity?: string, unexpectedOutcomes?: string, emergingPlayers?: string, Function?: string, startUp?: string) => void;
   onFilterChange: (filter: string) => void;
   onPlayBook: (book: Book, index: number) => void;
   onOpenDescription: (book: Book) => void;
@@ -27,7 +27,8 @@ interface BookSectionProps {
   name: string;
   email: string;
   all_books: Book[];
-  jobAidId: string| null;
+  jobAidId: string | null;
+  promptJobAidId?: string | null;
   packageDetails: any;
 }
 
@@ -46,6 +47,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   email,
   all_books,
   jobAidId,
+  promptJobAidId,
   packageDetails,
 }) => {
   console.log("BookSection rendered with books:", books);
@@ -63,7 +65,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   const [showLists, setShowLists] = useState<boolean>(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [showBadge, setShowBadge] = useState(false);
-  const [completedTransformations, setCompletedTransformations]  = useState(0);
+  const [completedTransformations, setCompletedTransformations] = useState(0);
   const [completedCases, setCompletedCases] = useState(0);
 
   const handleResetLibrary = () => {
@@ -80,7 +82,7 @@ const BookSection: React.FC<BookSectionProps> = ({
       list = likedBooks;
     } else if (viewMode === "later") {
       list = laterBooks;
-    } else if (viewMode === 'reset'){
+    } else if (viewMode === 'reset') {
       list = all_books
     }
     return list;
@@ -121,7 +123,7 @@ const BookSection: React.FC<BookSectionProps> = ({
 
   }, [userId]);
 
-useEffect(() => {
+  useEffect(() => {
     // Show badge if user has admin access
     if (userInfo?.libraryBotConfig?.show_certification_badge === true) {
       setShowBadge(true);
@@ -129,22 +131,34 @@ useEffect(() => {
       setShowBadge(false);
     }
 
-    async function getLibActions(userId:string){
+    async function getLibActions(userId: string) {
       const data = await ActionsPerMonth(userId);
-      if (data.jobaid_sessions_created){
+      if (data.jobaid_sessions_created) {
         setCompletedTransformations(data.jobaid_sessions_created);
       }
-      if (data.modules_completed){
+      if (data.modules_completed) {
         setCompletedCases(data.modules_completed);
       }
     }
-    if (user?.user_data?.uid){
+    if (user?.user_data?.uid) {
       getLibActions(user?.user_data?.uid)
     }
   }, [userInfo]);
-  
+
+
   return (
     <section className="other-reads" id="section">
+      {/* ⭐ Prompt Job Aid Section (Top) */}
+      {promptJobAidId && (
+        <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg">
+          <ConversationalForm
+            job_aid_id={promptJobAidId}
+            isEmailSection={false}
+            inputEmail={email || "undefined@gmail.com"}
+            inputName={name || "User"}
+          />
+        </div>
+      )}
       <div className="mt-12">
         <SearchFilter
           onSearch={onSearch}
@@ -195,45 +209,45 @@ useEffect(() => {
         </div>
       )}
       {/* Progress Section */}
-      { showBadge && (
-      <section className="bg-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Title Section */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Master the case library. Earn a verifiable credential: Certified Transformation leader</h2>
-            <p className="text-lg text-gray-600 max-w-[90%] xl:max-w-[80%] mx-auto">
-              Awarded to leaders who demonstrate consistent mastery of real-world case patterns while logging innovation ideas. Earn this verifiable badge by deeply analyzing 5+ cases and/or logging two transformation project ideas every month. 
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Case Progress Card */}
-            <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Case Progress this Month</h3>
-              <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className={i < Math.min(completedCases, 5) ? "text-yellow-400" : "text-gray-200"}>★</span>
-                ))}
-              </div>
-              <p className="mt-3 text-center text-gray-600">{Math.min(completedCases, 5)}/5 cases completed this month</p>
+      {showBadge && (
+        <section className="bg-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Title Section */}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">Master the case library. Earn a verifiable credential: Certified Transformation leader</h2>
+              <p className="text-lg text-gray-600 max-w-[90%] xl:max-w-[80%] mx-auto">
+                Awarded to leaders who demonstrate consistent mastery of real-world case patterns while logging innovation ideas. Earn this verifiable badge by deeply analyzing 5+ cases and/or logging two transformation project ideas every month.
+              </p>
             </div>
 
-            {/* Transformation Logs Card */}
-            <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Tranformation Logs this Month</h3>
-              <div className="flex items-center justify-center space-x-3 text-4xl my-2">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <span key={i} className={i < Math.min(completedTransformations, 3) ? "text-yellow-400" : "text-gray-200"}>★</span>
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Case Progress Card */}
+              <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
+                <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Case Progress this Month</h3>
+                <div className="flex items-center justify-center space-x-3 text-4xl my-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className={i < Math.min(completedCases, 5) ? "text-yellow-400" : "text-gray-200"}>★</span>
+                  ))}
+                </div>
+                <p className="mt-3 text-center text-gray-600">{Math.min(completedCases, 5)}/5 cases completed this month</p>
               </div>
-              <p className="mt-3 text-center text-gray-600">{Math.min(completedTransformations, 3)}/3 transformations logs this month</p>
+
+              {/* Transformation Logs Card */}
+              <div className="bg-white rounded-xl p-2 shadow-lg border border-gray-100">
+                <h3 className="text-xl font-semibold text-gray-800 mb-3 text-center">Based on your Tranformation Logs this Month</h3>
+                <div className="flex items-center justify-center space-x-3 text-4xl my-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <span key={i} className={i < Math.min(completedTransformations, 3) ? "text-yellow-400" : "text-gray-200"}>★</span>
+                  ))}
+                </div>
+                <p className="mt-3 text-center text-gray-600">{Math.min(completedTransformations, 3)}/3 transformations logs this month</p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
     </section>
-    
+
   );
 };
 
