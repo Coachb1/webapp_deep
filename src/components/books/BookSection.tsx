@@ -144,11 +144,7 @@ const BookSection: React.FC<BookSectionProps> = ({
       getLibActions(user?.user_data?.uid)
     }
   }, [userInfo]);
-console.log("BookSection → JOB IDS:", {
-  jobAidId,
-  promptJobAidId: packageDetails?.prompt_job_aid_uid,
-  fullPackage: packageDetails
-});
+
 
   return (
     <section className="other-reads" id="section">
