@@ -248,35 +248,56 @@ const SearchFilter = ({
       setViewMode("reset");
       setActiveButton(null);
     } else {
-      setSearchTerm("");
-      setSelectedFilters({});
-      setActiveFilterDropdown(null);
-      setEmergingPlayersChecked(false);
-      setStartUpChecked(false);
-      setShowSuggestions(false);
-      
       setActiveButton("like");
       setViewMode("liked");
 
-    }
-  }, [activeButton, onSearch, setViewMode]);
+    // 🔥 DEBUG: Log what filters we're sending
+    console.log("=== LIKE CLICKED ===");
+    console.log("Selected Filters:", selectedFilters);
+    console.log("Industry:", selectedFilters["Industry"]);
+    console.log("Emerging Players:", emergingPlayersChecked);
+    console.log("StartUp:", startUpChecked);
+    
+    onMultipleSearch(
+      selectedFilters["Industry"] || "",
+      "",
+      selectedFilters["Business Outcome"] || "",
+      selectedFilters["Implementation Complexity"] || "",
+      selectedFilters["Unexpected Outcomes"] || "",
+      emergingPlayersChecked ? "true" : "",
+      selectedFilters["Function"] || "",
+      startUpChecked ? "true" : ""
+    );
+  }
+}, [activeButton, setViewMode, selectedFilters, emergingPlayersChecked, startUpChecked, onMultipleSearch]);
 
   const handleLaterClick = useCallback(() => {
     if (activeButton === "later") {
       setActiveButton(null);
       setViewMode("reset");
     } else {
-      setSearchTerm("");
-      setSelectedFilters({});
-      setActiveFilterDropdown(null);
-      setEmergingPlayersChecked(false);
-      setStartUpChecked(false);
-      setShowSuggestions(false);
-
       setActiveButton("later");
       setViewMode("later");
-    }
-  }, [activeButton, onSearch, setViewMode]);
+
+    // 🔥 DEBUG: Log what filters we're sending
+    console.log("=== LATER CLICKED ===");
+    console.log("Selected Filters:", selectedFilters);
+    console.log("Industry:", selectedFilters["Industry"]);
+    console.log("Emerging Players:", emergingPlayersChecked);
+    console.log("StartUp:", startUpChecked);
+    
+    onMultipleSearch(
+      selectedFilters["Industry"] || "",
+      "",
+      selectedFilters["Business Outcome"] || "",
+      selectedFilters["Implementation Complexity"] || "",
+      selectedFilters["Unexpected Outcomes"] || "",
+      emergingPlayersChecked ? "true" : "",
+      selectedFilters["Function"] || "",
+      startUpChecked ? "true" : ""
+    );
+  }
+}, [activeButton, setViewMode, selectedFilters, emergingPlayersChecked, startUpChecked, onMultipleSearch]);
 
   // Optimized Reset handling
   const handleResetLibraryOptimized = useCallback(() => {
@@ -294,14 +315,18 @@ const SearchFilter = ({
     setStartUpChecked(false);
     setShowSuggestions(false);
     
+    // ✅ Reset viewMode to "all"
+    setViewMode("all");
+    
     // Use setTimeout to ensure state updates are batched
     setTimeout(() => {
       onSearch("");
       onFilterChange("");
       onMultipleSearch("", "", "", "", "", "", "", "");
+      handleResetLibrary(); 
       setIsResetting(false);
     }, 0);
-  }, [onSearch, onFilterChange, onMultipleSearch, setViewMode]);
+  }, [onSearch, onFilterChange, onMultipleSearch, setViewMode, handleResetLibrary]);
 
  
   // Dropdown close on outside click

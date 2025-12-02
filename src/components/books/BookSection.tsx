@@ -63,13 +63,12 @@ const BookSection: React.FC<BookSectionProps> = ({
   const [showLists, setShowLists] = useState<boolean>(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [showBadge, setShowBadge] = useState(false);
-  const [completedTransformations, setCompletedTransformations]  = useState(0);
+  const [completedTransformations, setCompletedTransformations] = useState(0);
   const [completedCases, setCompletedCases] = useState(0);
 
   const handleResetLibrary = () => {
-    const randomId = Math.random().toString(36).substring(2, 10);
-    console.log(randomId);
-    setViewMode(`reset-${randomId}`);
+    console.log("Reset Library called");
+    setViewMode("all");
     setFilteredBooks(all_books);
   };
 
@@ -77,11 +76,11 @@ const BookSection: React.FC<BookSectionProps> = ({
     let list = books;
 
     if (viewMode === "liked") {
-      list = likedBooks;
+      list = books.filter(book => likedBooks.some(liked => liked.id === book.id));
     } else if (viewMode === "later") {
-      list = laterBooks;
-    } else if (viewMode === 'reset'){
-      list = all_books
+      list = books.filter(book => laterBooks.some(later => later.id === book.id));
+    } else if (viewMode === "all" || viewMode.startsWith('reset')) {
+      list = books;
     }
     return list;
   }, [books, viewMode, likedBooks, laterBooks]);
