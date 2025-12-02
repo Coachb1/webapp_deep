@@ -346,7 +346,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold text-lg transition-all
+            className={`bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
+              hover:border-[#00c193] hover:shadow-md sm:w-auto
                 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             Submit
@@ -401,8 +402,10 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
                   href={reportUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold transition-all"
-                >
+                  className="inline-block bg-gray-200 text-gray-200 px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto"
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}    
+                >  
                   View Report
                 </a>
               </div>
@@ -423,8 +426,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         {redirectURL != null ? (
           <button
             onClick={() => (window.location.href = redirectURL)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
-          >
+            className="
+                        w-full bg-gray-200 border border-[#00c193] 
+                        px-8 py-4 text-sm font-medium text-gray-800 
+                        shadow-sm transition-all duration-300 
+                        hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto
+                      "
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}          >
             Home
           </button>
         ) : (
