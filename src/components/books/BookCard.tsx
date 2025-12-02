@@ -170,7 +170,7 @@ const BookCard: React.FC<BookCardProps> = ({
       </div>
 
       {/* Buttons */}
-<div className="flex items-center gap-[2rem] sm:gap-[3rem] md:gap-[5rem]">
+<div className="flex items-center justify-between gap-3 w-full mt-2">
         {/* ▶ Play Button */}
         <button
           className="rounded-full border border-green-500 text-green-500 
@@ -184,7 +184,7 @@ const BookCard: React.FC<BookCardProps> = ({
 
         {/* More Button */}
         <button
-          className="px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold hover:bg-gray-300 transition"
+          className="px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold whitespace-nowrap hover:bg-gray-300 transition"
           style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           onClick={onMore}
         >

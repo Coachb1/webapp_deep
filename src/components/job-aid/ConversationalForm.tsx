@@ -22,6 +22,7 @@ interface ConversationalFormProps {
   inputName?: string;
   inputEmail?: string;
   redirectURL?: string;
+  onSubmitLoading?: (state: boolean) => void;
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
@@ -460,35 +461,36 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         )}
 
         {/* Restart or redirect button */}
-        {redirectURL ? (
-          <button
-            onClick={() => (window.location.href = redirectURL)}
-            className="
-                        w-full bg-gray-200 border border-[#00c193] 
-                        px-8 py-4 text-sm font-medium text-gray-800 
-                        shadow-sm transition-all duration-300 
-                        hover:border-[#00c193] hover:shadow-md 
-                        sm:w-auto
-                      "
+        <div className="mt-10"></div>
+          {redirectURL ? (
+            <button
+              onClick={() => (window.location.href = redirectURL)}
+              className="
+                          w-full bg-gray-200 border border-[#00c193] 
+                          px-8 py-4 text-sm font-medium text-gray-800 
+                          shadow-sm transition-all duration-300 
+                          hover:border-[#00c193] hover:shadow-md 
+                          sm:w-auto
+                        "
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+            >
+              Home
+            </button>
+          ) : (
+            <button
+              onClick={handleRestart}
+              className="
+              w-full bg-gray-200 border border-[#00c193] 
+              px-8 py-4 text-sm font-medium text-gray-800 
+              shadow-sm transition-all duration-300 
+              hover:border-[#00c193] hover:shadow-md 
+              sm:w-auto
+            "
             style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-          >
-            Home
-          </button>
-        ) : (
-          <button
-            onClick={handleRestart}
-            className="
-            w-full bg-gray-200 border border-[#00c193] 
-            px-8 py-4 text-sm font-medium text-gray-800 
-            shadow-sm transition-all duration-300 
-            hover:border-[#00c193] hover:shadow-md 
-            sm:w-auto
-          "
-          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-          >
-            Start Over
-          </button>
-        )}
+            >
+              Start Over
+            </button>
+          )}
       </div>
     );
   }
