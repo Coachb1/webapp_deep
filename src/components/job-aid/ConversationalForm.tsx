@@ -422,7 +422,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
                   href={reportUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-gray-200 text-gray-200 px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
+                  className="inline-block bg-gray-200 text-gray-800 font-semibold px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
                         sm:w-auto"
                   style={{ borderRadius: 'calc(var(--radius) - 6px)' }}    
                 >  
