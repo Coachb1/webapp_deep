@@ -12,6 +12,7 @@ import {
   fetchJobAid,
   JobAid,
 } from "@/lib/job-aid-apis";
+import AdvMarkdownHandler from "../MarkdownAdvance";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
@@ -47,6 +48,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [reportUrl, setReportUrl] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [generatedPrompt, setGeneratedPrompt] = useState<string>("");
 
   // Import JobAid type from the correct location
   const [jobAid, setJobAid] = useState<JobAid | null>(null);
@@ -118,6 +120,10 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generatedPrompt);
+    alert("Copied to clipboard!");
   };
 
   const handleContinue = async (answer: string) => {
@@ -232,15 +238,15 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   };
 
   const handleGoBack = () => {
-  if (currentQuestionIndex === 0) {
-    // ⭐ Go to main/welcome page
-    setCurrentStep("welcome");
-    return;
-  }
+    if (currentQuestionIndex === 0) {
+      // ⭐ Go to main/welcome page
+      setCurrentStep("welcome");
+      return;
+    }
 
-  // ⭐ Normal back action
-  setCurrentQuestionIndex(prev => prev - 1);
-};
+    // ⭐ Normal back action
+    setCurrentQuestionIndex(prev => prev - 1);
+  };
 
 
   const handleValidation = async (
@@ -261,7 +267,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       );
       console.log("Report generated:", reportResult);
       setReportUrl(reportResult.report_url);
-
+      setGeneratedPrompt(reportResult.generated_prompt);
       setCurrentStep("completed");
     } catch (err: any) {
       console.error("Error generating report:", err);
@@ -380,25 +386,39 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   if (currentStep === "completed") {
     return (
       <div className="pt-24 flex flex-col items-center">
-        {reportUrl ? (
-          // ✅ Job Aid → Show report
-          reportUrl && (
-            <>
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                🎉 Congratulations!
-              </h2>
-              <p className="text-gray-600 text-lg mb-6">
-                You have completed all the questions in your Management Action
-                Planner.
-              </p>
-              <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  📊 Your Report is Ready!
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Click below to view your generated report:
-                </p>
-                <a
+
+        {generatedPrompt ? (
+          // 🟢 Prompt Generation Mode Output Box
+          <>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">✨ Your Prompt is Ready!</h2>
+            <p className="text-gray-600 text-lg mb-4 text-center">
+              Copy and use it wherever you like.
+            </p>
+
+            {/* Styled Box */}
+            <div className="w-full max-w-2xl bg-gray-100 border border-gray-300 rounded-xl p-6 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md">
+              <AdvMarkdownHandler content={generatedPrompt} />
+            </div>
+
+            {/* Copy Button */}
+            <button
+              onClick={handleCopy}
+              className="mt-6 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold rounded-lg transition-all"
+            >
+              📋 Copy Prompt
+            </button>
+          </>
+        ) : reportUrl ? (
+          // 🟩 Standard Report Mode
+          <>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">🎉 Congratulations!</h2>
+            <p className="text-gray-600 text-lg mb-6">
+              Your customized Action Planner is ready.
+            </p>
+
+            <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center w-full max-w-xl">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">📊 View Your Report</h3>
+              <a
                   href={reportUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -406,24 +426,22 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
                         sm:w-auto"
                   style={{ borderRadius: 'calc(var(--radius) - 6px)' }}    
                 >  
-                  View Report
-                </a>
-              </div>
-            </>
-          )
+                Open Report
+              </a>
+            </div>
+          </>
         ) : (
-          // ❌ Non Job Aid → Friendly message
+          // 🔹 No report or prompt → Simple completion message
           <div className="bg-gray-100 border border-[#00c193] rounded-xl p-6 mb-6 text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              ✅ Completed!
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
             <p className="text-gray-600">
-              We have captured your intake data and will be processed shortly. Thanks!
+              Your responses were submitted successfully.
             </p>
           </div>
         )}
 
-        {redirectURL != null ? (
+        {/* Restart or redirect button */}
+        {redirectURL ? (
           <button
             onClick={() => (window.location.href = redirectURL)}
             className="
@@ -433,13 +451,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
                         hover:border-[#00c193] hover:shadow-md 
                         sm:w-auto
                       "
-            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}          >
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          >
             Home
           </button>
         ) : (
-        <button
-          onClick={handleRestart}
-          className="
+          <button
+            onClick={handleRestart}
+            className="
             w-full bg-gray-200 border border-[#00c193] 
             px-8 py-4 text-sm font-medium text-gray-800 
             shadow-sm transition-all duration-300 
@@ -447,9 +466,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             sm:w-auto
           "
           style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-        >
-          Start Over
-        </button>
+          >
+            Start Over
+          </button>
         )}
       </div>
     );

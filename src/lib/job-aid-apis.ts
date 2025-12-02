@@ -32,6 +32,7 @@ export interface ValidateResponse {
 }
 
 export interface ReportResponse {
+  generated_prompt: string;
   report_url: string;
   session_id?: string;
 }
