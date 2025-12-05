@@ -17,7 +17,11 @@ export default function GlobalError({
     if (!error) return;
 
     // Always capture the error to Sentry first
-    Sentry.captureException(error);
+    try {
+      Sentry.captureException(error);
+    } catch (sentryError) {
+      console.error("Failed to capture exception with Sentry:", sentryError);
+    }
 
     // Detect Next.js Server Action mismatch or runtime 'workers' lookup errors
     const message = (error as Error)?.message || "";
