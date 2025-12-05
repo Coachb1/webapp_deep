@@ -56,7 +56,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { headers } from "next/headers";
 
 // Guard against pdfjs not being fully initialized; can happen in edge cases
 // or when the module is imported during server-side code execution.
