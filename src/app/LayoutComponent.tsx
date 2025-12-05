@@ -57,18 +57,26 @@ const LayoutComponent = ({
       const ENVIRONMENT = process.env.NEXT_PUBLIC_ENV;
 
       if (ENVIRONMENT != "local") {
-        Sentry.init({
-          dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
-          tracesSampleRate: 1.0, // Adjust this value in production
-        });
+        try {
+          Sentry.init({
+            dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
+            tracesSampleRate: 1.0, // Adjust this value in production
+          });
+        } catch (sentryInitError) {
+          console.error('Failed to initialize Sentry:', sentryInitError);
+        }
       }
 
       //sentry
-      Sentry.setUser({
-        id: userId, // Replace with your user's ID
-        username: `${user.given_name} ${user.family_name}`, // Replace with your user's name
-        email: user.email || "", // Replace with your user's email
-      });
+      try {
+        Sentry.setUser({
+          id: userId, // Replace with your user's ID
+          username: `${user.given_name} ${user.family_name}`, // Replace with your user's name
+          email: user.email || "", // Replace with your user's email
+        });
+      } catch (sentryUserError) {
+        console.error('Failed to set Sentry user:', sentryUserError);
+      }
     }
     if (subdomain !== "localhost") {
       if (!logSessionStarted) {
