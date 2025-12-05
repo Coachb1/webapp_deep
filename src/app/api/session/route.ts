@@ -42,11 +42,24 @@ export async function GET(req: NextRequest) {
     if (!token) {
       return NextResponse.json({ error: "Missing token" }, { status: 401 });
     }
-    const decoded = jwt.decode(token, SECRET);
+    // jwt.decode can throw (for example when the token is malformed or expired).
+    // Catch decode-specific errors so we can return a clear 401 response instead
+    // of letting an exception bubble up.
+    let decoded: any;
+    try {
+      decoded = jwt.decode(token, SECRET);
+    } catch (e: any) {
+      console.error("Error decoding JWT:", e);
+      const msg = e && e.message ? String(e.message) : "Invalid token";
+      if (msg.toLowerCase().includes("exp") || msg.toLowerCase().includes("expired")) {
+        return NextResponse.json({ error: "Token expired" }, { status: 401 });
+      }
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
 
     console.log("Decoded JWT:", decoded);
 
-    if (decoded.exp && decoded.exp < Date.now() / 1000) {
+    if (decoded?.exp && decoded.exp < Date.now() / 1000) {
       return NextResponse.json({ error: "Token expired" }, { status: 401 });
     }
 

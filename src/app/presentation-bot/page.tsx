@@ -23,27 +23,34 @@ export default function Page() {
   async function handleGenerateStart(data: any, apikey:string) {
     setSlides([]);
     setTaskId(data.id);
-    pollGenerationTask(data.id);
+    setApiKey(apikey); // Set API key first before polling
     setLoading(true);
-    setApiKey(apikey);
+    // Use the passed apikey directly, not the state (which hasn't updated yet)
+    pollGenerationTask(data.id, apikey);
   }
 
   // -------------------------------------------
   // Poll generation
   // -------------------------------------------
-  async function pollGenerationTask(id: string) {
-    const task = await presentonGetJobStatus(id,apiKey);
+  async function pollGenerationTask(id: string, currentApiKey?: string) {
+    const keyToUse = currentApiKey || apiKey;
+    if (!keyToUse) {
+      console.error("No API key available for polling");
+      setLoading(false);
+      return;
+    }
+    const task = await presentonGetJobStatus(id, keyToUse);
     setTaskStatus(task);
 
     if (task.status !== "completed") {
-      setTimeout(() => pollGenerationTask(id), 2000);
+      setTimeout(() => pollGenerationTask(id, keyToUse), 2000);
       return;
     }
 
     // Task finished → fetch full presentation
     if (task.data?.presentation_id) {
       setPresentationId(task.data.presentation_id);
-      loadPresentation(task.data.presentation_id);
+      loadPresentation(task.data.presentation_id, keyToUse);
       setLoading(false);
     }
   }
@@ -51,8 +58,13 @@ export default function Page() {
   // -------------------------------------------
   // Load Presentation Data
   // -------------------------------------------
-  async function loadPresentation(id: string) {
-    const pres = await presentonGetPresentation(id, apiKey);
+  async function loadPresentation(id: string, currentApiKey?: string) {
+    const keyToUse = currentApiKey || apiKey;
+    if (!keyToUse) {
+      console.error("No API key available for loading presentation");
+      return;
+    }
+    const pres = await presentonGetPresentation(id, keyToUse);
     console.log("Presentation fetch", pres);
     setSlides(pres.slides);
   }
@@ -62,6 +74,11 @@ export default function Page() {
   // -------------------------------------------
   async function savePresentation() {
     if (!presentationId) return;
+    if (!apiKey) {
+      console.error("No API key available for saving");
+      alert("API key missing. Please regenerate.");
+      return;
+    }
 
     setSaving(true);
 

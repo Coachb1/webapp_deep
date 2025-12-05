@@ -45,10 +45,28 @@ export async function presentonGenerateAsync(body: any, apiKey:string) {
     console.log("STEP 5: res object:", res);
     console.log("STEP 6: status:", res.status);
 
-    const data = await res.json();
-    console.log("STEP 7: json:", data);
-
-    return data;
+    // Parse JSON defensively. Some upstream services may send malformed
+    // or chunked/multipart responses that can cause the underlying
+    // fetch implementation (undici) to throw while parsing. Wrap json()
+    // in try/catch and fall back to text for better logging/debugging.
+    let data: any;
+    try {
+      data = await res.json();
+      console.log("STEP 7: json:", data);
+      return data;
+    } catch (parseErr) {
+      try {
+        const text = await res.text();
+        console.error("Presenton response JSON parse error:", parseErr);
+        console.error("Presenton raw response text:", text);
+        // Return a structured error so callers can handle it gracefully.
+        return { error: true, message: "Invalid JSON response from Presenton", status: res.status, raw: text };
+      } catch (textErr) {
+        console.error("Failed to read Presenton response as text:", textErr);
+        console.error("Original parse error:", parseErr);
+        return { error: true, message: "Failed to read response from Presenton", status: res.status };
+      }
+    }
   } catch (error) {
     console.log("STEP 8: FATAL ERROR:", error);
   }
