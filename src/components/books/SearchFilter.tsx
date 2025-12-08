@@ -549,7 +549,7 @@ const SearchFilter = ({
         >
           {isResetting ? 'Resetting...' : 'Reset'}
         </Button>
-
+        
         {/* Search */}
         <div className="flex items-center gap-2 bg-white rounded-full px-3 py-2 shadow border border-gray-200 w-full sm:max-w-md">
           <div className="relative flex-grow" ref={suggestionsRef}>
@@ -569,7 +569,7 @@ const SearchFilter = ({
               }}
               onKeyDown={handleKeyPress}
               onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
-              className="w-full border-none focus:ring-0 text-base sm:text-sm"
+              className="w-full  focus:ring-0 text-base sm:text-sm border border-[#00c193]"
               aria-autocomplete="list"
               aria-haspopup="true"
               aria-expanded={showSuggestions}

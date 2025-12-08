@@ -159,6 +159,16 @@ const BookSection: React.FC<BookSectionProps> = ({
           />
         </div>
       )}
+      <div className="text-center mt-10 mb-8 px-6">
+        <h1 className="text-2xl md:text-2xl font-bold text-gray-900 leading-snug max-w-6xl mx-auto">
+          Transformation Case Library powered by CoachBoT Innovation — now evolved into AIAdopts, built for scale, metadata discovery, and enterprise-wide AI readiness.
+        </h1>
+
+        {/* Divider */}
+          <div className="mx-auto mt-6 h-[1.5px] bg-gray-300 max-w-4xl opacity-70"></div>
+      </div>
+
+
       <div className="mt-12">
         <SearchFilter
           onSearch={onSearch}
