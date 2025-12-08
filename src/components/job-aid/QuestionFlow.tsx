@@ -32,8 +32,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 }) => {
   const [answer, setAnswer] = useState<string>(currentAnswer || "");
   const [showError, setShowError] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const getValidateContinueText = ()=>{
+  const getValidateContinueText = () => {
     let lable = isValidataion && question.question_type !== 'dropdown' ? "Validate & " : ""
 
     if (questionNumber == totalQuestions) {
@@ -218,20 +219,51 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         )}
 
         {suggestions && !error && (
-          <div className="bg-yellow-200 text-yellow-700 p-3 rounded-md text-lg border-l-4 border-yellow-600 flex items-center justify-between">
-            <span className="flex-1 text-center">{suggestions}</span>
+          <div className="relative bg-yellow-200 text-yellow-700 p-4 rounded-lg text-lg border-l-4 border-yellow-600">
+
+            {/* Copy button inside top-right */}
             <button
-              onClick={handleIgnore}
-              disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}
-              className={`
-                ml-4 bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300  hover:border-[#00c193] hover:shadow-md rounded-md
-              ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed hover:bg-gray-200 hover:text-gray-800" : ""}`}
-              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+              onClick={() => {
+                navigator.clipboard.writeText(suggestions);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1200);
+              }}
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 transition"
+              title="Copy to clipboard"
             >
-              {questionNumber == totalQuestions ? "Submit" : "Continue"}
+              {copied ? (
+                // ✓ Copied icon
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                // 📄 Copy icon
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              )}
             </button>
+
+
+            {/* Suggestion Text */}
+            <div className="pr-16 whitespace-pre-wrap">
+              {suggestions}
+            </div>
+
+            {/* Continue button */}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleIgnore}
+                disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}
+                className={`bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md rounded-md
+          ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {questionNumber === totalQuestions ? "Submit" : "Continue"}
+              </button>
+            </div>
           </div>
         )}
+
 
 
         {error && (
