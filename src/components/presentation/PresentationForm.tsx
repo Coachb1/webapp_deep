@@ -2,7 +2,7 @@
 
 import { presentonGenerateAsync } from "@/lib/presentation-api";
 import { CheckIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 export const PREDEFINED_THEMES = [
   {
@@ -104,22 +104,27 @@ export default function PresentonForm({
 
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const errorRef = useRef<HTMLDivElement | null>(null);
 
   const update = (k: string, v: any) => setForm((s) => ({ ...s, [k]: v }));
 
   async function submit() {
+    setErrorMsg(null);
     if (!apiKey) {
-      alert("Please enter your Presenton API key");
+      showError("Please enter your Presenton API key.");
       return;
     }
-
-    if (!form.content?.trim()) {
-      alert("Content is required");
+    if (!form.content.trim()) {
+      showError("Content is required.");
       return;
-  }
+    }
     
 
     setLoading(true);
+
+    try {
 
     const payload = {
       ...form,
@@ -128,8 +133,34 @@ export default function PresentonForm({
 
     const data = await presentonGenerateAsync(payload, apiKey);
 
+    if (data?.detail) {
+        throw new Error(data.detail);
+      }
+    if (data?.error) {
+      throw new Error(data.error);
+    }
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw new Error(data.errors.join(", "));
+    }
+
     setLoading(false);
     onDone(data,apiKey);
+  } catch (err: any) {
+      setLoading(false);
+      showError(err.message || "Something went wrong while generating.");
+    }
+  }
+
+  function showError(message: string) {
+    setErrorMsg(message);
+
+    // Scroll after DOM update
+    setTimeout(() => {
+      errorRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 50);
   }
 
   return (
@@ -137,6 +168,15 @@ export default function PresentonForm({
       <h2 className="text-2xl font-semibold tracking-tight">
         Create Presentation
       </h2>
+
+      {errorMsg && (
+        <div
+          ref={errorRef}
+          className="p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 text-sm"
+        >
+          {errorMsg}
+        </div>
+      )}
 
       {/* Content */}
       <div className="relative">
