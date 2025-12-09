@@ -543,13 +543,13 @@ const SearchFilter = ({
       <div className="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
         {/* Reset */}
         <Button
-          className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md bg-[#00c193] text-white hover:bg-green-600 transition ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`px-6 py-2 sm:py-3 text-sm sm:text-base font-medium bg-gray-200 border border-[#00c193] text-black shadow-sm transition-all duration-300 hover:bg-gray-300 ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           onClick={handleResetLibraryOptimized}
           disabled={isResetting}
         >
           {isResetting ? 'Resetting...' : 'Reset'}
         </Button>
-
+        
         {/* Search */}
         <div className="flex items-center gap-2 bg-white rounded-full px-3 py-2 shadow border border-gray-200 w-full sm:max-w-md">
           <div className="relative flex-grow" ref={suggestionsRef}>
@@ -569,7 +569,7 @@ const SearchFilter = ({
               }}
               onKeyDown={handleKeyPress}
               onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
-              className="w-full border-none focus:ring-0 text-base sm:text-sm"
+              className="w-full  focus:ring-0 text-base sm:text-sm border border-[#00c193]"
               aria-autocomplete="list"
               aria-haspopup="true"
               aria-expanded={showSuggestions}
@@ -604,7 +604,7 @@ const SearchFilter = ({
           </div>
           <Button
             onClick={handleSearch}
-            className="flex items-center justify-center bg-[#00c193] hover:bg-green-600 rounded-full w-10 h-10 transition"
+            className="flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 transition border border-[#00c193]"
             aria-label="Search"
           >
             <svg
@@ -612,7 +612,7 @@ const SearchFilter = ({
               height="20"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#ffffff"
+              stroke="#00c193"   // changed to green
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -621,38 +621,34 @@ const SearchFilter = ({
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </Button>
+
         </div>
 
         {/* Like + Later */}
         <div className="flex gap-2 items-center">
           <Button
             onClick={handleLikeClick}
-            className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${activeButton === "like"
-              ? "bg-green-600 text-white"
-              : "bg-[#00c193] text-white hover:bg-green-600"
-              }`}
+            className={`px-6 py-2 sm:py-3 text-sm sm:text-base font-medium shadow-sm transition-all duration-300 ${activeButton === "like" ? "bg-[#00c193] text-white border border-[#00c193]" : "bg-gray-200 text-black border border-[#00c193] hover:bg-gray-300"}`}style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Like
           </Button>
 
           <Button
             onClick={handleLaterClick}
-            className={`px-6 py-2 sm:py-3 text-sm sm:text-base rounded-2xl shadow-md transition ${activeButton === "later"
-              ? "bg-green-600 text-white"
-              : "bg-[#00c193] text-white hover:bg-green-600"
-              }`}
+            className={`px-6 py-2 sm:py-3 text-sm sm:text-base font-medium shadow-sm transition-all duration-300 ${activeButton === "later"? "bg-[#00c193] text-white border border-[#00c193]": "bg-gray-200 text-black border border-[#00c193] hover:bg-gray-300"}`}style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Let's Discuss
           </Button>
         </div>
       </div>
 
-      {/* Filter Categories - Below Search Bar */}
+     {/* Filter Categories - Below Search Bar */}
       <div ref={dropdownRef} className="relative w-full">
         {/* ===== TOP BAR WITH INDUSTRY ONLY ===== */}
         {filterCategories
             .filter((c) => c.filterName === "Industry" && c.filterOptions.length > 0).length > 0 &&
-        <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-4 justify-center mb-4">
+        <div className="w-full bg-gray-100 px-4 py-3 flex items-center gap-4 justify-center mb-4"
+        style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
           {filterCategories
             .filter((c) => c.filterName === "Industry")
             .map((category) => (
@@ -667,12 +663,13 @@ const SearchFilter = ({
                     )
                   }
                   disabled = {category.filterOptions.length === 0}
-                  className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
+                  className={`flex items-center gap-2 border px-4 py-2 text-sm transition
                 ${selectedFilters[category.filterName]
                       ? "bg-[#00c193] text-white border-[#00c193]"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+                      : "bg-white text-gray-700 border-[#00c193] hover:border-[#00c193]"
                     }
                   `}
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                 >
                   {selectedFilters["Industry"] || category.filterName}
 
@@ -695,7 +692,8 @@ const SearchFilter = ({
 
 
                 {activeFilterDropdown === category.filterName && (
-                  <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                  <ul className="absolute top-full mt-2 bg-white shadow-lg border border-[#00c193] py-2 z-20 w-56 max-h-64 overflow-y-auto"
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                     {category.filterOptions.map((option) => (
                       <li
                         key={option}
@@ -720,7 +718,8 @@ const SearchFilter = ({
 
         {/* ===== SECOND ROW WITH ALL OTHER FILTERS ===== */}
         {showSecondFilter &&
-          <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex flex-wrap items-center gap-3 justify-center">
+          <div className="w-full bg-gray-100 px-4 py-3 flex flex-wrap items-center gap-3 justify-center"
+          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
 
             {filterCategories
               .filter((c) => c.filterName !== "Industry")
@@ -736,12 +735,13 @@ const SearchFilter = ({
                       )
                     }
                     disabled = {category.filterOptions.length === 0}
-                    className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm transition
+                    className={`flex items-center gap-2 border px-4 py-2 text-sm transition
                   ${selectedFilters[category.filterName]
                         ? "bg-[#00c193] text-white border-[#00c193]"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-[#00c193]"
+                        : "bg-white text-gray-700 border-[#00c193] hover:border-[#00c193]"
                       }
                     `}
+                    style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                   >
                     {selectedFilters[category.filterName] || category.filterName}
 
@@ -762,7 +762,8 @@ const SearchFilter = ({
 
 
                   {activeFilterDropdown === category.filterName && (
-                    <ul className="absolute top-full mt-2 bg-white shadow-lg rounded-lg border border-gray-200 py-2 z-20 w-56 max-h-64 overflow-y-auto">
+                    <ul className="absolute top-full mt-2 bg-white shadow-lg border border-[#00c193] py-2 z-20 w-56 max-h-64 overflow-y-auto"
+                    style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
                       {category.filterOptions.map((option) => (
                         <li
                           key={option}

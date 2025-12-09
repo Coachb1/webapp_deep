@@ -20,6 +20,7 @@ export interface JobAid {
   job_aid_type?: string; // Type of job aid, e.g. "form" or "job_aid"
   is_validation: boolean;
   is_report: boolean;
+  is_prompt_generation: boolean;
 }
 
 
@@ -32,6 +33,7 @@ export interface ValidateResponse {
 }
 
 export interface ReportResponse {
+  generated_prompt: string;
   report_url: string;
   session_id?: string;
 }

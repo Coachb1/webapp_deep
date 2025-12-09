@@ -66,6 +66,7 @@ export default function BookPageClient({ id }: BookPageClientProps) {
           package_description: data.package_description,
           image_link: data.image_link,
           jobaid_id: data.jobaid_id,
+          prompt_job_aid_uid: data.prompt_job_aid_uid ?? null,
           report_config: data.report_config || {},
         });
         localStorage.setItem('jobaid', data.jobaid_id);
@@ -252,6 +253,7 @@ const handleMultipleSearch = (
             email={user?.user_data?.email}
             all_books={allBooks}
             jobAidId={jobAidId}
+            promptJobAidId={packageDetails?.prompt_job_aid_uid}
             packageDetails={packageDetails}
           />
         )}

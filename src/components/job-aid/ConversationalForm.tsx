@@ -12,6 +12,8 @@ import {
   fetchJobAid,
   JobAid,
 } from "@/lib/job-aid-apis";
+import AdvMarkdownHandler from "../MarkdownAdvance";
+import CopyBox from "../CopyBox";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
@@ -39,7 +41,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   // const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
   const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
   const [isReport, setIsReport] = useState<boolean>(true);
+  const [isPromptGenerator, setIsPromptGenerator] = useState<boolean>(false);
 
+  const [copied, setCopied] = useState<boolean>(false);
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>(
     {}
   );
@@ -47,6 +51,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [reportUrl, setReportUrl] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [generatedPrompt, setGeneratedPrompt] = useState<string>("");
+  const [showLoader, setShowLoader] = useState(true);
 
   // Import JobAid type from the correct location
   const [jobAid, setJobAid] = useState<JobAid | null>(null);
@@ -68,6 +74,11 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         console.log("validatioan", data?.is_validation);
         setIsValidation(data?.is_validation);
         setIsReport(data?.is_report);
+        setIsPromptGenerator(
+          data.is_prompt_generation !== undefined
+            ? data.is_prompt_generation
+            : data?.job_aid_type === "prompt_generator"
+        );
       } catch (err: any) {
         setError(err.message ?? "Failed to fetch job aid.");
       } finally {
@@ -139,8 +150,15 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         if (isEmailSection) {
           setCurrentStep("email");
         } else {
-          await handleValidation(updatedAnswers, email, name);
-          setCurrentStep("completed");
+          if (showLoader) {
+            setLoading(true);
+            setCurrentStep("loading");
+            await handleValidation(updatedAnswers, email, name);
+            setLoading(false);
+          } else {
+            await handleValidation(updatedAnswers, email, name);
+            setCurrentStep("completed");
+          }
         }
       }
       return;
@@ -225,22 +243,29 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       if (isEmailSection) {
         setCurrentStep("email");
       } else {
-        await handleValidation(answers, email, name);
-        setCurrentStep("completed");
+        if (showLoader) {
+          setLoading(true);
+          setCurrentStep("loading");
+          await handleValidation(answers, email, name);
+          setLoading(false);
+        } else {
+          await handleValidation(answers, email, name);
+          setCurrentStep("completed");
+        }
       }
     }
   };
 
   const handleGoBack = () => {
-  if (currentQuestionIndex === 0) {
-    // ⭐ Go to main/welcome page
-    setCurrentStep("welcome");
-    return;
-  }
+    if (currentQuestionIndex === 0) {
+      // ⭐ Go to main/welcome page
+      setCurrentStep("welcome");
+      return;
+    }
 
-  // ⭐ Normal back action
-  setCurrentQuestionIndex(prev => prev - 1);
-};
+    // ⭐ Normal back action
+    setCurrentQuestionIndex(prev => prev - 1);
+  };
 
 
   const handleValidation = async (
@@ -261,7 +286,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       );
       console.log("Report generated:", reportResult);
       setReportUrl(reportResult.report_url);
-
+      setGeneratedPrompt(reportResult.generated_prompt);
       setCurrentStep("completed");
     } catch (err: any) {
       console.error("Error generating report:", err);
@@ -284,6 +309,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     setEmail("");
     setName("");
   };
+
 
   // --- UI Rendering ---
   if (currentStep === "welcome") {
@@ -311,6 +337,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           error={questionErrors[questions[currentQuestionIndex]?.id]}
           currentAnswer={answers[questions[currentQuestionIndex]?.question]}
           suggestions={suggestions[questions[currentQuestionIndex]?.id]}
+          isValidataion={isValidation}
         />
       </div>
     );
@@ -346,7 +373,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className={`bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold text-lg transition-all
+            className={`bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
+              hover:border-[#00c193] hover:shadow-md sm:w-auto
                 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             Submit
@@ -362,7 +390,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           {isReport
             ? "⏳ Generating Your Report..."
-            : "⏳ Submitting..."}
+            : isPromptGenerator ?
+              "⏳ Generating Prompt..."
+              : "⏳ Submitting..."}
         </h2>
         <div className="flex justify-center">
           <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
@@ -370,7 +400,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         <p className="text-gray-600 mt-4 text-lg text-center">
           {isReport
             ? "Please wait while we prepare your personalized Management Action Planner."
-            : "Please wait while we submit your form"}
+            : isPromptGenerator
+              ? "Please wait while we are generating your Prompt."
+              : "Please wait while we submit your form"}
         </p>
       </div>
     );
@@ -379,58 +411,86 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   if (currentStep === "completed") {
     return (
       <div className="pt-24 flex flex-col items-center">
-        {reportUrl ? (
-          // ✅ Job Aid → Show report
-          reportUrl && (
-            <>
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                🎉 Congratulations!
-              </h2>
-              <p className="text-gray-600 text-lg mb-6">
-                You have completed all the questions in your Management Action
-                Planner.
-              </p>
-              <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  📊 Your Report is Ready!
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Click below to view your generated report:
-                </p>
-                <a
-                  href={reportUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 font-semibold transition-all"
-                >
-                  View Report
-                </a>
-              </div>
-            </>
-          )
+
+        {generatedPrompt ? (
+          // 🟢 Prompt Generation Mode Output Box
+          <>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">✨ Your Prompt is Ready!</h2>
+            <p className="text-gray-600 text-lg mb-4 text-center">
+              Copy and use it wherever you like.
+            </p>
+
+            {/* Styled Box */}
+            <div className="relative w-full max-w-[90rem] bg-gray-100 border border-gray-300 rounded-xl p-6 pt-10 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md">
+
+              {/* Copy Icon Only */}
+              <CopyBox content={generatedPrompt} />
+
+              {/* Render formatted content once */}
+              <AdvMarkdownHandler content={generatedPrompt} />
+            </div>
+
+          </>
+        ) : reportUrl ? (
+          // 🟩 Standard Report Mode
+          <>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">🎉 Congratulations!</h2>
+            <p className="text-gray-600 text-lg mb-6">
+              Your customized Action Planner is ready.
+            </p>
+
+            <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center w-full max-w-xl">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">📊 View Your Report</h3>
+              <a
+                href={reportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-gray-200 text-gray-800 font-semibold px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto"
+                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+              >
+                Open Report
+              </a>
+            </div>
+          </>
         ) : (
-          // ❌ Non Job Aid → Friendly message
-          <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              ✅ Completed!
-            </h3>
+          // 🔹 No report or prompt → Simple completion message
+          <div className="bg-gray-100 border border-[#00c193] rounded-xl p-6 mb-6 text-center">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
             <p className="text-gray-600">
-              We have captured your intake data and will be processed shortly. Thanks!
+              Your responses were submitted successfully.
             </p>
           </div>
         )}
 
-        {redirectURL != null ? (
+        {/* Restart or redirect button */}
+        <div className="mt-10"></div>
+
+        {redirectURL ? (
           <button
             onClick={() => (window.location.href = redirectURL)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+            className="
+                        w-full bg-gray-200 border border-[#00c193] 
+                        px-8 py-4 text-sm font-medium text-gray-800 
+                        shadow-sm transition-all duration-300 
+                        hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto
+                      "
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Home
           </button>
         ) : (
           <button
             onClick={handleRestart}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 font-semibold text-lg transition-all"
+            className="
+            w-full bg-gray-200 border border-[#00c193] 
+            px-8 py-4 text-sm font-medium text-gray-800 
+            shadow-sm transition-all duration-300 
+            hover:border-[#00c193] hover:shadow-md 
+            sm:w-auto
+          "
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Start Over
           </button>

@@ -143,21 +143,21 @@ const BookCard: React.FC<BookCardProps> = ({
 
       {/* Book Info */}
       <div>
-        <h4 className="font-bold text-lg mb-1 truncate" title={book.title}>
+        {/* <h4 className="font-bold text-lg mb-1 truncate" title={book.title}>
           {book.title}
-        </h4>
+        </h4> */}
         <p className="text-gray-600 mb-2 truncate" title={book.author}>
           {book.author}
         </p>
         <a
           href="#search-container"
-          className="inline-block mb-2 px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-xs font-semibold"
+          className="inline-block mb-2 px-3 py-1 bg-gray-200 text-gray-700 text-xs font-semibold"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
         >
           {book.tag[0]}
         </a>
         <button
           onClick={() => setIsReadModalOpen(true)}
-          className="ml-2 px-3 py-1 rounded-full bg-[#00c193] text-white text-xs font-semibold hover:bg-[#00b281] transition"
+          className="ml-2 px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold hover:bg-gray-300 transition"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
         >
           Report
         </button>
@@ -170,7 +170,7 @@ const BookCard: React.FC<BookCardProps> = ({
       </div>
 
       {/* Buttons */}
-      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+      <div className="flex items-center justify-between gap-3 w-full mt-2">
         {/* ▶ Play Button */}
         <button
           className="rounded-full border border-green-500 text-green-500 
@@ -184,10 +184,8 @@ const BookCard: React.FC<BookCardProps> = ({
 
         {/* More Button */}
         <button
-          className="rounded-full border border-[#00c193] bg-[#00c193] text-white 
-               px-3 py-1.5 sm:px-4 sm:py-2 
-               text-xs sm:text-sm md:text-base 
-               hover:bg-[#00b281] transition shrink-0 ml-auto"
+          className="px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold whitespace-nowrap hover:bg-gray-300 transition"
+          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           onClick={onMore}
         >
           {showTransformIQ? "Transform IQ" : "Summary"}
@@ -222,14 +220,6 @@ const BookCard: React.FC<BookCardProps> = ({
           </>
         )}
       </div>
-
-
-
-
-
-
-
-
     </article>
     {/* Read Modal with iframe */}
     {isReadModalOpen && (

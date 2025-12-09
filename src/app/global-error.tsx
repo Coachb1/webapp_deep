@@ -10,11 +10,47 @@ export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  error: (Error & { digest?: string }) | null;
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    if (!error) return;
+
+    // Always capture the error to Sentry first
+    try {
+      Sentry.captureException(error);
+    } catch (sentryError) {
+      console.error("Failed to capture exception with Sentry:", sentryError);
+    }
+
+    // Detect Next.js Server Action mismatch or runtime 'workers' lookup errors
+    const message = (error as Error)?.message || "";
+
+    const isServerActionMismatch = message.includes("Failed to find Server Action");
+    const isWorkersRuntimeError =
+      message.includes("reading 'workers'") ||
+      message.includes("Cannot read properties of undefined (reading 'workers')");
+
+    // If we detect the known conditions, attempt a single hard reload to refresh
+    // the client's bundle so it matches the deployed server action registry.
+    try {
+      const reloadKey = "serverActionReloaded";
+      if ((isServerActionMismatch || isWorkersRuntimeError) &&
+          typeof window !== "undefined" &&
+          !sessionStorage.getItem(reloadKey)) {
+        // mark we've attempted a reload so we don't loop
+        sessionStorage.setItem(reloadKey, "1");
+
+        // small timeout to allow Sentry to flush the event
+        setTimeout(() => {
+          // Force a full reload so the browser fetches new assets
+          window.location.reload();
+        }, 300);
+      }
+    } catch (e) {
+      // swallow any storage-related errors
+      console.error("Auto-reload guard failed:", e);
+    }
   }, [error]);
 
   return (

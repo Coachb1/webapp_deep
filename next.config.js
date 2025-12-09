@@ -76,7 +76,6 @@ const AllowedImgDomains = [
 
 
 module.exports = {
-  output: "standalone",
   async headers() {
     return [
       {
@@ -104,5 +103,11 @@ module.exports = {
         ],
       },
     ];
+  },
+  api: {
+    bodyParser: {
+      sizeLimit: "50mb",
+    },
+    responseLimit: "50mb",
   },
 };

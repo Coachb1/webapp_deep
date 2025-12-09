@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Question } from "@/lib/job-aid-apis";
+import CopyBox from "../CopyBox";
+import AdvMarkdownHandler from "../MarkdownAdvance";
 
 interface QuestionFlowProps {
   question: Question;
@@ -14,6 +16,7 @@ interface QuestionFlowProps {
   currentAnswer?: string;
   suggestions?: string; // Suggestions for the current question
   showBackButton?: boolean;
+  isValidataion: boolean;
 }
 
 const QuestionFlow: React.FC<QuestionFlowProps> = ({
@@ -26,10 +29,22 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
   error,
   currentAnswer,
   suggestions,
-  showBackButton
+  showBackButton,
+  isValidataion
 }) => {
   const [answer, setAnswer] = useState<string>(currentAnswer || "");
   const [showError, setShowError] = useState(false);
+
+  const getValidateContinueText = () => {
+    let lable = isValidataion && question.question_type !== 'dropdown' ? "Validate & " : ""
+
+    if (questionNumber == totalQuestions) {
+      lable += "Submit"
+    } else {
+      lable += "Continue"
+    }
+    return lable
+  }
 
   useEffect(() => {
     setAnswer(currentAnswer || "");
@@ -145,24 +160,27 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         {showBackButton && (
           <button
             onClick={onGoBack}
-            className="mb-4 px-4 py-2 text-sm font-medium bg-[#00c193] text-white rounded flex items-center gap-2 hover:bg-[#00b084] transition-colors"
+            className="w-full bg-gray-200 border border-[#00c193] px-3 py-1.5 text-xs font-medium text-gray-800 shadow-sm transition-all duration-300 
+                      hover:border-[#00c193] hover:shadow-md sm:w-auto flex items-center gap-1.5"
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
-            <svg 
-              className="w-4 h-4" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
                 d="M15 19l-7-7 7-7"
               />
             </svg>
             Back
           </button>
         )}
+        <br />
         <div className="w-full h-2 bg-gray-200 rounded overflow-hidden mb-4">
           <div
             className="h-full bg-[#00c193] transition-all duration-300"
@@ -202,19 +220,32 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         )}
 
         {suggestions && !error && (
-          <div className="bg-yellow-200 text-yellow-700 p-3 rounded-md text-lg border-l-4 border-yellow-600 flex items-center justify-between">
-            <span className="flex-1 text-center">{suggestions}</span>
-            <button
-                onClick={handleIgnore} 
-                disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}            
-                className={`ml-4 bg-[#00c193] text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-700
-                  ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}
-                  `}
+          <div className="relative bg-yellow-200 text-yellow-700 p-4 rounded-lg text-lg border-l-4 border-yellow-600">
+
+            <CopyBox content={suggestions} 
+                className="top-3 right-3 text-gray-500 hover:text-yellow-800 hover:bg-yellow-200"
+            />
+
+
+            {/* Suggestion Text */}
+            <div className="pr-16 whitespace-pre-wrap">
+              <AdvMarkdownHandler content={suggestions} />
+            </div>
+
+            {/* Continue button */}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleIgnore}
+                disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}
+                className={`bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md rounded-md
+          ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                Ignore
-            </button>            
+                {questionNumber === totalQuestions ? "Submit" : "Continue"}
+              </button>
+            </div>
           </div>
         )}
+
 
 
         {error && (
@@ -222,8 +253,8 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
             {error}
             {suggestions && (
               <span className="block mt-2 text-yellow-700">
-                Suggestions: {suggestions}
-              </span> 
+                Suggestions: <AdvMarkdownHandler content={suggestions} />
+              </span>
             )}
           </div>
         )}
@@ -232,18 +263,21 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           <button
             onClick={handleContinue}
-            disabled={(currentAnswer || "").trim() === answer.trim() || !answer.trim()}            
+            disabled={(currentAnswer || "").trim() === answer.trim() || !answer.trim()}
             className={`
-                        px-8 py-3 bg-[#00c193] text-white font-semibold 
-                       shadow-lg min-w-[140px] 
-                       transition-transform duration-300
-                       hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0
-                        ${(currentAnswer || "").trim() === answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}
-
-            `}
+    w-full bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium 
+    text-gray-800 shadow-sm transition-all duration-300
+    hover:border-[#00c193] hover:shadow-md sm:w-auto
+    ${(currentAnswer || "").trim() === answer.trim() || !answer.trim()
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+              }
+  `}
+            style={{ borderRadius: "calc(var(--radius) - 6px)" }}
           >
-            {questionNumber==totalQuestions?"Submit":"Continue"}
+            {getValidateContinueText()}
           </button>
+
 
           {/* Uncomment if you want Ignore back */}
           {/* <button

@@ -31,6 +31,7 @@ export interface CoursePackage {
   image_link: string;
   report_config: any;
   jobaid_id: string;
+  prompt_job_aid_uid?: string;
   books: Book[];
 }
 

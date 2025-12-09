@@ -196,10 +196,11 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
     );
   }
 
-  return (
+ return (
     <div className="max-w-6xl mx-auto p-6 min-h-screen bg-white font-inter">
       {/* Header */}
-      <div className="bg-[#00c193] rounded-2xl p-6 mb-8 text-white">
+      <div className="bg-gray-200 border-2 border-[#00c193] p-6 mb-8 text-black"
+      style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-extrabold flex items-center gap-2">
@@ -210,19 +211,22 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
           <div className="flex gap-2">
             <button
               onClick={() => downloadReport("csv")}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> CSV
             </button>
             <button
               onClick={() => downloadReport("xlsx")}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> Excel
             </button>
             <button
               onClick={refreshData}
-              className="bg-white/20 border border-white/30 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white/30 backdrop-blur-md transition text-white"
+              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaSyncAlt /> Refresh
             </button>
@@ -231,14 +235,15 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
       </div>
 
       {/* Main Content */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white shadow-xl border border-gray-200 overflow-hidden"
+      style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-900">
             <FaTable />
             Activity Report
           </h2>
           <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
-            <FaArrowUp /> Ranked by Report/Lesson count
+            <FaArrowUp /> Ranked by Report/Lesson count
           </span>
         </div>
 
@@ -313,11 +318,12 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
               <button
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-full font-bold ${
+                className={`px-4 py-2 font-bold border border-[#00c193] transition-all duration-300 ${
                   currentPage === 1
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-[#00c193] text-white hover:brightness-95"
+                    ? "bg-white text-gray-500 cursor-not-allowed"
+                    : "bg-white text-black hover:bg-gray-300"
                 }`}
+                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
               >
                 Prev
               </button>
@@ -327,12 +333,13 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
                 <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-full font-semibold transition 
+                  className={`w-9 h-9 flex items-center justify-center font-semibold transition border border-[#00c193]
         ${
           currentPage === i + 1
-            ? "bg-[#00c193] text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            ? "bg-white text-black"
+            : "bg-white text-black hover:bg-gray-300"
         }`}
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                 >
                   {i + 1}
                 </button>
@@ -344,12 +351,13 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-full font-medium transition 
+                className={`px-4 py-2 font-medium transition border border-[#00c193]
       ${
         currentPage === totalPages
-          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-          : "bg-[#00c193] text-white hover:bg-[#00a87f]"
+          ? "bg-white text-gray-400 cursor-not-allowed"
+          : "bg-white text-black hover:bg-gray-300"
       }`}
+                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
               >
                 Next
               </button>
@@ -376,7 +384,8 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
           onClick={() => setSelectedUser(null)}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 relative"
+            className="bg-white shadow-xl max-w-lg w-full p-6 relative border border-[#00c193]"
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -392,7 +401,8 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
               {selectedUser.books.map((book, idx) => (
                 <div
                   key={idx}
-                  className="p-3 border rounded-lg flex justify-between items-center"
+                  className="p-3 border border-[#00c193] flex justify-between items-center"
+                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
                 >
                   <span className="text-gray-800">{book}</span>
                 </div>

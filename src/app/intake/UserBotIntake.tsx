@@ -36,7 +36,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MediaData } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { useUser } from "@/context/UserContext";
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
+// Guard against pdfjs not being fully initialized; can happen in edge cases
+// or when the module is imported during server-side code execution.
+if (typeof pdfjs !== "undefined" && pdfjs.GlobalWorkerOptions) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+}
 
 const UserBotIntake = ({
   user,
@@ -327,29 +332,44 @@ const UserBotIntake = ({
           (checkIfEdit ? data.msg === "updated" : !data.msg)
         ) {
           const patchFormData = new FormData();
-          releventDocument.forEach(({ file, text }) => {
-            if (file.name.includes(".pdf")) {
-              if (text) {
-                patchFormData.append(
-                  "pdf_data",
-                  `file_name:${file.name} text_file:${text}`
-                );
-                console.log(text);
-              } else {
-                patchFormData.append(`attached_pdfs`, file, file.name.trim());
+          
+          // Validate and append files with proper error handling
+          try {
+            releventDocument.forEach(({ file, text }) => {
+              // Validate file exists and has size > 0
+              if (!file || file.size === 0) {
+                console.warn(`Skipping empty or invalid file: ${file?.name}`);
+                return;
               }
-            } else if (file.name.includes(".docx")) {
-              if (text) {
-                patchFormData.append(
-                  `doc_data`,
-                  `file_name:${file.name} text_file:${text}`
-                );
-                console.log(text);
-              } else {
-                patchFormData.append(`attached_docs`, file, file.name.trim());
+
+              if (file.name.includes(".pdf")) {
+                if (text) {
+                  patchFormData.append(
+                    "pdf_data",
+                    `file_name:${file.name} text_file:${text}`
+                  );
+                  console.log(text);
+                } else {
+                  patchFormData.append(`attached_pdfs`, file, file.name.trim());
+                }
+              } else if (file.name.includes(".docx")) {
+                if (text) {
+                  patchFormData.append(
+                    `doc_data`,
+                    `file_name:${file.name} text_file:${text}`
+                  );
+                  console.log(text);
+                } else {
+                  patchFormData.append(`attached_docs`, file, file.name.trim());
+                }
               }
-            }
-          });
+            });
+          } catch (fileError) {
+            console.error("Error processing files:", fileError);
+            toast.error("Error processing attached files. Please try again.");
+            setSubmitLoading(false);
+            return;
+          }
 
           let deletingDocs: string = "";
           let deletingPdfs: string = "";
@@ -431,7 +451,12 @@ const UserBotIntake = ({
             headers: myHeaders,
             body: patchFormData,
           })
-            .then((res) => res.json())
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+              }
+              return res.json();
+            })
             .then((data) => {
               console.log(data);
 
@@ -468,7 +493,7 @@ const UserBotIntake = ({
             })
             .catch((err) => {
               setSubmitLoading(false);
-              console.error(err);
+              console.error("Upload error:", err);
               toast.error("Error creating your user bot, Please try again.");
               throw new Error(
                 "Error creating your user bot, Please try again."

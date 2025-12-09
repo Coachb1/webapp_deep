@@ -36,7 +36,7 @@ const MainLayoutComponent = ({
   console.log("Current pathname: ", pathname);
 
   // ✅ Special case: Job Aid pages → Skip global layout
-  if (pathname.startsWith("/job-aid")) {
+  if (pathname.startsWith("/job-aid") || pathname.startsWith('/presentation-bot')) {
     return (
       <html lang="en" className="bg-white">
         <body className={font.className}>
