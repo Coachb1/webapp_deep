@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Question } from "@/lib/job-aid-apis";
+import CopyBox from "../CopyBox";
 
 interface QuestionFlowProps {
   question: Question;
@@ -32,7 +33,6 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 }) => {
   const [answer, setAnswer] = useState<string>(currentAnswer || "");
   const [showError, setShowError] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const getValidateContinueText = () => {
     let lable = isValidataion && question.question_type !== 'dropdown' ? "Validate & " : ""
@@ -221,28 +221,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         {suggestions && !error && (
           <div className="relative bg-yellow-200 text-yellow-700 p-4 rounded-lg text-lg border-l-4 border-yellow-600">
 
-            {/* Copy button inside top-right */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(suggestions);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1200);
-              }}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 transition"
-              title="Copy to clipboard"
-            >
-              {copied ? (
-                // ✓ Copied icon
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                // 📄 Copy icon
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              )}
-            </button>
+            <CopyBox content={suggestions} 
+                className="top-3 right-3 text-gray-500 hover:text-yellow-800 hover:bg-yellow-200"
+            />
 
 
             {/* Suggestion Text */}

@@ -4,16 +4,12 @@ import React, { useState } from "react";
 
 interface CopyBoxProps {
   content: string;
-  inline?: boolean;
-  variant?: "suggestion" | "output"; // NEW
   className?: string;
 }
 
 const CopyBox: React.FC<CopyBoxProps> = ({
   content,
-  inline,
-  variant = "suggestion",
-  className,
+  className = 'top-3 right-3 text-gray-500 hover:text-gray-800 hover:bg-gray-200',
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -24,16 +20,9 @@ const CopyBox: React.FC<CopyBoxProps> = ({
   };
 
   return (
-    <div
-      className={`relative p-4 rounded-lg border shadow-sm whitespace-pre-wrap
-        ${variant === "suggestion" ? "bg-yellow-200 border-yellow-400" : "bg-gray-100 border-gray-300"} 
-        ${className}`}
-    >
-
-      {/* COPY ICON - NO TEXT */}
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 hover:bg-gray-200 p-1 rounded transition"
+        className={`${className} absolute  p-1 rounded transition`}
         title={copied ? "Copied!" : "Copy"}
       >
         {copied ? (
@@ -48,9 +37,6 @@ const CopyBox: React.FC<CopyBoxProps> = ({
           </svg>
         )}
       </button>
-
-      {content}
-    </div>
   );
 };
 
