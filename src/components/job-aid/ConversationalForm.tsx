@@ -13,6 +13,7 @@ import {
   JobAid,
 } from "@/lib/job-aid-apis";
 import AdvMarkdownHandler from "../MarkdownAdvance";
+import CopyBox from "../CopyBox";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
@@ -129,11 +130,6 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       setLoading(false);
     }
   };
-  const handleCopy = () => {
-        navigator.clipboard.writeText(generatedPrompt);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      };
 
   const handleContinue = async (answer: string) => {
     const currentQ = questions[currentQuestionIndex];
@@ -154,7 +150,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         if (isEmailSection) {
           setCurrentStep("email");
         } else {
-          if (showLoader){
+          if (showLoader) {
             setLoading(true);
             setCurrentStep("loading");
             await handleValidation(updatedAnswers, email, name);
@@ -247,7 +243,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
       if (isEmailSection) {
         setCurrentStep("email");
       } else {
-        if (showLoader){
+        if (showLoader) {
           setLoading(true);
           setCurrentStep("loading");
           await handleValidation(answers, email, name);
@@ -396,7 +392,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             ? "⏳ Generating Your Report..."
             : isPromptGenerator ?
               "⏳ Generating Prompt..."
-            : "⏳ Submitting..."}
+              : "⏳ Submitting..."}
         </h2>
         <div className="flex justify-center">
           <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
@@ -404,9 +400,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         <p className="text-gray-600 mt-4 text-lg text-center">
           {isReport
             ? "Please wait while we prepare your personalized Management Action Planner."
-            : isPromptGenerator 
-            ? "Please wait while we are generating your Prompt."
-            : "Please wait while we submit your form"}
+            : isPromptGenerator
+              ? "Please wait while we are generating your Prompt."
+              : "Please wait while we submit your form"}
         </p>
       </div>
     );
@@ -425,30 +421,15 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             </p>
 
             {/* Styled Box */}
-            <div className="w-full max-w-[90rem] bg-gray-100 border border-gray-300 rounded-xl p-6 pt-10 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md relative">
-              {/* Copy Button - Top Right */}
-              <button
-                onClick={handleCopy}
-                className="absolute top-4 right-4 bg-transparent hover:bg-gray-100 text-gray-800 p-0.5 rounded-lg transition-all"
-                title={copied ? 'Copied!' : 'Copy to clipboard'}
-              >
-                {copied ? (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </>
-                )}
-              </button>
+            <div className="relative w-full max-w-[90rem] bg-gray-100 border border-gray-300 rounded-xl p-6 pt-10 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md">
 
+              {/* Copy Icon Only */}
+              <CopyBox content={generatedPrompt} />
+
+              {/* Render formatted content once */}
               <AdvMarkdownHandler content={generatedPrompt} />
             </div>
+
           </>
         ) : reportUrl ? (
           // 🟩 Standard Report Mode
@@ -461,13 +442,13 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center w-full max-w-xl">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">📊 View Your Report</h3>
               <a
-                  href={reportUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-gray-200 text-gray-800 font-semibold px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
+                href={reportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-gray-200 text-gray-800 font-semibold px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
                         sm:w-auto"
-                  style={{ borderRadius: 'calc(var(--radius) - 6px)' }}    
-                >  
+                style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+              >
                 Open Report
               </a>
             </div>
@@ -509,7 +490,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             hover:border-[#00c193] hover:shadow-md 
             sm:w-auto
           "
-          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Start Over
           </button>
