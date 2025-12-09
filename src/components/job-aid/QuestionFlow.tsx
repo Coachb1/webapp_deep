@@ -3,6 +3,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Question } from "@/lib/job-aid-apis";
 import CopyBox from "../CopyBox";
+import AdvMarkdownHandler from "../MarkdownAdvance";
 
 interface QuestionFlowProps {
   question: Question;
@@ -228,7 +229,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 
             {/* Suggestion Text */}
             <div className="pr-16 whitespace-pre-wrap">
-              {suggestions}
+              <AdvMarkdownHandler content={suggestions} />
             </div>
 
             {/* Continue button */}
@@ -252,7 +253,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
             {error}
             {suggestions && (
               <span className="block mt-2 text-yellow-700">
-                Suggestions: {suggestions}
+                Suggestions: <AdvMarkdownHandler content={suggestions} />
               </span>
             )}
           </div>
