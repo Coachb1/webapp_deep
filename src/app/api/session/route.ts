@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jwt-simple";
+import { getUserAccount } from "@/lib/utils";
 
 const SECRET = process.env.JWT_SECRET|| "default_secret"; // 🛡️ Use a strong secret in production!
 
@@ -62,8 +63,22 @@ export async function GET(req: NextRequest) {
     if (decoded?.exp && decoded.exp < Date.now() / 1000) {
       return NextResponse.json({ error: "Token expired" }, { status: 401 });
     }
+    const newUser = {
+      given_name: decoded.given_name,
+      email: decoded.email,
+    };
 
-    return NextResponse.json({ user: decoded }, { status: 200 });
+    // Fetch user account from backend
+    const res = await getUserAccount(newUser);
+    const accountData = await res.json();
+
+    console.log("✅ User account created/fetched:", accountData);
+
+    const fullUser = {
+      ...newUser,
+      user_data: accountData,
+    };
+    return NextResponse.json({ user: fullUser }, { status: 200 });
   } catch (err) {
     console.error("Error decoding JWT:", err);
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });

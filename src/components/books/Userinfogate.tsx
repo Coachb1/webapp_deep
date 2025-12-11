@@ -108,7 +108,7 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
       const res = await fetch("/api/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fullUser),
+        body: JSON.stringify(newUser),
         credentials: "include",
       });
       if (!res.ok) {
