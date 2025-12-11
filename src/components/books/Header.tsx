@@ -63,13 +63,19 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
       <header className="w-full border-b border-gray-200 bg-white">
         <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-3 sm:flex-row sm:gap-0">
           {/* Brand Logo */}
-            <Image
+            {/* <Image
               src="https://cdn.coachbots.com/TransformationIQ/AIAdpoptsLogo.png"
               alt="AiAdopts Bot Logo"
               width={140}
               height={40}
               className="cursor-pointer"
-            />
+            /> */}
+            <h1 className="w-fit border-2 border-[#2DC092] px-2 py-1 text-lg font-extrabold text-[#2DC092] sm:text-xl">
+              <span className="mr-1 bg-[#2DC092] px-2 py-1 text-base font-bold text-white sm:text-lg">
+                AI
+              </span>
+              ADOPTS
+            </h1>
 
           {/* Buttons Section */}
           {loading ? (
