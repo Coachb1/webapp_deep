@@ -75,9 +75,8 @@ const BookSection: React.FC<BookSectionProps> = ({
     setFilteredBooks(all_books);
   };
 
-  const filteredBooks = useMemo(() => {
+  useEffect(() => {
     let list = books;
-
     if (viewMode === "liked") {
       list = likedBooks;
     } else if (viewMode === "later") {
@@ -85,13 +84,9 @@ const BookSection: React.FC<BookSectionProps> = ({
     } else if (viewMode === 'reset') {
       list = all_books
     }
-    return list;
-  }, [books, viewMode, likedBooks, laterBooks]);
-
-  useEffect(() => {
-    setFilteredBooks(filteredBooks);
+    setFilteredBooks(list);
     setCurrentSlide(0);
-  }, [filteredBooks, setFilteredBooks, setCurrentSlide]);
+  }, [likedBooks, laterBooks, viewMode]);
 
 
   useEffect(() => {
