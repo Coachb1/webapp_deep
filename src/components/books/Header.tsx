@@ -64,7 +64,7 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
         <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-3 sm:flex-row sm:gap-0">
           {/* Brand Logo */}
             <Image
-              src="/images/AIAdpoptsLogo.png"
+              src="https://cdn.coachbots.com/TransformationIQ/AIAdpoptsLogo.png"
               alt="AiAdopts Bot Logo"
               width={140}
               height={40}
