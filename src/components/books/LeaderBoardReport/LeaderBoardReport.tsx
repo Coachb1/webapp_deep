@@ -32,11 +32,12 @@ const EXPIRY_HOURS = 24;
 
 const fetchLeaderBoardReportData = async (
   backend: string,
-  packageCourseID: string
+  packageCourseID: string,
+  clientId: string
 ): Promise<UserReport[]> => {
   try {
     const res = await fetch(
-      `${backend}/courses/course-report/?package_course_id=${packageCourseID}`
+      `${backend}/courses/course-report/?package_course_id=${packageCourseID}&client_id=${clientId}`
     );
     const data = await res.json();
     console.log("fetchLeaderBoardReportData", data);
@@ -133,7 +134,7 @@ const LeaderBoardReport: React.FC<LeaderBoardReportProps> = ({
 
   const loadData = async () => {
     setLoading(true);
-    const response = await fetchLeaderBoardReportData(baseURL, packageCourseId);
+    const response = await fetchLeaderBoardReportData(baseURL, packageCourseId, client_id);
     setData(response);
     setLoading(false);
   };
