@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/books/ui/buttonn";
 import { Input } from "@/components/books/ui/input";
 import { usePortalUser } from "./context/UserContext";
-import Link from "next/link";
+import Image from "next/image";
 
 const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaidId: string|null }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
@@ -18,7 +18,7 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
   const [LeaderBoardButtonLabel, setLeaderBoardButtonLabel] = useState("LeaderBoard");
   const [AiPulseButtonLabel, setAiPulseButtonLabel] = useState("AI Pulse Report");
   const [IdeaBoardButtonLabel, setIdeaBoardButtonLabel] = useState("Idea Board");
-  
+
   const [password, setPassword] = useState("");
   const { user, loading, userInfo } = usePortalUser(); // Assuming useUser is imported from context
 
@@ -63,12 +63,13 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
       <header className="w-full border-b border-gray-200 bg-white">
         <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-3 sm:flex-row sm:gap-0">
           {/* Brand Logo */}
-          <h1 className="w-fit border-2 border-[#2DC092] px-2 py-1 text-lg font-extrabold text-[#2DC092] sm:text-xl">
-            <span className="mr-1 bg-[#2DC092] px-2 py-1 text-base font-bold text-white sm:text-lg">
-              COACH
-            </span>
-            BOT
-          </h1>
+            <Image
+              src="/images/AIAdpoptsLogo.png"
+              alt="AiAdopts Bot Logo"
+              width={140}
+              height={40}
+              className="cursor-pointer"
+            />
 
           {/* Buttons Section */}
           {loading ? (
@@ -95,61 +96,61 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
               </svg>
             </div>
           ) : (
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
-            {/* Leader Board Button */}
-            {LeaderBoardButtonLabel && showLeaderBoardButton && (
-            <Button
-              onClick={() => {
-                if (packageCourseId) {
-                  const url = `/library-bot/leaderBoardReport/?package_course_id=${encodeURIComponent(
-                    packageCourseId
-                  )}&client_id=${encodeURIComponent(userInfo.clientId || "")}`;
-                  // Open in a new tab with no referrer
-                  window.open(url, "_blank", "noopener,noreferrer");
-                }
-              }}
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+              {/* Leader Board Button */}
+              {LeaderBoardButtonLabel && showLeaderBoardButton && (
+                <Button
+                  onClick={() => {
+                    if (packageCourseId) {
+                      const url = `/library-bot/leaderBoardReport/?package_course_id=${encodeURIComponent(
+                        packageCourseId
+                      )}&client_id=${encodeURIComponent(userInfo.clientId || "")}`;
+                      // Open in a new tab with no referrer
+                      window.open(url, "_blank", "noopener,noreferrer");
+                    }
+                  }}
 
               className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300 sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-            >
-              {LeaderBoardButtonLabel}
-            </Button>
-            )}
+                >
+                  {LeaderBoardButtonLabel}
+                </Button>
+              )}
 
-            {/* AI Pulse Report btn */}
-            {AiPulseButtonLabel && showAiPulseButton && (
-            <Button
-              onClick={() => {
-                if (packageCourseId) {
-                  const url = `/library-bot/AiPulseReport/?package_course_id=${encodeURIComponent(
-                    packageCourseId
-                  )}&client_id=${encodeURIComponent(userInfo.clientId || "")}`;
-                  window.open(url, "_blank", "noopener,noreferrer");
-                }
-              }}
+              {/* AI Pulse Report btn */}
+              {AiPulseButtonLabel && showAiPulseButton && (
+                <Button
+                  onClick={() => {
+                    if (packageCourseId) {
+                      const url = `/library-bot/AiPulseReport/?package_course_id=${encodeURIComponent(
+                        packageCourseId
+                      )}&client_id=${encodeURIComponent(userInfo.clientId || "")}`;
+                      window.open(url, "_blank", "noopener,noreferrer");
+                    }
+                  }}
              className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300 sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-            >
-              {AiPulseButtonLabel}
-            </Button>
-            )}
+                >
+                  {AiPulseButtonLabel}
+                </Button>
+              )}
 
-            {/* Idea Board Button */}
+              {/* Idea Board Button */}
 
-            {showIdeaBoardButton && jobaidId && (
-              <Button
-                onClick={() => {
-                  if (user?.email) {
-                    const url = `/library-bot/ideaboardReport/?jobaid=${jobaidId}&email=${encodeURIComponent(
-                      user.email
-                    )}`;
-                    window.open(url, "_blank", "noopener,noreferrer");
-                  }
-                }}
+              {showIdeaBoardButton && jobaidId && (
+                <Button
+                  onClick={() => {
+                    if (user?.email) {
+                      const url = `/library-bot/ideaboardReport/?jobaid=${jobaidId}&email=${encodeURIComponent(
+                        user.email
+                      )}`;
+                      window.open(url, "_blank", "noopener,noreferrer");
+                    }
+                  }}
                 className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300 sm:w-auto"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-              >
-                {IdeaBoardButtonLabel}
-              </Button>
-            )}
-          </div>
+                >
+                  {IdeaBoardButtonLabel}
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </header>
