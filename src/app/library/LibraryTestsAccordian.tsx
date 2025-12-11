@@ -281,7 +281,7 @@ const LibraryTestsAccordian = ({
                         )}
                       </p>
 
-                      {type === "assigned" && (
+                      {type === "assigned" && test.assigned_by &&(
                         <p className="my-2 text-sm max-sm:text-xs text-left bg-gray-200 w-fit rounded-sm py-1 px-2">
                           Assigned by{" "}
                           <span className="font-bold text-blue-500">

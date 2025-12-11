@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { FaLock } from "react-icons/fa";
 
@@ -20,15 +20,19 @@ const ProtectedSection: React.FC<ProtectedSectionProps> = ({
   onUnlock,
 }) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const fullUrl = searchParams.toString()
+    ? `${pathname}?${searchParams.toString()}`
+    : pathname;
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const AuthToken = `reportAuth_${pathname}`;
+  const AuthToken = `reportAuth_${fullUrl}`;
 
   console.log("ProtectedSection rendered with isProtected:", isProtected);
 
   useEffect(() => {
-
     const stored = localStorage.getItem(AuthToken);
     if (stored) {
       const { expiresAt } = JSON.parse(stored);

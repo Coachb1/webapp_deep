@@ -259,7 +259,7 @@ const SearchFilter = ({
       setViewMode("liked");
 
     }
-  }, [activeButton, onSearch, setViewMode]);
+  }, [activeButton, setViewMode]);
 
   const handleLaterClick = useCallback(() => {
     if (activeButton === "later") {
@@ -276,7 +276,7 @@ const SearchFilter = ({
       setActiveButton("later");
       setViewMode("later");
     }
-  }, [activeButton, onSearch, setViewMode]);
+  }, [activeButton, setViewMode]);
 
   // Optimized Reset handling
   const handleResetLibraryOptimized = useCallback(() => {
@@ -298,7 +298,7 @@ const SearchFilter = ({
     setTimeout(() => {
       onSearch("");
       onFilterChange("");
-      onMultipleSearch("", "", "", "", "", "", "", "");
+      setViewMode('reset')
       setIsResetting(false);
     }, 0);
   }, [onSearch, onFilterChange, onMultipleSearch, setViewMode]);
@@ -369,6 +369,7 @@ const SearchFilter = ({
     setSearchTerm("");     // 🔥 reset search box
     onSearch("");          // clear search results
     setActiveButton(null); // clear like/later buttion
+    setViewMode('') // nothing happening
     let newFilters = { ...selectedFilters };
 
     if (option === "ALL") {
@@ -565,6 +566,7 @@ const SearchFilter = ({
                 setEmergingPlayersChecked(false);
                 setStartUpChecked(false);
                 setActiveButton(null); // clear like/later buttion
+                setViewMode('') ;// nothing
 
               }}
               onKeyDown={handleKeyPress}
