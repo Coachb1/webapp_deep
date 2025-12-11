@@ -76,6 +76,9 @@ const AllowedImgDomains = [
 
 
 module.exports = {
+  images: {
+    domains: ["cdn.coachbots.com"],
+  },
   async headers() {
     return [
       {
