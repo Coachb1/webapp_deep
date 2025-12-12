@@ -1,20 +1,11 @@
 import { Raleway } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { HelpModeProvider } from "@/lib/helpmodeContext";
-import { Toaster } from "@/components/ui/sonner";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
-import LayoutComponent from "./LayoutComponent";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { baseURL, basicAuth, getUserAccounts } from "@/lib/utils";
-import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { UserProvider } from "@/context/UserContext";
-import { ConfigProvider } from "antd";
-import { ReadPaths } from "@/lib/ReadPaths";
-import { usePathname } from "next/navigation";
-import { Main } from "next/document";
+
 import MainLayoutComponent from "./MainLayout";
+import ConsolePatch from "./ConsolePatch";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -134,6 +125,10 @@ export default async function RootLayout({
     await getClientUserInfo(user?.email, user);
 
   return (
+    <>
+    {/* to disable consoel for platform */}
+    <ConsolePatch/> 
+    
     <MainLayoutComponent
       user={user}
       isDemoUser={isDemoUser}
@@ -142,5 +137,7 @@ export default async function RootLayout({
     >
       {children}
     </MainLayoutComponent>
+    </>
+
   );
 }

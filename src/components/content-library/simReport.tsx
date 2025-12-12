@@ -360,7 +360,7 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
                       <td className="px-6 py-4 font-bold text-gray-900">#{row.rank}</td>
                       <td className="px-6 py-4 font-semibold text-gray-900">{row.name}</td>
                       <td className="px-6 py-4 text-gray-600">{row.email}</td>
-                      <td className="px-6 py-4 text-gray-800">{truncateText(row.title, 20)}</td>
+                      <td className="px-6 py-4 text-gray-800" title={row.title}>{truncateText(row.title, 20)}</td>
                       <td className="px-6 py-4 text-gray-600">{row.date}</td>
                       <td className="px-6 py-4 text-gray-800">{row.avg_score}</td>
                       <td className="px-6 py-4">
