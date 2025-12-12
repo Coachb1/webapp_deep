@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { emptyData, getTestMappings, getUserAccounts, getUserTestMappings, hideConsoleLogs } from "@/lib/utils";
+import { emptyData, getTestMappings, getUserAccounts, getUserTestMappings } from "@/lib/utils";
 import {
   getActionPoints,
   getAttemptedTestsList,
@@ -563,7 +563,6 @@ export const UserProvider = ({
   }, []);
 
   useEffect(() => {
-    hideConsoleLogs();
 
     if (window.location.href.includes("dev-bot")) {
       basicUserConfigs(kindeUser);
