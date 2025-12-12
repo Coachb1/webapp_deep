@@ -7,7 +7,6 @@ import { DemoPage, LoginWall, UnAuth } from "./UnAuthpage";
 import {
   getUserAccounts,
   hideBots,
-  hideConsoleLogs,
   subdomain,
 } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
@@ -43,7 +42,6 @@ const LayoutComponent = ({
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
 
-  hideConsoleLogs();
   useEffect(() => {
     let userId = "";
     if (user) {

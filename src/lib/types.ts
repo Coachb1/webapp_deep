@@ -381,6 +381,7 @@ export interface CollectionBlock {
   id: number;
   collection_name: string;
   case_items: CaseItem[];
+  heading?:string;
 }
 
 export interface UserInfoType {

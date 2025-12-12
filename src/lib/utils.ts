@@ -138,7 +138,6 @@ const ENVIRONMENT = process.env.NEXT_PUBLIC_ENV;
 
 export const baseURL = ENVIRONMENT === "prod" ? prodUrl : devUrl;
 
-console.log('base url 1', baseURL, ENVIRONMENT)
 export const basicAuth =
   "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
 
@@ -154,11 +153,6 @@ export const hideBots = () => {
   }
 };
 
-export const hideConsoleLogs = () => {
-  if (baseURL.includes("prod")) {
-    return (console.log = function () {});
-  }
-};
 
 export const getUserAccount = (user: any) => {
   return fetch(`${baseURL}/accounts/`, {
