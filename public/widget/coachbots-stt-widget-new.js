@@ -2053,7 +2053,7 @@ function populateChatHistory(chatId) {
   console.log('Loading previous chat history:', chatId, conversations);
 
   // Display chat header
-  appendMessage2(`<b>🔄 Starting New Session:</b> ( Short Summary text:<i>${sessionData.summary?.slice(0, 30) || "No Summary"}...</i>)`);
+  appendMessage2(`<b>Session History:</b> ( Short Summary text:<i>${sessionData.summary?.slice(0, 30) || "No Summary"}...</i>)`);
 
   conversations.forEach((entry, index) => {
     const coachMessage = entry.coach_message_text?.trim();
@@ -2079,19 +2079,34 @@ function populateChatHistory(chatId) {
   const formattedSummary = (sessionData.summary || "No Summary")
   .replace(/\n/g, "<br>");
 
+
 appendMessage2(
   `<b>✅ End of Session Summary:</b><br>
-   <i>${formattedSummary}</i>`
+   <i>${formattedSummary}</i>
+   <br><br>
+
+   <button 
+     style="
+       margin-top: 10px;
+       padding: 8px 14px;
+       border-radius: 6px;
+       border: 1px solid green;
+       background: white;
+       cursor: pointer;
+       font-size: 14px;
+       font-weight: 500;
+     "
+     onclick="
+       const btn = document.getElementById('begin-session-button'); 
+       if (btn) btn.click();
+     "
+   >
+     ▶ Continue Session
+   </button>`
 );
 
 
-  // Disable the selected dropdown option
-  // const dropdown = document.getElementById('chatHistoryDropdown');
-  // if (dropdown) {
-  //   Array.from(dropdown.options).forEach(opt => (opt.disabled = false)); // Reset all first
-  //   const selectedOption = Array.from(dropdown.options).find(opt => opt.value === chatId);
-  //   if (selectedOption) selectedOption.disabled = true;
-  // }
+
 }
 
 
@@ -4628,6 +4643,7 @@ async function handleFaqButtonClick(question) {
         return;
 
       }
+      ToggleChatHistory(true)
       if (botType === 'avatar_bot' && botScenarioCase === 'icons_by_ai' ){
 
         const response = await fetch(`${baseURL2}/coaching-conversations/coaching-intake/?user_id=${userId2}`,
@@ -5423,6 +5439,7 @@ function sendBotTranscript2() {
 
 function handleEndConversation(isInActive, message) {
   console.log("end conversation clicked");
+  ToggleChatHistory(false)
   if (isInActive === true) {
     appendMessage2(
       "<b>Due to inactivity, your session has ended. Please refresh the page to restart again anytime</b>"
@@ -9831,6 +9848,8 @@ function stopModernTimer() {
 
   if (enabled) {
     button.disabled = false;
+    ToggleChatHistory(false)
+
     Object.assign(button.style, {
       backgroundColor: "#22c55e",
       color: "white",
@@ -9856,6 +9875,8 @@ function stopModernTimer() {
     });
   } else {
     button.disabled = true;
+    ToggleChatHistory(true)
+
     Object.assign(button.style, {
       cursor: "not-allowed",
       backgroundColor: "#d3d3d3",
@@ -11964,6 +11985,12 @@ async function loadExternalModule() {
     console.error("Error loading external module:", error);
   }
 }
+
+function ToggleChatHistory(disable) {
+  document.getElementById("chatHistoryDropdown").disabled = disable;
+}
+
+
 
 // Call the function to load and use the external module2
 loadExternalModule().then(() => {

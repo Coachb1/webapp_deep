@@ -2,7 +2,7 @@
 
 // Runs before any UI renders
 if (typeof window !== "undefined") {
-  const isProd = window.location.hostname === "localhost";
+  const isProd = window.location.hostname === "platform.coachbots.com";
 
   if (isProd) {
     console.log = () => {};
