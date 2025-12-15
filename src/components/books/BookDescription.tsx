@@ -173,7 +173,7 @@ const BookDescription = ({
                 {book.title}
               </h2>
               <h4 className="text-gray-600 text-base sm:text-lg mb-2">
-                by {book.author}
+                Featuring {book.author}
               </h4>
 
               <p className="text-sm text-gray-500 mb-3">
