@@ -463,3 +463,23 @@ export interface ConvertedConversation {
   participant_uid: string;
   bot_id: string;
 }
+
+
+export interface CompanyIQ {
+  id: string; // uid
+  company: string;
+  industry: string;
+  hq: string;
+  revenue: number;
+  employees: number;
+
+  leadership?: string[];
+  initiatives?: string[];
+  techStack?: string[];
+  useCases?: string[];
+  outlook?: string;
+
+  source: "LLM" | "CSV" | "Manual";
+  approved: boolean;
+  created: string;
+}

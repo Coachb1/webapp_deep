@@ -27,7 +27,8 @@ import {
   UserInfoType,
   knowledgeBotJson,
   Book,
-  CoursePackage
+  CoursePackage,
+  CompanyIQ
 } from "./types";
 
 export const getClientUserInfo = async (
@@ -1146,3 +1147,50 @@ export const ActionsPerMonth = async(userId:string)=>{
     return {}
   }
 }
+
+
+
+export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
+  try {
+    const response = await fetch(`${baseURL}/company-iq/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store", // important for admin / live data
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const raw = await response.json();
+
+    // If backend is paginated
+    const results = raw.results ?? raw;
+
+    return results.map((item: any): CompanyIQ => ({
+      id: item.uid,
+      company: item.company,
+      industry: item.industry,
+      hq: item.hq,
+      revenue: item.revenue_us_millions,
+      employees: item.employees_full_time,
+
+      leadership: item.ai_cloud_leadership_roles ?? [],
+      initiatives: item.ai_digital_initiatives ?? [],
+      techStack: item.cloud_tech_stack_signals ?? [],
+      useCases: item.ai_use_cases ?? [],
+      outlook: item.transformation_iq_outlook ?? "",
+
+      source: item.source,
+      approved: item.approved,
+      created: item.created,
+    }));
+
+  } catch (error) {
+    console.error("Error fetching CompanyIQ data:", error);
+    return [];
+  }
+};

@@ -64,6 +64,15 @@ const MainLayoutComponent = ({
       </html>
     );
   }
+  if (pathname.includes("/company-iq")) {
+    return (
+      <html lang="en" className="bg-white">
+        <body className={font.className}>
+          <div className="z-[999]">{children}</div>
+        </body>
+      </html>
+    );
+  }
 
   if (pathname.includes("/portal") ) {
     if (pathname.includes("/portal/simReport")){
