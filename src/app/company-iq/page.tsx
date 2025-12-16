@@ -1,13 +1,13 @@
 import CompanyIQ from "@/components/company-iq/companyiq";
+import { constructMetadata } from "@/lib/utils";
 
-export default function CompanyIQPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export const metadata = constructMetadata({
+  title: "Company IQ",
+  description: "Company IQ provides insights into company performance and metrics.",
+});
+
+export default function CompanyIQPage() {
   return (
-    <div>
       <CompanyIQ />
-    </div>
   );
 }
