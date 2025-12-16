@@ -10,8 +10,8 @@ const companies = Array.from({ length: 24 }).map((_, i) => {
     const hqs = ["USA", "UK", "Germany", "Japan"];
     const randomIndustry = industries[Math.floor(Math.random() * industries.length)];
     const randomHQ = hqs[Math.floor(Math.random() * hqs.length)];
-    const randomRevenue = `$${Math.floor(Math.random() * 900) + 100}M`;
-    const randomEmployees = `${Math.floor(Math.random() * 9) + 1}k`;
+    const randomRevenue = Math.floor(Math.random() * 900) + 100;
+    const randomEmployees = Math.floor(Math.random() * 2500) + 100;
 
     return {
         id: i + 1,
@@ -22,7 +22,7 @@ const companies = Array.from({ length: 24 }).map((_, i) => {
         employees: randomEmployees,
         reports: {
             digital:
-                "Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.",
+                "Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.Public and digital initiatives include platform modernization, customer portals, and ecosystem integrations.",
             cloud:
                 "Cloud stack includes AWS/Azure, containerization, CI/CD pipelines, and DevOps tooling.",
             ai:
@@ -264,7 +264,20 @@ export default function CompanyIQ() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedFilter, setSelectedFilter] = useState("All Companies");
-    const itemsPerPage = 8;
+    
+    // Temporary filter states (before Apply is clicked)
+    const [tempIndustry, setTempIndustry] = useState("");
+    const [tempHQ, setTempHQ] = useState("");
+    const [tempRevenue, setTempRevenue] = useState("");
+    const [tempEmployees, setTempEmployees] = useState("");
+    
+    // Applied filter states (after Apply is clicked)
+    const [appliedIndustry, setAppliedIndustry] = useState("");
+    const [appliedHQ, setAppliedHQ] = useState("");
+    const [appliedRevenue, setAppliedRevenue] = useState("");
+    const [appliedEmployees, setAppliedEmployees] = useState("");
+    
+    const itemsPerPage = 6;
     const paginationRef = useRef<HTMLDivElement | null>(null);
 
     const toggleSection = (companyId: number, section: string) => {
@@ -294,22 +307,59 @@ export default function CompanyIQ() {
         setCurrentPage(1);
     };
 
+    const handleApplyFilters = () => {
+        setAppliedIndustry(tempIndustry);
+        setAppliedHQ(tempHQ);
+        setAppliedRevenue(tempRevenue);
+        setAppliedEmployees(tempEmployees);
+        setCurrentPage(1);
+    };
+
+    const handleClearAll = () => {
+        setTempIndustry("");
+        setTempHQ("");
+        setTempRevenue("");
+        setTempEmployees("");
+        setAppliedIndustry("");
+        setAppliedHQ("");
+        setAppliedRevenue("");
+        setAppliedEmployees("");
+        setSelectedFilter("All Companies");
+        setSearchTerm("");
+        setCurrentPage(1);
+    };
+
     const filteredCompanies = companies.filter(company => {
         const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase());
 
+        // Industry filter (using applied state)
+        if (appliedIndustry && company.industry !== appliedIndustry) return false;
+
+        // HQ filter (using applied state)
+        if (appliedHQ && company.hq !== appliedHQ) return false;
+
+        // Revenue filter (using applied state)
+        if (appliedRevenue) {
+            if (appliedRevenue === "$0–100M" && company.revenue > 100) return false;
+            if (appliedRevenue === "$100–500M" && (company.revenue <= 100 || company.revenue > 500)) return false;
+            if (appliedRevenue === "$500M+" && company.revenue <= 500) return false;
+        }
+
+        // Employees filter (using applied state)
+        if (appliedEmployees) {
+            if (appliedEmployees === "0–500" && company.employees > 500) return false;
+            if (appliedEmployees === "500–2000" && (company.employees <= 500 || company.employees > 2000)) return false;
+            if (appliedEmployees === "2000+" && company.employees <= 2000) return false;
+        }
+
+        // Quick filter
         if (selectedFilter === "All Companies") return matchesSearch;
         if (selectedFilter === "Technology") return matchesSearch && company.industry === "Technology";
         if (selectedFilter === "Finance") return matchesSearch && company.industry === "Finance";
         if (selectedFilter === "Healthcare") return matchesSearch && company.industry === "Healthcare";
         if (selectedFilter === "Retail") return matchesSearch && company.industry === "Retail";
-        if (selectedFilter === "High Revenue") {
-            const revenue = parseInt(company.revenue.replace(/\D/g, ''));
-            return matchesSearch && revenue > 500;
-        }
-        if (selectedFilter === "Large Teams") {
-            const employees = parseInt(company.employees.replace(/\D/g, ''));
-            return matchesSearch && employees > 5;
-        }
+        if (selectedFilter === "High Revenue") return matchesSearch && company.revenue > 500;
+        if (selectedFilter === "Large Teams") return matchesSearch && company.employees > 2000;
 
         return matchesSearch;
     });
@@ -346,8 +396,6 @@ export default function CompanyIQ() {
                     </div>
                 </div>
 
-
-
                 {/* Search Bar with Icon */}
                 <div className="relative">
                     <svg
@@ -367,7 +415,10 @@ export default function CompanyIQ() {
                         type="text"
                         placeholder="Search companies..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
                         className="w-full pl-12 pr-4 py-3 rounded-xl text-sm focus:outline-none focus:border-[#00c193] transition-colors shadow-sm"
                         style={{
                             borderWidth: "2px",
@@ -402,6 +453,8 @@ export default function CompanyIQ() {
 
                         {/* Industry */}
                         <select
+                            value={tempIndustry}
+                            onChange={(e) => setTempIndustry(e.target.value)}
                             className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
                             style={{ borderWidth: "2px", borderColor: "#00c193" }}
                         >
@@ -414,6 +467,8 @@ export default function CompanyIQ() {
 
                         {/* HQ */}
                         <select
+                            value={tempHQ}
+                            onChange={(e) => setTempHQ(e.target.value)}
                             className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
                             style={{ borderWidth: "2px", borderColor: "#00c193" }}
                         >
@@ -426,6 +481,8 @@ export default function CompanyIQ() {
 
                         {/* Revenue */}
                         <select
+                            value={tempRevenue}
+                            onChange={(e) => setTempRevenue(e.target.value)}
                             className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
                             style={{ borderWidth: "2px", borderColor: "#00c193" }}
                         >
@@ -437,6 +494,8 @@ export default function CompanyIQ() {
 
                         {/* Employees */}
                         <select
+                            value={tempEmployees}
+                            onChange={(e) => setTempEmployees(e.target.value)}
                             className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
                             style={{ borderWidth: "2px", borderColor: "#00c193" }}
                         >
@@ -448,7 +507,8 @@ export default function CompanyIQ() {
 
                         {/* Apply Button */}
                         <button
-                            className="px-5 py-2 rounded-lg text-sm font-medium text-white transition-colors"
+                            onClick={handleApplyFilters}
+                            className="px-5 py-2 rounded-lg text-sm font-medium text-white transition-colors hover:bg-[#069473]"
                             style={{ backgroundColor: "#00c193" }}
                         >
                             Apply
@@ -456,7 +516,8 @@ export default function CompanyIQ() {
 
                         {/* Clear All */}
                         <button
-                            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            onClick={handleClearAll}
+                            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100"
                             style={{ color: "#00c193" }}
                         >
                             Clear All
@@ -464,47 +525,44 @@ export default function CompanyIQ() {
                     </div>
                 </div>
 
-
-
                 {/* Results Count */}
                 <div className="text-sm text-gray-600">
                     Showing {paginatedCompanies.length} of {filteredCompanies.length} companies
                 </div>
 
-                {/* GRID: Company Cards - 3 Rows x 4 Cards */}
-                <div className="grid grid-cols-4 gap-6">
+                {/* GRID: Company Cards - 3 Rows x 2 Cards */}
+                <div className="grid grid-cols-2 gap-8">
                     {paginatedCompanies.map(company => (
                         <div
                             key={company.id}
-                            className="rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+                            className="rounded-xl p-6 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1"
                             style={{ borderWidth: "1px", borderColor: "#00c193" }}
                         >
                             {/* Card Header */}
                             <div className="mb-4">
-                                <h3 className="font-semibold text-gray-900">{company.name}</h3>
-                                <p className="text-xs text-gray-500">{company.industry}</p>
+                                <h3 className="font-semibold text-lg text-gray-900">{company.name}</h3>
+                                <p className="text-sm text-gray-500">{company.industry}</p>
                             </div>
 
                             {/* Quick Info */}
-                            <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
-                                <div className="bg-gray-50 p-2 rounded-lg">
+                            <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+                                <div className="bg-gray-50 p-3 rounded-lg">
                                     <div className="text-gray-500">HQ</div>
                                     <div className="font-semibold text-gray-900">{company.hq}</div>
                                 </div>
-                                <div className="bg-gray-50 p-2 rounded-lg">
+                                <div className="bg-gray-50 p-3 rounded-lg">
                                     <div className="text-gray-500">Revenue</div>
-                                    <div className="font-semibold text-gray-900">{company.revenue}</div>
+                                    <div className="font-semibold text-gray-900">${company.revenue}M</div>
                                 </div>
                             </div>
 
                             {/* Report Sections */}
                             <div className="space-y-2">
                                 {[
-                                    ["digital", "Public / Digital Initiatives", "🌐"],
+                                    ["digital", "Digital Initiatives", "🌐"],
                                     ["cloud", "Cloud / Tech Stack", "☁️"],
                                     ["ai", "AI Use Cases", "🤖"],
-                                    ["outlook", "Transformation Outlook", "📊"],
-                                    ["explanation", "Score Explanation", "💡"]
+                                    ["outlook", "Transformation Outlook", "📊"]
                                 ].map(([key, label, icon]) => {
                                     const isActive = activeSection[company.id] === key;
                                     const hasActiveSection = activeSection[company.id] !== null && activeSection[company.id] !== undefined;
@@ -514,7 +572,7 @@ export default function CompanyIQ() {
                                         <div key={key}>
                                             <button
                                                 onClick={() => toggleSection(company.id, key as string)}
-                                                className="w-full flex justify-between items-center px-3 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors rounded-lg"
+                                                className="w-full flex justify-between items-center px-4 py-3 text-sm font-medium hover:bg-gray-50 transition-colors rounded-lg"
                                                 style={{ borderWidth: "1px", borderColor: "#00c193" }}
                                             >
                                                 <span className="flex items-center gap-2">
@@ -528,11 +586,11 @@ export default function CompanyIQ() {
 
                                             {isActive && (
                                                 <div
-                                                    className="mt-2 px-3 py-3 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg overflow-y-auto"
+                                                    className="mt-2 px-4 py-3 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg overflow-y-auto"
                                                     style={{
                                                         borderWidth: "1px",
                                                         borderColor: "#00c193",
-                                                        height: "200px"
+                                                        maxHeight: "150px"
                                                     }}
                                                 >
                                                     <AdvMarkdownHandler
