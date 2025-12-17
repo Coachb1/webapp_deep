@@ -245,14 +245,14 @@ export default function CompanyIQ() {
       return matchesSearch;
     });
   }, [
-  companies,
-  searchTerm,
-  selectedFilter,
-  appliedIndustry,
-  appliedHQ,
-  appliedRevenue,
-  appliedEmployees,
-]);
+    companies,
+    searchTerm,
+    selectedFilter,
+    appliedIndustry,
+    appliedHQ,
+    appliedRevenue,
+    appliedEmployees,
+  ]);
 
   const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -288,14 +288,14 @@ export default function CompanyIQ() {
             boxShadow: "0 10px 25px rgba(0, 193, 147, 0.25)",
           }}
         >
-          <h1 className="text-3xl font-bold text-black">CompanyIQ</h1>
+          <h1 className="text-3xl font-bold text-black">AI Landscape Snapshot</h1>
 
           <p className="text-gray-700 mt-2">
             AI-powered company intelligence, transformation scores, and
             strategic insights
           </p>
 
-          <div className="mt-4 flex gap-4 text-sm">
+          {/* <div className="mt-4 flex gap-4 text-sm">
             <span className="bg-white px-3 py-1 rounded-full text-black border border-gray-300">
               {companies.length} Companies
             </span>
@@ -303,7 +303,7 @@ export default function CompanyIQ() {
             <span className="bg-white px-3 py-1 rounded-full text-black border border-gray-300">
               Real-time Data
             </span>
-          </div>
+          </div> */}
         </div>
 
         {/* Search Bar with Icon */}
@@ -458,28 +458,34 @@ export default function CompanyIQ() {
               </div>
 
               {/* Quick Info */}
-              <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-                <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="flex gap-28 mb-4 text-sm">
+                <div>
                   <div className="text-gray-500">HQ</div>
                   <div className="font-semibold text-gray-900">
                     {company.hq}
                   </div>
                 </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
+                <div>
                   <div className="text-gray-500">Revenue</div>
                   <div className="font-semibold text-gray-900">
                     ${company.revenue}M
                   </div>
                 </div>
+                <div>
+                  <div className="text-gray-500">Employees</div>
+                  <div className="font-semibold text-gray-900">
+                    {company.employees}
+                  </div>
+                </div>
               </div>
 
-              {/* Report Sections */}
               <div className="space-y-2">
                 {[
+                  ["leadershipRoles", "AI/Cloud Leadership Roles", "👔"],
                   ["initiatives", "Digital Initiatives", "🌐"],
                   ["techStack", "Cloud / Tech Stack", "☁️"],
                   ["useCases", "AI Use Cases", "🤖"],
-                  
+
                 ].map(([key, label, icon]) => {
                   const isActive = activeSection[company.id] === key;
                   const hasActiveSection =
@@ -509,17 +515,30 @@ export default function CompanyIQ() {
                           style={{
                             borderWidth: "1px",
                             borderColor: "#00c193",
-                            maxHeight: "150px",
                           }}
                         >
-                          <AdvMarkdownHandler
-                            content={
-                              Array.isArray((company as any)[key])
-                                ? (company as any)[key].join("\n")
-                                : (company as any)[key] || "No data available."
-                            }
-                          />
-
+                          <ul className="space-y-2">
+                            {Array.isArray((company as any)[key])
+                              ? (company as any)[key].map((item: string, idx: number) => (
+                                <li key={idx} className="flex gap-3 text-sm text-gray-700">
+                                  <span className="text-green-500 font-bold mt-0.5">•</span>
+                                  <span>{item}</span>
+                                </li>
+                              ))
+                              : typeof (company as any)[key] === "string" && (company as any)[key]
+                                ? (company as any)[key].split("\n").filter((line: string) => line.trim()).map((item: string, idx: number) => (
+                                  <li key={idx} className="flex gap-3 text-sm text-gray-700">
+                                    <span className="text-green-500 font-bold mt-0.5">•</span>
+                                    <span>{item.trim()}</span>
+                                  </li>
+                                ))
+                                : (
+                                  <li className="flex gap-3 text-sm text-gray-700">
+                                    <span className="text-green-500 font-bold mt-0.5">•</span>
+                                    <span>No data available.</span>
+                                  </li>
+                                )}
+                          </ul>
                         </div>
                       )}
                     </div>
