@@ -481,7 +481,7 @@ export default function CompanyIQ() {
 
               <div className="space-y-2">
                 {[
-                  ["leadershipRoles", "AI/Cloud Leadership Roles", "👔"],
+                  ["leadership", "AI/Cloud Leadership Roles", "👔"],
                   ["initiatives", "Digital Initiatives", "🌐"],
                   ["techStack", "Cloud / Tech Stack", "☁️"],
                   ["useCases", "AI Use Cases", "🤖"],
@@ -521,8 +521,8 @@ export default function CompanyIQ() {
                             {Array.isArray((company as any)[key])
                               ? (company as any)[key].map((item: string, idx: number) => (
                                 <li key={idx} className="flex gap-3 text-sm text-gray-700">
-                                  <span className="text-green-500 font-bold mt-0.5">•</span>
-                                  <span>{item}</span>
+                                  <span className="text-green-500 font-bold mt-0.5"><strong>•</strong></span>
+                                  <span>{<AdvMarkdownHandler content={item.replace('*', '')} />}</span>
                                 </li>
                               ))
                               : typeof (company as any)[key] === "string" && (company as any)[key]
