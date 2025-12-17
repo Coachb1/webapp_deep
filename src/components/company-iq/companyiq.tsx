@@ -479,7 +479,7 @@ export default function CompanyIQ() {
                   ["initiatives", "Digital Initiatives", "🌐"],
                   ["techStack", "Cloud / Tech Stack", "☁️"],
                   ["useCases", "AI Use Cases", "🤖"],
-                  ["outlook", "Transformation Outlook", "📊"],
+                  
                 ].map(([key, label, icon]) => {
                   const isActive = activeSection[company.id] === key;
                   const hasActiveSection =
