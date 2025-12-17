@@ -10,10 +10,14 @@ function PaginationComponent({
   totalPages,
   currentPage,
   onPageChange,
+  loading,
+  error,
 }: {
   totalPages: number;
   currentPage: number;
   onPageChange: (page: number) => void;
+  loading: boolean;
+  error: string | null;
 }) {
   const getPageNumbers = () => {
     const pages = [];
@@ -48,6 +52,22 @@ function PaginationComponent({
     }
     return pages;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Loading CompanyIQ…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <nav
@@ -146,6 +166,32 @@ export default function CompanyIQ() {
 
   const itemsPerPage = 6;
   const paginationRef = useRef<HTMLDivElement | null>(null);
+
+  // ✅ ADD THESE THREE useMemo HOOKS HERE (AFTER YOUR STATE DECLARATIONS)
+  const industryOptions = useMemo(() => {
+    const industries = companies
+      .map((c) => c.industry)
+      .filter((value, index, self) => value && self.indexOf(value) === index)
+      .sort();
+    return industries;
+  }, [companies]);
+
+  const hqOptions = useMemo(() => {
+    const hqs = companies
+      .map((c) => c.hq)
+      .filter((value, index, self) => value && self.indexOf(value) === index)
+      .sort();
+    return hqs;
+  }, [companies]);
+
+  const revenueOptions = useMemo(() => {
+    return ["$0–100M", "$100–500M", "$500M+"];
+  }, []);
+
+  const employeeOptions = useMemo(() => {
+    return ["0–500", "500–2000", "2000+"];
+  }, []);
+  // ✅ END OF NEW CODE
 
   const toggleSection = (companyId: string | number, section: string) => {
     setActiveSection((prev) => ({
@@ -369,13 +415,14 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Industry</option>
-              <option>Technology</option>
-              <option>Finance</option>
-              <option>Healthcare</option>
-              <option>Retail</option>
+              {industryOptions.map((industry) => (
+                <option key={industry} value={industry}>
+                  {industry}
+                </option>
+              ))}
             </select>
 
-            {/* HQ */}
+            {/* ✅ UPDATED: HQ Select */}
             <select
               value={tempHQ}
               onChange={(e) => setTempHQ(e.target.value)}
@@ -383,13 +430,14 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">HQ</option>
-              <option>USA</option>
-              <option>UK</option>
-              <option>Germany</option>
-              <option>Japan</option>
+              {hqOptions.map((hq) => (
+                <option key={hq} value={hq}>
+                  {hq}
+                </option>
+              ))}
             </select>
 
-            {/* Revenue */}
+            {/* ✅ UPDATED: Revenue Select */}
             <select
               value={tempRevenue}
               onChange={(e) => setTempRevenue(e.target.value)}
@@ -397,12 +445,14 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Revenue</option>
-              <option>$0–100M</option>
-              <option>$100–500M</option>
-              <option>$500M+</option>
+              {revenueOptions.map((revenue) => (
+                <option key={revenue} value={revenue}>
+                  {revenue}
+                </option>
+              ))}
             </select>
 
-            {/* Employees */}
+            {/* ✅ UPDATED: Employees Select */}
             <select
               value={tempEmployees}
               onChange={(e) => setTempEmployees(e.target.value)}
@@ -410,9 +460,11 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Employees</option>
-              <option>0–500</option>
-              <option>500–2000</option>
-              <option>2000+</option>
+              {employeeOptions.map((emp) => (
+                <option key={emp} value={emp}>
+                  {emp}
+                </option>
+              ))}
             </select>
 
             {/* Apply Button */}
@@ -555,6 +607,8 @@ export default function CompanyIQ() {
             totalPages={totalPages}
             currentPage={currentPage}
             onPageChange={handlePageChange}
+            loading={loading}
+            error={error}
           />
         </div>
       </div>
