@@ -147,6 +147,15 @@ export default function CompanyIQ() {
   const itemsPerPage = 6;
   const paginationRef = useRef<HTMLDivElement | null>(null);
 
+  // Dynamically extract unique industries and HQs from companies
+  const uniqueIndustries = useMemo(() => {
+    return Array.from(new Set(companies.map((c) => c.industry).filter(Boolean))).sort();
+  }, [companies]);
+
+  const uniqueHQs = useMemo(() => {
+    return Array.from(new Set(companies.map((c) => c.hq).filter(Boolean))).sort();
+  }, [companies]);
+
   const toggleSection = (companyId: string | number, section: string) => {
     setActiveSection((prev) => ({
       ...prev,
@@ -369,10 +378,11 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Industry</option>
-              <option>Technology</option>
-              <option>Finance</option>
-              <option>Healthcare</option>
-              <option>Retail</option>
+              {uniqueIndustries.map((industry) => (
+                <option key={industry} value={industry}>
+                  {industry}
+                </option>
+              ))}
             </select>
 
             {/* HQ */}
@@ -383,10 +393,11 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">HQ</option>
-              <option>USA</option>
-              <option>UK</option>
-              <option>Germany</option>
-              <option>Japan</option>
+              {uniqueHQs.map((hq) => (
+                <option key={hq} value={hq}>
+                  {hq}
+                </option>
+              ))}
             </select>
 
             {/* Revenue */}
