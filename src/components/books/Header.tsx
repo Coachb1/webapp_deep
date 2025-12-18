@@ -153,7 +153,7 @@ const Header = ({ packageCourseId, jobaidId, onlyClientSetup }: { packageCourseI
                     if (user?.email) {
                       const url = `/library-bot/ideaboardReport/?jobaid=${jobaidId}&email=${encodeURIComponent(
                         user.email
-                      )}`;
+                      )}&onlyclientsetup=${onlyClientSetup}`;
                       window.open(url, "_blank", "noopener,noreferrer");
                     }
                   }}

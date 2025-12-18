@@ -26,9 +26,10 @@ export interface RowData {
 interface IdeaboardPageProps {
   jobaid: string;
   userEmail: string;
+  onlyclientsetup: boolean;
 }
 
-export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmail }) => {
+export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmail, onlyclientsetup }) => {
   const [client, setClientData] = useState<UserInfoType|null>(null);
   const [clientLoading, setClientLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -150,6 +151,60 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
     const { id, uid, liked } = row;
     const newLikeStatus = !liked;
     const likeChange = newLikeStatus ? 1 : -1;
+
+    // Optimistic update (with clamp at 0)
+    setRows((prevRows) =>
+      prevRows.map((r) =>
+        r.id === id
+          ? { ...r, liked: newLikeStatus, likes: Math.max(0, r.likes + likeChange) }
+          : r
+      )
+    );
+    setLoadingLike(id);
+
+    try {
+      const res = await fetch(`${baseURL}/job-aid/job-aid-leaderboard/like/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: uid,
+          email: userEmail,
+          like_count: likeChange,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update like");
+      console.log(await res.json());
+      // ✅ Refetch the latest like count from API
+      const updatedRes = await fetch(
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+      );
+      if (!updatedRes.ok) throw new Error("Failed to refresh data");
+      const updatedData = await updatedRes.json();
+
+      // Re-map API data to rows
+      const mapped = mapApiToRows(updatedData);
+      setRows(mapped);
+      setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || []),]);
+    } catch (err) {
+      console.error("Like API failed:", err);
+      // rollback if API fails
+      setRows((prevRows) =>
+        prevRows.map((r) =>
+          r.id === id
+            ? { ...r, liked, likes: Math.max(0, r.likes - likeChange) }
+            : r
+        )
+      );
+    } finally {
+      setLoadingLike(null);
+    }
+  };
+
+  const onThumbupOrThumbdown = async (row: RowData, type: "thumbup" | "thumbdown") => {
+    const { id, uid, liked } = row;
+    const newLikeStatus = type === "thumbup" ? true : false;
+    const likeChange = type === "thumbup" ? 1 : -1;
 
     // Optimistic update (with clamp at 0)
     setRows((prevRows) =>
@@ -329,6 +384,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
               loadingLike={loadingLike}
               onLike={handleLike}
               onSelectRow={setSelectedRow}
+              onlyClientSetup={onlyclientsetup}
+              onThumbupOrThumbdown={onThumbupOrThumbdown}
             />
 
             <IdeaBoardPagination
