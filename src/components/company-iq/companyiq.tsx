@@ -492,7 +492,7 @@ export default function CompanyIQ() {
 
               <div className="space-y-2">
                 {[
-                  ["leadership", "AI/Cloud Leadership Roles", "👔"],
+                  // ["leadership", "AI/Cloud Leadership Roles", "👔"],
                   ["initiatives", "Digital Initiatives", "🌐"],
                   ["techStack", "Cloud / Tech Stack", "☁️"],
                   ["useCases", "AI Use Cases", "🤖"],
