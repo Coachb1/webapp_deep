@@ -66,7 +66,7 @@ export const LibraryPageLoader = () => {
 
 export const HeroLoader = () => (
   <section className="bg-white border border-[#00c193] py-14 md:py-18 lg:py-9">
-    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
+    <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
 
       {/* Left skeleton */}
       <div className="space-y-4 animate-pulse">
@@ -110,3 +110,81 @@ export const ConceptsBoxLoader = () => {
   );
 };
 
+export const CompanyIQLoader = () => {
+  return (
+    <div className=" animate-pulse">
+
+      {/* 🔰 HERO / TITLE BOX */}
+      <div className=" mx-auto px-4 mt-6">
+        <div className="border border-[#00c193] rounded-2xl p-6 bg-white">
+          <div className="h-7 w-72 bg-gray-200 rounded mb-3" />
+          <div className="h-4 w-[520px] max- bg-gray-200 rounded" />
+        </div>
+      </div>
+
+      {/* 🔰 SEARCH BAR */}
+      <div className=" mx-auto px-4 mt-6">
+        <div className="h-12  bg-gray-200 rounded-full" />
+      </div>
+
+      {/* 🔰 FILTER BAR */}
+      <div className=" mx-auto px-4 mt-6">
+        <div className="border border-[#00c193] rounded-2xl p-5 bg-white flex flex-wrap gap-4 items-center justify-center">
+
+          <div className="h-5 w-20 bg-gray-200 rounded" />
+
+          <div className="h-10 w-36 bg-gray-200 rounded-md" />
+          <div className="h-10 w-36 bg-gray-200 rounded-md" />
+          <div className="h-10 w-36 bg-gray-200 rounded-md" />
+          <div className="h-10 w-36 bg-gray-200 rounded-md" />
+
+          <div className="h-10 w-24 bg-gray-300 rounded-md" />
+          <div className="h-4 w-16 bg-gray-200 rounded" />
+        </div>
+      </div>
+
+      {/* 🔰 RESULT COUNT */}
+      <div className=" mx-auto px-4 mt-6">
+        <div className="h-4 w-40 bg-gray-200 rounded" />
+      </div>
+
+      {/* 🔰 COMPANY CARD GRID */}
+      <div className=" mx-auto px-4 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="border border-[#00c193] rounded-2xl p-5 bg-white shadow-sm"
+          >
+            {/* Company name */}
+            <div className="h-5 w-32 bg-gray-300 rounded mb-2" />
+            <div className="h-3 w-24 bg-gray-200 rounded mb-4" />
+
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-4 mb-5">
+              <div>
+                <div className="h-3 w-10 bg-gray-200 rounded mb-2" />
+                <div className="h-4 w-20 bg-gray-300 rounded" />
+              </div>
+              <div>
+                <div className="h-3 w-16 bg-gray-200 rounded mb-2" />
+                <div className="h-4 w-24 bg-gray-300 rounded" />
+              </div>
+              <div>
+                <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
+                <div className="h-4 w-16 bg-gray-300 rounded" />
+              </div>
+            </div>
+
+            {/* Accordion placeholders */}
+            <div className="space-y-3">
+              <div className="h-10  bg-gray-200 rounded-md" />
+              <div className="h-10  bg-gray-200 rounded-md" />
+              <div className="h-10  bg-gray-200 rounded-md" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
+};

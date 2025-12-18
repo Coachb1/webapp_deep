@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import AdvMarkdownHandler from "../MarkdownAdvance";
 import { useCompanyIQ } from "@/hooks/useCompanyIQ";
+import { CompanyIQLoader } from "../books/Loaders";
 
 /* -------------------------
    PAGINATION COMPONENT
@@ -272,9 +273,7 @@ export default function CompanyIQ() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Loading CompanyIQ…
-      </div>
+      <CompanyIQLoader />
     );
   }
 
