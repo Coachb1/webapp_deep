@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import AdvMarkdownHandler from "../MarkdownAdvance";
 import { useCompanyIQ } from "@/hooks/useCompanyIQ";
+import { CompanyIQLoader } from "../books/Loaders";
 
 /* -------------------------
    PAGINATION COMPONENT
@@ -147,6 +148,15 @@ export default function CompanyIQ() {
   const itemsPerPage = 6;
   const paginationRef = useRef<HTMLDivElement | null>(null);
 
+  // Dynamically extract unique industries and HQs from companies
+  const uniqueIndustries = useMemo(() => {
+    return Array.from(new Set(companies.map((c) => c.industry).filter(Boolean))).sort();
+  }, [companies]);
+
+  const uniqueHQs = useMemo(() => {
+    return Array.from(new Set(companies.map((c) => c.hq).filter(Boolean))).sort();
+  }, [companies]);
+
   const toggleSection = (companyId: string | number, section: string) => {
     setActiveSection((prev) => ({
       ...prev,
@@ -263,9 +273,7 @@ export default function CompanyIQ() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Loading CompanyIQ…
-      </div>
+      <CompanyIQLoader />
     );
   }
 
@@ -369,10 +377,11 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Industry</option>
-              <option>Technology</option>
-              <option>Finance</option>
-              <option>Healthcare</option>
-              <option>Retail</option>
+              {uniqueIndustries.map((industry) => (
+                <option key={industry} value={industry}>
+                  {industry}
+                </option>
+              ))}
             </select>
 
             {/* HQ */}
@@ -383,10 +392,11 @@ export default function CompanyIQ() {
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">HQ</option>
-              <option>USA</option>
-              <option>UK</option>
-              <option>Germany</option>
-              <option>Japan</option>
+              {uniqueHQs.map((hq) => (
+                <option key={hq} value={hq}>
+                  {hq}
+                </option>
+              ))}
             </select>
 
             {/* Revenue */}
@@ -481,7 +491,7 @@ export default function CompanyIQ() {
 
               <div className="space-y-2">
                 {[
-                  ["leadership", "AI/Cloud Leadership Roles", "👔"],
+                  // ["leadership", "AI/Cloud Leadership Roles", "👔"],
                   ["initiatives", "Digital Initiatives", "🌐"],
                   ["techStack", "Cloud / Tech Stack", "☁️"],
                   ["useCases", "AI Use Cases", "🤖"],
