@@ -17,13 +17,12 @@ const Navbar: React.FC<{ clientId?: string }> = ({ clientId }) => {
       <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Image
-            src="/images/coachbotlogo.png"
-            alt="CoachBot Logo"
-            width={180}
-            height={180}
-            className="w-44 h-44 md:w-44 md:h-44 object-contain"
-          />
+          <h1 className="w-fit border-2 border-[#2DC092] px-2 py-1 text-lg font-extrabold text-[#2DC092] sm:text-xl">
+              <span className="mr-1 bg-[#2DC092] px-2 py-1 text-base font-bold text-white sm:text-lg">
+                AI
+              </span>
+              ADOPTS
+            </h1>
           {pathname.includes("portal") && clientId && (
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
               {/* Leader Board Button */}

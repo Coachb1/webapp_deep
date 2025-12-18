@@ -15,6 +15,8 @@ import ProtectedSection from "../protectedSection";
 export interface RowData {
   id: number;
   uid: string;
+  full_name: string;
+  email: string;
   qna: Record<string, string>;
   likes: number;
   liked: boolean;
@@ -24,9 +26,10 @@ export interface RowData {
 interface IdeaboardPageProps {
   jobaid: string;
   userEmail: string;
+  onlyclientsetup: boolean;
 }
 
-export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmail }) => {
+export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmail, onlyclientsetup }) => {
   const [client, setClientData] = useState<UserInfoType|null>(null);
   const [clientLoading, setClientLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -106,7 +109,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
         console.log("Fetched report data:", data);
         const mapped = mapApiToRows(data);
         setRows(mapped);
-        setQnaKeys(mapped[0]?.keyOrder || [])
+        setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || [])]);
 
       } catch (err: any) {
         console.error("Error fetching data:", err);
@@ -127,6 +130,8 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       id: item.id,
       uid: item.uid || item.session_id,
       // Q&A object (question: answer)
+      full_name: item.full_name || "-",
+      email: item.email || "-",
       qna:
         item.ordered_qna?.reduce((acc: Record<string, string>, q: any) => {
           acc[q.question] = q.answer;
@@ -180,7 +185,61 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
       setRows(mapped);
-      setQnaKeys(mapped[0]?.keyOrder || [])
+      setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || []),]);
+    } catch (err) {
+      console.error("Like API failed:", err);
+      // rollback if API fails
+      setRows((prevRows) =>
+        prevRows.map((r) =>
+          r.id === id
+            ? { ...r, liked, likes: Math.max(0, r.likes - likeChange) }
+            : r
+        )
+      );
+    } finally {
+      setLoadingLike(null);
+    }
+  };
+
+  const onThumbupOrThumbdown = async (row: RowData, type: "thumbup" | "thumbdown") => {
+    const { id, uid, liked } = row;
+    const newLikeStatus = type === "thumbup" ? true : false;
+    const likeChange = type === "thumbup" ? 1 : -1;
+
+    // Optimistic update (with clamp at 0)
+    setRows((prevRows) =>
+      prevRows.map((r) =>
+        r.id === id
+          ? { ...r, liked: newLikeStatus, likes: Math.max(0, r.likes + likeChange) }
+          : r
+      )
+    );
+    setLoadingLike(id);
+
+    try {
+      const res = await fetch(`${baseURL}/job-aid/job-aid-leaderboard/like/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: uid,
+          email: userEmail,
+          like_count: likeChange,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update like");
+      console.log(await res.json());
+      // ✅ Refetch the latest like count from API
+      const updatedRes = await fetch(
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+      );
+      if (!updatedRes.ok) throw new Error("Failed to refresh data");
+      const updatedData = await updatedRes.json();
+
+      // Re-map API data to rows
+      const mapped = mapApiToRows(updatedData);
+      setRows(mapped);
+      setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || []),]);
     } catch (err) {
       console.error("Like API failed:", err);
       // rollback if API fails
@@ -203,13 +262,16 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   // Prepare data for export
   const exportData = rows.map(row => {
     const rowData: any = {
-      
+      "Full Name": row.full_name,
+      "Email": row.email,
       
     };
     
     // Add all Q&A columns
     qnaKeys.forEach(key => {
+      if (key !== "Full Name" && key !== "Email") {
       rowData[key] = row.qna[key] || '-';
+    }
     });
     rowData['Likes'] = row.likes;
     
@@ -261,14 +323,14 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto p-6 min-h-screen bg-white font-inter">
+    <div className="max-w-[1800px] mx-auto p-6 min-h-screen bg-white font-inter">
       {/* Header */}
       <div className="bg-gray-200 border-2 border-[#00c193] p-6 mb-8 text-black"
       style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-extrabold flex items-center gap-2">
-              <FaChartLine /> IdeaBoard Report
+              <FaChartLine /> Enterprise Idea Portfolio
             </h1>
             <p className="opacity-90 text-lg">Enterprise Ideas log</p>
           </div>
@@ -303,12 +365,12 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
       <div className="bg-white shadow-xl border border-gray-200 overflow-hidden"
       style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="p-6 border-b border-gray-200 bg-white flex justify-between items-center">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+          {/* <h2 className="text-2xl font-bold flex items-center gap-2">
             <FaTable />Activity Report
-          </h2>
-          <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
+          </h2> */}
+          {/* <span className="text-[#00c193] font-semibold flex items-center gap-1 text-sm">
             <FaArrowUp /> Updated just now
-          </span>
+          </span> */}
         </div>
 
         {loading && <div className="p-6 text-center text-gray-500">Loading...</div>}
@@ -322,6 +384,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
               loadingLike={loadingLike}
               onLike={handleLike}
               onSelectRow={setSelectedRow}
+              onlyClientSetup={onlyclientsetup}
+              onThumbupOrThumbdown={onThumbupOrThumbdown}
             />
 
             <IdeaBoardPagination

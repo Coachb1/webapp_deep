@@ -22,6 +22,7 @@ export interface Book {
   list_name: string;
   transform_iq?: Record<string, any>;
   userProgress?: Record<string, any>;
+  totalLikes?: number;
 }
 
 export interface CoursePackage {

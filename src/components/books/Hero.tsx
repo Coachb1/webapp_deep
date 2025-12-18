@@ -28,7 +28,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
 <section className="bg-[#ffffff] text-white py-14 md:py-18 lg:py-9 border border-[#00c193]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-10 px-4 sm:px-6 lg:px-8">
           <div>
-            <h1 className=" text-[28px] sm:text-[32px] md:text-[40px] lg:text-[36px] leading-tight text-black">
+            <h1 className="font-bold text-[28px] sm:text-[32px] md:text-[40px] lg:text-[36px] leading-tight text-black">
               {title}
             </h1>
 

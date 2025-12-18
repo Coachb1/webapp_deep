@@ -4,8 +4,9 @@ import { Book } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
-import { addModuleLater, addModuleLike, getModuleCompletion } from "@/lib/api";
+import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
+import ThumbVoteButton from "./ui/LIkeDislikeButtons";
 
 interface BookCardProps {
   book: Book;
@@ -16,6 +17,7 @@ interface BookCardProps {
   setLaterBooks: React.Dispatch<React.SetStateAction<Book[]>>;
   laterBooks: Book[];
   likedBooks: Book[];
+  onlyClientSetup: boolean; // Optional prop to handle client setup
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -27,6 +29,7 @@ const BookCard: React.FC<BookCardProps> = ({
   setLaterBooks,
   likedBooks,
   laterBooks,
+  onlyClientSetup, // Default to false if not provided
 }) => {
 
   const { user, userInfo } = usePortalUser()
@@ -36,7 +39,8 @@ const BookCard: React.FC<BookCardProps> = ({
   const [completedDate, setCompletedDate] = useState<string | null>(null);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
-
+  const [moduleLikes, setModuleLikes] = useState<number>(book.totalLikes || 0);
+  const [loadingLikeDislike, setLoadingLikeDislike] = useState<boolean>(false);
   useEffect(()=>{
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature 
       && book?.transform_iq?.overview && book?.transform_iq?.roles){
@@ -76,7 +80,19 @@ const BookCard: React.FC<BookCardProps> = ({
     fetchProgress();
   }, [user_id, book.id, book.userProgress?.completed_in_percentage]);
 
-
+  const handleLikeDisLike = async (book: Book, vote: 1 | -1) => {
+    // Update the like count
+    setLoadingLikeDislike(true);
+    setModuleLikes((prev) => {
+      if (vote === 1) {
+        return prev + 1;
+      } else {
+        return prev - 1;
+      }
+    });
+    await addModuleTotalLike(book.id, vote);
+    setLoadingLikeDislike(false);
+  };
 
   const handleToggleLike = (book: Book) => {
     setLikedBooks((prev: Book[]) => {
@@ -119,14 +135,25 @@ const BookCard: React.FC<BookCardProps> = ({
       {/* Watch Later + Like */}
       <div className="flex items-center gap-1 sm:gap-2 md:gap-0 lg:justify-between">
         {/* Listen Later */}
-        <button onClick={() => handleToggleLater(book)} className="shrink-0">
-          <WatchLaterButton
-            isActive={laterBooks.some((b) => b.title === book.title)}
-            onToggle={() => { }}
-          />
-        </button>
+        {!onlyClientSetup && (
+          <button onClick={() => handleToggleLater(book)} className="shrink-0">
+            <WatchLaterButton
+              isActive={laterBooks.some((b) => b.title === book.title)}
+              onToggle={() => { }}
+            />
+          </button>
+        )}
+        
+        {/* The Watchlater button is commented for specific purpose to be uncommented later */}
 
         {/* Heart */}
+        {onlyClientSetup ?(
+            <ThumbVoteButton
+              count={moduleLikes || 0}
+              onVote={(value) => handleLikeDisLike(book, value)}
+              loading={loadingLikeDislike}
+            />
+        ): (
         <button
           onClick={() => handleToggleLike(book)}
           className="shrink-0 md:-ml-1 lg:ml-auto"
@@ -136,6 +163,7 @@ const BookCard: React.FC<BookCardProps> = ({
             onToggle={() => { }}
           />
         </button>
+        )}
       </div>
 
 
@@ -193,12 +221,13 @@ const BookCard: React.FC<BookCardProps> = ({
       </div>
 
 
-
+      {/* This section is commented to hide progress bar and finished status to be uncommented later. */}
       {/* Finished Status + Progress */}
+      {!onlyClientSetup && (
       <div className="flex items-center mt-3 gap-2">
         {status === "finished" ? (
           <>
-            {/* Date + Finished */}
+            
             <span className="text-gray-700 text-sm">
               {completedDate ? `${completedDate} • Finished` : "Finished"}
             </span>
@@ -208,9 +237,9 @@ const BookCard: React.FC<BookCardProps> = ({
           </>
         ) : (
           <>
-            {/* Progress (text only) */}
+            
             <span className="text-gray-700 text-sm">Progress</span>
-            {/* Progress bar */}
+            
             <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
               <div
                 className="h-2 bg-green-500 transition-all duration-500"
@@ -220,6 +249,8 @@ const BookCard: React.FC<BookCardProps> = ({
           </>
         )}
       </div>
+      )}
+
     </article>
     {/* Read Modal with iframe */}
     {isReadModalOpen && (
