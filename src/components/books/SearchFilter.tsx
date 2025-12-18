@@ -625,9 +625,11 @@ const SearchFilter = ({
           </Button>
 
         </div>
+        
+        {/* --->For Specific Purpose the Like And Lets discuss Commented to be uncommented later */}
 
         {/* Like + Later */}
-        <div className="flex gap-2 items-center">
+        {/* <div className="flex gap-2 items-center">
           <Button
             onClick={handleLikeClick}
             className={`px-6 py-2 sm:py-3 text-sm sm:text-base font-medium shadow-sm transition-all duration-300 ${activeButton === "like" ? "bg-[#00c193] text-white border border-[#00c193]" : "bg-gray-200 text-black border border-[#00c193] hover:bg-gray-300"}`}style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
@@ -641,7 +643,8 @@ const SearchFilter = ({
           >
             Let's Discuss
           </Button>
-        </div>
+        </div> */}
+
       </div>
 
      {/* Filter Categories - Below Search Bar */}

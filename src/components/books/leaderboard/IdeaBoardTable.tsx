@@ -32,23 +32,36 @@ export default function IdeaBoardTable({ qnaKeys, rows, loadingLike, onLike, onS
         <tbody>
           {rows.map((row) => (
             <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
-              {qnaKeys.map((key) => (
-                <td key={key} className="px-6 py-4 text-center text-gray-600 max-w-[200px]">
-                  <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                    {row.qna[key] || "-"}
-                  </div>
+              {qnaKeys.map((key) => {
+                if (key === "Full Name") {
+                  return (<td key={key} className="px-6 py-4 text-left font-medium text-gray-800 whitespace-nowrap">
+                    {row.full_name}
+                  </td>);
+                }
+                if (key === "Email") {
+                  return (
+                    <td key={key}>
+                      {row.email}
+                    </td>);
+                }
+                const value = row.qna[key] || "-";
+                return (
+                  <td key={key} className="px-6 py-4 text-center text-gray-600 max-w-[200px]">
+                    <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                      {row.qna[key] || "-"}
+                    </div>
 
-                  {row.qna[key] && row.qna[key].length > 80 && (
-                    <button
-                      onClick={() => onSelectRow({ [key]: row.qna[key] })}
-                      className="ml-2 text-[#00c193] underline text-sm"
-                    >
-                      More
-                    </button>
-                  )}
-                </td>
-
-              ))}
+                    {row.qna[key] && row.qna[key].length > 80 && (
+                      <button
+                        onClick={() => onSelectRow({ [key]: row.qna[key] })}
+                        className="ml-2 text-[#00c193] underline text-sm"
+                      >
+                        More
+                      </button>
+                    )}
+                  </td>
+                );
+              })}
 
 
               <td className="px-6 py-4 text-center">

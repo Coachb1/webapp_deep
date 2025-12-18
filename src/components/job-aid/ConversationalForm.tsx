@@ -391,7 +391,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           {isReport
             ? "⏳ Generating Your Report..."
             : isPromptGenerator ?
-              "⏳ Generating Prompt..."
+              "⏳ Please wait while we are generating your Blueprint..."
               : "⏳ Submitting..."}
         </h2>
         <div className="flex justify-center">
@@ -415,7 +415,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         {generatedPrompt ? (
           // 🟢 Prompt Generation Mode Output Box
           <>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">✨ Your Prompt is Ready!</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">✨ Your Draft Blueprint is Ready!</h2>
             <p className="text-gray-600 text-lg mb-4 text-center">
               Copy and use it wherever you like.
             </p>
