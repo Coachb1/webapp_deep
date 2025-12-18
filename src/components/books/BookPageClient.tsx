@@ -14,6 +14,10 @@ import CoachBotsWidget from "./CoachWidget";
 import { usePortalUser } from "./context/UserContext";
 import { LibraryPageLoader } from "./Loaders";
 import ConceptsViewer from "./ConceptTabCollections";
+import ActionDashboard from "./ActionDashboard";
+import CompanyIQ from "../company-iq/companyiq";
+import { IdeaBoardReport } from "./leaderboard/ideaboardReport";
+import ConversationalForm from "../job-aid/ConversationalForm";
 
 interface BookPageClientProps {
   id: string;
@@ -40,6 +44,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const [heroImageLink, setHeroImageLink] = useState<string|null>(null);
   const [packageDetails, setPackageDetails] = useState<any>(null);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
+  const [actionKey, setActionKey] = useState<string | null>(null);
   
   useEffect(()=>{
     console.info('transformiq', userInfo.libraryBotConfig)
@@ -234,9 +239,17 @@ const handleMultipleSearch = (
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
-        <ConceptsViewer/>
 
-        {LibraryLoading || loading ? (
+        <ActionDashboard onAction={(value)=> setActionKey(value)}/>
+
+
+        {actionKey === "OPEN_CONCEPTS_EXEC_AI_MASTERY" && <ConceptsViewer/>}
+
+        {actionKey === "AI_LANDSCAPE" && <CompanyIQ/>}
+
+        {actionKey === 'SHOW_AI_CASES' && (
+          <>
+          {LibraryLoading || loading ? (
           <LibraryPageLoader/>
         ) : (
           <BookSection
@@ -259,6 +272,27 @@ const handleMultipleSearch = (
             onlyClientSetup={onlyClientSetup}
           />
         )}
+        </>
+        )}
+
+        {!loading && jobAidId && (
+          <>
+          {actionKey === "INTERNAL_TRANSFORMATION_ALIGN" && (
+              <IdeaBoardReport jobaid={jobAidId} userEmail={user?.user_data?.email} onlyclientsetup={onlyClientSetup}/>
+            )}
+          {actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
+              <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+                <ConversationalForm
+                  job_aid_id={jobAidId}
+                  isEmailSection={onlyClientSetup ? true : false}
+                  inputEmail={user?.user_data?.email || "undefined@gmail.com"}
+                  inputName={user?.user_data?.name || "User"}
+                />
+              </div>
+          )}
+          </>
+        )}
+          
       </main>
 
       <footer className="bg-white text-black py-6 mt-8 border-t">

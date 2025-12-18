@@ -5,9 +5,10 @@ import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock } from "@/lib/types";
 import { ConceptsBoxLoader } from "./Loaders";
 
-const LIMIT = 10; // show first 20 items
+const LIMIT = 10; // show first 10 items
 
 const ConceptsViewer = () => {
+  const [pageMap, setPageMap] = useState<Record<string, number>>({});
   const { userInfo, loading } = usePortalUser();
   const [data, setData] = useState<CollectionBlock[] | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
@@ -19,6 +20,17 @@ const ConceptsViewer = () => {
   const [activeBlockForMore, setActiveBlockForMore] =
     useState<CollectionBlock | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
+  
+  
+  // Pagination helpers (per collection block)
+  const getPage = (blockId: string) => pageMap[blockId] ?? 0;
+
+  const setPage = (blockId: string, page: number) => {
+    setPageMap((prev) => ({
+      ...prev,
+      [blockId]: page,
+    }));
+  };
 
   // Normalize the 2 links (clean helper)
   const getLinks = (item: CaseItem | null) => {
@@ -51,10 +63,16 @@ const ConceptsViewer = () => {
       {data
         .filter((block) => block.case_items && block.case_items.length > 0)
         .map((block) => {
-          const visibleItems =
-            block.case_items.length > LIMIT
-              ? block.case_items.slice(0, LIMIT)
-              : block.case_items;
+          const page = getPage(block.collection_name);
+
+          const start = page * LIMIT;
+          const end = start + LIMIT;
+
+          const visibleItems = block.case_items.slice(start, end);
+
+          const hasNext = end < block.case_items.length;
+          const hasPrev = page > 0;
+
 
           return (
             <React.Fragment key={block.id}>
@@ -79,23 +97,41 @@ const ConceptsViewer = () => {
                     {block.collection_name}
                   </div>
 
-                  {/* SMALL MORE BUTTON — top right */}
+                  {/* Pagination Buttons */}
                   {block.case_items.length > LIMIT && (
-                    <button
-                      onClick={() => {
-                        setActiveBlockForMore(block);
-                        setIsMoreModalOpen(true);
-                      }}
-                      className="
-                        absolute -top-3 right-4
-                        bg-white border border-[#00c193]
-                        text-xs font-medium px-3 py-[5px]
-                        rounded-md shadow-sm hover:bg-gray-100
-                      "
-                    >
-                      More
-                    </button>
+                    <div className="absolute -top-3 right-4 flex gap-2">
+                      {/* Prev */}
+                      <button
+                        disabled={!hasPrev}
+                        onClick={() => setPage(block.collection_name, page - 1)}
+                        className={`
+                          border border-[#00c193] text-xs font-medium px-3 py-[5px]
+                          rounded-md shadow-sm
+                          ${hasPrev
+                            ? "bg-white hover:bg-gray-100"
+                            : "bg-gray-200 text-gray-400 cursor-not-allowed"}
+                        `}
+                      >
+                        Prev
+                      </button>
+
+                      {/* Next */}
+                      <button
+                        disabled={!hasNext}
+                        onClick={() => setPage(block.collection_name, page + 1)}
+                        className={`
+                          border border-[#00c193] text-xs font-medium px-3 py-[5px]
+                          rounded-md shadow-sm
+                          ${hasNext
+                            ? "bg-white hover:bg-gray-100"
+                            : "bg-gray-200 text-gray-400 cursor-not-allowed"}
+                        `}
+                      >
+                        Next
+                      </button>
+                    </div>
                   )}
+
 
                   {/* Tabs */}
                   <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8">
@@ -116,60 +152,7 @@ const ConceptsViewer = () => {
                 </div>
               </div>
 
-              {/* MORE MODAL */}
-              {isMoreModalOpen && activeBlockForMore && (
-                <div
-                  className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-                  onClick={() => setIsMoreModalOpen(false)}
-                >
-                  <div
-                    className="bg-white rounded-lg w-full max-w-4xl max-h-[85vh] overflow-auto p-6 shadow-xl"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-4 gap-[25px]">
-                      <input
-                        type="text"
-                        value={moreSearch}
-                        onChange={(e) => setMoreSearch(e.target.value)}
-                        placeholder="Search topics..."
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00c193]"
-                      />
-                      <button
-                        onClick={() => setIsMoreModalOpen(false)}
-                        className="text-gray-500 hover:text-gray-700 text-2xl"
-                      >
-                        ×
-                      </button>
-                    </div>
-                    {/* Search Bar */}
-
-                    {/* All Items */}
-                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8">
-                      {activeBlockForMore?.case_items
-                        .filter((item) =>
-                          item.tab_name
-                            .toLowerCase()
-                            .includes(moreSearch.toLowerCase())
-                        )
-                        .map((item) => (
-                          <button
-                            key={item.id}
-                            onClick={() => {
-                              setSelectedTab(item);
-                              setPageIndex(0);
-                              setIsMoreModalOpen(false);
-                              setIsReadModalOpen(true);
-                            }}
-                            className="px-4 py-2 rounded-md border text-sm bg-gray-100 border-[#00c193] hover:bg-gray-200"
-                          >
-                            {item.tab_name}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              
             </React.Fragment>
           );
         })}
