@@ -906,7 +906,8 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
           list_name: m.list_name || '',
           jobaid_id: data.jobaid_uid,
           prompt_job_aid_uid: data.prompt_job_aid_uid,
-          userProgress: m.progress
+          userProgress: m.progress,
+          totalLikes: m.total_likes || 0
         }))
     );
     console.log('[fetchBooks] Books:', books);
@@ -1044,6 +1045,39 @@ export const addModuleLike = async (moduleId: string, userId: string) => {
     return responseData;
   } catch (error) {
     console.error("[addModuleLike] Error:", error);
+    return null;
+  }
+};
+
+export const addModuleTotalLike = async (moduleId: string, vote: 1 | -1) => {
+  try {
+    if (!moduleId || !vote) {
+      console.error("[addModuleTotalLike] Missing required parameters : ", vote, moduleId);
+      return null;
+    }
+
+    console.log("[addModuleTotalLike] Module ID:", moduleId, "Vote:", vote);
+
+    const response = await fetch(`${baseURL}/courses/modules/${moduleId}/like/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ client_only_likes: true,  likes: vote}),
+    });
+    console.log(response.statusText)
+    if (!response.ok) {
+      console.error("[addModuleTotalLike] Failed:", response.statusText);
+      return null;
+    }
+
+    // ✅ Check if response has content
+    const responseData = await response.json();
+    console.log("[addModuleTotalLike] Success:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("[addModuleTotalLike] Error:", error);
     return null;
   }
 };

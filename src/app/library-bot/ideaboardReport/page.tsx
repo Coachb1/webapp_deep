@@ -9,7 +9,7 @@ interface IdeaboardPageProps {
   searchParams: {
     email: string;
     jobaid: string;
-    onlyclientsetup?: boolean;
+    onlyclientsetup?: string;
   };
 }
 
@@ -31,7 +31,7 @@ export default function Page({ searchParams }: IdeaboardPageProps) {
     <IdeaBoardReport
       userEmail={email}
       jobaid={jobaid}
-      onlyclientsetup={onlyclientsetup || false}
+      onlyclientsetup={onlyclientsetup ? onlyclientsetup === "true" : false} 
     />
   );
 }

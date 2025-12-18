@@ -28,7 +28,7 @@ export default function Page({ params, searchParams}: BookPageProps) {
   return (
     <UserProvider >
       <UserInfoWall>
-        <BookPageClient id={params.id} />
+        <BookPageClient id={params.id} onlyClientSetup={true}/>
       </UserInfoWall>
     </UserProvider>
   );

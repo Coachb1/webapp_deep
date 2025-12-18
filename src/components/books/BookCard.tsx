@@ -4,8 +4,9 @@ import { Book } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
-import { addModuleLater, addModuleLike, getModuleCompletion } from "@/lib/api";
+import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
+import ThumbVoteButton from "./ui/LIkeDislikeButtons";
 
 interface BookCardProps {
   book: Book;
@@ -38,7 +39,8 @@ const BookCard: React.FC<BookCardProps> = ({
   const [completedDate, setCompletedDate] = useState<string | null>(null);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
-
+  const [moduleLikes, setModuleLikes] = useState<number>(book.totalLikes || 0);
+  const [loadingLikeDislike, setLoadingLikeDislike] = useState<boolean>(false);
   useEffect(()=>{
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature 
       && book?.transform_iq?.overview && book?.transform_iq?.roles){
@@ -78,7 +80,19 @@ const BookCard: React.FC<BookCardProps> = ({
     fetchProgress();
   }, [user_id, book.id, book.userProgress?.completed_in_percentage]);
 
-
+  const handleLikeDisLike = async (book: Book, vote: 1 | -1) => {
+    // Update the like count
+    setLoadingLikeDislike(true);
+    setModuleLikes((prev) => {
+      if (vote === 1) {
+        return prev + 1;
+      } else {
+        return prev - 1;
+      }
+    });
+    await addModuleTotalLike(book.id, vote);
+    setLoadingLikeDislike(false);
+  };
 
   const handleToggleLike = (book: Book) => {
     setLikedBooks((prev: Book[]) => {
@@ -133,6 +147,13 @@ const BookCard: React.FC<BookCardProps> = ({
         {/* The Watchlater button is commented for specific purpose to be uncommented later */}
 
         {/* Heart */}
+        {onlyClientSetup ?(
+            <ThumbVoteButton
+              count={moduleLikes || 0}
+              onVote={(value) => handleLikeDisLike(book, value)}
+              loading={loadingLikeDislike}
+            />
+        ): (
         <button
           onClick={() => handleToggleLike(book)}
           className="shrink-0 md:-ml-1 lg:ml-auto"
@@ -142,6 +163,7 @@ const BookCard: React.FC<BookCardProps> = ({
             onToggle={() => { }}
           />
         </button>
+        )}
       </div>
 
 
