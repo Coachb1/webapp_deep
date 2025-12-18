@@ -17,9 +17,10 @@ import ConceptsViewer from "./ConceptTabCollections";
 
 interface BookPageClientProps {
   id: string;
+  onlyClientSetup?: boolean;
 }
 
-export default function BookPageClient({ id }: BookPageClientProps) {
+export default function BookPageClient({ id, onlyClientSetup=false }: BookPageClientProps) {
   const { user, userInfo, loading } = usePortalUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
@@ -231,7 +232,7 @@ const handleMultipleSearch = (
   return (
       <>
       <main id="top">
-        <Header packageCourseId={id} jobaidId={jobAidId}/>
+        <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
         <ConceptsViewer/>
 
@@ -255,6 +256,7 @@ const handleMultipleSearch = (
             jobAidId={jobAidId}
             promptJobAidId={packageDetails?.prompt_job_aid_uid}
             packageDetails={packageDetails}
+            onlyClientSetup={onlyClientSetup}
           />
         )}
       </main>
@@ -278,6 +280,7 @@ const handleMultipleSearch = (
         onNext={handleNextBook}
         onPrev={handlePrevBook}
         courseId={courseId}
+        trackCompletion={onlyClientSetup? false : true} // Track completion only if not in client setup mode
       />
 
       <BookDescription

@@ -11,11 +11,22 @@ export const metadata = constructMetadata({
 });
 interface BookPageProps {
   params: { id: string };
+  searchParams: { email?: string };
+
 }
 
-export default function Page({ params }: BookPageProps) {
+export default function Page({ params, searchParams}: BookPageProps) {
+  const autoLoginEmail = searchParams.email || undefined;
+  if (autoLoginEmail ){
+    return <UserProvider >
+      <UserInfoGate autoLoginEmail={autoLoginEmail}>
+        <BookPageClient id={params.id} onlyClientSetup={true} />
+      </UserInfoGate>
+    </UserProvider>
+  }
+
   return (
-    <UserProvider>
+    <UserProvider >
       <UserInfoWall>
         <BookPageClient id={params.id} />
       </UserInfoWall>

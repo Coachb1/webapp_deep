@@ -10,7 +10,7 @@ import { Input } from "@/components/books/ui/input";
 import { usePortalUser } from "./context/UserContext";
 import Image from "next/image";
 
-const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaidId: string|null }) => {
+const Header = ({ packageCourseId, jobaidId, onlyClientSetup }: { packageCourseId: string, jobaidId: string|null, onlyClientSetup: boolean }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showLeaderBoardButton, setShowLeaderBoardButton] = useState(false);
   const [showAiPulseButton, setShowAiPulseButton] = useState(false);
@@ -24,8 +24,14 @@ const Header = ({ packageCourseId, jobaidId }: { packageCourseId: string, jobaid
 
 
   useEffect(() => {
-    setShowLeaderBoardButton(userInfo?.libraryBotConfig?.feature_and_button_controls?.leaderboard_button?.show ?? false);
-    setShowAiPulseButton(userInfo?.libraryBotConfig?.feature_and_button_controls?.ai_pulse?.show ?? false);
+    if (onlyClientSetup) {
+      setShowLeaderBoardButton(false);
+      setShowAiPulseButton(false);
+    } else {
+      setShowLeaderBoardButton(userInfo?.libraryBotConfig?.feature_and_button_controls?.leaderboard_button?.show ?? false);
+      setShowAiPulseButton(userInfo?.libraryBotConfig?.feature_and_button_controls?.ai_pulse?.show ?? false);
+    }
+    
     setShowIdeaBoardButton(userInfo?.libraryBotConfig?.feature_and_button_controls?.idea_board_button?.show ?? false);
 
     setLeaderBoardButtonLabel(userInfo?.libraryBotConfig?.feature_and_button_controls?.leaderboard_button?.label ?? "LeaderBoard");

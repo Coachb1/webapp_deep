@@ -16,6 +16,7 @@ interface BookCardProps {
   setLaterBooks: React.Dispatch<React.SetStateAction<Book[]>>;
   laterBooks: Book[];
   likedBooks: Book[];
+  onlyClientSetup: boolean; // Optional prop to handle client setup
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -27,6 +28,7 @@ const BookCard: React.FC<BookCardProps> = ({
   setLaterBooks,
   likedBooks,
   laterBooks,
+  onlyClientSetup, // Default to false if not provided
 }) => {
 
   const { user, userInfo } = usePortalUser()
@@ -119,12 +121,14 @@ const BookCard: React.FC<BookCardProps> = ({
       {/* Watch Later + Like */}
       <div className="flex items-center gap-1 sm:gap-2 md:gap-0 lg:justify-between">
         {/* Listen Later */}
-        {/* <button onClick={() => handleToggleLater(book)} className="shrink-0">
-          <WatchLaterButton
-            isActive={laterBooks.some((b) => b.title === book.title)}
-            onToggle={() => { }}
-          />
-        </button> */}
+        {!onlyClientSetup && (
+          <button onClick={() => handleToggleLater(book)} className="shrink-0">
+            <WatchLaterButton
+              isActive={laterBooks.some((b) => b.title === book.title)}
+              onToggle={() => { }}
+            />
+          </button>
+        )}
         
         {/* The Watchlater button is commented for specific purpose to be uncommented later */}
 
@@ -197,7 +201,8 @@ const BookCard: React.FC<BookCardProps> = ({
 
       {/* This section is commented to hide progress bar and finished status to be uncommented later. */}
       {/* Finished Status + Progress */}
-      {/* <div className="flex items-center mt-3 gap-2">
+      {!onlyClientSetup && (
+      <div className="flex items-center mt-3 gap-2">
         {status === "finished" ? (
           <>
             
@@ -221,7 +226,8 @@ const BookCard: React.FC<BookCardProps> = ({
             </div>
           </>
         )}
-      </div> */}
+      </div>
+      )}
 
     </article>
     {/* Read Modal with iframe */}
