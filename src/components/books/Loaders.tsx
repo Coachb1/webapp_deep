@@ -188,3 +188,30 @@ export const CompanyIQLoader = () => {
     </div>
   );
 };
+
+
+export const DashboardSkeletonCard = () => {
+  return (
+    <div
+      className="
+        bg-white rounded-xl
+        border border-[#00c193]
+        shadow-[0_2px_6px_rgba(0,0,0,0.08)]
+        flex flex-col justify-between
+        px-5 py-3
+        animate-pulse
+      "
+    >
+      <div>
+        <div className="w-9 h-9 bg-gray-200 rounded mb-3" />
+        <div className="h-4 w-3/4 bg-gray-200 rounded mb-2" />
+        <div className="h-3 w-full bg-gray-200 rounded mb-1" />
+        <div className="h-3 w-5/6 bg-gray-200 rounded" />
+      </div>
+
+      <div className="mt-3">
+        <div className="h-9 w-full bg-gray-200 rounded-md" />
+      </div>
+    </div>
+  );
+};
