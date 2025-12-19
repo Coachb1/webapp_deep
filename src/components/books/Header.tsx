@@ -147,7 +147,7 @@ const Header = ({ packageCourseId, jobaidId, onlyClientSetup }: { packageCourseI
 
               {/* Idea Board Button */}
 
-              {showIdeaBoardButton && jobaidId && (
+              {/* {showIdeaBoardButton && jobaidId && (
                 <Button
                   onClick={() => {
                     if (user?.email) {
@@ -161,7 +161,7 @@ const Header = ({ packageCourseId, jobaidId, onlyClientSetup }: { packageCourseI
                 >
                   {IdeaBoardButtonLabel}
                 </Button>
-              )}
+              )} */}
             </div>
           )}
         </div>

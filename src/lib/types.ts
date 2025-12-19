@@ -379,12 +379,25 @@ export interface CaseItem {
 }
 
 export interface CollectionBlock {
+  action_tab_info: DashboardItem;
   id: number;
   collection_name: string;
   case_items: CaseItem[];
   heading?:string;
 }
 
+export interface ActionButton {
+  label: string;
+  action?: string;
+}
+
+export interface DashboardItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  buttons: ActionButton[];
+}
 export interface UserInfoType {
   clientId?: string;
   clientName: string;

@@ -211,16 +211,7 @@ const BookSection: React.FC<BookSectionProps> = ({
       <br />
       <br />
       {/* <CTA /> */}
-      {jobAidId && (
-        <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-          <ConversationalForm
-            job_aid_id={jobAidId}
-            isEmailSection={onlyClientSetup ? true : false}
-            inputEmail={email || "undefined@gmail.com"}
-            inputName={name || "User"}
-          />
-        </div>
-      )}
+      
       {/* Progress Section */}
       {showBadge && (
         <section className="bg-white py-12">
