@@ -4,24 +4,18 @@ import React, { useEffect, useMemo, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
 
 import {
-  ShieldCheck,
-  ClipboardList,
-  Layers,
   Radar,
   Database,
   FolderPlus,
 } from "lucide-react";
 import { ActionButton, CollectionBlock, DashboardItem } from "@/lib/types";
-
+import { DashboardSkeletonCard } from "./Loaders";
 
 /* -------------------- TYPES -------------------- */
-
-
 
 interface ActionDashboardProps {
   onAction?: (action: string) => void;
 }
-
 
 /* -------------------- DATA -------------------- */
 
@@ -55,10 +49,15 @@ const dashboardItems: DashboardItem[] = [
 /* -------------------- COMPONENT -------------------- */
 
 const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
-  const { userInfo, loading } = usePortalUser();
-
+  const { userInfo } = usePortalUser();
+  const [loading, setLoading] = useState(true);
 
   const items: DashboardItem[] = useMemo(() => {
+    console.debug("ActionDashboard: userInfo", userInfo);
+
+    if (userInfo?.collections?.length === 0) {
+      setLoading(false);
+    }
     if (!userInfo?.collections) return dashboardItems;
 
     const actionTabs = userInfo.collections
@@ -66,10 +65,20 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
         (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
           Boolean(col.action_tab_info)
       )
-      .map(col => col.action_tab_info);
-
+      .map((col) => col.action_tab_info);
+    setLoading(false);
     return [...actionTabs, ...dashboardItems];
   }, [userInfo]);
+
+  if (loading) {
+    return (
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <DashboardSkeletonCard key={index} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <section className="bg-white border border-[#00c193] rounded-xl p-6">
@@ -78,7 +87,6 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-
         {items.map((item: DashboardItem) => {
           const isMultiButton = item.buttons.length > 1;
 
@@ -94,13 +102,13 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
               "
             >
               <div>
-                {typeof item?.icon === "string" && item.icon.includes("<svg") ? (
+                {typeof item?.icon === "string" &&
+                item.icon.includes("<svg") ? (
                   <div className="mb-3">
                     <div
                       className="w-9 h-9"
                       dangerouslySetInnerHTML={{ __html: item.icon }}
                     />
-
                   </div>
                 ) : (
                   <div className="mb-3">{item?.icon}</div>
@@ -117,10 +125,11 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
 
               {/* Buttons */}
               <div
-                className={`mt-3 gap-1.5 ${isMultiButton
-                  ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
-                  : "flex"
-                  }`}
+                className={`mt-3 gap-1.5 ${
+                  isMultiButton
+                    ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+                    : "flex"
+                }`}
               >
                 {item.buttons.map((btn: ActionButton, index: number) => (
                   <button
@@ -135,10 +144,9 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
                     py-2.5 rounded-md
                     shadow-[0_1px_3px_rgba(0,0,0,0.12)]
                     whitespace-nowrap
-                    ${isMultiButton
-                        ? "text-[11px] px-4"
-                        : "text-xs w-full px-5"
-                      }
+                    ${
+                      isMultiButton ? "text-[11px] px-4" : "text-xs w-full px-5"
+                    }
                   `}
                   >
                     {btn.label}
