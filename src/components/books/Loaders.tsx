@@ -188,3 +188,62 @@ export const CompanyIQLoader = () => {
     </div>
   );
 };
+
+export const IframeGridLoader = () => {
+  return (
+    <div className="w-full animate-pulse">
+
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="h-6 w-2/3 bg-gray-300 rounded mx-auto mb-3" />
+        <div className="h-4 w-1/2 bg-gray-200 rounded mx-auto" />
+      </div>
+
+      {/* Toolbar */}
+      <div className="flex items-center gap-4 px-4 py-3 border border-gray-300 rounded-t-xl bg-gray-100">
+        <div className="h-4 w-20 bg-gray-300 rounded" />
+        <div className="h-4 w-16 bg-gray-300 rounded" />
+        <div className="h-4 w-16 bg-gray-300 rounded" />
+        <div className="h-4 w-16 bg-gray-300 rounded" />
+        <div className="ml-auto h-4 w-6 bg-gray-300 rounded-full" />
+      </div>
+
+      {/* Table */}
+      <div className="border border-t-0 border-gray-300 rounded-b-xl overflow-hidden">
+
+        {/* Table Header */}
+        <div className="grid grid-cols-6 gap-4 px-4 py-3 bg-gray-50 border-b">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-4 bg-gray-300 rounded" />
+          ))}
+        </div>
+
+        {/* Rows */}
+        {Array.from({ length: 8 }).map((_, row) => (
+          <div
+            key={row}
+            className="grid grid-cols-6 gap-4 px-4 py-3 border-b last:border-b-0"
+          >
+            {Array.from({ length: 6 }).map((_, col) => (
+              <div
+                key={col}
+                className={`h-4 rounded ${
+                  col === 0
+                    ? "bg-gray-300 w-3/4"
+                    : "bg-gray-200 w-full"
+                }`}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Footer / Scroll hint */}
+      <div className="mt-4 flex justify-between items-center px-2">
+        <div className="h-3 w-20 bg-gray-200 rounded" />
+        <div className="h-2 w-32 bg-gray-200 rounded" />
+      </div>
+
+    </div>
+  );
+};
