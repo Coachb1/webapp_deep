@@ -13,7 +13,7 @@ export default function ThumbVoteButton({
   loading,
 }: ThumbVoteButtonProps) {
   return (
-    <div className="flex items-center gap-3 mb-2">
+    <div className="flex items-center gap-0 mb-2 border-2 border-[#00c193]-500 rounded-full px-2 py-1 bg-white">
 
       {/* 👍 THUMB UP */}
       <motion.button

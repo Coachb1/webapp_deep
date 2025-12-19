@@ -45,10 +45,10 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const [packageDetails, setPackageDetails] = useState<any>(null);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
   const [actionKey, setActionKey] = useState<string | null>(null);
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
-    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature){
+    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature) {
       setShowTransformIQ(userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature?.show === true);
     }
   }, [userInfo])
@@ -111,7 +111,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
       const key_words = book.keywords?.map((k) => k.toLowerCase().trim()) || [];
-      
+
       return queries.some(
         (query) =>
           title.includes(query) ||
@@ -123,57 +123,57 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     setFilteredBooks(filtered);
   };
 
-// it will get 'tag', 'list_name', 'business_outcome', 'implementation_complexity', 'unexpected_outcomes', and 'emerging_players' from the book object
-// and there will be AND filter applied on these fields.
-const handleMultipleSearch = (
-  tag?: string,
-  listName?: string,
-  businessOutcome?: string,
-  implementationComplexity?: string,
-  unexpectedOutcomes?: string,
-  emergingPlayers?: string,
-  Function?: string,
-  startUp?: string
-) => {
-  // Normalize only when provided
-  const normalize = (val?: string) => val?.trim().toLowerCase() || null;
+  // it will get 'tag', 'list_name', 'business_outcome', 'implementation_complexity', 'unexpected_outcomes', and 'emerging_players' from the book object
+  // and there will be AND filter applied on these fields.
+  const handleMultipleSearch = (
+    tag?: string,
+    listName?: string,
+    businessOutcome?: string,
+    implementationComplexity?: string,
+    unexpectedOutcomes?: string,
+    emergingPlayers?: string,
+    Function?: string,
+    startUp?: string
+  ) => {
+    // Normalize only when provided
+    const normalize = (val?: string) => val?.trim().toLowerCase() || null;
 
-  const normalized = {
-    tag: normalize(tag),
-    listName: normalize(listName),
-    businessOutcome: normalize(businessOutcome),
-    implementationComplexity: normalize(implementationComplexity),
-    unexpectedOutcomes: normalize(unexpectedOutcomes),
-    emergingPlayers: normalize(emergingPlayers),
-    function: normalize(Function),
-    startUp: normalize(startUp),
+    const normalized = {
+      tag: normalize(tag),
+      listName: normalize(listName),
+      businessOutcome: normalize(businessOutcome),
+      implementationComplexity: normalize(implementationComplexity),
+      unexpectedOutcomes: normalize(unexpectedOutcomes),
+      emergingPlayers: normalize(emergingPlayers),
+      function: normalize(Function),
+      startUp: normalize(startUp),
+    };
+    console.log("Multiple search with filters:", normalized);
+
+    const filtered = allBooks.filter((book) => {
+      const bookTag = book.tag?.map((t: string) => t.toLowerCase()) || [];
+      const bookBusinessOutcome = book.business_outcome?.map((b: string) => b.toLowerCase()) || [];
+      const bookImplementationComplexity = book.implementation_complexity?.map((i: string) => i.toLowerCase()) || [];
+      const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
+      const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
+      const bookFunction = book.function?.map((f: string) => f.toLowerCase()) || [];
+      const bookStartUp = String(book.start_up || "").toLowerCase();
+
+      return (
+        (!normalized.tag || bookTag.includes(normalized.tag)) &&
+        (!normalized.businessOutcome || bookBusinessOutcome.includes(normalized.businessOutcome)) &&
+        (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
+        (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
+        (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers) &&
+        (!normalized.function || bookFunction.includes(normalized.function)) &&
+        (!normalized.startUp || bookStartUp === normalized.startUp)
+      );
+    });
+
+    // Update state
+    console.info('filter', filtered)
+    setFilteredBooks(filtered);
   };
-  console.log("Multiple search with filters:", normalized);
-
-  const filtered = allBooks.filter((book) => {
-    const bookTag = book.tag?.map((t: string) => t.toLowerCase()) || [];
-    const bookBusinessOutcome = book.business_outcome?.map((b: string) => b.toLowerCase()) || [];
-    const bookImplementationComplexity = book.implementation_complexity?.map((i: string) => i.toLowerCase()) || [];
-    const bookUnexpectedOutcomes = book.unexpected_outcomes?.map((u: string) => u.toLowerCase()) || [];
-    const bookEmergingPlayers = String(book.emerging_players || "").toLowerCase();
-    const bookFunction = book.function?.map((f: string) => f.toLowerCase()) || [];
-    const bookStartUp = String(book.start_up || "").toLowerCase();
-
-    return (
-      (!normalized.tag || bookTag.includes(normalized.tag)) &&
-      (!normalized.businessOutcome || bookBusinessOutcome.includes(normalized.businessOutcome)) &&
-      (!normalized.implementationComplexity || bookImplementationComplexity.includes(normalized.implementationComplexity)) &&
-      (!normalized.unexpectedOutcomes || bookUnexpectedOutcomes.includes(normalized.unexpectedOutcomes)) &&
-      (!normalized.emergingPlayers || bookEmergingPlayers === normalized.emergingPlayers) &&
-      (!normalized.function || bookFunction.includes(normalized.function)) &&
-      (!normalized.startUp || bookStartUp === normalized.startUp)
-    );
-  });
-
-  // Update state
-  console.info('filter', filtered)
-  setFilteredBooks(filtered);
-};
 
 
   const handleFilterChange = (filter: string) => {
@@ -235,74 +235,99 @@ const handleMultipleSearch = (
   };
 
   return (
-      <>
+    <>
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
-        <ActionDashboard onAction={(value)=> setActionKey(value)}/>
+        <ActionDashboard
+          selectedAction={actionKey}
+          onAction={(value) => {
+            setActionKey(value);
+
+            setTimeout(() => {
+              document
+                .getElementById("action-section")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 120);
+          }}
+        />
 
 
-        {actionKey?.includes("CONCEPTS") && <ConceptsViewer actionKey={actionKey!} />}
-    
-        {actionKey === "AI_LANDSCAPE" && <CompanyIQ/>}
- 
-        {actionKey === 'SHOW_AI_CASES' && (
-          <>
-          {LibraryLoading || loading ? (
-          <LibraryPageLoader/>
-        ) : (
-          <BookSection
-            books={filteredBooks}
-            currentSlide={currentSlide}
-            onSlideChange={setCurrentSlide}
-            onSearch={handleSearch}
-            onMultipleSearch={handleMultipleSearch}
-            onFilterChange={handleFilterChange}
-            onPlayBook={handlePlayBook}
-            onOpenDescription={handleOpenDescription}
-            setFilteredBooks={setFilteredBooks}
-            setCurrentSlide={setCurrentSlide}
-            name={user?.user_data?.name}
-            email={user?.user_data?.email}
-            all_books={allBooks}
-            jobAidId={jobAidId}
-            promptJobAidId={packageDetails?.prompt_job_aid_uid}
-            packageDetails={packageDetails}
-            onlyClientSetup={onlyClientSetup}
-          />
-        )}
-        </>
-        )}
-
-        {!loading && jobAidId && (
-          <>
-          {actionKey === "INTERNAL_TRANSFORMATION_ALIGN" && (
-              <IdeaBoardReport jobaid={jobAidId} userEmail={user?.user_data?.email} onlyclientsetup={onlyClientSetup}/>
-            )}
-          {actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
-              <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-                <ConversationalForm
-                  job_aid_id={jobAidId}
-                  isEmailSection={onlyClientSetup ? true : false}
-                  inputEmail={user?.user_data?.email || "undefined@gmail.com"}
-                  inputName={user?.user_data?.name || "User"}
-                />
-              </div>
+        {/* 🔥 Smooth Action Section */}
+        <div
+          id="action-section"
+          className={`
+            overflow-hidden transition-all duration-500 ease-in-out
+            ${actionKey
+              ? "max-h-[3000px] opacity-100 translate-y-0 mt-6"
+              : "max-h-0 opacity-0 -translate-y-2"}
+          `}
+        >
+          {actionKey?.includes("CONCEPTS") && (
+            <ConceptsViewer actionKey={actionKey!} />
           )}
-          </>
-        )}
-          
+
+          {actionKey === "AI_LANDSCAPE" && <CompanyIQ />}
+
+          {actionKey === "SHOW_AI_CASES" && (
+            <>
+              {LibraryLoading || loading ? (
+                <LibraryPageLoader />
+              ) : (
+                <BookSection
+                  books={filteredBooks}
+                  currentSlide={currentSlide}
+                  onSlideChange={setCurrentSlide}
+                  onSearch={handleSearch}
+                  onMultipleSearch={handleMultipleSearch}
+                  onFilterChange={handleFilterChange}
+                  onPlayBook={handlePlayBook}
+                  onOpenDescription={handleOpenDescription}
+                  setFilteredBooks={setFilteredBooks}
+                  setCurrentSlide={setCurrentSlide}
+                  name={user?.user_data?.name}
+                  email={user?.user_data?.email}
+                  all_books={allBooks}
+                  jobAidId={jobAidId}
+                  promptJobAidId={packageDetails?.prompt_job_aid_uid}
+                  packageDetails={packageDetails}
+                  onlyClientSetup={onlyClientSetup}
+                />
+              )}
+            </>
+          )}
+
+          {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_ALIGN" && (
+            <IdeaBoardReport
+              jobaid={jobAidId}
+              userEmail={user?.user_data?.email}
+              onlyclientsetup={onlyClientSetup}
+            />
+          )}
+
+          {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
+            <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+              <ConversationalForm
+                job_aid_id={jobAidId}
+                isEmailSection={onlyClientSetup}
+                inputEmail={user?.user_data?.email || "undefined@gmail.com"}
+                inputName={user?.user_data?.name || "User"}
+              />
+            </div>
+          )}
+        </div>
+
       </main>
 
       <footer className="bg-white text-black py-6 mt-8 border-t">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm sm:text-base leading-relaxed">
-            © {new Date().getFullYear()}{" "}
-            <span className="font-semibold">CoachBoT</span>. All rights reserved.
+            {/* © {new Date().getFullYear()}{" "} */}
+            © 2026 <span className="font-semibold">AIAdopTs</span> previously<span className="font-semibold"> CoachBoT</span>. All rights reserved.
           </p>
           <p className="text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
-            Cases curated through independent research, verification, and third-party data sources.
+            Frameworks Licenses from respective owners. Cases curated through independent research, verification, and third-party data sources.
           </p>
         </div>
       </footer>
@@ -314,7 +339,7 @@ const handleMultipleSearch = (
         onNext={handleNextBook}
         onPrev={handlePrevBook}
         courseId={courseId}
-        trackCompletion={onlyClientSetup? false : true} // Track completion only if not in client setup mode
+        trackCompletion={onlyClientSetup ? false : true} // Track completion only if not in client setup mode
       />
 
       <BookDescription
@@ -325,13 +350,13 @@ const handleMultipleSearch = (
       />
 
       {/* <TinyTalkWidget up={showAudioPlayer} /> */}
-      {!loading && userInfo?.libraryBotConfig?.bot_config?.coaching?.show === true &&(
-        <CoachBotsWidget 
+      {!loading && userInfo?.libraryBotConfig?.bot_config?.coaching?.show === true && (
+        <CoachBotsWidget
           clientId={userInfo.clientName || "First-Demo"}
-          botId = {userInfo?.libraryBotConfig?.bot_config?.coaching.show === true ? userInfo?.libraryBotConfig?.bot_config?.coaching.bot_id : "avatar-bot-4837d-coachbot-master-coach--multi-modal-professional-development"}
-          up={showAudioPlayer} 
+          botId={userInfo?.libraryBotConfig?.bot_config?.coaching.show === true ? userInfo?.libraryBotConfig?.bot_config?.coaching.bot_id : "avatar-bot-4837d-coachbot-master-coach--multi-modal-professional-development"}
+          up={showAudioPlayer}
         />
-        )}
+      )}
     </>
   );
 }
