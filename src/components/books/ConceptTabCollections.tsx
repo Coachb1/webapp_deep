@@ -7,7 +7,11 @@ import { ConceptsBoxLoader } from "./Loaders";
 
 const LIMIT = 10; // show first 10 items
 
-const ConceptsViewer = () => {
+interface ConceptsViewerProps {
+  actionKey?: string | null;
+}
+
+const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
   const [pageMap, setPageMap] = useState<Record<string, number>>({});
   const { userInfo, loading } = usePortalUser();
   const [data, setData] = useState<CollectionBlock[] | null>(null);
@@ -20,8 +24,8 @@ const ConceptsViewer = () => {
   const [activeBlockForMore, setActiveBlockForMore] =
     useState<CollectionBlock | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
-  
-  
+
+
   // Pagination helpers (per collection block)
   const getPage = (blockId: string) => pageMap[blockId] ?? 0;
 
@@ -48,7 +52,7 @@ const ConceptsViewer = () => {
   useEffect(() => {
     if (loading) return;
 
-    console.info("collection", userInfo.collections);
+    console.info("collection", userInfo.collections,"actionKey",actionKey);
 
     setData(userInfo.collections || null);
     setDataLoading(false);
@@ -62,6 +66,14 @@ const ConceptsViewer = () => {
       {/* ---------------- COLLECTION BLOCKS ---------------- */}
       {data
         .filter((block) => block.case_items && block.case_items.length > 0)
+        .filter((block) =>
+          !actionKey ||
+          block.action_tab_info?.buttons?.some(
+            (btn: any) => btn.action === actionKey
+          )
+        )
+
+
         .map((block) => {
           const page = getPage(block.collection_name);
 
@@ -152,7 +164,7 @@ const ConceptsViewer = () => {
                 </div>
               </div>
 
-              
+
             </React.Fragment>
           );
         })}

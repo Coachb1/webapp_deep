@@ -243,10 +243,10 @@ const handleMultipleSearch = (
         <ActionDashboard onAction={(value)=> setActionKey(value)}/>
 
 
-        {actionKey === "OPEN_CONCEPTS_EXEC_AI_MASTERY" && <ConceptsViewer/>}
-
+        {actionKey?.includes("CONCEPTS") && <ConceptsViewer actionKey={actionKey!} />}
+    
         {actionKey === "AI_LANDSCAPE" && <CompanyIQ/>}
-
+ 
         {actionKey === 'SHOW_AI_CASES' && (
           <>
           {LibraryLoading || loading ? (

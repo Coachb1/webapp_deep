@@ -1,6 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { usePortalUser } from "./context/UserContext";
+
 import {
   ShieldCheck,
   ClipboardList,
@@ -9,21 +11,12 @@ import {
   Database,
   FolderPlus,
 } from "lucide-react";
+import { ActionButton, CollectionBlock, DashboardItem } from "@/lib/types";
+
 
 /* -------------------- TYPES -------------------- */
 
-interface ActionButton {
-  label: string;
-  action?: string;
-}
 
-interface DashboardItem {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  buttons: ActionButton[];
-}
 
 interface ActionDashboardProps {
   onAction?: (action: string) => void;
@@ -33,29 +26,6 @@ interface ActionDashboardProps {
 /* -------------------- DATA -------------------- */
 
 const dashboardItems: DashboardItem[] = [
-  {
-    id: "executive-ai-mastery",
-    title: "Executive AI Mastery",
-    description: "Decision Notes for quick reviews",
-    icon: <ClipboardList className="w-9 h-9 text-[#00c193]" />,
-    buttons: [
-  {label: "ALIGN",
-    action: "OPEN_CONCEPTS_EXEC_AI_MASTERY",}],
-  },
-  {
-    id: "design-architecture",
-    title: "Design & Architecture Guardrails",
-    description: "Evaluation Heuristics for common cases",
-    icon: <ShieldCheck className="w-9 h-9 text-[#00c193]" />,
-    buttons: [{ label: "ALIGN", action: "DESIGN_ARCH_GUARDRAILS" }],
-  },
-  {
-    id: "enterprise-tools",
-    title: "Enterprise Tools Use Case",
-    description: "AI-based extension of use cases",
-    icon: <Layers className="w-9 h-9 text-[#00c193]" />,
-    buttons: [{ label: "ALIGN", action: "ENTERPRISE_TOOLS" }],
-  },
   {
     id: "ai-landscape",
     title: "AI Landscape & Snapshot",
@@ -85,6 +55,22 @@ const dashboardItems: DashboardItem[] = [
 /* -------------------- COMPONENT -------------------- */
 
 const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
+  const { userInfo, loading } = usePortalUser();
+
+
+  const items: DashboardItem[] = useMemo(() => {
+    if (!userInfo?.collections) return dashboardItems;
+
+    const actionTabs = userInfo.collections
+      .filter(
+        (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
+          Boolean(col.action_tab_info)
+      )
+      .map(col => col.action_tab_info);
+
+    return [...actionTabs, ...dashboardItems];
+  }, [userInfo]);
+
   return (
     <section className="bg-white border border-[#00c193] rounded-xl p-6">
       <h2 className="text-center text-xl font-semibold text-black mb-5">
@@ -92,7 +78,8 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        {dashboardItems.map((item) => {
+
+        {items.map((item: DashboardItem) => {
           const isMultiButton = item.buttons.length > 1;
 
           return (
@@ -107,7 +94,17 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
               "
             >
               <div>
-                <div className="mb-3">{item.icon}</div>
+                {typeof item?.icon === "string" && item.icon.includes("<svg") ? (
+                  <div className="mb-3">
+                    <div
+                      className="w-9 h-9"
+                      dangerouslySetInnerHTML={{ __html: item.icon }}
+                    />
+
+                  </div>
+                ) : (
+                  <div className="mb-3">{item?.icon}</div>
+                )}
 
                 <h3 className="text-sm font-semibold text-black mb-1">
                   {item.title}
@@ -120,31 +117,29 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
 
               {/* Buttons */}
               <div
-                className={`mt-3 gap-1.5 ${
-                  isMultiButton
-                    ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
-                    : "flex"
-                }`}
+                className={`mt-3 gap-1.5 ${isMultiButton
+                  ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+                  : "flex"
+                  }`}
               >
-                {item.buttons.map((btn, index) => (
+                {item.buttons.map((btn: ActionButton, index: number) => (
                   <button
                     key={index}
                     onClick={() => btn.action && onAction?.(btn.action)}
                     className={`
-                      flex items-center justify-center
-                      box-border min-w-0
-                      font-medium text-black
-                      bg-[#f2f2f2]
-                      border border-[#00c193]
-                      py-2.5 rounded-md
-                      shadow-[0_1px_3px_rgba(0,0,0,0.12)]
-                      whitespace-nowrap
-                      ${
-                        isMultiButton
-                          ? "text-[11px] px-4"
-                          : "text-xs w-full px-5"
+                    flex items-center justify-center
+                    box-border min-w-0
+                    font-medium text-black
+                    bg-[#f2f2f2]
+                    border border-[#00c193]
+                    py-2.5 rounded-md
+                    shadow-[0_1px_3px_rgba(0,0,0,0.12)]
+                    whitespace-nowrap
+                    ${isMultiButton
+                        ? "text-[11px] px-4"
+                        : "text-xs w-full px-5"
                       }
-                    `}
+                  `}
                   >
                     {btn.label}
                   </button>
