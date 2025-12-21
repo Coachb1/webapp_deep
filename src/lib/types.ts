@@ -380,6 +380,7 @@ export interface CaseItem {
 
 export interface CollectionBlock {
   action_tab_info: DashboardItem;
+  iframe_link: string;
   id: number;
   collection_name: string;
   case_items: CaseItem[];

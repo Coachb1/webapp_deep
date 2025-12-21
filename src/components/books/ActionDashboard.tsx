@@ -15,6 +15,7 @@ import { DashboardSkeletonCard } from "./Loaders";
 
 interface ActionDashboardProps {
   onAction?: (action: string) => void;
+  selectedAction?: string | null;
 }
 
 /* -------------------- DATA -------------------- */
@@ -48,8 +49,8 @@ const dashboardItems: DashboardItem[] = [
 
 /* -------------------- COMPONENT -------------------- */
 
-const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
-  const { userInfo } = usePortalUser();
+const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAction }) => {
+  const { userInfo, loading } = usePortalUser();
   const [loading, setLoading] = useState(true);
 
   const items: DashboardItem[] = useMemo(() => {
@@ -86,21 +87,47 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
         ENTERPRISE AI ADOPTS DASHBOARD
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+      <div className="flex flex-wrap justify-center gap-6 max-width-full">
+
         {items.map((item: DashboardItem) => {
           const isMultiButton = item.buttons.length > 1;
+
+          const isActive = item.buttons.some(
+            (btn) => btn.action === selectedAction
+          );
+
 
           return (
             <div
               key={item.id}
-              className="
-                bg-white rounded-xl
-                border border-[#00c193]
-                shadow-[0_2px_6px_rgba(0,0,0,0.08)]
+              className={`
+                rounded-xl
                 flex flex-col justify-between
                 px-5 py-3
-              "
+                w-[260px]
+                flex-shrink-0 
+                transition-all duration-300
+
+                ${isActive
+                  ? `
+                    bg-white
+                    border border-[#00c193]
+                    shadow-[0_6px_16px_rgba(0,193,147,0.28)]
+                    scale-[1.09]
+                  `
+                  : `
+                    bg-white
+                    border border-[#00c193]
+                    shadow-[0_2px_6px_rgba(0,0,0,0.08)]
+                    hover:shadow-[0_8px_22px_rgba(0,193,147,0.30)]
+                    hover:scale-[1.03]
+                  `
+                }
+
+
+              `}
             >
+
               <div>
                 {typeof item?.icon === "string" &&
                 item.icon.includes("<svg") ? (

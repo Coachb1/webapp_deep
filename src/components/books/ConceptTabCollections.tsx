@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock } from "@/lib/types";
-import { ConceptsBoxLoader } from "./Loaders";
+import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
 
 const LIMIT = 10; // show first 10 items
 
@@ -47,12 +47,26 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
   };
 
   const links = getLinks(selectedTab);
+  const activeIframeBlock = data?.find(
+    (block) =>
+      block.iframe_link &&
+      (!actionKey ||
+        block.action_tab_info?.buttons?.some(
+          (btn: any) => btn.action === actionKey
+        ))
+  );
+  const [iframeLoading, setIframeLoading] = useState(true);
+  useEffect(() => {
+    if (activeIframeBlock?.iframe_link) {
+      setIframeLoading(true);
+    }
+  }, [activeIframeBlock?.iframe_link]);
 
   // Load from userInfo
   useEffect(() => {
     if (loading) return;
 
-    console.info("collection", userInfo.collections,"actionKey",actionKey);
+    console.info("collection", userInfo.collections, "actionKey", actionKey);
 
     setData(userInfo.collections || null);
     setDataLoading(false);
@@ -168,6 +182,49 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
             </React.Fragment>
           );
         })}
+
+      {/* ---------------- DO MORE (DYNAMIC IFRAME) ---------------- */}
+      {activeIframeBlock?.iframe_link && (
+        <div className="w-full flex justify-center mt-14 px-4">
+          <div className="bg-white border border-[#00c193] rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
+
+            {/* Section Heading */}
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Enterprise AI Literacy Training & Course Catalogue
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Curated collection of free & paid AI training courses
+              </p>
+              <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
+            </div>
+
+            {/* Dynamic Iframe */}
+            <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 min-h-[533px]">
+
+              {/* Loader */}
+              {iframeLoading && (
+                <div className="absolute inset-0 z-10 bg-white p-6">
+                  <IframeGridLoader />
+                </div>
+              )}
+
+              {/* Iframe */}
+              <iframe
+                className="w-full h-[533px]"
+                src={activeIframeBlock.iframe_link}
+                frameBorder="0"
+                title="Enterprise AI Courses"
+                onLoad={() => setIframeLoading(false)}
+              />
+            </div>
+
+
+          </div>
+        </div>
+      )}
+
+
 
       {/* READ MODAL */}
       {isReadModalOpen && selectedTab && (
