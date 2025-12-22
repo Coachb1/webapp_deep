@@ -65,6 +65,8 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
       .filter(
         (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
           Boolean(col.action_tab_info)
+      ).filter(
+        (col) => col.case_items && col.case_items.length > 0
       )
       .map((col) => col.action_tab_info);
     setLoading(false);
@@ -73,11 +75,19 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
 
   if (loading) {
     return (
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <DashboardSkeletonCard key={index} />
-        ))}
-      </div>
+      <section className="bg-white border border-[#00c193] rounded-xl p-6">
+        <h2 className="text-center text-xl font-semibold text-black mb-5">
+          ENTERPRISE AI ADOPTS DASHBOARD
+        </h2>
+
+        <div className="flex flex-wrap justify-center gap-6">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="w-[260px] flex-shrink-0">
+              <DashboardSkeletonCard />
+            </div>
+          ))}
+        </div>
+      </section>
     );
   }
 
