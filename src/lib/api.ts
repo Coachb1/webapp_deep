@@ -1186,7 +1186,7 @@ export const ActionsPerMonth = async(userId:string)=>{
 
 export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
   try {
-    const response = await fetch(`${baseURL}/company-iq/`, {
+    const response = await fetch(`${baseURL}/company-iq/all/`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
