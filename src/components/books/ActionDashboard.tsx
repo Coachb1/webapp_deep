@@ -50,7 +50,7 @@ const dashboardItems: DashboardItem[] = [
 /* -------------------- COMPONENT -------------------- */
 
 const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAction }) => {
-  const { userInfo, loading } = usePortalUser();
+  const { userInfo } = usePortalUser();
   const [loading, setLoading] = useState(true);
 
   const items: DashboardItem[] = useMemo(() => {
