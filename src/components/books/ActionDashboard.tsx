@@ -1,3 +1,165 @@
+// "use client";
+
+// import React, { useEffect, useMemo, useState } from "react";
+// import { usePortalUser } from "./context/UserContext";
+
+// import {
+//   Radar,
+//   Database,
+//   FolderPlus,
+// } from "lucide-react";
+// import { ActionButton, CollectionBlock, DashboardItem } from "@/lib/types";
+// import { DashboardSkeletonCard } from "./Loaders";
+
+// /* -------------------- TYPES -------------------- */
+
+// interface ActionDashboardProps {
+//   onAction?: (action: string) => void;
+// }
+
+// /* -------------------- DATA -------------------- */
+
+// const dashboardItems: DashboardItem[] = [
+//   // {
+//   //   id: "ai-landscape",
+//   //   title: "AI Landscape & Snapshot",
+//   //   description: "Digital & Cloud initiatives View",
+//   //   icon: <Radar className="w-9 h-9 text-[#00c193]" />,
+//   //   buttons: [{ label: "ALIGN", action: "AI_LANDSCAPE" }],
+//   // },
+//   {
+//     id: "ai-cases",
+//     title: "AI Landscape & Cases",
+//     description: "Digital Initiatives repository with AI cases plus  relevance",
+//     icon: <Database className="w-9 h-9 text-[#00c193]" />,
+//     buttons: [
+//       { label: "Cases", action: "SHOW_AI_CASES" },
+//       { label: "Landscape", action: "AI_LANDSCAPE"  },
+//     ],
+//   },
+//   {
+//     id: "internal-transformation",
+//     title: "Internal Transformation Projects",
+//     description: "Submit & View Project Themes",
+//     icon: <FolderPlus className="w-9 h-9 text-[#00c193]" />,
+//     buttons: [
+//       { label: "View", action: "INTERNAL_TRANSFORMATION_ALIGN" },
+//       { label: "Propose", action: "INTERNAL_TRANSFORMATION_PROPOSE" },
+//     ],
+//   },
+// ];
+
+// /* -------------------- COMPONENT -------------------- */
+
+// const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
+//   const { userInfo } = usePortalUser();
+//   const [loading, setLoading] = useState(true);
+
+//   const items: DashboardItem[] = useMemo(() => {
+//     console.debug("ActionDashboard: userInfo", userInfo);
+
+//     if (userInfo?.collections?.length === 0) {
+//       setLoading(false);
+//     }
+//     if (!userInfo?.collections) return dashboardItems;
+
+//     const actionTabs = userInfo.collections
+//       .filter(
+//         (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
+//           Boolean(col.action_tab_info)
+//       )
+//       .map((col) => col.action_tab_info);
+//     setLoading(false);
+//     return [...actionTabs, ...dashboardItems];
+//   }, [userInfo]);
+
+//   if (loading) {
+//     return (
+//       <div className="mt-4 sm:mt-5 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 md:gap-6">
+//         {Array.from({ length: 5 }).map((_, index) => (
+//           <DashboardSkeletonCard key={index} />
+//         ))}
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <section className="bg-white border border-[#00c193] rounded-lg sm:rounded-xl p-2 sm:p-5 md:p-1">
+//       <h2 className="text-center text-base xs:text-lg sm:text-xl md:text-2xl font-semibold text-black mb-4 sm:mb-5 md:mb-6">
+//         ENTERPRISE AI ADOPTS DASHBOARD
+//       </h2>
+
+//       <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 md:gap-6">
+//         {items.map((item: DashboardItem) => {
+//           const isMultiButton = item.buttons.length > 1;
+
+//           return (
+//             <div
+//               key={item.id}
+//               className=" bg-white rounded-xl border border-[#00c193] shadow-[0_2px_6px_rgba(0,0,0,0.08)] flex flex-col justify-between px-5 py-3">
+//               <div>
+//                 {typeof item?.icon === "string" &&
+//                 item.icon.includes("<svg") ? (
+//                   <div className="mb-3">
+//                     <div
+//                       className="w-9 h-9"
+//                       dangerouslySetInnerHTML={{ __html: item.icon }}
+//                     />
+//                   </div>
+//                 ) : (
+//                   <div className="mb-3">{item?.icon}</div>
+//                 )}
+
+//                 <h3 className="text-sm font-semibold text-black mb-1">
+//                   {item.title}
+//                 </h3>
+
+//                 <p className="text-sm text-gray-700 leading-snug">
+//                   {item.description}
+//                 </p>
+//               </div>
+
+//               {/* Buttons */}
+//               <div
+//                 className={`mt-3 gap-1.5 ${
+//                   isMultiButton
+//                     ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+//                     : "flex"
+//                 }`}
+//               >
+//                 {item.buttons.map((btn: ActionButton, index: number) => (
+//                   <button
+//                     key={index}
+//                     onClick={() => btn.action && onAction?.(btn.action)}
+//                     className={`
+//                     flex items-center justify-center
+//                     box-border min-w-0
+//                     font-medium text-black
+//                     bg-[#f2f2f2]
+//                     border border-[#00c193]
+//                     py-2.5 rounded-md
+//                     shadow-[0_1px_3px_rgba(0,0,0,0.12)]
+//                     whitespace-nowrap
+//                     ${
+//                       isMultiButton ? "text-[11px] px-4" : "text-xs w-full px-5"
+//                     }
+//                   `}
+//                   >
+//                     {btn.label}
+//                   </button>
+//                 ))}
+//               </div>
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </section>
+//   );
+// };
+
+// export default ActionDashboard;
+
+
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -20,28 +182,31 @@ interface ActionDashboardProps {
 /* -------------------- DATA -------------------- */
 
 const dashboardItems: DashboardItem[] = [
-  {
-    id: "ai-landscape",
-    title: "AI Landscape & Snapshot",
-    description: "Digital & Cloud initiatives View",
-    icon: <Radar className="w-9 h-9 text-[#00c193]" />,
-    buttons: [{ label: "ALIGN", action: "AI_LANDSCAPE" }],
-  },
+  // {
+  //   id: "ai-landscape",
+  //   title: "AI Landscape & Snapshot",
+  //   description: "Digital & Cloud initiatives View",
+  //   icon: <Radar className="w-9 h-9 text-[#00c193]" />,
+  //   buttons: [{ label: "ALIGN", action: "AI_LANDSCAPE" }],
+  // },
   {
     id: "ai-cases",
-    title: "AI Cases & Metadata",
-    description: "AI implementation cases & their relevance",
-    icon: <Database className="w-9 h-9 text-[#00c193]" />,
-    buttons: [{ label: "ALIGN", action: "SHOW_AI_CASES" }],
+    title: "AI Landscape & Cases",
+    description: "Digital Initiatives repository with AI cases plus  relevance",
+    icon: <Database className="w-5 h-5 text-[#00c193]" />,
+    buttons: [
+      { label: "Cases", action: "SHOW_AI_CASES" },
+      { label: "Landscape", action: "AI_LANDSCAPE"  },
+    ],
   },
   {
     id: "internal-transformation",
     title: "Internal Transformation Projects",
     description: "Submit & View Project Themes",
-    icon: <FolderPlus className="w-9 h-9 text-[#00c193]" />,
+    icon: <FolderPlus className="w-5 h-5 text-[#00c193]" />,
     buttons: [
-      { label: "ALIGN", action: "INTERNAL_TRANSFORMATION_ALIGN" },
-      { label: "PROPOSE", action: "INTERNAL_TRANSFORMATION_PROPOSE" },
+      { label: "View", action: "INTERNAL_TRANSFORMATION_ALIGN" },
+      { label: "Propose", action: "INTERNAL_TRANSFORMATION_PROPOSE" },
     ],
   },
 ];
@@ -72,7 +237,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
 
   if (loading) {
     return (
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+      <div className="mt-2 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {Array.from({ length: 5 }).map((_, index) => (
           <DashboardSkeletonCard key={index} />
         ))}
@@ -81,53 +246,46 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
   }
 
   return (
-    <section className="bg-white border border-[#00c193] rounded-xl p-6">
-      <h2 className="text-center text-xl font-semibold text-black mb-5">
+    <section className="bg-white border border-[#00c193] rounded-md p-2">
+      <h2 className="text-center text-sm font-semibold text-black mb-2">
         ENTERPRISE AI ADOPTS DASHBOARD
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+      <div className="flex flex-wrap justify-center gap-2 w-full">
         {items.map((item: DashboardItem) => {
           const isMultiButton = item.buttons.length > 1;
 
           return (
             <div
               key={item.id}
-              className="
-                bg-white rounded-xl
-                border border-[#00c193]
-                shadow-[0_2px_6px_rgba(0,0,0,0.08)]
-                flex flex-col justify-between
-                px-5 py-3
-              "
-            >
-              <div>
+              className="bg-white rounded-md border border-[#00c193] shadow-sm flex flex-col justify-between p-2 max-w-[180px]">
+              <div className="mb-1.5">
                 {typeof item?.icon === "string" &&
                 item.icon.includes("<svg") ? (
-                  <div className="mb-3">
+                  <div className="mb-1.5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:max-w-5 [&>svg]:max-h-5">
                     <div
-                      className="w-9 h-9"
+                      className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5"
                       dangerouslySetInnerHTML={{ __html: item.icon }}
                     />
                   </div>
                 ) : (
-                  <div className="mb-3">{item?.icon}</div>
+                  <div className="mb-1.5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:max-w-5 [&>svg]:max-h-5">{item?.icon}</div>
                 )}
 
-                <h3 className="text-sm font-semibold text-black mb-1">
+                <h3 className="text-[11px] font-semibold text-black leading-tight mb-1">
                   {item.title}
                 </h3>
 
-                <p className="text-sm text-gray-700 leading-snug">
+                <p className="text-[9px] text-gray-600 leading-snug">
                   {item.description}
                 </p>
               </div>
 
               {/* Buttons */}
               <div
-                className={`mt-3 gap-1.5 ${
+                className={`gap-1 ${
                   isMultiButton
-                    ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+                    ? "grid grid-cols-2"
                     : "flex"
                 }`}
               >
@@ -135,19 +293,18 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
                   <button
                     key={index}
                     onClick={() => btn.action && onAction?.(btn.action)}
-                    className={`
+                    className="
                     flex items-center justify-center
-                    box-border min-w-0
                     font-medium text-black
                     bg-[#f2f2f2]
                     border border-[#00c193]
-                    py-2.5 rounded-md
-                    shadow-[0_1px_3px_rgba(0,0,0,0.12)]
+                    py-1 px-2 rounded
+                    shadow-sm
                     whitespace-nowrap
-                    ${
-                      isMultiButton ? "text-[11px] px-4" : "text-xs w-full px-5"
-                    }
-                  `}
+                    text-[9px]
+                    hover:bg-[#e8e8e8]
+                    transition-colors
+                  "
                   >
                     {btn.label}
                   </button>
