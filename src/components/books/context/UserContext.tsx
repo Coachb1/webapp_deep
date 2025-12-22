@@ -171,7 +171,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let token: string | null = null;
-    if (pathname.includes('library-bot')) {
+    const fullPath = window.location.href;
+    if (fullPath.includes('library-bot') && !fullPath.includes('clientId')) {
       token = localStorage.getItem("access_token");
       if (!token) {
         setLoading(false);
