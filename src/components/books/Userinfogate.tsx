@@ -54,7 +54,9 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
           const data = await res.json();
 
           console.log('user data', data)
-          if (data) {setUser(data.user)
+          if (data) {
+            setUser(data.user)
+            await refreshUserData(data.user);
           };
         } else {
           console.error("Failed to fetch user data", await res.text());
