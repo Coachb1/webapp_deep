@@ -174,7 +174,8 @@ export const getClientbyClientId = async (
               "protected": data.data.only_client_data.leaderboard_report_protected,
               "password": data.data.only_client_data.leaderboard_report_password
             },
-            collections: data.data.only_client_data.collection_name
+            collections: data.data.only_client_data.collection_name,
+            owner_email_id: data.data.only_client_data.owner_id
           };
         } else {
           throw new Error("Failed to fetch client information");

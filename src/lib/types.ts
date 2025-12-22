@@ -420,6 +420,7 @@ export interface UserInfoType {
   portalPageConfig?: any;
   universalPageConfig?: any;
   collections?: CollectionBlock[] | null;
+  owner_email_id?: string;
 }
 
 export interface PositionedUserTypes {

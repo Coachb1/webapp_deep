@@ -65,6 +65,8 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
       .filter(
         (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
           Boolean(col.action_tab_info)
+      ).filter(
+        (col) => col.case_items && col.case_items.length > 0
       )
       .map((col) => col.action_tab_info);
     setLoading(false);
