@@ -8,10 +8,17 @@
   const WIDGET_HEIGHT = parseInt(currentScript.getAttribute("data-widget-height")) || null;
   const baseUrl = currentScript.getAttribute("data-base-url") || 'https://playground.coachbots.com';
   const clientEmail = currentScript.getAttribute("data-client-email") || null;
+  const clientId = currentScript.getAttribute("data-client-id") || null;
 
   let TARGET_URL = `${baseUrl}/library-bot/${PAGE_ID}`;
-  if (clientEmail) {
-    TARGET_URL += `?email=${encodeURIComponent(clientEmail)}`;
+  if (clientEmail || clientId) {
+    TARGET_URL += `?`;
+    if (clientEmail) {
+      TARGET_URL += `email=${encodeURIComponent(clientEmail)}&`;
+    }
+    if (clientId) {
+      TARGET_URL += `clientId=${encodeURIComponent(clientId)}&`;
+    }
   }
 
   let widgetOpened = false;
