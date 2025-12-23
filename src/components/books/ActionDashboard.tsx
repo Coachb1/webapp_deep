@@ -35,7 +35,7 @@ const dashboardItems: DashboardItem[] = [
     icon: <Database className="w-5 h-5 text-[#00c193]" />,
     buttons: [
       { label: "Cases", action: "SHOW_AI_CASES" },
-      { label: "Landscape", action: "AI_LANDSCAPE"  },
+      { label: "Landscape", action: "AI_LANDSCAPE" },
     ],
   },
   {
@@ -100,7 +100,16 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
         ENTERPRISE AI ADOPTS DASHBOARD
       </h2>
 
-      <div className="flex flex-wrap justify-center gap-2 w-full">
+      <div
+        className="
+grid gap-3
+w-full
+max-w-[1600px]
+mx-auto
+justify-center
+justify-items-center
+[grid-template-columns:repeat(auto-fit,200px)] "
+      >
 
         {items.map((item: DashboardItem) => {
           const isMultiButton = item.buttons.length > 1;
@@ -117,7 +126,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
                 rounded-md
                 flex flex-col justify-between
                 px-5 py-3
-                w-[260px]
+                w-[200px]
                 flex-shrink-0 
                 transition-all duration-300
 
@@ -143,7 +152,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
 
               <div className="mb-1.5">
                 {typeof item?.icon === "string" &&
-                item.icon.includes("<svg") ? (
+                  item.icon.includes("<svg") ? (
                   <div className="mb-1.5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:max-w-5 [&>svg]:max-h-5">
                     <div
                       className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5"
@@ -165,31 +174,31 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
 
               {/* Buttons */}
               <div
-                className={`gap-1 ${
-                  isMultiButton
+                className={`gap-1 w-full mt-auto ${isMultiButton
                     ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
                     : "flex"
-                }`}
+                  }`}
               >
+
                 {item.buttons.map((btn: ActionButton, index: number) => (
                   <button
                     key={index}
                     onClick={() => btn.action && onAction?.(btn.action)}
                     className={`
-                    flex items-center justify-center
-                    font-medium text-black
-                    bg-[#f2f2f2]
-                    border border-[#00c193]
-                    py-1 px-2 rounded
-                    shadow-sm
-                    whitespace-nowrap
-                    text-[9px]
-                    hover:bg-[#e8e8e8]
-                    transition-colors
-                    ${
-                      isMultiButton ? "text-[11px] px-4" : "text-xs w-full px-5"
-                    }
-                  `}
+  flex items-center justify-center
+  w-full
+  font-medium text-black
+  bg-[#f2f2f2]
+  border border-[#00c193]
+  py-1 px-2 rounded
+  shadow-sm
+  whitespace-nowrap
+  hover:bg-[#e8e8e8]
+  transition-colors
+  ${isMultiButton ? "text-[11px] px-4" : "text-xs px-5"
+                      }
+`}
+
                   >
                     {btn.label}
                   </button>
