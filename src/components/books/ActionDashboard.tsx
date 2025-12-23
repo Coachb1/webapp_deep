@@ -52,7 +52,7 @@ const dashboardItems: DashboardItem[] = [
 
 /* -------------------- COMPONENT -------------------- */
 
-const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
+const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAction }) => {
   const { userInfo } = usePortalUser();
   const [loading, setLoading] = useState(true);
 
@@ -68,6 +68,8 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
       .filter(
         (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
           Boolean(col.action_tab_info)
+      ).filter(
+        (col) => col.case_items && col.case_items.length > 0
       )
       .map((col) => col.action_tab_info);
     setLoading(false);
@@ -99,14 +101,46 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
       </h2>
 
       <div className="flex flex-wrap justify-center gap-2 w-full">
-        
+
         {items.map((item: DashboardItem) => {
           const isMultiButton = item.buttons.length > 1;
+
+          const isActive = item.buttons.some(
+            (btn) => btn.action === selectedAction
+          );
+
 
           return (
             <div
               key={item.id}
-              className="bg-white rounded-md border border-[#00c193] shadow-sm flex flex-col justify-between p-2 max-w-[180px]">
+              className={`
+                rounded-md
+                flex flex-col justify-between
+                px-5 py-3
+                w-[260px]
+                flex-shrink-0 
+                transition-all duration-300
+
+                ${isActive
+                  ? `
+                    bg-white
+                    border border-[#00c193]
+                    shadow-[0_6px_16px_rgba(0,193,147,0.28)]
+                    scale-[1.05]
+                  `
+                  : `
+                    bg-white
+                    border border-[#00c193]
+                    shadow-[0_2px_6px_rgba(0,0,0,0.08)]
+                    hover:shadow-[0_8px_22px_rgba(0,193,147,0.30)]
+                    hover:scale-[1.02]
+                  `
+                }
+
+
+              `}
+            >
+
               <div className="mb-1.5">
                 {typeof item?.icon === "string" &&
                 item.icon.includes("<svg") ? (
@@ -133,7 +167,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
               <div
                 className={`gap-1 ${
                   isMultiButton
-                    ? "grid grid-cols-2"
+                    ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
                     : "flex"
                 }`}
               >
@@ -141,7 +175,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
                   <button
                     key={index}
                     onClick={() => btn.action && onAction?.(btn.action)}
-                    className="
+                    className={`
                     flex items-center justify-center
                     font-medium text-black
                     bg-[#f2f2f2]
@@ -152,7 +186,10 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction }) => {
                     text-[9px]
                     hover:bg-[#e8e8e8]
                     transition-colors
-                  "
+                    ${
+                      isMultiButton ? "text-[11px] px-4" : "text-xs w-full px-5"
+                    }
+                  `}
                   >
                     {btn.label}
                   </button>
