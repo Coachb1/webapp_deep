@@ -48,7 +48,8 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const token = localStorage.getItem('jwt_token')
+
+        const token = window.location.origin.includes("clientId") && window.location.origin.includes("library-bot") ? localStorage.getItem('client_jwt_token') : localStorage.getItem('jwt_token')
         const res = await fetch("/api/session", { method: "GET", headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
@@ -56,7 +57,7 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
           console.log('user data', data)
           if (data) {
             setUser(data.user)
-            await refreshUserData(data.user);
+            // if (!data.user?.user_data && !data.user?.user_data?.id) await refreshUserData(data.user);
           };
         } else {
           console.error("Failed to fetch user data", await res.text());
@@ -79,12 +80,12 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
         setTempEmail(autoLoginEmail);
         setTempName(autoLoginEmail.split("@")[0] || "demo user"); // Use provided password or empty string
   
-        onSubmit();
+        onSubmit(`client_jwt_token`);
   
       }
     }, [autoLoginEmail, checking, user, loading]);
   
-  const onSubmit = async () => {
+  const onSubmit = async (token_key='jwt_token') => {
     setNameError("");
     setEmailError("");
     setApiError("");
@@ -131,7 +132,7 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
         throw new Error(errData.message || "Failed to create session");
       }
       const resdata = await res.json();
-      localStorage.setItem('jwt_token', resdata.token)
+      localStorage.setItem(token_key, resdata.token)
       setUser(fullUser);
       await refreshUserData(fullUser);
 

@@ -173,6 +173,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     let token: string | null = null;
     const fullPath = window.location.href;
     if (fullPath.includes('library-bot') && !fullPath.includes('clientId')) {
+      console.debug("Library Bot detected, using access token");
       token = localStorage.getItem("access_token");
       if (!token) {
         setLoading(false);
@@ -196,7 +197,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       })
       .then(async (data) => {
         if (!data) return; // Token was expired
-        console.log("User data from session:", data);
+        console.debug("User data from session:", data);
         
         const newUser = { given_name: data.name, email: data.email };
 
@@ -215,7 +216,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => setLoading(false));
       
     } else {
-      token = localStorage.getItem("jwt_token");
+      console.debug("Regular user session detected, using JWT token");
+      token = fullPath.includes('clientId') ? localStorage.getItem("client_jwt_token") : localStorage.getItem("jwt_token");
       if (!token) {
         setLoading(false);
         return;
