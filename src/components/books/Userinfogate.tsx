@@ -149,6 +149,14 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
     onSubmit();
   };
 
+  if (autoLoginEmail){
+    return (
+      <div>
+        {children}
+      </div>
+    )
+  }
+
   return (
     <div className="relative">
       {/* Main content blurred until user is set */}
@@ -165,7 +173,9 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
               <div className="flex flex-col items-center justify-center py-10">
                 <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
                 <p className="mt-3 text-gray-600 text-sm">
-                  Checking user...
+                  {autoLoginEmail
+                    ? "Updating the latest adoption intelligence. Please wait…"
+                    : "Verifying your access…"}
                 </p>
               </div>
             ) : (

@@ -416,7 +416,7 @@ export default function CompanyIQ() {
               className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
-              <option value="">Revenue</option>
+              <option value="">Revenue  (USD)</option>
               <option>$0–100M</option>
               <option>$100–500M</option>
               <option>$500M+</option>

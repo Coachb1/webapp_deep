@@ -179,7 +179,7 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
             {checking ? (
               <div className="flex flex-col items-center justify-center py-10">
                 <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <p className="mt-3 text-gray-600 text-sm">Checking session...</p>
+                <p className="mt-3 text-gray-600 text-sm">Verifying your access…</p>
               </div>
             ) : (
               <>

@@ -258,12 +258,14 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
         <div
           id="action-section"
           className={`
-            overflow-hidden transition-all duration-500 ease-in-out
-            ${actionKey
-              ? "max-h-[3000px] opacity-100 translate-y-0 mt-6"
-              : "max-h-0 opacity-0 -translate-y-2"}
-          `}
-        >
+            transition-all duration-500 ease-in-out
+            ${actionKey?.includes("CONCEPTS")
+              ? "overflow-visible max-h-none"
+              : actionKey
+                ? "overflow-hidden max-h-[3000px]"
+                : "overflow-hidden max-h-0"}
+            `}
+          >
           {actionKey?.includes("CONCEPTS") && (
             <ConceptsViewer actionKey={actionKey!} />
           )}
