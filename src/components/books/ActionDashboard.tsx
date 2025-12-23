@@ -167,9 +167,14 @@ justify-items-center
                   {item.title}
                 </h3>
 
-                <p className="text-[9px] text-gray-600 leading-snug">
-                  {item.description}
-                </p>
+                <p
+  className={`text-[9px] leading-snug ${
+    isActive ? "text-gray-800 font-semibold" : "text-gray-700 font-medium"
+  }`}
+>
+  {item.description}
+</p>
+
               </div>
 
               {/* Buttons */}
