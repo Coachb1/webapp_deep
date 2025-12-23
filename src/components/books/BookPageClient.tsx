@@ -240,6 +240,22 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
         <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
 
+        {(loading || LibraryLoading) &&  (
+          <div
+            // full-page hovering overlay
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 flex flex-col items-center shadow-lg">
+              <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+              <p className="mt-3 text-gray-700 dark:text-gray-200 text-sm">
+                Updating the latest adoption intelligence. Please wait…
+              </p>
+            </div>
+          </div>
+        )}
+
         <ActionDashboard
           selectedAction={actionKey}
           onAction={(value) => {
