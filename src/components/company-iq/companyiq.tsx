@@ -234,7 +234,17 @@ export default function CompanyIQ() {
           (company.employees <= 500 || company.employees > 2000)
         )
           return false;
-        if (appliedEmployees === "2000+" && company.employees <= 2000)
+        if (
+          appliedEmployees === "2000-10000" &&
+          (company.employees <= 2000 || company.employees > 10000)
+        ) 
+          return false
+        if (
+          appliedEmployees === "10000-50000" &&
+          (company.employees <= 10000 || company.employees > 50000)
+        ) 
+          return false
+        if (appliedEmployees === "50000+" && company.employees <= 50000)
           return false;
       }
 
@@ -422,7 +432,9 @@ export default function CompanyIQ() {
               <option value="">Employees</option>
               <option>0–500</option>
               <option>500–2000</option>
-              <option>2000+</option>
+              <option>2000-10000</option>
+              <option>10000-50000</option>
+              <option>50000+</option>
             </select>
 
             {/* Apply Button */}

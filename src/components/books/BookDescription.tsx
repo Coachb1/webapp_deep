@@ -147,7 +147,7 @@ const BookDescription = ({
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-2xl shadow-xl p-6 max-w-2xl w-full relative transform transition-all scale-95 animate-in fade-in-50 duration-200"
+          className="bg-white rounded-2xl shadow-xl p-6 max-w-7xl w-full relative transform transition-all scale-95 animate-in fade-in-50 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
@@ -184,6 +184,20 @@ const BookDescription = ({
               <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4">
                 {book.desc}
               </p>
+            {/* Summary Notice Box */}
+              <div className="border border-[#00c193] rounded-lg p-3 text-sm text-gray-700 leading-relaxed mt-2">
+                <p>
+                  This is summary only. The Transform IQ view provided relevance, activated during full implementation.{" "}
+                  <a 
+                    href="https://cdn.coachbots.com/TransformationIQ/transformation%20pdf/Transform-IQ-Sample.pdf" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
+                  >
+                    Sample
+                  </a>.
+                </p>
+              </div>
             </div>
           </div>
         </div>
