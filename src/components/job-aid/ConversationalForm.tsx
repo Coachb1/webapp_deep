@@ -347,7 +347,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     return (
       <div className="pt-24 flex flex-col items-center">
         <h2 className="text-3xl font-bold text-gray-800 mb-6">
-          Where should we send your completed blueprint?
+          Please enter your details for tracking.
         </h2>
 
         <form

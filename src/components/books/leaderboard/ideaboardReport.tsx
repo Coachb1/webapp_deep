@@ -1,7 +1,7 @@
 "use client";
 
 import { baseURL } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FaChartLine, FaSyncAlt, FaTable, FaArrowUp, FaCalendar, FaClock } from "react-icons/fa";
 import IdeaBoardTable from "./IdeaBoardTable";
 import IdeaBoardPagination from "./IdeaBoardPagination";
@@ -50,6 +50,45 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
   // Pagination
   const rowsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
+
+  // sorting state: default by id ascending
+  const [sortBy, setSortBy] = useState<"id" | "votes">("id");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const sortedRows = useMemo(() => {
+    const copy = [...rows];
+    if (sortBy === "votes") {
+      copy.sort((a, b) => {
+        const av = Number(a.likes ?? 0);
+        const bv = Number(b.likes ?? 0);
+        return sortDir === "asc" ? av - bv : bv - av;
+      });
+    } else {
+      // sort by id (try numeric, fallback to string)
+      copy.sort((a, b) => {
+        const ai = Number(a.id);
+        const bi = Number(b.id);
+        if (!Number.isNaN(ai) && !Number.isNaN(bi)) {
+          return sortDir === "asc" ? ai - bi : bi - ai;
+        }
+        return sortDir === "asc"
+          ? String(a.id).localeCompare(String(b.id))
+          : String(b.id).localeCompare(String(a.id));
+      });
+    }
+    return copy;
+  }, [rows, sortBy, sortDir]);
+
+  const toggleSortVotes = () => {
+    if (sortBy === "votes") {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy("votes");
+      setSortDir("desc"); // default to highest-first when switching to votes
+    }
+  };
+
+
 
   // Date setup
   useEffect(() => {
@@ -297,8 +336,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
 
 
   // Pagination helpers
-  const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
-  const paginatedRows = rows.slice(
+  const totalPages = Math.max(1, Math.ceil(sortedRows.length / rowsPerPage));
+  const paginatedRows = sortedRows.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -318,6 +357,8 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   const refreshData = async () => {
     setLoading(true);
     setError(null);
+    setSortDir('desc');
+    setSortBy('id');
     await fetchData();
     setLoading(false);
   };
@@ -386,6 +427,9 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
               onSelectRow={setSelectedRow}
               onlyClientSetup={onlyclientsetup}
               onThumbupOrThumbdown={onThumbupOrThumbdown}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              toggleSortVotes={toggleSortVotes}
             />
 
             <IdeaBoardPagination
