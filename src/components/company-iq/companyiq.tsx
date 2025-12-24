@@ -309,8 +309,7 @@ export default function CompanyIQ() {
           <h1 className="text-3xl font-bold text-black">AI Landscape Snapshot</h1>
 
           <p className="text-gray-700 mt-2">
-            AI-powered company intelligence, transformation scores, and
-            strategic insights
+             Digital and AI initiatives from over 1000+ companies. Revenues & Headcount are indicative approximations.
           </p>
 
           {/* <div className="mt-4 flex gap-4 text-sm">
@@ -487,18 +486,18 @@ export default function CompanyIQ() {
                     {company.hq}
                   </div>
                 </div>
-                <div>
+                {/* <div>
                   <div className="text-gray-500">Revenue</div>
                   <div className="font-semibold text-gray-900">
                     ${company.revenue}M
                   </div>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <div className="text-gray-500">Employees</div>
                   <div className="font-semibold text-gray-900">
                     {company.employees}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="space-y-2">
