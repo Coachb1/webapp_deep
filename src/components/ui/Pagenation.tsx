@@ -18,13 +18,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         disabled={currentSlide === 0}
         onClick={() => onPageChange(currentSlide - 1)}
-        className={`px-4 py-1.5 text-sm font-medium shadow-sm transition-all duration-300 border border-[#00c193]
-        ${
-          currentSlide === 0
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+        className={`custom-btn btn-sm`}
       >
         Prev
       </button>
@@ -40,13 +34,13 @@ const Pagination: React.FC<PaginationProps> = ({
             <button
               key={index}
               onClick={() => onPageChange(index)}
-              className={`w-6 h-6 flex items-center justify-center font-bold text-sm shadow-sm cursor-pointer mx-[2px] transition-all duration-300 border border-[#00c193]
-              ${
-                index === currentSlide
-                  ? "bg-[#00c193] text-white"
-                  : "bg-gray-200 text-black hover:bg-gray-300"
-              }`}
-              style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+              className={`custom-btn btn-sm page-btn
+                ${
+                  index === currentSlide
+                    ? "page-btn-active"
+                    : "page-btn-inactive"
+                }`}
+              style={{ borderRadius: "6px" }}
             >
               {index + 1}
             </button>
@@ -68,13 +62,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         disabled={currentSlide === totalSlides - 1}
         onClick={() => onPageChange(currentSlide + 1)}
-        className={`px-4 py-1.5 text-sm font-medium shadow-sm transition-all duration-300 border border-[#00c193]
-        ${
-          currentSlide === totalSlides - 1
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+        className={`custom-btn btn-sm`}
       >
         Next
       </button>

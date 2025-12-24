@@ -201,12 +201,12 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 
       {/* Content */}
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-semibold text-gray-800 leading-snug text-center">
+        <h2 className="custom-title text-2xl font-semibold text-gray-800 leading-snug text-center">
           {question.question}
         </h2>
 
         {question.description && (
-          <p className="text-lg text-gray-500 leading-relaxed text-center">
+          <p className="custom-subtitle text-lg text-gray-500 leading-relaxed text-center">
             {question.description}
           </p>
         )}
@@ -220,7 +220,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         )}
 
         {suggestions && !error && (
-          <div className="relative bg-yellow-200 text-yellow-700 p-4 rounded-lg text-lg border-l-4 border-yellow-600">
+          <div className="custom-subtitle relative bg-yellow-200 text-yellow-700 p-4 rounded-lg text-lg border-l-4 border-yellow-600">
 
             <CopyBox content={suggestions} 
                 className="top-3 right-3 text-gray-500 hover:text-yellow-800 hover:bg-yellow-200"
@@ -237,7 +237,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
               <button
                 onClick={handleIgnore}
                 disabled={(currentAnswer || "").trim() !== answer.trim() || !answer.trim()}
-                className={`bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md rounded-md
+                className={`custom-btn btn-sm bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md rounded-md
           ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {questionNumber === totalQuestions ? "Submit" : "Continue"}
@@ -249,10 +249,10 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 
 
         {error && (
-          <div className="bg-red-200 text-red-700 p-3 rounded-md text-center text-lg border-l-4 border-red-600">
+          <div className="custom-subtitle bg-red-200 text-red-700 p-3 rounded-md text-center text-lg border-l-4 border-red-600">
             {error}
             {suggestions && (
-              <span className="block mt-2 text-yellow-700">
+              <span className=" custom-subtitle block mt-2 text-yellow-700">
                 Suggestions: <AdvMarkdownHandler content={suggestions} />
               </span>
             )}
@@ -264,16 +264,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
           <button
             onClick={handleContinue}
             disabled={(currentAnswer || "").trim() === answer.trim() || !answer.trim()}
-            className={`
-    w-full bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium 
-    text-gray-800 shadow-sm transition-all duration-300
-    hover:border-[#00c193] hover:shadow-md sm:w-auto
-    ${(currentAnswer || "").trim() === answer.trim() || !answer.trim()
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-              }
-  `}
-            style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+            className={`custom-btn btn-sm
+              ${(currentAnswer || "").trim() === answer.trim() || !answer.trim()? "opacity-50 cursor-not-allowed" : ""} `}
+              style={{ borderRadius: "calc(var(--radius) - 6px)" }}
           >
             {getValidateContinueText()}
           </button>

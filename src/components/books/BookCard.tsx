@@ -189,7 +189,7 @@ const BookCard: React.FC<BookCardProps> = ({
           </p>
           <button
             onClick={() => setIsReadModalOpen(true)}
-          className="ml-2 px-3 py-1 custom-btn btn-sm transition"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          className={`ml-2 custom-btn btn-sm`}
           >
             Report
           </button>
@@ -216,8 +216,8 @@ const BookCard: React.FC<BookCardProps> = ({
 
           {/* More Button */}
           <button
-            className="px-3 py-1  whitespace-nowrap  transition custom-btn btn-sm"
-            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+            className={`custom-btn btn-sm`}
+            
             onClick={onMore}
           >
           {showTransformIQ? "Transform IQ" : "Transform IQ"}

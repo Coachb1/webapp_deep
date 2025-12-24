@@ -13,7 +13,7 @@ export default function ThumbVoteButton({
   loading,
 }: ThumbVoteButtonProps) {
   return (
-    <div className="flex items-center gap-0 mb-2 border-2 border-[#00c193]-500 rounded-full px-2 py-1 bg-white">
+    <div className="flex items-center gap-0 mb-2 border-2 border-[#00c193]-500 rounded-full px-1 py-0.5 bg-white">
 
       {/* 👍 THUMB UP */}
       <motion.button
@@ -22,7 +22,7 @@ export default function ThumbVoteButton({
         whileHover={!loading ? { scale: 1.05 } : undefined}
         onClick={() => onVote(1)}
         disabled={loading}
-        className={`flex items-center justify-center w-8 h-8 rounded-full border transition
+        className={`flex items-center justify-center w-5 h-5 rounded-full border transition
           ${loading
             ? "bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed"
             : "bg-white border-gray-300 hover:border-[#00c193]"
@@ -30,7 +30,7 @@ export default function ThumbVoteButton({
         `}
       >
         <FaThumbsUp
-          className="text-[#00c193] text-lg pointer-events-none"
+          className="text-[#00c193] text-sm pointer-events-none"
         />
       </motion.button>
 
@@ -45,7 +45,7 @@ export default function ThumbVoteButton({
             •••
           </motion.span>
         ) : (
-          <span className="font-semibold text-gray-700">{count}</span>
+          <span className="text-xs font-semibold text-gray-700">{count}</span>
         )}
       </div>
 
@@ -56,7 +56,7 @@ export default function ThumbVoteButton({
         whileHover={!loading && count > 0 ? { scale: 1.05 } : undefined}
         onClick={() => onVote(-1)}
         disabled={loading || count <= 0}
-        className={`flex items-center justify-center w-8 h-8 rounded-full border transition
+        className={`flex items-center justify-center w-5 h-5 rounded-full border transition
           ${loading || count <= 0
             ? "bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed"
             : "bg-white border-gray-300 hover:border-red-400"
@@ -64,7 +64,7 @@ export default function ThumbVoteButton({
         `}
       >
         <FaThumbsDown
-          className="text-red-500 text-lg pointer-events-none"
+          className="text-red-500 text-sm pointer-events-none"
         />
       </motion.button>
 

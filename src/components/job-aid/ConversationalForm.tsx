@@ -346,7 +346,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   if (currentStep === "email" && isEmailSection) {
     return (
       <div className="pt-24 flex flex-col items-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">
+        <h2 className="custom-title text-3xl font-bold text-gray-800 mb-6">
           Where should we send your completed blueprint?
         </h2>
 
@@ -373,7 +373,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className={`bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
+            className={` custom-btn btn-sm bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
               hover:border-[#00c193] hover:shadow-md sm:w-auto
                 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
@@ -456,8 +456,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         ) : (
           // 🔹 No report or prompt → Simple completion message
           <div className="bg-gray-100 border border-[#00c193] rounded-xl p-6 mb-6 text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
-            <p className="text-gray-600">
+            <h3 className="custom-title text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
+            <p className="custom-subtitle text-gray-600">
               Your responses were submitted successfully.
             </p>
           </div>
@@ -483,7 +483,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         ) : (
           <button
             onClick={handleRestart}
-            className="
+            className="custom-btn btn-sm
             w-full bg-gray-200 border border-[#00c193] 
             px-8 py-4 text-sm font-medium text-gray-800 
             shadow-sm transition-all duration-300 

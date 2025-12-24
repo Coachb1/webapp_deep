@@ -62,11 +62,8 @@ function PaginationComponent({
           <button
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor: currentPage === 1 ? "#e5e7eb" : "#e5e7eb",
-              color: currentPage === 1 ? "#9ca3af" : "#374151",
-            }}
+            className={`custom-btn btn-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+         }`}
             aria-label="Go to previous page"
           >
             <span>Prev</span>
@@ -83,12 +80,8 @@ function PaginationComponent({
             ) : (
               <button
                 onClick={() => onPageChange(page as number)}
-                className="inline-flex items-center justify-center text-sm font-medium transition-colors h-9 w-9 rounded-lg"
-                style={{
-                  backgroundColor:
-                    currentPage === page ? "#00c193" : "transparent",
-                  color: currentPage === page ? "white" : "#374151",
-                }}
+                className={`custom-btn btn-sm h-[6.5] w-[6.5] ${currentPage === page ? "!bg-[#00c193] !text-white" : ""
+                  }`}
                 aria-current={currentPage === page ? "page" : undefined}
               >
                 {page}
@@ -102,12 +95,8 @@ function PaginationComponent({
           <button
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor:
-                currentPage === totalPages ? "#e5e7eb" : "#e5e7eb",
-              color: currentPage === totalPages ? "#9ca3af" : "#374151",
-            }}
+            className={`custom-btn btn-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             aria-label="Go to next page"
           >
             <span>Next</span>
@@ -382,7 +371,7 @@ export default function CompanyIQ() {
             <select
               value={tempIndustry}
               onChange={(e) => setTempIndustry(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Industry</option>
@@ -397,7 +386,7 @@ export default function CompanyIQ() {
             <select
               value={tempHQ}
               onChange={(e) => setTempHQ(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">HQ</option>
@@ -412,7 +401,7 @@ export default function CompanyIQ() {
             <select
               value={tempRevenue}
               onChange={(e) => setTempRevenue(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Revenue  (USD)</option>
@@ -425,7 +414,7 @@ export default function CompanyIQ() {
             <select
               value={tempEmployees}
               onChange={(e) => setTempEmployees(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Employees</option>

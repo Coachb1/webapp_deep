@@ -169,23 +169,23 @@ const BookDescription = ({
 
             {/* Book Details */}
             <div className="flex flex-col text-center md:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+               <h2 className="custom-title text-xl mb-1">
                 {book.title}
               </h2>
-              <h4 className="text-gray-600 text-base sm:text-lg mb-2">
+              <h4 className="custom-subtitle  mb-2">
                 Featuring {book.author}
               </h4>
 
-              <p className="text-sm text-gray-500 mb-3">
+              <p className="custom-subtitle  mb-3 ">
                 <span className="font-semibold">Category:</span>{" "}
                 {book.tag.join(", ")}
               </p>
 
-              <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4">
+              <p className=" custom-body mb-2 text-justify break-words">
                 {book.desc}
               </p>
             {/* Summary Notice Box */}
-              <div className="border border-[#00c193] rounded-lg p-3 text-sm text-gray-700 leading-relaxed mt-2">
+              <div className="custom-subtitle border border-[#00c193] rounded-lg p-3 text-sm text-gray-700 leading-relaxed mt-2">
                 <p>
                   This is summary only. The Transform IQ view provided relevance, activated during full implementation.{" "}
                   <a 
