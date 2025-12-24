@@ -1,3 +1,54 @@
+.main_font_family {
+  font-family: "Rotis Sans Serif", "RotisSansSerif", Arial, Helvetica, sans-serif;
+}
+
+.custom-title {
+  font-size: 16px;
+  font-weight: 600; /* semibold */
+  color: #000000;
+}
+
+.title-bold {
+  font-weight: 550;
+}
+
+.custom-subtitle {
+  @apply text-xs 
+  font-semibold
+  text-gray-700;
+}
+
+/* Base button */
+.custom-btn {
+  @apply
+    inline-flex items-center justify-center
+    font-medium
+    rounded
+    border border-[#00c193]
+    bg-[#f2f2f2]
+    text-black
+    whitespace-nowrap
+    shadow-sm
+    transition-colors
+    hover:bg-[#e8e8e8];
+}
+
+/* Small button */
+.btn-sm {
+  @apply text-xs px-3 py-1;
+}
+
+
+/* Medium button (default) */
+.btn-md {
+  @apply text-sm px-4 py-1.5;
+}
+
+
+/* Large button */
+.btn-lg {
+  @apply text-base px-5 py-2;
+}
 
 
 /* Popup styles */
@@ -18,7 +69,6 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   height: 80px;
 }
 

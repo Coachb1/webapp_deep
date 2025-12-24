@@ -29,18 +29,18 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onStart, loading, title, desc
   return (
     <div className="bg-transparent rounded-2xl shadow-none p-10 text-center max-w-4xl w-full animate-[fadeInUp_0.8s_ease-out] mt-2 mx-auto">
       <div className="flex flex-col items-center gap-8">
-        <h1 className="text-4xl md:text-[2.75rem] font-bold text-gray-800 leading-tight whitespace-normal max-w-3xl">
+        <h1 className="custom-title text-4xl md:text-[2.75rem] font-bold text-gray-800 leading-tight whitespace-normal max-w-3xl">
           {title}
         </h1>
-        <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto whitespace-pre-line">
+        <p className="custom-subtitle text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto whitespace-pre-line">
           {description}
         </p>
         <button
           onClick={onStart}
           disabled={isDisabled}
-          className="bg-white border border-[#00c193] text-black px-10 py-4 text-lg font-semibold 
+          className="custom-btn btn-md bg-white border border-[#00c193] text-black px-10 py-4 text-lg font-semibold 
                      cursor-pointer transition-all duration-300 
-                     shadow-sm min-w-[200px] 
+                     shadow-sm
                      disabled:opacity-70 disabled:cursor-not-allowed
                      hover:bg-gray-300
                      active:translate-y-0"

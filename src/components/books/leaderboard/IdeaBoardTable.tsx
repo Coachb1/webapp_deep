@@ -23,7 +23,7 @@ export default function IdeaBoardTable({
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold border-b border-gray-200">
+        <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
           <tr>
             {qnaKeys.map((key) => (
               <th
@@ -43,7 +43,7 @@ export default function IdeaBoardTable({
           {rows.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-gray-200 hover:bg-gray-50"
+              className="border-b border-gray-300 hover:bg-gray-50"
             >
               {qnaKeys.map((key) => {
                 if (key === "Full Name") {

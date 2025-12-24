@@ -189,12 +189,12 @@ const BookCard: React.FC<BookCardProps> = ({
           </p>
           <button
             onClick={() => setIsReadModalOpen(true)}
-          className="ml-2 px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold hover:bg-gray-300 transition"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          className="ml-2 px-3 py-1 custom-btn btn-sm transition"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             Report
           </button>
           <p
-            className="text-gray-700 text-sm mb-4 line-clamp-2"
+            className="custom-subtitle mb-4 line-clamp-2"
             title={book.desc}
           >
             {book.desc}
@@ -216,11 +216,11 @@ const BookCard: React.FC<BookCardProps> = ({
 
           {/* More Button */}
           <button
-            className="px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold whitespace-nowrap hover:bg-gray-300 transition"
+            className="px-3 py-1  whitespace-nowrap  transition custom-btn btn-sm"
             style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             onClick={onMore}
           >
-          {showTransformIQ? "Transform IQ" : "Summary"}
+          {showTransformIQ? "Transform IQ" : "Transform IQ"}
           </button>
         </div>
 

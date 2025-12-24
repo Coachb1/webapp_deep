@@ -235,8 +235,13 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   };
 
   return (
-    <>
-    <div style={{transform: "scale(0.8) translateX(-12.5%)", transformOrigin: "top center", width: "125%",}}>
+    <div
+      className="main_font_family"
+      style={{
+        zoom: "0.8",
+        width: "100%",
+      }}
+    >
       <main id="top">
         <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
@@ -361,6 +366,5 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
         />
       )}
     </div>
-    </>
   );
 }
