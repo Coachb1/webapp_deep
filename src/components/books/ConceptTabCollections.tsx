@@ -233,7 +233,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
           onClick={() => setIsReadModalOpen(false)}
         >
           <div
-            className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col shadow-xl"
+            className="bg-white rounded-lg w-full  h-[100vh] flex flex-col shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
