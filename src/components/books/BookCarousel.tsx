@@ -16,6 +16,7 @@ interface BookCarouselProps {
   setLaterBooks: React.Dispatch<React.SetStateAction<Book[]>>;
   laterBooks: Book[];
   likedBooks: Book[];
+  onlyClientSetup: boolean;
 }
 
 const booksPerSlide = 12; // 3 rows × 4 books
@@ -31,6 +32,7 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   likedBooks,
   laterBooks,
   setViewMode,
+  onlyClientSetup
 }) => {
   const totalSlides = Math.ceil(books.length / booksPerSlide);
   const paginationRef = useRef<HTMLDivElement | null>(null);
@@ -102,6 +104,7 @@ const handlePageChange = (page: number) => {
                         likedBooks={likedBooks}
                         laterBooks={laterBooks}
                         setViewMode={setViewMode}
+                        onlyClientSetup={onlyClientSetup} 
                       />
                     ))}
                   </div>

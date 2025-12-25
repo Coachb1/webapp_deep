@@ -17,6 +17,7 @@ interface AudioPlayerProps {
   onNext: () => void;
   onPrev: () => void;
   courseId: string;
+  trackCompletion: boolean;
 }
 
 const AudioPlayer = ({
@@ -26,6 +27,7 @@ const AudioPlayer = ({
   onNext,
   onPrev,
   courseId,
+  trackCompletion = true,
 }: AudioPlayerProps) => {
   const user = usePortalUser();
 
@@ -55,16 +57,11 @@ const AudioPlayer = ({
   };
 
   const getPlayedPercentage = () => {
-
-    console.log(
-      '[getplayedpercentage]',
-      {
-        actualPlayedPercentage: actualPlayedPercentageRef.current,
-      }
-    );
+    console.log("[getplayedpercentage]", {
+      actualPlayedPercentage: actualPlayedPercentageRef.current,
+    });
     return actualPlayedPercentageRef.current;
   };
-
 
   function mergeRanges(ranges: [number, number][]): [number, number][] {
     if (ranges.length === 0) return [];
@@ -126,20 +123,24 @@ const AudioPlayer = ({
         actualPlayedPercentage: actualPlayedPercentageRef.current,
       });
 
-      updateCourseProgress(
-        courseId,
-        userId,
-        book.id,
-        playedPercentage >= completedThreshold ? "completed" : "in_progress",
-        completion,
-        playedPercentage
-      ).catch(console.error);
-      book.userProgress = book.userProgress || {};
-      book.userProgress.completed_in_percentage = completion
-      book.userProgress.audio_played = playedPercentage
-      if (playedPercentage >= completedThreshold) {
-        book.userProgress.status = "completed";
-        book.userProgress.end_time = new Date().toISOString();
+      {trackCompletion &&
+          updateCourseProgress(
+            courseId,
+            userId,
+            book.id,
+            playedPercentage >= completedThreshold
+              ? "completed"
+              : "in_progress",
+            completion,
+            playedPercentage
+          ).catch(console.error);
+        book.userProgress = book.userProgress || {};
+        book.userProgress.completed_in_percentage = completion;
+        book.userProgress.audio_played = playedPercentage;
+        if (playedPercentage >= completedThreshold) {
+          book.userProgress.status = "completed";
+          book.userProgress.end_time = new Date().toISOString();
+        }
       }
     }
   };
@@ -196,28 +197,31 @@ const AudioPlayer = ({
           merged,
           totalPlayed,
           playedPercent,
-          percent
+          percent,
         });
 
-      actualPlayedPercentageRef.current = Number(playedPercent.toFixed(2));
-        console.log('played percentage', { actualPlayedPercentage: actualPlayedPercentageRef.current, playedPercent })
+        actualPlayedPercentageRef.current = Number(playedPercent.toFixed(2));
+        console.log("played percentage", {
+          actualPlayedPercentage: actualPlayedPercentageRef.current,
+          playedPercent,
+        });
 
         // debug log per timeupdate (throttled by browser)
         // (progress-calc already logs, this is supplemental)
         // console.log("[audio-timeupdate]", { bookId: book?.id, currentTime: Number(t.toFixed(3)), duration: Number(d.toFixed(3)), percent });
 
-      if (!markedCompleted && playedPercent >= completedThreshold) {
-        setMarkedCompleted(true);
+        if (!markedCompleted && playedPercent >= completedThreshold) {
+          setMarkedCompleted(true);
           const userId = user?.user?.user_data?.uid || "";
           console.log(
             `[AudioPlayer] reached ${completedThreshold}% -> marking completed (${completedThreshold})`,
             {
               bookId: book.title,
               playedPercent,
-              percent
+              percent,
             }
           );
-          saveProgress('book threshold completed', book)
+          saveProgress("book threshold completed", book);
         }
 
         // Stop playback at 100%
@@ -228,7 +232,7 @@ const AudioPlayer = ({
           saveProgress("book completed", book);
           AudioManager.stop();
           setIsPlaying(false);
-      }
+        }
 
         return merged; // return the updated state
       });
@@ -317,23 +321,20 @@ const AudioPlayer = ({
           userId,
           managerSrc: AudioManager.getSrc(),
         });
-        const moduleCompletion = await getModuleCompletion(userId, book.id);
+        const moduleCompletion = trackCompletion? await getModuleCompletion(userId, book.id) : {};
         console.log("[AudioPlayer:init] starting", {
           bookTitle: book.title,
           completion: moduleCompletion?.completed_in_percentage || 0,
-          AudioPlayed: moduleCompletion?.audio_played || 0
+          AudioPlayed: moduleCompletion?.audio_played || 0,
         });
         percentFromApi = moduleCompletion?.completed_in_percentage || 0;
 
-
-        
         if (percentFromApi < 100) {
           const playedAudio = moduleCompletion?.audio_played || 0;
           actualPlayedPercentageRef.current = playedAudio;
 
           setMarkedCompleted(playedAudio >= completedThreshold);
         }
-
 
         if (percentFromApi >= 100) {
           percentFromApi = 0;
@@ -364,10 +365,12 @@ const AudioPlayer = ({
             managerSrcBefore: AudioManager.getSrc(),
           });
           setLoading(true);
-          await AudioManager.play(book.audio, Math.max(0, percentFromApi - 0.5)); // if less than 0, start from 0 if greater 0 then - 0.5
+          await AudioManager.play(
+            book.audio,
+            Math.max(0, percentFromApi - 0.5)
+          ); // if less than 0, start from 0 if greater 0 then - 0.5
           setIsPlaying(true);
           setAutoplayBlocked(false);
-
         } catch (err) {
           console.warn("[AudioPlayer:init] play blocked / failed", {
             bookId: book.title,
@@ -442,7 +445,10 @@ const AudioPlayer = ({
         });
 
         const playedPercentage = getPlayedPercentage();
-        console.log("[AudioPlayer] played percentage:", { playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current });
+        console.log("[AudioPlayer] played percentage:", {
+          playedPercentage,
+          actualPlayedPercentage: actualPlayedPercentageRef.current,
+        });
       }
     };
   }, [show, book, courseId]);
@@ -461,7 +467,10 @@ const AudioPlayer = ({
           completion,
         });
         const playedPercentage = getPlayedPercentage();
-        console.log("[AudioPlayer] played percentage:", { playedPercentage, actualPlayedPercentage: actualPlayedPercentageRef.current });
+        console.log("[AudioPlayer] played percentage:", {
+          playedPercentage,
+          actualPlayedPercentage: actualPlayedPercentageRef.current,
+        });
 
         // synchronous-ish best-effort; API likely async. we call it and hope it finishes.
         saveProgress("beforeunload", book);
@@ -536,7 +545,6 @@ const AudioPlayer = ({
       managerSrc: AudioManager.getSrc(),
     });
   }, [show, book, courseId]);
-
 
   // Controls
   const togglePlayPause = async () => {
@@ -650,8 +658,8 @@ const AudioPlayer = ({
 
   const resetPlayback = () => {
     AudioManager.setCurrentTime(0); // go to start
-      AudioManager.play(book.audio, 0); // auto play from start if paused
-      setIsPlaying(true);
+    AudioManager.play(book.audio, 0); // auto play from start if paused
+    setIsPlaying(true);
   };
   return (
     <div className={`popup ${show ? "show" : ""}`}>

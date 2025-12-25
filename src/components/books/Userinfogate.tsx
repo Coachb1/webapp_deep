@@ -13,6 +13,7 @@ interface User {
 
 interface UserInfoGateProps {
   children: React.ReactNode;
+  autoLoginEmail?: string;
 }
 
 // Sanitize input
@@ -32,7 +33,7 @@ const sanitize = (str: string) =>
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-const UserInfoGate = ({ children }: UserInfoGateProps) => {
+const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
   const { setUser, refreshUserData , user} = usePortalUser();
 
   const [tempName, setTempName] = useState("");
@@ -47,13 +48,16 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const token = localStorage.getItem('jwt_token')
+
+        const token = window.location.origin.includes("clientId") && window.location.origin.includes("library-bot") ? localStorage.getItem('client_jwt_token') : localStorage.getItem('jwt_token')
         const res = await fetch("/api/session", { method: "GET", headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
 
           console.log('user data', data)
-          if (data) {setUser(data.user)
+          if (data) {
+            setUser(data.user)
+            // if (!data.user?.user_data && !data.user?.user_data?.id) await refreshUserData(data.user);
           };
         } else {
           console.error("Failed to fetch user data", await res.text());
@@ -68,15 +72,27 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
     fetchSession();
   }, [setUser]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  /** ---------------------------
+     *  AUTO-LOGIN EFFECT
+     * ----------------------------*/
+    useEffect(() => {
+      if (autoLoginEmail && !checking && !user && !loading) {
+        setTempEmail(autoLoginEmail);
+        setTempName(autoLoginEmail.split("@")[0] || "demo user"); // Use provided password or empty string
+  
+        onSubmit(`client_jwt_token`);
+  
+      }
+    }, [autoLoginEmail, checking, user, loading]);
+  
+  const onSubmit = async (token_key='jwt_token') => {
     setNameError("");
     setEmailError("");
     setApiError("");
 
 
-    const sanitizedName = sanitize(tempName.trim());
-    const sanitizedEmail = sanitize(tempEmail.trim().toLowerCase());
+    const sanitizedName = sanitize(tempName.trim() || autoLoginEmail?.split("@")[0] || "demo user");
+    const sanitizedEmail = sanitize(tempEmail.trim().toLowerCase() || autoLoginEmail?.toLowerCase() || "");
 
     let valid = true;
     if (!sanitizedName) {
@@ -116,7 +132,7 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
         throw new Error(errData.message || "Failed to create session");
       }
       const resdata = await res.json();
-      localStorage.setItem('jwt_token', resdata.token)
+      localStorage.setItem(token_key, resdata.token)
       setUser(fullUser);
       await refreshUserData(fullUser);
 
@@ -127,7 +143,19 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
       .finally(() => {
       setLoading(false);
       });
+  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit();
   };
+
+  if (autoLoginEmail){
+    return (
+      <div>
+        {children}
+      </div>
+    )
+  }
 
   return (
     <div className="relative">
@@ -145,7 +173,9 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
               <div className="flex flex-col items-center justify-center py-10">
                 <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
                 <p className="mt-3 text-gray-600 text-sm">
-                  Checking user...
+                  {autoLoginEmail
+                    ? "Updating the latest adoption intelligence. Please wait…"
+                    : "Verifying your access…"}
                 </p>
               </div>
             ) : (
@@ -155,13 +185,21 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
                     <div className="w-6 h-6 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
+                {autoLoginEmail ? (
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <p className="mt-5 text-gray-600 text-sm">
+                      </p>
+                    </div>
+                  ) : (
+                    <>
         
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
                   Enter Your Details
                 </h2>
                 {apiError && <p className="text-red-600 text-sm mb-2 text-center">{apiError}</p>}
-
+                
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  
                   <input
                     type="text"
                     placeholder="Your Name"
@@ -189,6 +227,8 @@ const UserInfoGate = ({ children }: UserInfoGateProps) => {
                     {loading ? "Saving..." : "Save"}
                   </button>
                 </form>
+                </>
+                )}
               </>
             )}
           </div>

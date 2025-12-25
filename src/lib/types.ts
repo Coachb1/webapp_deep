@@ -22,6 +22,7 @@ export interface Book {
   list_name: string;
   transform_iq?: Record<string, any>;
   userProgress?: Record<string, any>;
+  totalLikes?: number;
 }
 
 export interface CoursePackage {
@@ -378,12 +379,26 @@ export interface CaseItem {
 }
 
 export interface CollectionBlock {
+  action_tab_info: DashboardItem;
+  iframe_link: string;
   id: number;
   collection_name: string;
   case_items: CaseItem[];
   heading?:string;
 }
 
+export interface ActionButton {
+  label: string;
+  action?: string;
+}
+
+export interface DashboardItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  buttons: ActionButton[];
+}
 export interface UserInfoType {
   clientId?: string;
   clientName: string;
@@ -405,6 +420,7 @@ export interface UserInfoType {
   portalPageConfig?: any;
   universalPageConfig?: any;
   collections?: CollectionBlock[] | null;
+  owner_email_id?: string;
 }
 
 export interface PositionedUserTypes {
@@ -462,4 +478,24 @@ export interface ConvertedConversation {
   bot_type?: string;
   participant_uid: string;
   bot_id: string;
+}
+
+
+export interface CompanyIQ {
+  id: string; // uid
+  company: string;
+  industry: string;
+  hq: string;
+  revenue: number;
+  employees: number;
+
+  leadership?: string[];
+  initiatives?: string[];
+  techStack?: string[];
+  useCases?: string[];
+  outlook?: string;
+
+  source: "LLM" | "CSV" | "Manual";
+  approved: boolean;
+  created: string;
 }

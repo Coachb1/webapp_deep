@@ -4,8 +4,9 @@ import { Book } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
-import { addModuleLater, addModuleLike, getModuleCompletion } from "@/lib/api";
+import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
+import ThumbVoteButton from "./ui/LIkeDislikeButtons";
 
 interface BookCardProps {
   book: Book;
@@ -16,6 +17,7 @@ interface BookCardProps {
   setLaterBooks: React.Dispatch<React.SetStateAction<Book[]>>;
   laterBooks: Book[];
   likedBooks: Book[];
+  onlyClientSetup: boolean; // Optional prop to handle client setup
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -27,6 +29,7 @@ const BookCard: React.FC<BookCardProps> = ({
   setLaterBooks,
   likedBooks,
   laterBooks,
+  onlyClientSetup, // Default to false if not provided
 }) => {
 
   const { user, userInfo } = usePortalUser()
@@ -36,9 +39,10 @@ const BookCard: React.FC<BookCardProps> = ({
   const [completedDate, setCompletedDate] = useState<string | null>(null);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
-
+  const [moduleLikes, setModuleLikes] = useState<number>(book.totalLikes || 0);
+  const [loadingLikeDislike, setLoadingLikeDislike] = useState<boolean>(false);
   useEffect(()=>{
-    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature 
+    if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature
       && book?.transform_iq?.overview && book?.transform_iq?.roles){
       setShowTransformIQ(userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature?.show === true);
     }
@@ -76,7 +80,19 @@ const BookCard: React.FC<BookCardProps> = ({
     fetchProgress();
   }, [user_id, book.id, book.userProgress?.completed_in_percentage]);
 
-
+  const handleLikeDisLike = async (book: Book, vote: 1 | -1) => {
+    // Update the like count
+    setLoadingLikeDislike(true);
+    setModuleLikes((prev) => {
+      if (vote === 1) {
+        return prev + 1;
+      } else {
+        return prev - 1;
+      }
+    });
+    await addModuleTotalLike(book.id, vote);
+    setLoadingLikeDislike(false);
+  };
 
   const handleToggleLike = (book: Book) => {
     setLikedBooks((prev: Book[]) => {
@@ -109,150 +125,169 @@ const BookCard: React.FC<BookCardProps> = ({
 
   return (
     <>
-    <article className="shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
-      {/* Book Cover */}
-      <img
-        src={book.img}
-        alt={book.title}
-        className="rounded-md mb-4 shadow-sm w-full object-cover aspect-[3/4]"
-      />
-      {/* Watch Later + Like */}
-      <div className="flex items-center gap-1 sm:gap-2 md:gap-0 lg:justify-between">
-        {/* Listen Later */}
-        <button onClick={() => handleToggleLater(book)} className="shrink-0">
-          <WatchLaterButton
-            isActive={laterBooks.some((b) => b.title === book.title)}
-            onToggle={() => { }}
-          />
-        </button>
+      <article className="shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
+        {/* Book Cover */}
+        <img
+          src={book.img}
+          alt={book.title}
+          className="rounded-md mb-4 shadow-sm w-full object-cover aspect-[3/4]"
+        />
+        {/* Watch Later + Like */}
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-0 lg:justify-between">
+          {/* Listen Later */}
+          {!onlyClientSetup && (
+            <button onClick={() => handleToggleLater(book)} className="shrink-0">
+              <WatchLaterButton
+                isActive={laterBooks.some((b) => b.title === book.title)}
+                onToggle={() => { }}
+              />
+            </button>
+          )}
 
-        {/* Heart */}
-        <button
-          onClick={() => handleToggleLike(book)}
-          className="shrink-0 md:-ml-1 lg:ml-auto"
-        >
-          <HeartButton
-            isActive={likedBooks.some((b) => b.title === book.title)}
-            onToggle={() => { }}
-          />
-        </button>
-      </div>
+          {/* The Watchlater button is commented for specific purpose to be uncommented later */}
+
+          {/* Heart */}
+        {onlyClientSetup ?(
+            <ThumbVoteButton
+              count={moduleLikes || 0}
+              onVote={(value) => handleLikeDisLike(book, value)}
+              loading={loadingLikeDislike}
+            />
+        ): (
+            <button
+              onClick={() => handleToggleLike(book)}
+              className="shrink-0 md:-ml-1 lg:ml-auto"
+            >
+              <HeartButton
+                isActive={likedBooks.some((b) => b.title === book.title)}
+                onToggle={() => { }}
+              />
+            </button>
+          )}
+        </div>
 
 
 
 
-      {/* Book Info */}
-      <div>
-        {/* <h4 className="font-bold text-lg mb-1 truncate" title={book.title}>
+        {/* Book Info */}
+        <div>
+          {/* <h4 className="font-bold text-lg mb-1 truncate" title={book.title}>
           {book.title}
         </h4> */}
-        <p className="text-gray-600 mb-2 truncate" title={book.author}>
-          {book.author}
-        </p>
-        <a
-          href="#search-container"
-          className="inline-block mb-2 px-3 py-1 bg-gray-200 text-gray-700 text-xs font-semibold"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-        >
-          {book.tag[0]}
-        </a>
-        <button
-          onClick={() => setIsReadModalOpen(true)}
-          className="ml-2 px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold hover:bg-gray-300 transition"style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-        >
-          Report
-        </button>
-        <p
-          className="text-gray-700 text-sm mb-4 line-clamp-2"
-          title={book.desc}
-        >
-          {book.desc}
-        </p>
-      </div>
+          <p className="text-gray-600 mb-2 truncate" title={book.author}>
+            {book.author}
+          </p>
+          <p
+            
+            className="
+              inline-block mb-2 px-3 py-1
+              bg-gray-200 text-gray-700 text-xs font-semibold
+              rounded-full
+            "
+          >
+            {book.tag[0]}
+          </p>
+          <button
+            onClick={() => setIsReadModalOpen(true)}
+          className={`ml-2 custom-btn btn-sm`}
+          >
+            Report
+          </button>
+          <p
+            className="custom-subtitle mb-4 line-clamp-2"
+            title={book.desc}
+          >
+            {book.desc}
+          </p>
+        </div>
 
-      {/* Buttons */}
-      <div className="flex items-center justify-between gap-3 w-full mt-2">
-        {/* ▶ Play Button */}
-        <button
-          className="rounded-full border border-green-500 text-green-500 
+        {/* Buttons */}
+        <div className="flex items-center justify-between gap-3 w-full mt-2">
+          {/* ▶ Play Button */}
+          <button
+            className="rounded-full border border-green-500 text-green-500 
                w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center 
                hover:bg-green-100 transition shrink-0"
-          aria-label="Play audio"
-          onClick={onPlay}
+            aria-label="Play audio"
+            onClick={onPlay}
+          >
+            ▶
+          </button>
+
+          {/* More Button */}
+          <button
+            className={`custom-btn btn-sm`}
+            
+            onClick={onMore}
+          >
+          {showTransformIQ? "Transform IQ" : "Transform IQ"}
+          </button>
+        </div>
+
+
+        {/* This section is commented to hide progress bar and finished status to be uncommented later. */}
+        {/* Finished Status + Progress */}
+        {!onlyClientSetup && (
+          <div className="flex items-center mt-3 gap-2">
+            {status === "finished" ? (
+              <>
+
+                <span className="text-gray-700 text-sm">
+                  {completedDate ? `${completedDate} • Finished` : "Finished"}
+                </span>
+                <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#00c193] text-white text-xs font-bold shadow-md">
+                  ✓
+                </div>
+              </>
+            ) : (
+              <>
+
+                <span className="text-gray-700 text-sm">Progress</span>
+
+                <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
+                  <div
+                    className="h-2 bg-green-500 transition-all duration-500"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+      </article>
+      {/* Read Modal with iframe */}
+      {isReadModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsReadModalOpen(false)}
         >
-          ▶
-        </button>
-
-        {/* More Button */}
-        <button
-          className="px-3 py-1 bg-gray-200 border border-[#00c193] text-black text-xs font-semibold whitespace-nowrap hover:bg-gray-300 transition"
-          style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-          onClick={onMore}
-        >
-          {showTransformIQ? "Transform IQ" : "Summary"}
-        </button>
-      </div>
-
-
-
-      {/* Finished Status + Progress */}
-      <div className="flex items-center mt-3 gap-2">
-        {status === "finished" ? (
-          <>
-            {/* Date + Finished */}
-            <span className="text-gray-700 text-sm">
-              {completedDate ? `${completedDate} • Finished` : "Finished"}
-            </span>
-            <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#00c193] text-white text-xs font-bold shadow-md">
-              ✓
+          <div
+            className="bg-white rounded-lg w-full  h-[100vh] flex flex-col shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-xl font-bold text-gray-800">{book.title}</h3>
+              <button
+                onClick={() => setIsReadModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+              >
+                ×
+              </button>
             </div>
-          </>
-        ) : (
-          <>
-            {/* Progress (text only) */}
-            <span className="text-gray-700 text-sm">Progress</span>
-            {/* Progress bar */}
-            <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
-              <div
-                className="h-2 bg-green-500 transition-all duration-500"
-                style={{ width: `${progress}%` }}
+
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src={book.report}
+                className="w-full h-full border-0"
+                title={`Read ${book.title}`}
+                allow="fullscreen"
               />
             </div>
-          </>
-        )}
-      </div>
-    </article>
-    {/* Read Modal with iframe */}
-    {isReadModalOpen && (
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-        onClick={() => setIsReadModalOpen(false)}
-      >
-        <div 
-          className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col shadow-xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex justify-between items-center p-4 border-b">
-            <h3 className="text-xl font-bold text-gray-800">{book.title}</h3>
-            <button
-              onClick={() => setIsReadModalOpen(false)}
-              className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-hidden">
-            <iframe
-              src={book.report}
-              className="w-full h-full border-0"
-              title={`Read ${book.title}`}
-              allow="fullscreen"
-            />
           </div>
         </div>
-      </div>
-    )}
-  </>
+      )}
+    </>
   );
 };
 

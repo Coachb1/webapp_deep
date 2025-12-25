@@ -3,12 +3,44 @@
   const currentScript = document.currentScript;
   const IMAGE_URL = currentScript.getAttribute("data-widget-image") || '';
   const WIDGET_TEXT = currentScript.getAttribute("data-widget-text") || '';
-  const PAGE_ID = currentScript.getAttribute("data-page-id") || '';
+  const PAGE_ID = currentScript.getAttribute("data-page-id") || ''; // packageID for library bot
+  const WIDGET_TYPE = currentScript.getAttribute("data-widget-type") || "case_study";
+  if (!WIDGET_TYPE) {
+    console.error("Widget initialization failed: data-widget-type is required.");
+    return;
+  }
+  if (!PAGE_ID && WIDGET_TYPE === 'case_study') {
+    console.error("Widget initialization failed: data-page-id is required. for case_study widget type.");
+    return;
+  }
   const WIDGET_WIDTH = parseInt(currentScript.getAttribute("data-widget-width")) || null;
   const WIDGET_HEIGHT = parseInt(currentScript.getAttribute("data-widget-height")) || null;
-  const baseUrl = currentScript.getAttribute("data-base-url") || 'https://playground.coachbots.com';
-
-  const TARGET_URL = `${baseUrl}/library-bot/${PAGE_ID}`;
+  const src = currentScript.src;
+  const origin = new URL(src).origin;
+  const baseUrl = origin || currentScript.getAttribute("data-base-url") || 'https://playground.coachbots.com';
+  console.log("Base URL:", baseUrl, );
+  const clientEmail = currentScript.getAttribute("data-client-email") || null;
+  const clientId = currentScript.getAttribute("data-client-id") || null;
+  let TARGET_URL = `${baseUrl}`;
+  if (WIDGET_TYPE === 'case_study' && PAGE_ID) {
+    TARGET_URL += `/library-bot/${PAGE_ID}`;
+    if (clientEmail || clientId) {
+      TARGET_URL += `?`;
+      if (clientEmail) {
+        TARGET_URL += `email=${encodeURIComponent(clientEmail)}&`;
+      }
+      if (clientId) {
+        TARGET_URL += `clientId=${encodeURIComponent(clientId)}&`;
+      }
+      TARGET_URL = TARGET_URL.slice(0, -1); // Remove trailing '&'
+    }
+  } else if (WIDGET_TYPE.includes('leadership_library')) {
+    if (WIDGET_TYPE.includes('portal')) TARGET_URL += `/portal`;
+    TARGET_URL += `/content-library`;
+  } else if (WIDGET_TYPE.includes('domain_library')) {
+    if (WIDGET_TYPE.includes('portal')) TARGET_URL += `/portal`;
+    TARGET_URL += `/domain-skills-library`;
+  }
 
   let widgetOpened = false;
   let originalWidth = 0;

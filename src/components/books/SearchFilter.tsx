@@ -33,6 +33,7 @@ interface SearchFilterProps {
   clientDepartments?: string;
   clientExpertise?: string;
   allBooks: Book[];
+  onlyClientSetup: boolean;
 }
 
 const SearchFilter = ({
@@ -48,7 +49,8 @@ const SearchFilter = ({
   availableFilters,
   showSearchBar,
   defaultFilters,
-  allBooks
+  allBooks,
+  onlyClientSetup
 }: SearchFilterProps) => {
   const {userInfo} = usePortalUser();
   const [activeButton, setActiveButton] = useState<"like" | "later" | null>(
@@ -544,7 +546,8 @@ const SearchFilter = ({
       <div className="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
         {/* Reset */}
         <Button
-          className={`px-6 py-2 sm:py-3 text-sm sm:text-base font-medium bg-gray-200 border border-[#00c193] text-black shadow-sm transition-all duration-300 hover:bg-gray-300 ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          className={`custom-btn btn-md ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          // style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           onClick={handleResetLibraryOptimized}
           disabled={isResetting}
         >
@@ -625,8 +628,11 @@ const SearchFilter = ({
           </Button>
 
         </div>
+        
+        {/* --->For Specific Purpose the Like And Lets discuss Commented to be uncommented later */}
 
         {/* Like + Later */}
+        { onlyClientSetup ? null : (
         <div className="flex gap-2 items-center">
           <Button
             onClick={handleLikeClick}
@@ -642,6 +648,8 @@ const SearchFilter = ({
             Let's Discuss
           </Button>
         </div>
+        )}
+
       </div>
 
      {/* Filter Categories - Below Search Bar */}
@@ -793,7 +801,7 @@ const SearchFilter = ({
                 type="checkbox"
                 checked={emergingPlayersChecked}
                 onChange={() => handleCheckboxToggle("Latest")}
-                className="w-4 h-4 accent-[#00c193]"
+                className="w-5 h-5 accent-[#00c193]"
               />
               Latest
             </label>
@@ -806,7 +814,7 @@ const SearchFilter = ({
                 type="checkbox"
                 checked={startUpChecked}
                 onChange={() => handleCheckboxToggle("Start Up")}
-                className="w-4 h-4 accent-[#00c193]"
+                className="w-5 h-5 accent-[#00c193]"
               />
               Start Up
             </label>

@@ -30,6 +30,7 @@ interface BookSectionProps {
   jobAidId: string | null;
   promptJobAidId?: string | null;
   packageDetails: any;
+  onlyClientSetup: boolean;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -49,6 +50,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   jobAidId,
   promptJobAidId,
   packageDetails,
+  onlyClientSetup
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
@@ -119,6 +121,10 @@ const BookSection: React.FC<BookSectionProps> = ({
   }, [userId]);
 
   useEffect(() => {
+    if (onlyClientSetup){
+      setShowBadge(false);
+      return;
+    }
     // Show badge if user has admin access
     if (userInfo?.libraryBotConfig?.show_certification_badge === true) {
       setShowBadge(true);
@@ -148,14 +154,16 @@ const BookSection: React.FC<BookSectionProps> = ({
         <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg mt-10">
           <ConversationalForm
             job_aid_id={promptJobAidId}
-            isEmailSection={false}
+            isEmailSection={onlyClientSetup ? true : false}
             inputEmail={email || "undefined@gmail.com"}
             inputName={name || "User"}
           />
         </div>
       )}
       <div className="text-center mt-10 mb-8 px-6">
-        <h1 className="text-2xl md:text-2xl font-bold text-gray-900 leading-snug max-w-6xl mx-auto">
+
+        <h1 className="
+                  custom-title leading-snug max-w-6xl mx-auto">
           Transformation Case Library powered by CoachBoT Innovation — now evolved into AIAdopts, built for scale, metadata discovery, and enterprise-wide AI readiness.
         </h1>
 
@@ -177,6 +185,7 @@ const BookSection: React.FC<BookSectionProps> = ({
           showSearchBar={showSearchBar}
           defaultFilters={userInfo.libraryBotConfig?.default_filters || {}}
           allBooks={all_books}
+          onlyClientSetup={onlyClientSetup}
         />
         {showLists && <>
           <br />
@@ -198,21 +207,13 @@ const BookSection: React.FC<BookSectionProps> = ({
         likedBooks={likedBooks}
         laterBooks={laterBooks}
         setViewMode={setViewMode}
+        onlyClientSetup={onlyClientSetup}
       />
 
       <br />
       <br />
       {/* <CTA /> */}
-      {jobAidId && (
-        <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-          <ConversationalForm
-            job_aid_id={jobAidId}
-            isEmailSection={false}
-            inputEmail={email || "undefined@gmail.com"}
-            inputName={name || "User"}
-          />
-        </div>
-      )}
+      
       {/* Progress Section */}
       {showBadge && (
         <section className="bg-white py-12">

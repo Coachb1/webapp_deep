@@ -346,8 +346,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   if (currentStep === "email" && isEmailSection) {
     return (
       <div className="pt-24 flex flex-col items-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">
-          Where should we send your completed blueprint?
+        <h2 className="custom-title text-3xl font-bold text-gray-800 mb-6">
+          Please enter your details for tracking.
         </h2>
 
         <form
@@ -360,7 +360,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg text-lg"
+            className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-lg"
           />
           <input
             type="email"
@@ -368,12 +368,12 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg text-lg"
+            className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-lg"
           />
           <button
             type="submit"
             disabled={loading}
-            className={`bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
+            className={` custom-btn btn-sm bg-gray-100 border border-[#00c193] text-gray-800 px-6 py-3 font-semibold text-lg transition-all
               hover:border-[#00c193] hover:shadow-md sm:w-auto
                 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
@@ -387,17 +387,17 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   if (currentStep === "loading") {
     return (
       <div className="pt-24 flex flex-col items-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <h2 className="custom-title mb-6">
           {isReport
             ? "⏳ Generating Your Report..."
             : isPromptGenerator ?
-              "⏳ Generating Prompt..."
+              "⏳ Please wait while we are generating your Blueprint..."
               : "⏳ Submitting..."}
         </h2>
         <div className="flex justify-center">
           <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <p className="text-gray-600 mt-4 text-lg text-center">
+        <p className="custom-subtitle text-center">
           {isReport
             ? "Please wait while we prepare your personalized Management Action Planner."
             : isPromptGenerator
@@ -415,13 +415,13 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         {generatedPrompt ? (
           // 🟢 Prompt Generation Mode Output Box
           <>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">✨ Your Prompt is Ready!</h2>
-            <p className="text-gray-600 text-lg mb-4 text-center">
+            <h2 className="custom-title mb-4">✨ Your Draft Blueprint is Ready!</h2>
+            <p className="custom-subtitle mb-4 text-center">
               Copy and use it wherever you like.
             </p>
 
             {/* Styled Box */}
-            <div className="relative w-full max-w-[90rem] bg-gray-100 border border-gray-300 rounded-xl p-6 pt-10 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md">
+            <div className="custom-subtitle relative w-full max-w-[90rem] bg-gray-100 border border-gray-300 rounded-xl p-6 pt-10 text-left whitespace-pre-wrap text-lg leading-relaxed shadow-md">
 
               {/* Copy Icon Only */}
               <CopyBox content={generatedPrompt} />
@@ -434,18 +434,18 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         ) : reportUrl ? (
           // 🟩 Standard Report Mode
           <>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">🎉 Congratulations!</h2>
-            <p className="text-gray-600 text-lg mb-6">
+            <h2 className="custom-title mb-4">🎉 Congratulations!</h2>
+            <p className="custom-subtitle mb-6">
               Your customized Action Planner is ready.
             </p>
 
             <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mb-6 text-center w-full max-w-xl">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">📊 View Your Report</h3>
+              <h3 className="custom-title mb-2">📊 View Your Report</h3>
               <a
                 href={reportUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block bg-gray-200 text-gray-800 font-semibold px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
+                className="inline-block custom-subtitle px-6 py-3 transition-all border border-[#00c193] hover:border-[#00c193] hover:shadow-md 
                         sm:w-auto"
                 style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
               >
@@ -456,8 +456,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         ) : (
           // 🔹 No report or prompt → Simple completion message
           <div className="bg-gray-100 border border-[#00c193] rounded-xl p-6 mb-6 text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
-            <p className="text-gray-600">
+            <h3 className="custom-title text-xl font-semibold text-gray-800 mb-2">✅ Completed!</h3>
+            <p className="custom-subtitle text-gray-600">
               Your responses were submitted successfully.
             </p>
           </div>
@@ -483,7 +483,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         ) : (
           <button
             onClick={handleRestart}
-            className="
+            className="custom-btn btn-sm
             w-full bg-gray-200 border border-[#00c193] 
             px-8 py-4 text-sm font-medium text-gray-800 
             shadow-sm transition-all duration-300 
