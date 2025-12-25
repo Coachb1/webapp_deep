@@ -105,7 +105,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
               {/* Heading */}
               {block.heading && (
                 <div className="text-center mt-10 mb-8 px-6">
-                  <h1 className="text-2xl md:text-2xl font-bold text-gray-900 leading-snug max-w-6xl mx-auto">
+                  <h1 className="text-center custom-title leading-snug max-w-6xl mx-auto">
                     {block.heading}
                   </h1>
                   <div className="mx-auto mt-6 h-[1.5px] bg-gray-300 max-w-4xl opacity-70"></div>
@@ -117,7 +117,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                 <div className="relative bg-white border border-[#00c193] rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
                   {/* Collection name (centered) */}
                   <div
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-200 border border-[#00c193] text-black text-sm font-medium px-5 py-[6px] shadow-sm"
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 border border-[#00c193] px-5 py-[6px] shadow-sm custom-title"
                     style={{ borderRadius: "calc(var(--radius) - 6px)" }}
                   >
                     {block.collection_name}
@@ -168,8 +168,8 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                           setSelectedTab(item);
                           setPageIndex(0);
                           setIsReadModalOpen(true);
-                        }}
-                        className="px-4 py-2 rounded-md border text-sm bg-gray-100 border-[#00c193] hover:bg-gray-200"
+                        }}  
+                        className="custom-btn btn-sm"
                       >
                         {item.tab_name}
                       </button>
@@ -190,10 +190,10 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
             {/* Section Heading */}
             <div className="text-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="custom-title">
                 Enterprise AI Literacy Training & Course Catalogue
               </h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="custom-subtitle mt-1">
                 Curated collection of free & paid AI training courses
               </p>
               <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
@@ -238,7 +238,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
           >
             {/* Header */}
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="custom-title text-xl font-bold text-gray-800">
                 {selectedTab.tab_name}
               </h3>
 
@@ -247,7 +247,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                 {selectedTab.transform_iq && (
                   <button
                     onClick={() => setPageIndex(pageIndex === 0 ? 1 : 0)}
-                    className="w-full bg-gray-200 border border-[#00c193] px-6 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md sm:w-auto"
+                    className="custom-btn btn-sm w-full bg-gray-200 border border-[#00c193] px-6 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md sm:w-auto"
                     style={{ borderRadius: "calc(var(--radius) - 6px)" }}
                   >
                     {pageIndex === 0 ? "Transform IQ" : "Overview"}

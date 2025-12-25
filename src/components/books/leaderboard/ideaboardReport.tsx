@@ -366,34 +366,34 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   return (
     <div className="max-w-[1800px] mx-auto p-6 min-h-screen bg-white font-inter">
       {/* Header */}
-      <div className="bg-gray-200 border-2 border-[#00c193] p-6 mb-8 text-black"
+      <div className=" border-2 border-[#00c193] p-6 mb-8 text-black"
       style={{ borderRadius: 'calc(var(--radius) - 6px)' }}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold flex items-center gap-2">
+            <h1 className="custom-title flex items-center gap-2">
               <FaChartLine /> Enterprise Idea Portfolio
             </h1>
-            <p className="opacity-90 text-lg">Enterprise Ideas log</p>
+            <p className="opacity-90 custom-subtitle">Enterprise Ideas log</p>
           </div>
 
           <div className="flex gap-2">
             <button
               onClick={() => downloadReport('csv')}
-              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              className=" px-4 py-2 flex items-center gap-2 transition custom-btn btn-md "
               style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> CSV
             </button>
             <button
               onClick={() => downloadReport('xlsx')}
-              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              className="px-4 py-2 flex items-center gap-2 transition custom-btn btn-md "
               style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaTable /> Excel
             </button>
             <button
               onClick={() => refreshData()}
-              className="bg-white border border-[#00c193] px-4 py-2 font-semibold flex items-center gap-2 hover:bg-gray-300 transition text-black"
+              className="px-4 py-2 flex items-center gap-2 transition custom-btn btn-md "
               style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             >
               <FaSyncAlt /> Refresh

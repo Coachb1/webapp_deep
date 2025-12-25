@@ -62,11 +62,8 @@ function PaginationComponent({
           <button
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor: currentPage === 1 ? "#e5e7eb" : "#e5e7eb",
-              color: currentPage === 1 ? "#9ca3af" : "#374151",
-            }}
+            className={`custom-btn btn-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+         }`}
             aria-label="Go to previous page"
           >
             <span>Prev</span>
@@ -83,12 +80,8 @@ function PaginationComponent({
             ) : (
               <button
                 onClick={() => onPageChange(page as number)}
-                className="inline-flex items-center justify-center text-sm font-medium transition-colors h-9 w-9 rounded-lg"
-                style={{
-                  backgroundColor:
-                    currentPage === page ? "#00c193" : "transparent",
-                  color: currentPage === page ? "white" : "#374151",
-                }}
+                className={`custom-btn btn-sm h-[6.5] w-[6.5] ${currentPage === page ? "!bg-[#00c193] !text-white" : ""
+                  }`}
                 aria-current={currentPage === page ? "page" : undefined}
               >
                 {page}
@@ -102,12 +95,8 @@ function PaginationComponent({
           <button
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor:
-                currentPage === totalPages ? "#e5e7eb" : "#e5e7eb",
-              color: currentPage === totalPages ? "#9ca3af" : "#374151",
-            }}
+            className={`custom-btn btn-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             aria-label="Go to next page"
           >
             <span>Next</span>
@@ -297,7 +286,7 @@ export default function CompanyIQ() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-[1600px] mx-auto p-6 space-y-6">
+      <div className="max-w-[1500px] mx-auto p-6 space-y-6">
         {/* Header with Gradient */}
         <div
           className="bg-gradient-to-r rounded-2xl p-8 bg-gray-100"
@@ -306,9 +295,9 @@ export default function CompanyIQ() {
             boxShadow: "0 10px 25px rgba(0, 193, 147, 0.25)",
           }}
         >
-          <h1 className="text-3xl font-bold text-black">AI Landscape Snapshot</h1>
+          <h1 className="custom-title">AI Landscape Snapshot</h1>
 
-          <p className="text-gray-700 mt-2">
+          <p className="custom-subtitle mt-2">
              Digital and AI initiatives from over 1000+ companies. Revenues & Headcount are indicative approximations.
           </p>
 
@@ -382,7 +371,7 @@ export default function CompanyIQ() {
             <select
               value={tempIndustry}
               onChange={(e) => setTempIndustry(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Industry</option>
@@ -397,7 +386,7 @@ export default function CompanyIQ() {
             <select
               value={tempHQ}
               onChange={(e) => setTempHQ(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">HQ</option>
@@ -412,7 +401,7 @@ export default function CompanyIQ() {
             <select
               value={tempRevenue}
               onChange={(e) => setTempRevenue(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Revenue  (USD)</option>
@@ -425,7 +414,7 @@ export default function CompanyIQ() {
             <select
               value={tempEmployees}
               onChange={(e) => setTempEmployees(e.target.value)}
-              className="px-4 py-2 rounded-lg text-sm bg-white focus:outline-none"
+              className="px-4 py-2 rounded-none text-sm bg-white focus:outline-none"
               style={{ borderWidth: "2px", borderColor: "#00c193" }}
             >
               <option value="">Employees</option>
@@ -439,8 +428,8 @@ export default function CompanyIQ() {
             {/* Apply Button */}
             <button
               onClick={handleApplyFilters}
-              className="px-5 py-2 rounded-lg text-sm font-medium text-white transition-colors hover:bg-[#069473]"
-              style={{ backgroundColor: "#00c193" }}
+              className="custom-btn btn-sm px-5 py-2 rounded-lg text-sm font-medium text-white transition-colors "
+              // style={{ backgroundColor: "#00c193" }}
             >
               Apply
             </button>
@@ -449,7 +438,7 @@ export default function CompanyIQ() {
             <button
               onClick={handleClearAll}
               className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-100"
-              style={{ color: "#00c193" }}
+              // style={{ color: "#00c193" }}
             >
               Clear All
             </button>
@@ -472,17 +461,17 @@ export default function CompanyIQ() {
             >
               {/* Card Header */}
               <div className="mb-4">
-                <h3 className="font-semibold text-lg text-gray-900">
+                <h3 className="custom-title">
                   {company.company}
                 </h3>
-                <p className="text-sm text-gray-500">{company.industry}</p>
+                <p className="custom-subtitle">{company.industry}</p>
               </div>
 
               {/* Quick Info */}
               <div className="flex gap-28 mb-4 text-sm">
                 <div>
                   <div className="text-gray-500">HQ</div>
-                  <div className="font-semibold text-gray-900">
+                  <div className="custom-title">
                     {company.hq}
                   </div>
                 </div>
@@ -543,7 +532,7 @@ export default function CompanyIQ() {
                               ? (company as any)[key].map((item: string, idx: number) => (
                                 <li key={idx} className="flex gap-3 text-sm text-gray-700">
                                   <span className="text-green-500 font-bold mt-0.5"><strong>•</strong></span>
-                                  <span>{<AdvMarkdownHandler content={item.replace('*', '')} />}</span>
+                                  <span className="custom-subtitle">{<AdvMarkdownHandler content={item.replace('*', '')} />}</span>
                                 </li>
                               ))
                               : typeof (company as any)[key] === "string" && (company as any)[key]

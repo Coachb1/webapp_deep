@@ -78,8 +78,8 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
 
   if (loading) {
     return (
-      <section className="bg-white border border-[#00c193] rounded-xl p-6">
-        <h2 className="text-center text-xl font-semibold text-black mb-5">
+      <section className="bg-white border border-[#00c193] rounded-xl p-2">
+        <h2 className="custom-title text-center mb-4">
           ENTERPRISE AI ADOPTS DASHBOARD
         </h2>
 
@@ -96,19 +96,19 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
 
   return (
     <section className="bg-white border border-[#00c193] rounded-md p-2">
-      <h2 className="text-center text-sm font-semibold text-black mb-2">
+      <h2 className="custom-title text-center mb-4">
         ENTERPRISE AI ADOPTS DASHBOARD
       </h2>
 
       <div
         className="
-grid gap-3
-w-full
-max-w-[1600px]
-mx-auto
-justify-center
-justify-items-center
-[grid-template-columns:repeat(auto-fit,200px)] "
+            grid gap-3
+            w-full
+            max-w-[1600px]
+            mx-auto
+            justify-center
+            justify-items-center
+            [grid-template-columns:repeat(auto-fit,200px)] "
       >
 
         {items.map((item: DashboardItem) => {
@@ -163,17 +163,17 @@ justify-items-center
                   <div className="mb-1.5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:max-w-5 [&>svg]:max-h-5">{item?.icon}</div>
                 )}
 
-                <h3 className="text-[11px] font-semibold text-black leading-tight mb-1">
+                <h3 className="text-[14px] font-semibold text-black leading-tight mb-1">
                   {item.title}
                 </h3>
 
                 <p
-  className={`text-[9px] leading-snug ${
-    isActive ? "text-gray-800 font-semibold" : "text-gray-700 font-medium"
-  }`}
->
-  {item.description}
-</p>
+                  className={`text-[12px] leading-snug ${
+                    isActive ? "text-gray-800 font-semibold" : "text-gray-700  font-semibold"
+                  }`}
+                >
+                  {item.description}
+                </p>
 
               </div>
 
@@ -189,21 +189,7 @@ justify-items-center
                   <button
                     key={index}
                     onClick={() => btn.action && onAction?.(btn.action)}
-                    className={`
-  flex items-center justify-center
-  w-full
-  font-medium text-black
-  bg-[#f2f2f2]
-  border border-[#00c193]
-  py-1 px-2 rounded
-  shadow-sm
-  whitespace-nowrap
-  hover:bg-[#e8e8e8]
-  transition-colors
-  ${isMultiButton ? "text-[11px] px-4" : "text-xs px-5"
-                      }
-`}
-
+                    className={`custom-btn btn-sm`}
                   >
                     {btn.label}
                   </button>

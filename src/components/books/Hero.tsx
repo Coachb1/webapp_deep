@@ -29,9 +29,24 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 px-4 sm:px-6 lg:px-8">
           {/* Text Content */}
           <div className="text-center md:text-left">
-            <h1 className="font-bold text-[24px] xs:text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] xl:text-[44px] leading-tight text-black">
+            <h1 className="
+              font-inter
+              font-medium
+              text-[22px]
+              xs:text-[26px]
+              sm:text-[30px]
+              md:text-[34px]
+              lg:text-[38px]
+              xl:text-[42px]
+              leading-[1.25]
+              tracking-[-0.01em]
+              text-black
+              title-bold
+              uppercase
+            ">
               {title}
             </h1>
+
 
             <p className="text-black mt-3 sm:mt-4 md:mt-5 text-sm xs:text-base sm:text-lg md:text-xl lg:text-[22px] leading-relaxed">
               {subTitle}
