@@ -38,6 +38,20 @@
     hover:bg-[#e8e8e8];
 }
 
+.minimal-btn {
+  @apply
+    items-center
+    font-medium
+    rounded
+    border border-[#00c193]
+    bg-[#f2f2f2]
+    text-black
+    whitespace-nowrap
+    shadow-sm
+    transition-colors
+    hover:bg-[#e8e8e8];
+}
+
 /* Small button */
 .btn-sm {
   @apply text-xs px-3 py-1;

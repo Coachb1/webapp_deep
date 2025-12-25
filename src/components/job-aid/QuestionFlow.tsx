@@ -160,9 +160,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         {showBackButton && (
           <button
             onClick={onGoBack}
-            className="w-full bg-gray-200 border border-[#00c193] px-3 py-1.5 text-xs font-medium text-gray-800 shadow-sm transition-all duration-300 
+            className="minimal-btn btn-sm w-full bg-gray-200 border border-[#00c193] px-3 py-1.5 text-xs font-medium text-gray-800 shadow-sm transition-all duration-300 
                       hover:border-[#00c193] hover:shadow-md sm:w-auto flex items-center gap-1.5"
-            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+            // style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
           >
             <svg
               className="w-3 h-3"
