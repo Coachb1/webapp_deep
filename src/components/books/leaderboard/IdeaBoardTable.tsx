@@ -1,3 +1,4 @@
+import React from "react";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { RowData } from "./ideaboardReport";
 
@@ -9,6 +10,10 @@ interface Props {
   onSelectRow: (row: object | null) => void;
   onlyClientSetup: boolean;
   onThumbupOrThumbdown: (row: RowData, type: "thumbup" | "thumbdown") => void;
+  sortBy: string;
+  sortDir: string;
+  toggleSortVotes: () => void;
+
 }
 
 export default function IdeaBoardTable({
@@ -18,8 +23,13 @@ export default function IdeaBoardTable({
   onLike,
   onSelectRow,
   onlyClientSetup,
-  onThumbupOrThumbdown
+  onThumbupOrThumbdown,
+  sortBy,
+  sortDir,
+  toggleSortVotes
 }: Props) {
+  
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -35,7 +45,20 @@ export default function IdeaBoardTable({
                 {key}
               </th>
             ))}
-            <th className="px-6 py-3 text-center w-[100px]">Vote</th>
+            <th className="px-6 py-3 text-center w-[120px]">
+              <button
+                onClick={toggleSortVotes}
+                className="inline-flex items-center gap-2"
+                aria-label="Sort by votes"
+              >
+                Vote
+                {sortBy === "votes" ? (
+                  <span className="text-xs">({sortDir === "asc" ? "↑" : "↓"})</span>
+                ) : (
+                  <span className="text-xs">({sortBy === "id" ? "↑↓" : ""})</span>
+                )}
+              </button>
+            </th>
           </tr>
         </thead>
 
@@ -66,12 +89,12 @@ export default function IdeaBoardTable({
                     className="px-6 py-4 text-center text-gray-600 max-w-[200px]"
                   >
                     <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                      {row.qna[key] || "-"}
+                      {value}
                     </div>
 
-                    {row.qna[key] && row.qna[key].length > 80 && (
+                    {value && value.length > 80 && (
                       <button
-                        onClick={() => onSelectRow({ [key]: row.qna[key] })}
+                        onClick={() => onSelectRow({ [key]: value })}
                         className="ml-2 text-[#00c193] underline text-sm"
                       >
                         More
