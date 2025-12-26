@@ -6,6 +6,7 @@ import { baseURL } from "@/lib/utils";
 
 interface UserInfoGateProps {
   children: React.ReactNode;
+  allowedDomains: string;
 }
 
 const isValidEmail = (email: string) =>
@@ -13,7 +14,7 @@ const isValidEmail = (email: string) =>
 
 const SUBDOMAIN_PREFIX = "deepchat-domain"; // change if needed
 
-const UserInfoWall = ({ children }: UserInfoGateProps) => {
+const UserInfoWall = ({ children, allowedDomains }: UserInfoGateProps) => {
   const { setUser, user, refreshUserData } = usePortalUser();
 
   const [email, setEmail] = useState("");
@@ -83,7 +84,7 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
     e.preventDefault();
     setApiError("");
     setEmailError("");
-    setPasswordError("");
+    setPasswordError("");    
 
     let valid = true;
 

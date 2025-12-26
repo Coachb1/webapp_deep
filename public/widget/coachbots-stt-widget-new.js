@@ -672,7 +672,7 @@ let IntakeTypeSTT='individual_only';
 let IsDiagnosticsOn;
 let BotconversationPerMonth=0;
 let systemBotconversationLimit=0;
-
+let UserSessionContextSTT=null;
 const micSvg = `<svg id="micToggle" class="mic-icon" viewBox="0 0 24 24" style="fill: gray; width: 24px; height: 24px;">
   <path d="M19 11c0 1.93-.78 3.68-2.05 4.95l1.41 1.41C20.03 15.7 21 13.45 21 11h-2zm-4 0c0 .89-.34 1.7-.88 2.31l1.45 1.45C16.44 13.9 17 12.52 17 11h-2zm-2-7v3.17l2 2V4a2 2 0 0 0-2-2h-.17l2 2H13zm-9.19-.19l16.38 16.38-1.41 1.41-2.15-2.15C14.96 20.3 13.05 21 11 21c-4.42 0-8-3.58-8-8h2c0 3.31 2.69 6 6 6 1.31 0 2.52-.43 3.5-1.15l-1.43-1.43A4.978 4.978 0 0 1 11 17c-2.76 0-5-2.24-5-5v-.17L2.81 3.81 4.22 2.4z"/>
 </svg>
@@ -6493,6 +6493,7 @@ const handleGameTypeConversation = async () => {
         test_attempt_session_id: sessionId2,
         question_id: testId2,
         response_text: userResponse2,
+        context: UserSessionContextSTT || null,
         response_file: "",
         user_attributes: {
           tag: "deepchat_profile",
@@ -6980,7 +6981,7 @@ function isAudioURL(url) {
   const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
   return isAudio
 }
-const showUserNameInputStt = () => {
+const showUserContextInputStt = () => {
   return new Promise((resolve) => {
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
@@ -6988,28 +6989,74 @@ const showUserNameInputStt = () => {
     if (msg) {
       // Create container for username input
       const userInputContainer = document.createElement("div");
+      userInputContainer.id = 'proceed-option2'
       userInputContainer.innerHTML = `
-        <div style="padding: 10px;">
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
-              Please Provide Context:
-            </label>
-            <input 
-              type="text" 
-              id="username-input-stt" 
-              placeholder="Enter your name"
-              style="width: 180px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
-              
-            />
+        <div
+          style="
+            padding: 12px;
+            background: #fafafa;
+          "
+        >
+          <label
+            for="context-input"
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-weight: 600;
+              font-size: 14px;
+            "
+          >
+            Please Provide Context:
+          </label>
 
-            <button 
-              id="username-submit-btn" 
-              style="padding: 8px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;"
+          <div
+            style="
+              display: flex;
+              align-items: stretch;
+              gap: 8px;
+            "
+          >
+            <!-- TEXT AREA -->
+            <textarea
+              id="context-input"
+              placeholder="Optional"
+              rows="2"
+              style="
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #d0d0d0;
+                border-radius: 6px;
+                resize: none;
+                font-family: inherit;
+                font-size: 14px;
+              "
+            ></textarea>
+
+            <!-- CONTINUE BUTTON -->
+            <button
+              id="context-submit-btn"
+              style="
+                width: 44px;
+                border: 1px solid #2ecc71;
+                background: white;
+                color: black;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s ease;
+              "
+              onmouseover="this.style.background='#e9f9f0'"
+              onmouseout="this.style.background='white'"
             >
-              Submit
+              →
             </button>
           </div>
         </div>
+
 
       `;
       
@@ -7018,28 +7065,21 @@ const showUserNameInputStt = () => {
       
       // Add click event to submit button
       setTimeout(() => {
-        const submitBtn = gshadowRoot.getElementById("username-submit-btn");
-        const usernameInput = gshadowRoot.getElementById("username-input-stt");
+        const submitBtn = gshadowRoot.getElementById("context-submit-btn");
+        const usernameInput = gshadowRoot.getElementById("context-input");
         
         submitBtn.addEventListener("click", () => {
           const userName = usernameInput.value.trim();
-          
-          if (userName === "") {
-            alert("Please enter your name");
-            return;
-          }
 
           // Remove the input form
-          userInputContainer.remove();
-
-          // Store username globally
-          window.userNameStt = userName;
+          // userInputContainer.remove();
 
           // Display username in chat using appendMessage2
-          appendMessage2(`<b>Name:</b> ${userName}`);
+          if (userName) appendMessage2(`<b>Context:</b> ${userName}`);
 
           // Resolve promise to continue
-          resolve(userName);
+          resolve(userName.trim() || null);
+          console.debug('submit sucessfully')
         });
         
         // Allow Enter key to submit
@@ -7074,13 +7114,15 @@ const handleProceedClickStt = async (choice) => {
     }
     
     isProceedStt = "true";
-    const userName = await showUserNameInputStt();
-
-    if (!userName) {
-      console.log("Username not provided");
-      return;
+    console.debug(clientuserInformationSTT?.session_user_context, clientuserInformationSTT)
+    if (clientuserInformationSTT?.session_user_context){
+      
+      UserSessionContextSTT = await showUserContextInputStt();
+  
+  
+      console.debug('submitted', UserSessionContextSTT, 'now proceeding with next..')
     }
-    console.log("User name submitted:", userName);
+    
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
     // button.parentNode.removeChild(button)
@@ -7881,6 +7923,7 @@ async function setMcqVariablesStt() {
         question_id: question_id,
         response_text: responseTextStt,
         response_file: "",
+        context: UserSessionContextSTT || null,
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
@@ -7959,6 +8002,7 @@ async function setMcqVariablesStt() {
         test_attempt_session_id: test_attempt_session_id,
         question_id: question_id,
         response_text: responseTextStt,
+        context: UserSessionContextSTT || null,
         response_file: "",
         user_attributes: {
           tag: "deepchat_profile",
@@ -16099,6 +16143,7 @@ const customMicButton = document.getElementById("startMicBtn");
                           test_attempt_session_id: sessionId2,
                           question_id: questionId2,
                           response_text: userResponse2,
+                          context: UserSessionContextSTT || null,
                           response_file: "",
                           user_attributes: {
                             tag: "deepchat_profile",
@@ -16142,6 +16187,7 @@ const customMicButton = document.getElementById("startMicBtn");
                             question_id: questionId2,
                             response_text: "",
                             response_file: "",
+                            context: UserSessionContextSTT || null,
                             user_attributes: {
                               tag: "deepchat_profile",
                               attributes: {
