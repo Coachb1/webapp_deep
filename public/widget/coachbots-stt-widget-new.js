@@ -6980,6 +6980,80 @@ function isAudioURL(url) {
   const isAudio = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i.test(url);
   return isAudio
 }
+const showUserNameInputStt = () => {
+  return new Promise((resolve) => {
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    
+    if (msg) {
+      // Create container for username input
+      const userInputContainer = document.createElement("div");
+      userInputContainer.innerHTML = `
+        <div style="padding: 10px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+              Please Provide Context:
+            </label>
+            <input 
+              type="text" 
+              id="username-input-stt" 
+              placeholder="Enter your name"
+              style="width: 180px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+              
+            />
+
+            <button 
+              id="username-submit-btn" 
+              style="padding: 8px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+
+      `;
+      
+      // Replace proceed button with username input
+      msg.parentNode.replaceChild(userInputContainer, msg);
+      
+      // Add click event to submit button
+      setTimeout(() => {
+        const submitBtn = gshadowRoot.getElementById("username-submit-btn");
+        const usernameInput = gshadowRoot.getElementById("username-input-stt");
+        
+        submitBtn.addEventListener("click", () => {
+          const userName = usernameInput.value.trim();
+          
+          if (userName === "") {
+            alert("Please enter your name");
+            return;
+          }
+
+          // Remove the input form
+          userInputContainer.remove();
+
+          // Store username globally
+          window.userNameStt = userName;
+
+          // Display username in chat using appendMessage2
+          appendMessage2(`<b>Name:</b> ${userName}`);
+
+          // Resolve promise to continue
+          resolve(userName);
+        });
+        
+        // Allow Enter key to submit
+        usernameInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            submitBtn.click();
+          }
+        });
+      }, 100);
+    } else {
+      resolve(null);
+    }
+  });
+};
 
 const handleProceedClickStt = async (choice) => {
 
@@ -7000,6 +7074,13 @@ const handleProceedClickStt = async (choice) => {
     }
     
     isProceedStt = "true";
+    const userName = await showUserNameInputStt();
+
+    if (!userName) {
+      console.log("Username not provided");
+      return;
+    }
+    console.log("User name submitted:", userName);
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
     // button.parentNode.removeChild(button)
