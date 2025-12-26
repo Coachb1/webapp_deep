@@ -348,7 +348,7 @@ export default function CompanyIQ() {
           className="bg-white rounded-xl p-5 shadow-sm"
           style={{ borderWidth: "1px", borderColor: "#00c193" }}
         >
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             {/* Filters Label */}
             <div className="flex items-center gap-2 mr-2">
               <svg
@@ -452,7 +452,7 @@ export default function CompanyIQ() {
         </div>
 
         {/* GRID: Company Cards - 3 Rows x 2 Cards */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
           {paginatedCompanies.map((company) => (
             <div
               key={company.id}
