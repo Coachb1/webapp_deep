@@ -48,8 +48,8 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-
-        const token = window.location.origin.includes("clientId") && window.location.origin.includes("library-bot") ? localStorage.getItem('client_jwt_token') : localStorage.getItem('jwt_token')
+        const fullPath = window.location.href;
+        const token = fullPath.includes("clientId") && fullPath.includes("library-bot") ? localStorage.getItem('client_jwt_token') : localStorage.getItem('jwt_token')
         const res = await fetch("/api/session", { method: "GET", headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
