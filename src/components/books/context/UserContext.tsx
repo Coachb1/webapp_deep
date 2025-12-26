@@ -45,7 +45,7 @@ export const usePortalUser = () => {
   return context;
 };
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+export const UserProvider = ({ children, LoginView }: { children: ReactNode, LoginView?:string }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -172,7 +172,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let token: string | null = null;
     const fullPath = window.location.href;
-    if (fullPath.includes('library-bot') && !fullPath.includes('clientId')) {
+    if (LoginView && LoginView === 'email_password') {
       console.debug("Library Bot detected, using access token");
       token = localStorage.getItem("access_token");
       if (!token) {
@@ -217,7 +217,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       
     } else {
       console.debug("Regular user session detected, using JWT token");
-      token = fullPath.includes('clientId') ? localStorage.getItem("client_jwt_token") : localStorage.getItem("jwt_token");
+      token = localStorage.getItem(`${fullPath}-${LoginView || "jwt_token"}`);
       if (!token) {
         setLoading(false);
         return;

@@ -14,6 +14,7 @@ interface BookPageProps {
   searchParams: {
     email?: string;
     clientId?: string;
+    tempLoginView?: string;
   };
 }
 
@@ -22,29 +23,51 @@ export default async function Page({
   searchParams,
 }: BookPageProps) {
   let autoLoginEmail: string | undefined = searchParams.email;
+  let LoginView: string = "email_password"
+  let onlyClientSetup = false;
+  let allowedDomain = "";
 
   // ✅ If no email but clientId exists → fetch client
   if (!autoLoginEmail && searchParams.clientId) {
     const client = await getClientbyClientId(searchParams.clientId);
-    autoLoginEmail = client?.owner_email_id;
+    console.debug('loginviwe', client?.libraryBotConfig?.login_view, client)
+    LoginView = client?.libraryBotConfig?.login_view ?? searchParams?.tempLoginView ?? "email_password"
+    allowedDomain = client?.allowed_domain || ""
+    if (LoginView === 'no_login'){
+      autoLoginEmail = client?.owner_email_id;
+      onlyClientSetup = true;
+    }
   }
 
   // ✅ Auto-login path
-  if (autoLoginEmail) {
+  if (autoLoginEmail && onlyClientSetup) {
     return (
-      <UserProvider>
-        <UserInfoGate autoLoginEmail={autoLoginEmail}>
-          <BookPageClient id={params.id} onlyClientSetup />
+      <UserProvider LoginView={LoginView}>
+        <UserInfoGate autoLoginEmail={autoLoginEmail} LoginView={LoginView}>
+          <BookPageClient id={params.id} onlyClientSetup={onlyClientSetup} />
         </UserInfoGate>
       </UserProvider>
     );
   }
 
-  return (
-    <UserProvider>
-      <UserInfoWall>
-        <BookPageClient id={params.id} />
-      </UserInfoWall>
-    </UserProvider>
-  );
+  if (LoginView === 'email_password'){
+    return (
+      <UserProvider LoginView={LoginView}>
+        <UserInfoWall allowedDomains={allowedDomain}>
+          <BookPageClient id={params.id} />
+        </UserInfoWall>
+      </UserProvider>
+    );
+  }
+
+  if (LoginView === 'only_email'){
+    return (
+      <UserProvider LoginView={LoginView}>
+        <UserInfoGate LoginView={LoginView} allowedDomains={allowedDomain}>
+          <BookPageClient id={params.id} />
+        </UserInfoGate>
+      </UserProvider>
+    );
+  }
+
 }
