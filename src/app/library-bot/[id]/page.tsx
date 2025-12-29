@@ -31,7 +31,7 @@ export default async function Page({
   if (!autoLoginEmail && searchParams.clientId) {
     const client = await getClientbyClientId(searchParams.clientId);
     console.debug('loginviwe', client?.libraryBotConfig?.login_view, client)
-    LoginView = client?.libraryBotConfig?.login_view ?? searchParams?.tempLoginView ?? "email_password"
+    LoginView = client?.libraryBotConfig?.login_view ?? searchParams?.tempLoginView ?? "no_login"
     allowedDomain = client?.allowed_domain || ""
     if (LoginView === 'no_login'){
       autoLoginEmail = client?.owner_email_id;
