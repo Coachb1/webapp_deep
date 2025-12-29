@@ -16,6 +16,7 @@ interface UserInfoGateProps {
   autoLoginEmail?: string;
   LoginView?: string;
   allowedDomains?:string;
+  clientId?: string;
 }
 
 // Sanitize input
@@ -35,7 +36,7 @@ const sanitize = (str: string) =>
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains}: UserInfoGateProps) => {
+const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, clientId}: UserInfoGateProps) => {
   const { setUser, refreshUserData , user} = usePortalUser();
 
   const [tempName, setTempName] = useState("");
@@ -124,8 +125,15 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains}: Us
           ...newUser,
           user_data: data,
         };
+        console.debug(data.client, 'client')
+        if (clientId && data?.client?.uid && data?.client?.uid != clientId){
+          setEmailError("You are not allowed! Please contact your admin.")
+          setLoading(false);
+          return;
 
-        if (!data?.client?.client_name){
+        }
+
+        if (!data?.client){
             if (allowedDomains?.trim()) {
             const domain = sanitizedEmail.split('@').pop();
 
@@ -134,7 +142,7 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains}: Us
               .map(d => d.trim());
 
             if (!allowed.includes(domain!)) {
-                setEmailError("Email domain is not allowed. Please use an approved work email.")
+                setEmailError("Email domain is not allowed. Please use an valid business email.")
                 setLoading(false)
                 return;
             }
