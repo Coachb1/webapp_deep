@@ -7114,8 +7114,8 @@ const handleProceedClickStt = async (choice) => {
     }
     
     isProceedStt = "true";
-    console.debug(clientuserInformationSTT?.session_user_context, clientuserInformationSTT)
-    if (clientuserInformationSTT?.session_user_context){
+    console.debug(clientuserInformationSTT?.session_context, clientuserInformationSTT)
+    if (clientuserInformationSTT?.session_context){
       
       UserSessionContextSTT = await showUserContextInputStt();
   
