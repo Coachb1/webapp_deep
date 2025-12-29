@@ -138,9 +138,10 @@ export const getClientbyClientId = async (
           `${baseURL}/accounts/get-client-information/?for=only_client_data&client_id=${clientID}`,
           {
             method: "GET",
+            cache: 'no-store',
             headers: {
               Authorization: basicAuth,
-              cache: "no-store" 
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
             },
           }
         );
