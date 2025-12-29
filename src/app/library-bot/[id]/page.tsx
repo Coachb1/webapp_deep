@@ -62,7 +62,7 @@ export default async function Page({ params, searchParams }: BookPageProps) {
   if (LoginView === "email_password") {
     return (
       <UserProvider LoginView={LoginView}>
-        <UserInfoWall allowedDomains={allowedDomain}>
+        <UserInfoWall allowedDomains={allowedDomain} clientId={searchParams?.clientId}>
           <BookPageClient id={params.id} />
         </UserInfoWall>
       </UserProvider>
