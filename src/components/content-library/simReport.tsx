@@ -119,7 +119,7 @@ const SimReport: React.FC<SimReportProps> = ({ client_id }) => {
       try {
         setClientLoading(true);
         const clientdata = await getClientbyClientId(client_id);
-        console.log("Fetched client data:", clientdata);
+        console.log("Fetched client data:", clientdata, clientdata.libraryBotConfig.login_view);
         setClientName(clientdata.clientName);
         if (clientdata.portalPageConfig && Object.keys(clientdata.portalPageConfig).length > 0) {
           console.log("Using portalPageConfig for protection settings");

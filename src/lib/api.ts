@@ -140,6 +140,7 @@ export const getClientbyClientId = async (
             method: "GET",
             headers: {
               Authorization: basicAuth,
+              cache: "no-store" 
             },
           }
         );

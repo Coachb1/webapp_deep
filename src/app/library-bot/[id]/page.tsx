@@ -30,7 +30,7 @@ export default async function Page({
   // ✅ If no email but clientId exists → fetch client
   if (!autoLoginEmail && searchParams.clientId) {
     const client = await getClientbyClientId(searchParams.clientId);
-    console.debug('loginviwe', client?.libraryBotConfig?.login_view, client)
+    console.debug('loginviwe', client?.libraryBotConfig?.login_view, client.libraryBotConfig)
     LoginView = client?.libraryBotConfig?.login_view ?? searchParams?.tempLoginView ?? "no_login"
     allowedDomain = client?.allowed_domain || ""
     if (LoginView === 'no_login'){
@@ -60,7 +60,7 @@ export default async function Page({
     );
   }
 
-  if (LoginView === 'only_email'){
+  if (LoginView === 'email_only'){
     return (
       <UserProvider LoginView={LoginView}>
         <UserInfoGate LoginView={LoginView} allowedDomains={allowedDomain}>
