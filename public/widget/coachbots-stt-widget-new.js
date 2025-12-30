@@ -13347,6 +13347,10 @@ const customMicButton = document.getElementById("startMicBtn");
               //     : "hard_skills";  
               const test_case = 'previous_normal_test'
               console.log('test_case', test_case);
+              await getLLMOrderSTT(null, 'scenario_generation');
+              console.log('llm order for scenario generattion', BotGenerationLLMOrder)
+              let llmOrders = BotGenerationLLMOrder.providers
+              let modelOrder = BotGenerationLLMOrder.models
 
               try {
                 const data = await generateTestScenarioStt({
@@ -13354,7 +13358,9 @@ const customMicButton = document.getElementById("startMicBtn");
                   sessionId: PreviousSessionInfoSTT['sessionId'],
                   skills: PreviousSessionInfoSTT['skills'],
                   flavour: test_case,
-                  isMicro: true
+                  isMicro: true,
+                  llmOrder: Array.isArray(llmOrders) ? llmOrders.join(", ") : llmOrders ?? "",          
+                  modelOrder: modelOrder
                 });
                 console.log(data);
 
