@@ -114,7 +114,11 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
               {/* Collection Block */}
               <div className="w-full flex justify-center mt-10 px-4">
-                <div className="relative bg-white border border-[#00c193] rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
+                  <div className="
+                    relative bg-white border border-[#00c193] rounded-2xl
+                    px-6 pb-6 pt-16
+                    shadow-sm w-full max-w-6xl
+                  ">
                   {/* Collection name (centered) */}
                   <div
                     className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 border border-[#00c193] px-5 py-[6px] shadow-sm custom-title"
@@ -125,13 +129,15 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
                   {/* Pagination Buttons */}
                   {block.case_items.length > LIMIT && (
-                    <div className="absolute -top-3 right-4 flex gap-2">
-                      {/* Prev */}
+                    <div className="
+                      mt-4 flex justify-center gap-3
+                      sm:absolute sm:-top-3 sm:right-4 sm:mt-0
+                    ">
                       <button
                         disabled={!hasPrev}
                         onClick={() => setPage(block.collection_name, page - 1)}
                         className={`
-                          border border-[#00c193] text-xs font-medium px-3 py-[5px]
+                          border border-[#00c193] text-xs font-medium px-4 py-1.5
                           rounded-md shadow-sm
                           ${hasPrev
                             ? "bg-white hover:bg-gray-100"
@@ -146,7 +152,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                         disabled={!hasNext}
                         onClick={() => setPage(block.collection_name, page + 1)}
                         className={`
-                          border border-[#00c193] text-xs font-medium px-3 py-[5px]
+                          border border-[#00c193] text-xs font-medium px-4 py-1.5
                           rounded-md shadow-sm
                           ${hasNext
                             ? "bg-white hover:bg-gray-100"

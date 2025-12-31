@@ -6,6 +6,8 @@ import { baseURL } from "@/lib/utils";
 
 interface UserInfoGateProps {
   children: React.ReactNode;
+  allowedDomains?: string;
+  clientId?: string;
 }
 
 const isValidEmail = (email: string) =>
@@ -13,7 +15,7 @@ const isValidEmail = (email: string) =>
 
 const SUBDOMAIN_PREFIX = "deepchat-domain"; // change if needed
 
-const UserInfoWall = ({ children }: UserInfoGateProps) => {
+const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps) => {
   const { setUser, user, refreshUserData } = usePortalUser();
 
   const [email, setEmail] = useState("");
@@ -83,7 +85,7 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
     e.preventDefault();
     setApiError("");
     setEmailError("");
-    setPasswordError("");
+    setPasswordError("");    
 
     let valid = true;
 
@@ -124,9 +126,6 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
 
       console.log('udata    ', data)
 
-      // Save tokens
-      localStorage.setItem("access_token", data.access);
-      localStorage.setItem("refresh_token", data.refresh);
 
       // Fetch user details
       const userRes = await fetch(`${baseURL}/accounts/me/`, {
@@ -142,7 +141,17 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
 
       const userData = await userRes.json();
       console.log("✅ User data:", userData);
+
+      if (clientId && userData?.client?.uid && userData?.client?.uid != clientId){
+          setPasswordError("You are not allowed! Please contact your admin.")
+          setLoading(false);
+          return;
+
+        }
       
+      // Save tokens
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
 
       // Set user in context
       const newUser = { given_name: userData.name, email: userData.email };
@@ -158,7 +167,8 @@ const UserInfoWall = ({ children }: UserInfoGateProps) => {
 
       await refreshUserData(fullUser);
     } catch (err: any) {
-      setApiError(err.message);
+      console.error("failed to log", err.message)
+      setApiError("Unable to login please try again later or contact your admin.");
     } finally {
       setLoading(false);
     }

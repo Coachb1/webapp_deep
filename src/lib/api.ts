@@ -138,8 +138,10 @@ export const getClientbyClientId = async (
           `${baseURL}/accounts/get-client-information/?for=only_client_data&client_id=${clientID}`,
           {
             method: "GET",
+            cache: 'no-store',
             headers: {
               Authorization: basicAuth,
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
             },
           }
         );
@@ -150,6 +152,7 @@ export const getClientbyClientId = async (
           return {
             clientId: data.data.only_client_data.uid,
             clientName: data.data.only_client_data.client_name,
+            allowed_domain: data.data.only_client_data.domain_name,
             isDemoUser: data.data.only_client_data.demo_ids,
             isRestricted: data.data.only_client_data.restricted_ids,
             clientExpertise: parseStringList(

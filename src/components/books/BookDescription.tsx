@@ -37,16 +37,23 @@ const BookDescription = ({
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-2xl shadow-xl p-6 max-w-8xl w-full relative transform transition-all scale-95 animate-in fade-in-50 duration-200"
+          className="
+            bg-white shadow-xl w-full
+            h-[100dvh] sm:h-auto
+            max-w-none sm:max-w-8xl
+            rounded-none sm:rounded-2xl
+            flex flex-col
+            relative
+          "
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header (Right aligned) */}
           <div className="flex items-center justify-end gap-3 mb-3">
-            {clientName &&
+            {clientName && (
               <span className="text-xl font-bold text-green-600">
                 {clientName.replaceAll("-", " ")}
               </span>
-            }
+            )}
 
             <button
               onClick={onClose}
@@ -57,51 +64,52 @@ const BookDescription = ({
           </div>
 
           {/* Content */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Book Image */}
-            <img
-              src={book.img}
-              alt={book.title}
-              className="w-32 sm:w-40 h-48 sm:h-56 object-cover rounded-lg shadow-md mx-auto md:mx-0"
-            />
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Book Image */}
+              <img
+                src={book.img}
+                alt={book.title}
+                className="w-32 sm:w-40 h-48 sm:h-56 object-cover rounded-lg shadow-md mx-auto md:mx-0"
+              />
 
-            {/* Book Details */}
-            <div className="flex flex-col text-center md:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                {book.title}
-              </h2>
-              <div className="flex items-center gap-3 mb-2">
-                <h4 className="text-gray-600 text-base sm:text-sm">
-                  @ {book.author}
-                </h4>
+              {/* Book Details */}
+              <div className="flex flex-col text-center md:text-left">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+                  {book.title}
+                </h2>
+                <div className="flex items-center gap-3 mb-2">
+                  <h4 className="text-gray-600 text-base sm:text-sm">
+                    @ {book.author}
+                  </h4>
 
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold">Category:</span>{" "}
-                  {book.tag.join(", ")}
-                </p>
-              </div>
+                  <p className="text-sm text-gray-500">
+                    <span className="font-semibold">Category:</span>{" "}
+                    {book.tag.join(", ")}
+                  </p>
+                </div>
 
-              <span className="font-semibold">Transform IQ Overview</span>
-              <div
-                className="border border-gray-300 rounded-lg p-3 bg-gray-50 
+                <span className="font-semibold">Transform IQ Overview</span>
+                <div
+                  className="border border-gray-300 rounded-lg p-3 bg-gray-50 
                               text-sm sm:text-base text-gray-700 leading-relaxed mb-4
                               h-40 overflow-y-auto white-space: pre-line"
-              >
-                <AdvMarkdownHandler content={book.transform_iq?.overview} />
-              </div>
+                >
+                  <AdvMarkdownHandler content={book.transform_iq?.overview} />
+                </div>
 
-              {/* Transform IQ Role */}
-              {/* Transform IQ Role */}
-              <div className="flex flex-col  mb-2">
-                <span className="font-semibold">Transform IQ Role</span>
+                {/* Transform IQ Role */}
+                {/* Transform IQ Role */}
+                <div className="flex flex-col  mb-2">
+                  <span className="font-semibold">Transform IQ Role</span>
 
-                {/* Tabs Row (attached to box) */}
-                <div className="flex items-center gap-2 border-b border-gray-300">
-                  {roles.map((role) => (
-                    <button
-                      key={role}
-                      onClick={() => setSelectedRole(role)}
-                      className={`
+                  {/* Tabs Row (attached to box) */}
+                  <div className="flex items-center gap-2 border-b border-gray-300">
+                    {roles.map((role) => (
+                      <button
+                        key={role}
+                        onClick={() => setSelectedRole(role)}
+                        className={`
                       px-4 py-2 text-sm rounded-t-lg
                       border border-gray-300 border-b-0
                       transition-all
@@ -111,28 +119,29 @@ const BookDescription = ({
                           : "bg-white hover:bg-gray-50" // Default tab appearance
                       }
                     `}
-                    >
-                      {role}
-                    </button>
-                  ))}
-                </div>
+                      >
+                        {role}
+                      </button>
+                    ))}
+                  </div>
 
-                {/* Role Description Box */}
-                <div
-                  className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 
+                  {/* Role Description Box */}
+                  <div
+                    className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 
                 text-gray-700 leading-relaxed 
                 h-40 overflow-y-auto"
-                >
-                  {selectedRole ? (
-                    <div>
-                      {/* <span className="font-semibold">{selectedRole} Overview</span> */}
-                      <AdvMarkdownHandler
-                        content={book.transform_iq?.roles[selectedRole]}
-                      />
-                    </div>
-                  ) : (
-                    "Please select a role."
-                  )}
+                  >
+                    {selectedRole ? (
+                      <div>
+                        {/* <span className="font-semibold">{selectedRole} Overview</span> */}
+                        <AdvMarkdownHandler
+                          content={book.transform_iq?.roles[selectedRole]}
+                        />
+                      </div>
+                    ) : (
+                      "Please select a role."
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -147,7 +156,14 @@ const BookDescription = ({
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-2xl shadow-xl p-6 max-w-7xl w-full relative transform transition-all scale-95 animate-in fade-in-50 duration-200"
+          className="
+            bg-white shadow-xl w-full
+            h-[100dvh] sm:h-auto
+            max-w-none sm:max-w-8xl
+            rounded-none sm:rounded-2xl
+            flex flex-col
+            relative
+          "
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
@@ -159,44 +175,46 @@ const BookDescription = ({
           </button>
 
           {/* Content */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Book Image */}
-            <img
-              src={book.img}
-              alt={book.title}
-              className="w-32 sm:w-40 h-48 sm:h-56 object-cover rounded-lg shadow-md mx-auto md:mx-0"
-            />
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Book Image */}
+              <img
+                src={book.img}
+                alt={book.title}
+                className="w-32 sm:w-40 h-48 sm:h-56 object-cover rounded-lg shadow-md mx-auto md:mx-0"
+              />
 
-            {/* Book Details */}
-            <div className="flex flex-col text-center md:text-left">
-               <h2 className="custom-title text-xl mb-1">
-                {book.title}
-              </h2>
-              <h4 className="custom-subtitle  mb-2">
-                Featuring {book.author}
-              </h4>
+              {/* Book Details */}
+              <div className="flex flex-col text-center md:text-left">
+                <h2 className="custom-title text-xl mb-1">{book.title}</h2>
+                <h4 className="custom-subtitle  mb-2">
+                  Featuring {book.author}
+                </h4>
 
-              <p className="custom-subtitle  mb-3 ">
-                <span className="font-semibold">Category:</span>{" "}
-                {book.tag.join(", ")}
-              </p>
-
-              <p className=" custom-body mb-2 text-justify break-words">
-                {book.desc}
-              </p>
-            {/* Summary Notice Box */}
-              <div className="custom-subtitle border border-[#00c193] rounded-lg p-3 text-sm text-gray-700 leading-relaxed mt-2">
-                <p>
-                  This is summary only. The Transform IQ view provided relevance, activated during full implementation.{" "}
-                  <a 
-                    href="https://cdn.coachbots.com/TransformationIQ/transformation%20pdf/Transform-IQ-Sample.pdf" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
-                  >
-                    Sample
-                  </a>.
+                <p className="custom-subtitle  mb-3 ">
+                  <span className="font-semibold">Category:</span>{" "}
+                  {book.tag.join(", ")}
                 </p>
+
+                <p className=" custom-body mb-2 text-justify break-words">
+                  {book.desc}
+                </p>
+                {/* Summary Notice Box */}
+                <div className="custom-subtitle border border-[#00c193] rounded-lg p-3 text-sm text-gray-700 leading-relaxed mt-2">
+                  <p>
+                    This is summary only. The Transform IQ view provided
+                    relevance, activated during full implementation.{" "}
+                    <a
+                      href="https://cdn.coachbots.com/TransformationIQ/transformation%20pdf/Transform-IQ-Sample.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
+                    >
+                      Sample
+                    </a>
+                    .
+                  </p>
+                </div>
               </div>
             </div>
           </div>

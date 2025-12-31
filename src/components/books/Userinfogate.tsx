@@ -14,6 +14,9 @@ interface User {
 interface UserInfoGateProps {
   children: React.ReactNode;
   autoLoginEmail?: string;
+  LoginView?: string;
+  allowedDomains?:string;
+  clientId?: string;
 }
 
 // Sanitize input
@@ -33,7 +36,7 @@ const sanitize = (str: string) =>
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
+const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, clientId}: UserInfoGateProps) => {
   const { setUser, refreshUserData , user} = usePortalUser();
 
   const [tempName, setTempName] = useState("");
@@ -48,8 +51,8 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-
-        const token = window.location.origin.includes("clientId") && window.location.origin.includes("library-bot") ? localStorage.getItem('client_jwt_token') : localStorage.getItem('jwt_token')
+        const token_key = window.location.href + '-' + (LoginView ?? "jwt_token")
+        const token = localStorage.getItem(token_key)
         const res = await fetch("/api/session", { method: "GET", headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
@@ -79,13 +82,13 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
       if (autoLoginEmail && !checking && !user && !loading) {
         setTempEmail(autoLoginEmail);
         setTempName(autoLoginEmail.split("@")[0] || "demo user"); // Use provided password or empty string
-  
-        onSubmit(`client_jwt_token`);
+        const token_key = window.location.href + '-' + LoginView
+        onSubmit(token_key);
   
       }
     }, [autoLoginEmail, checking, user, loading]);
   
-  const onSubmit = async (token_key='jwt_token') => {
+  const onSubmit = async (token_key=window.location.href + '-' + (LoginView ?? 'jwt_token')) => {
     setNameError("");
     setEmailError("");
     setApiError("");
@@ -94,6 +97,7 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
     const sanitizedName = sanitize(tempName.trim() || autoLoginEmail?.split("@")[0] || "demo user");
     const sanitizedEmail = sanitize(tempEmail.trim().toLowerCase() || autoLoginEmail?.toLowerCase() || "");
 
+    
     let valid = true;
     if (!sanitizedName) {
       setNameError("Name cannot be empty.");
@@ -103,6 +107,9 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
       setEmailError("Please enter a valid email address.");
       valid = false;
     }
+
+    
+
     if (!valid) return;
 
     setLoading(true);
@@ -112,12 +119,35 @@ const UserInfoGate = ({ children, autoLoginEmail }: UserInfoGateProps) => {
     getUserAccount(newUser)
       .then((response) => response.json())
       .then(async(data) => {
-        console.log("✅ User account created/fetched:", data);
+        console.log("✅ User account created/fetched:", data, !data?.client?.client_name);
 
         const fullUser = {
           ...newUser,
           user_data: data,
         };
+        console.debug(data.client, 'client')
+        if (clientId && data?.client?.uid && data?.client?.uid != clientId){
+          setEmailError("You are not allowed! Please contact your admin.")
+          setLoading(false);
+          return;
+
+        }
+
+        if (!data?.client){
+            if (allowedDomains?.trim()) {
+            const domain = sanitizedEmail.split('@').pop();
+
+            const allowed = allowedDomains
+              .split(',')
+              .map(d => d.trim());
+
+            if (!allowed.includes(domain!)) {
+                setEmailError("Email domain is not allowed. Please use an valid business email.")
+                setLoading(false)
+                return;
+            }
+          }
+        }
 
 
 

@@ -187,12 +187,14 @@ const BookCard: React.FC<BookCardProps> = ({
           >
             {book.tag[0]}
           </p>
-          <button
-            onClick={() => setIsReadModalOpen(true)}
-          className={`ml-2 custom-btn btn-sm`}
-          >
-            Report
-          </button>
+          {book.report &&
+            <button
+              onClick={() => setIsReadModalOpen(true)}
+            className={`ml-2 custom-btn btn-sm`}
+            >
+              Report
+            </button>
+          }
           <p
             className="custom-subtitle mb-4 line-clamp-2"
             title={book.desc}

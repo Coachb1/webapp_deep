@@ -401,6 +401,7 @@ export interface DashboardItem {
 }
 export interface UserInfoType {
   clientId?: string;
+  allowed_domain?: string;
   clientName: string;
   isDemoUser: boolean;
   isRestricted: boolean;
