@@ -1,12 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock } from "@/lib/types";
 import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
 
 const LIMIT = 10; // show first 10 items
 
+const matchesAction = (
+  block: CollectionBlock,
+  actionKey?: string | null
+) => {
+  return !actionKey ||
+  block.case_items?.some(
+    (caseItem) => 
+      {        
+        return caseItem.action_name === actionKey
+      }
+  );
+}
 interface ConceptsViewerProps {
   actionKey?: string | null;
 }
@@ -47,15 +59,17 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
   };
 
   const links = getLinks(selectedTab);
-  const activeIframeBlock = data?.find(
-    (block) =>
-      block.iframe_link &&
-      (!actionKey ||
-        block.action_tab_info?.buttons?.some(
-          (btn: any) => btn.action === actionKey
-        ))
-  );
+  const activeIframeBlock = useMemo(
+  () =>
+    data?.find(
+      (block) =>
+        block.iframe_link && matchesAction(block, actionKey)
+    ),
+  [data, actionKey]
+);
+
   const [iframeLoading, setIframeLoading] = useState(true);
+
   useEffect(() => {
     if (activeIframeBlock?.iframe_link) {
       setIframeLoading(true);
@@ -80,33 +94,53 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
       {/* ---------------- COLLECTION BLOCKS ---------------- */}
       {data
         .filter((block) => block.case_items && block.case_items.length > 0)
-        .filter((block) =>
-          !actionKey ||
-          block.action_tab_info?.buttons?.some(
-            (btn: any) => btn.action === actionKey
-          )
-        )
-
-
+        .filter((block) => matchesAction(block, actionKey))
         .map((block) => {
           const page = getPage(block.collection_name);
 
           const start = page * LIMIT;
           const end = start + LIMIT;
 
-          const visibleItems = block.case_items.slice(start, end);
+          const filteredCaseItems = actionKey
+            ? block.case_items.filter(
+                (item) => item.action_name === actionKey
+              )
+            : block.case_items;
+
+          const visibleItems = filteredCaseItems.slice(start, end);
 
           const hasNext = end < block.case_items.length;
           const hasPrev = page > 0;
 
+          let heading = block.heading
+          if (actionKey && block.action_tab_info?.buttons?.length > 0) {
+            const matchedButton = block.action_tab_info.buttons.find(
+              (btn) => btn.action === actionKey
+            );
+
+            if (matchedButton?.heading) {
+              heading = matchedButton.heading;
+            }
+          }
+          let collectionName = block.collection_name;
+
+          if (actionKey && block.action_tab_info?.buttons?.length > 0) {
+            const matchedButton = block.action_tab_info.buttons.find(
+              (btn) => btn.action === actionKey
+            );
+
+            if (matchedButton?.collection_name) {
+              collectionName = matchedButton.collection_name;
+            }
+          }
 
           return (
             <React.Fragment key={block.id}>
               {/* Heading */}
-              {block.heading && (
+              {heading && (
                 <div className="text-center mt-10 mb-8 px-6">
                   <h1 className="text-center custom-title leading-snug max-w-6xl mx-auto">
-                    {block.heading}
+                    {heading}
                   </h1>
                   <div className="mx-auto mt-6 h-[1.5px] bg-gray-300 max-w-4xl opacity-70"></div>
                 </div>
@@ -124,7 +158,8 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                     className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 border border-[#00c193] px-5 py-[6px] shadow-sm custom-title"
                     style={{ borderRadius: "calc(var(--radius) - 6px)" }}
                   >
-                    {block.collection_name}
+                    {collectionName}
+
                   </div>
 
                   {/* Pagination Buttons */}
@@ -166,7 +201,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
 
                   {/* Tabs */}
-                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8">
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8 sm:mt-0">
                     {visibleItems.map((item) => (
                       <button
                         key={item.id}
