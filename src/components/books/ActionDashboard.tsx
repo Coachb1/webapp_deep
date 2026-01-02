@@ -2,12 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
-
-import {
-  Radar,
-  Database,
-  FolderPlus,
-} from "lucide-react";
+import { Database, FolderPlus } from "lucide-react";
 import { ActionButton, CollectionBlock, DashboardItem } from "@/lib/types";
 import { DashboardSkeletonCard } from "./Loaders";
 
@@ -18,16 +13,9 @@ interface ActionDashboardProps {
   selectedAction?: string | null;
 }
 
-/* -------------------- DATA -------------------- */
+/* -------------------- STATIC ITEMS -------------------- */
 
-const dashboardItems: DashboardItem[] = [
-  // {
-  //   id: "ai-landscape",
-  //   title: "AI Landscape & Snapshot",
-  //   description: "Digital & Cloud initiatives View",
-  //   icon: <Radar className="w-9 h-9 text-[#00c193]" />,
-  //   buttons: [{ label: "ALIGN", action: "AI_LANDSCAPE" }],
-  // },
+const staticDashboardItems: DashboardItem[] = [
   {
     id: "ai-cases",
     title: "AI Landscape & Cases",
@@ -50,31 +38,64 @@ const dashboardItems: DashboardItem[] = [
   },
 ];
 
+
+const resolveValidButtons = (
+  col: CollectionBlock
+): ActionButton[] => {
+  if (!col.action_tab_info?.buttons?.length) return [];
+  if (!col.case_items?.length) return [];
+
+  const caseActionSet = new Set(
+    col.case_items
+      .map((c) => c.action_name)
+      .filter(Boolean)
+  );
+
+  return col.action_tab_info.buttons.filter(
+    (btn) => caseActionSet.has(btn.action)
+  );
+};
+
+
+
 /* -------------------- COMPONENT -------------------- */
 
-const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAction }) => {
+const ActionDashboard: React.FC<ActionDashboardProps> = ({
+  onAction,
+  selectedAction,
+}) => {
   const { userInfo } = usePortalUser();
   const [loading, setLoading] = useState(true);
 
-  const items: DashboardItem[] = useMemo(() => {
-    console.debug("ActionDashboard: userInfo", userInfo);
+  /* Build dashboard items (no side-effects) */
+const items: DashboardItem[] = useMemo(() => {
+  if (!userInfo?.collections) return staticDashboardItems;
 
-    if (userInfo?.collections?.length === 0) {
-      setLoading(false);
-    }
-    if (!userInfo?.collections) return dashboardItems;
+  const dynamicItems = userInfo.collections
+    .map((col) => {
+      if (!col.action_tab_info) return null;
 
-    const actionTabs = userInfo.collections
-      .filter(
-        (col): col is CollectionBlock & { action_tab_info: DashboardItem } =>
-          Boolean(col.action_tab_info)
-      ).filter(
-        (col) => col.case_items && col.case_items.length > 0
-      )
-      .map((col) => col.action_tab_info);
+      const validButtons = resolveValidButtons(col);
+
+      // ❌ If no buttons match → don't show this action tab
+      if (validButtons.length === 0) return null;
+
+      // ✅ Return action tab with ONLY valid buttons
+      return {
+        ...col.action_tab_info,
+        buttons: validButtons,
+      };
+    })
+    .filter(Boolean) as DashboardItem[];
+
+  return [...dynamicItems, ...staticDashboardItems];
+}, [userInfo]);
+
+
+
+  useEffect(() => {
     setLoading(false);
-    return [...actionTabs, ...dashboardItems];
-  }, [userInfo]);
+  }, [items]);
 
   if (loading) {
     return (
@@ -182,17 +203,17 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({ onAction, selectedAct
                 className={`gap-1 w-full mt-auto ${isMultiButton
                     ? "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
                     : "flex"
-                  }`}
+                }`}
               >
 
                 {item.buttons.map((btn: ActionButton, index: number) => (
-                  <button
+                    <button
                     key={index}
                     onClick={() => btn.action && onAction?.(btn.action)}
                     className={`custom-btn btn-sm`}
-                  >
-                    {btn.label}
-                  </button>
+                    >
+                      {btn.label}
+                    </button>
                 ))}
               </div>
             </div>
