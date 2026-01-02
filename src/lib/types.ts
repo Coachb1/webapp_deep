@@ -376,6 +376,7 @@ export interface CaseItem {
   tab_name: string;
   embed_link: string;
   transform_iq?: string;
+  action_name?: string;
 }
 
 export interface CollectionBlock {

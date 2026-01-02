@@ -1,12 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock } from "@/lib/types";
 import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
 
 const LIMIT = 10; // show first 10 items
 
+const matchesAction = (
+  block: CollectionBlock,
+  actionKey?: string | null
+) => {
+  return !actionKey ||
+  block.case_items?.some(
+    (caseItem) => 
+      {        
+        return caseItem.action_name === actionKey
+      }
+  );
+}
 interface ConceptsViewerProps {
   actionKey?: string | null;
 }
@@ -47,15 +59,17 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
   };
 
   const links = getLinks(selectedTab);
-  const activeIframeBlock = data?.find(
-    (block) =>
-      block.iframe_link &&
-      (!actionKey ||
-        block.action_tab_info?.buttons?.some(
-          (btn: any) => btn.action === actionKey
-        ))
-  );
+  const activeIframeBlock = useMemo(
+  () =>
+    data?.find(
+      (block) =>
+        block.iframe_link && matchesAction(block, actionKey)
+    ),
+  [data, actionKey]
+);
+
   const [iframeLoading, setIframeLoading] = useState(true);
+
   useEffect(() => {
     if (activeIframeBlock?.iframe_link) {
       setIframeLoading(true);
@@ -80,21 +94,20 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
       {/* ---------------- COLLECTION BLOCKS ---------------- */}
       {data
         .filter((block) => block.case_items && block.case_items.length > 0)
-        .filter((block) =>
-          !actionKey ||
-          block.action_tab_info?.buttons?.some(
-            (btn: any) => btn.action === actionKey
-          )
-        )
-
-
+        .filter((block) => matchesAction(block, actionKey))
         .map((block) => {
           const page = getPage(block.collection_name);
 
           const start = page * LIMIT;
           const end = start + LIMIT;
 
-          const visibleItems = block.case_items.slice(start, end);
+          const filteredCaseItems = actionKey
+            ? block.case_items.filter(
+                (item) => item.action_name === actionKey
+              )
+            : block.case_items;
+
+          const visibleItems = filteredCaseItems.slice(start, end);
 
           const hasNext = end < block.case_items.length;
           const hasPrev = page > 0;
@@ -166,7 +179,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
 
                   {/* Tabs */}
-                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8">
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8 sm:mt-0">
                     {visibleItems.map((item) => (
                       <button
                         key={item.id}
