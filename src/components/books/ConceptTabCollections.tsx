@@ -122,6 +122,18 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
               heading = matchedButton.heading;
             }
           }
+          let collectionName = block.collection_name;
+
+          if (actionKey && block.action_tab_info?.buttons?.length > 0) {
+            const matchedButton = block.action_tab_info.buttons.find(
+              (btn) => btn.action === actionKey
+            );
+
+            if (matchedButton?.collection_name) {
+              collectionName = matchedButton.collection_name;
+            }
+          }
+
           return (
             <React.Fragment key={block.id}>
               {/* Heading */}
@@ -146,7 +158,8 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                     className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 border border-[#00c193] px-5 py-[6px] shadow-sm custom-title"
                     style={{ borderRadius: "calc(var(--radius) - 6px)" }}
                   >
-                    {block.collection_name}
+                    {collectionName}
+
                   </div>
 
                   {/* Pagination Buttons */}
