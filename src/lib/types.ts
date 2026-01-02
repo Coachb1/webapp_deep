@@ -389,6 +389,7 @@ export interface CollectionBlock {
 }
 
 export interface ActionButton {
+  collection_name?: string;
   label: string;
   action?: string;
   heading?: string;
