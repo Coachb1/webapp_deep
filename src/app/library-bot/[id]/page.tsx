@@ -24,7 +24,7 @@ interface BookPageProps {
 }
 
 export default async function Page({ params, searchParams }: BookPageProps) {
-  let autoLoginEmail: string | undefined = searchParams.email;
+  let autoLoginEmail: string | undefined | null= searchParams.email;
   let LoginView: string = "email_password";
   let onlyClientSetup = false;
   let allowedDomain = "";
@@ -40,16 +40,24 @@ export default async function Page({ params, searchParams }: BookPageProps) {
     LoginView =
       client?.libraryBotConfig?.login_view ??
       searchParams?.tempLoginView ??
-      "no_login";
+      "email_password";
     allowedDomain = client?.allowed_domain || "";
+
+
     if (LoginView === "no_login") {
-      autoLoginEmail = client?.owner_email_id;
-      onlyClientSetup = true;
+      if (isNonEmptyString(client?.owner_email_id)){
+        autoLoginEmail = client!.owner_email_id!.trim();
+        onlyClientSetup = true;
+      } else {
+        LoginView = 'email_password'
+      }
     }
+
+    
   }
 
   // ✅ Auto-login path
-  if (autoLoginEmail && onlyClientSetup) {
+  if (autoLoginEmail && autoLoginEmail.length > 0 && onlyClientSetup) {
     return (
       <UserProvider LoginView={LoginView}>
         <UserInfoGate autoLoginEmail={autoLoginEmail} LoginView={LoginView}>
@@ -81,3 +89,7 @@ export default async function Page({ params, searchParams }: BookPageProps) {
     );
   }
 }
+
+
+const isNonEmptyString = (value?: string | null): value is string =>
+      typeof value === "string" && value.trim().length > 0;
