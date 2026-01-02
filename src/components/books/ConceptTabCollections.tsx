@@ -112,14 +112,23 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
           const hasNext = end < block.case_items.length;
           const hasPrev = page > 0;
 
+          let heading = block.heading
+          if (actionKey && block.action_tab_info?.buttons?.length > 0) {
+            const matchedButton = block.action_tab_info.buttons.find(
+              (btn) => btn.action === actionKey
+            );
 
+            if (matchedButton?.heading) {
+              heading = matchedButton.heading;
+            }
+          }
           return (
             <React.Fragment key={block.id}>
               {/* Heading */}
-              {block.heading && (
+              {heading && (
                 <div className="text-center mt-10 mb-8 px-6">
                   <h1 className="text-center custom-title leading-snug max-w-6xl mx-auto">
-                    {block.heading}
+                    {heading}
                   </h1>
                   <div className="mx-auto mt-6 h-[1.5px] bg-gray-300 max-w-4xl opacity-70"></div>
                 </div>

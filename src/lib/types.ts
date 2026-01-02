@@ -391,6 +391,7 @@ export interface CollectionBlock {
 export interface ActionButton {
   label: string;
   action?: string;
+  heading?: string;
 }
 
 export interface DashboardItem {
