@@ -48,6 +48,9 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
     }));
   };
 
+  useEffect(()=> {
+    setPageMap({});
+  }, [actionKey])
   // Normalize the 2 links (clean helper)
   const getLinks = (item: CaseItem | null) => {
     if (!item) return [];
@@ -232,10 +235,10 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
             {/* Section Heading */}
             <div className="text-center mb-6">
               <h2 className="custom-title">
-                Enterprise AI Literacy Training & Course Catalogue
+                {activeIframeBlock.iframe_title}
               </h2>
               <p className="custom-subtitle mt-1">
-                Curated collection of free & paid AI training courses
+                {activeIframeBlock.iframe_subtitle}
               </p>
               <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
             </div>
