@@ -109,7 +109,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
           const visibleItems = filteredCaseItems.slice(start, end);
 
-          const hasNext = end < block.case_items.length;
+          const hasNext = end < filteredCaseItems.length;
           const hasPrev = page > 0;
 
           let heading = block.heading
