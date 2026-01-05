@@ -64,12 +64,15 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
   onAction,
   selectedAction,
 }) => {
-  const { userInfo } = usePortalUser();
-  const [loading, setLoading] = useState(true);
+  const { userInfo, loading } = usePortalUser();
 
-  /* Build dashboard items (no side-effects) */
+
 const items: DashboardItem[] = useMemo(() => {
-  if (!userInfo?.collections) return staticDashboardItems;
+  if (loading) return [];
+
+  if (!userInfo.collections || userInfo.collections.length === 0) {
+    return staticDashboardItems;
+  }
 
   const dynamicItems = userInfo.collections
     .map((col) => {
@@ -80,7 +83,6 @@ const items: DashboardItem[] = useMemo(() => {
       // ❌ If no buttons match → don't show this action tab
       if (validButtons.length === 0) return null;
 
-      // ✅ Return action tab with ONLY valid buttons
       return {
         ...col.action_tab_info,
         buttons: validButtons,
@@ -93,9 +95,6 @@ const items: DashboardItem[] = useMemo(() => {
 
 
 
-  useEffect(() => {
-    setLoading(false);
-  }, [items]);
 
   if (loading) {
     return (

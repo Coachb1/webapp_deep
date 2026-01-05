@@ -6,9 +6,9 @@ import "@/index.css";
 import { constructMetadata } from "@/lib/utils";
 import { getClientbyClientId } from "@/lib/api";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const fetchCache = 'force-no-store';
+export const fetchCache = "force-no-store";
 export const dynamicParams = true; // Important for dynamic routes
 
 export const metadata = constructMetadata({
@@ -24,65 +24,62 @@ interface BookPageProps {
 }
 
 export default async function Page({ params, searchParams }: BookPageProps) {
-  let autoLoginEmail: string | undefined | null= searchParams.email;
-  let LoginView: string = "email_password";
+  let autoLoginEmail: string | undefined | null = searchParams.email;
+  let loginView: string = "email_password";
   let onlyClientSetup = false;
   let allowedDomain = "";
 
   // ✅ If no email but clientId exists → fetch client
   if (!autoLoginEmail && searchParams.clientId) {
     const client = await getClientbyClientId(searchParams.clientId);
-    console.debug(
-      "loginviwe",
-      client?.libraryBotConfig?.login_view,
-      client.libraryBotConfig
-    );
-    LoginView =
+    loginView =
       client?.libraryBotConfig?.login_view ??
       searchParams?.tempLoginView ??
       "email_password";
     allowedDomain = client?.allowed_domain || "";
 
-
-    if (LoginView === "no_login") {
-      if (isNonEmptyString(client?.owner_email_id)){
-        autoLoginEmail = client!.owner_email_id!.trim();
+    if (loginView === "no_login") {
+      if (client?.owner_email_id && isNonEmptyString(client.owner_email_id)) {
+        autoLoginEmail = client.owner_email_id.trim();
         onlyClientSetup = true;
       } else {
-        LoginView = 'email_password'
+        loginView = "email_password";
       }
     }
-
-    
   }
 
   // ✅ Auto-login path
   if (autoLoginEmail && autoLoginEmail.length > 0 && onlyClientSetup) {
     return (
-      <UserProvider LoginView={LoginView}>
-        <UserInfoGate autoLoginEmail={autoLoginEmail} LoginView={LoginView}>
+      <UserProvider LoginView={loginView}>
+        <UserInfoGate autoLoginEmail={autoLoginEmail} LoginView={loginView}>
           <BookPageClient id={params.id} onlyClientSetup={onlyClientSetup} />
         </UserInfoGate>
       </UserProvider>
     );
   }
 
-  if (LoginView === "email_password") {
+  if (loginView === "email_password") {
     return (
-      <UserProvider LoginView={LoginView}>
-        <UserInfoWall allowedDomains={allowedDomain} clientId={searchParams?.clientId}>
+      <UserProvider LoginView={loginView}>
+        <UserInfoWall
+          allowedDomains={allowedDomain}
+          clientId={searchParams?.clientId}
+        >
           <BookPageClient id={params.id} />
         </UserInfoWall>
       </UserProvider>
     );
   }
 
-  if (LoginView === "email_only") {
+  if (loginView === "email_only") {
     return (
-      <UserProvider LoginView={LoginView}>
-        <UserInfoGate LoginView={LoginView} 
-        allowedDomains={allowedDomain}
-        clientId={searchParams?.clientId}>
+      <UserProvider LoginView={loginView}>
+        <UserInfoGate
+          LoginView={loginView}
+          allowedDomains={allowedDomain}
+          clientId={searchParams?.clientId}
+        >
           <BookPageClient id={params.id} />
         </UserInfoGate>
       </UserProvider>
@@ -90,6 +87,5 @@ export default async function Page({ params, searchParams }: BookPageProps) {
   }
 }
 
-
 const isNonEmptyString = (value?: string | null): value is string =>
-      typeof value === "string" && value.trim().length > 0;
+  typeof value === "string" && value.trim().length > 0;
