@@ -7019,7 +7019,8 @@ const showUserContextInputStt = () => {
             <!-- TEXT AREA -->
             <textarea
               id="context-input"
-              placeholder="Optional"
+              placeholder="Add any extra context you know about the scenario (optional), then click ➡️ to continue.
+Or just click ➡️ to skip."
               rows="2"
               style="
                 flex: 1;
