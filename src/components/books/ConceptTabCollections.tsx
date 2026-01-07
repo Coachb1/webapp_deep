@@ -235,10 +235,10 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
             {/* Section Heading */}
             <div className="text-center mb-6">
               <h2 className="custom-title">
-                {activeIframeBlock.iframe_title}
+                {activeIframeBlock?.iframe_title || "Enterprise AI Literacy Training & Course Catalogue"}
               </h2>
               <p className="custom-subtitle mt-1">
-                {activeIframeBlock.iframe_subtitle}
+                {activeIframeBlock?.iframe_subtitle || "Curated collection of free & paid AI training courses"}
               </p>
               <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
             </div>
