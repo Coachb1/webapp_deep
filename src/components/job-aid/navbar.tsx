@@ -19,9 +19,9 @@ const Navbar: React.FC<{ clientId?: string }> = ({ clientId }) => {
           {/* Logo */}
           <h1 className="w-fit border-2 border-[#2DC092] px-2 py-1 text-lg font-extrabold text-[#2DC092] sm:text-xl">
               <span className="mr-1 bg-[#2DC092] px-2 py-1 text-base font-bold text-white sm:text-lg">
-                AI
+                COACH
               </span>
-              ADOPTS
+              BOT
             </h1>
           {pathname.includes("portal") && clientId && (
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
