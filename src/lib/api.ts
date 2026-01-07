@@ -127,6 +127,7 @@ export const getClientUserInfo = async (
 
 export const getClientbyClientId = async (
   clientID: string | null | undefined,
+  no_cache_controle: boolean = false
 ): Promise<UserInfoType> => {
   if (clientID !== null && clientID !== undefined) {
     let attempt = 0;
@@ -134,15 +135,21 @@ export const getClientbyClientId = async (
 
     while (attempt <= maxRetries) {
       try {
+        let headers: { Authorization: string , 'Cache-Control'?: string} = {
+              Authorization: basicAuth,
+            }
+        if (no_cache_controle) {
+          headers = {
+              Authorization: basicAuth,
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+            }
+        }
         const clientInfoResponse = await fetch(
           `${baseURL}/accounts/get-client-information/?for=only_client_data&client_id=${clientID}`,
           {
             method: "GET",
             cache: 'no-store',
-            headers: {
-              Authorization: basicAuth,
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-            },
+            headers: headers,
           }
         );
 
