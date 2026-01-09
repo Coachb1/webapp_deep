@@ -126,7 +126,10 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, cli
           user_data: data,
         };
         console.debug(data.client, 'client')
-        if (clientId && data?.client?.uid && data?.client?.uid != clientId){
+        if (
+          clientId &&
+          String(data?.client?.uid || "") !== String(clientId)
+        ){
           setEmailError("You are not allowed! Please contact your admin.")
           setLoading(false);
           return;
@@ -169,6 +172,7 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, cli
       })
       .catch((error) => {
         console.error("❌ Error creating user:", error);
+        setApiError("Something went wrong! Try again later or contact your admin.")
       })
       .finally(() => {
       setLoading(false);

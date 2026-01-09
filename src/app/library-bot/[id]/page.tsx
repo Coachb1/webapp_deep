@@ -41,10 +41,13 @@ export default async function Page({ params, searchParams }: BookPageProps) {
     if (loginView === "no_login") {
       if (client?.owner_email_id && isNonEmptyString(client.owner_email_id)) {
         autoLoginEmail = client.owner_email_id.trim();
-        onlyClientSetup = true;
       } else {
         loginView = "email_password";
       }
+    }
+
+    if (client?.libraryBotConfig?.login_dashboard === "client_only_setup") {
+      onlyClientSetup = true;
     }
   }
 
@@ -66,7 +69,7 @@ export default async function Page({ params, searchParams }: BookPageProps) {
           allowedDomains={allowedDomain}
           clientId={searchParams?.clientId}
         >
-          <BookPageClient id={params.id} />
+          <BookPageClient id={params.id} onlyClientSetup={onlyClientSetup}/>
         </UserInfoWall>
       </UserProvider>
     );
@@ -80,7 +83,7 @@ export default async function Page({ params, searchParams }: BookPageProps) {
           allowedDomains={allowedDomain}
           clientId={searchParams?.clientId}
         >
-          <BookPageClient id={params.id} />
+          <BookPageClient id={params.id} onlyClientSetup={onlyClientSetup}/>
         </UserInfoGate>
       </UserProvider>
     );
