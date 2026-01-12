@@ -154,7 +154,8 @@ export const hideBots = () => {
 };
 
 
-export const getUserAccount = (user: any) => {
+export const getUserAccount = async (user: any) => {
+  await CreateOrAssignClientId(user.email);
   return fetch(`${baseURL}/accounts/`, {
     method: "POST",
     headers: {
