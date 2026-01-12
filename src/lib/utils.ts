@@ -436,17 +436,22 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
 export const CreateOrAssignClientId = (
   userEmail: string | null | undefined
 ) => {
-  if (userEmail !== null && userEmail !== undefined) {
-    return fetch(`${baseURL}/accounts/create-or-assign-client-id/`, {
-      method: "POST",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: userEmail,
-      }),
-    });
+  try {
+    if (userEmail !== null && userEmail !== undefined) {
+      return fetch(`${baseURL}/accounts/create-or-assign-client-id/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userEmail,
+        }),
+      });
+    }
+  } catch(error){
+    console.error(error);
+    return null;
   }
 };
 
