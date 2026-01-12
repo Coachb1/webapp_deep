@@ -121,38 +121,24 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, cli
       .then(async(data) => {
         console.log("✅ User account created/fetched:", data, !data?.client?.client_name);
 
-        const fullUser = {
-          ...newUser,
-          user_data: data,
-        };
+        
         console.debug(data.client, 'client')
+        let fetchedClientId = data?.client?.uid
+        console.debug(fetchedClientId, 'fetchedClientId')
         if (
           clientId &&
-          String(data?.client?.uid || "") !== String(clientId)
+          String(fetchedClientId) !== String(clientId)
         ){
           setEmailError("You are not allowed! Please contact your admin.")
           setLoading(false);
           return;
 
         }
-
-        if (!data?.client){
-            if (allowedDomains?.trim()) {
-            const domain = sanitizedEmail.split('@').pop();
-
-            const allowed = allowedDomains
-              .split(',')
-              .map(d => d.trim());
-
-            if (!allowed.includes(domain!)) {
-                setEmailError("Email domain is not allowed. Please use an valid business email.")
-                setLoading(false)
-                return;
-            }
-          }
-        }
-
-
+        
+        const fullUser = {
+          ...newUser,
+          user_data: data,
+        };
 
       const res = await fetch("/api/session", {
         method: "POST",
