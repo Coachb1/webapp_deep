@@ -64,7 +64,8 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
   onAction,
   selectedAction,
 }) => {
-  const { userInfo, loading } = usePortalUser();
+  const { userInfo,loading } = usePortalUser();
+  const [initialLoading, setInitialLoading] = useState(true);
 
 
 const items: DashboardItem[] = useMemo(() => {
@@ -93,10 +94,16 @@ const items: DashboardItem[] = useMemo(() => {
   return [...dynamicItems, ...staticDashboardItems];
 }, [userInfo]);
 
+  useEffect(() => {
+    if (items.length > 0) {
+      console.debug("int", initialLoading)
+      setInitialLoading(false);
+    }
+  }, [items]);
 
 
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <section className="bg-white border border-[#00c193] rounded-xl p-2">
         <h2 className="custom-title text-center mb-4">
