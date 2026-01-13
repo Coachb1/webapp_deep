@@ -337,6 +337,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                 isEmailSection={onlyClientSetup}
                 inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                 inputName={user?.user_data?.name || "User"}
+                clientId={userInfo?.clientId}
               />
             </div>
           )}
