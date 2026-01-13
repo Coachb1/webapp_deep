@@ -23,6 +23,7 @@ interface ConversationalFormProps {
   inputName?: string;
   inputEmail?: string;
   redirectURL?: string;
+  clientId?: string;
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
@@ -31,6 +32,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   inputName,
   inputEmail,
   redirectURL,
+  clientId
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -282,7 +284,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         answers,
         email || inputEmail || "undefined@gmail.com",
         name || inputName || "sample",
-        job_aid_id
+        job_aid_id,
+        clientId
       );
       console.log("Report generated:", reportResult);
       setReportUrl(reportResult.report_url);
@@ -358,18 +361,21 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             type="text"
             placeholder="Enter your name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value)
+              setEmail(inputEmail || 'user@example.com')
+            }}
             required
             className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-lg"
           />
-          <input
+          {/* <input
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg text-lg"
-          />
+          /> */}
           <button
             type="submit"
             disabled={loading}
