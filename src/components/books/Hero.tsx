@@ -52,6 +52,43 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
               {subTitle}
             </p>
 
+            {/* Feature Boxes */}
+            <div className="mt-5 sm:mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
+              {[
+                "AI Readiness ⬆️",
+                "Digital Tools Adoption ⬆️",
+                "Workflows Augmented ⬆️",
+                "Decision Readiness ⬆️",
+                "Project Pipeline ⬆️",
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="
+                    flex items-center gap-2
+                    bg-white text-black
+                    px-3 sm:px-4
+                    h-[44px] sm:h-[48px]
+                    transition
+                    shadow-[0_8px_20px_rgba(0,0,0,0.18),0_2px_6px_rgba(0,0,0,0.12)]
+                  "
+                  style={{ borderRadius: "6px" }}
+                >
+                  {/* <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#00c193] text-white text-sm font-bold shadow-md shrink-0">
+                    ↑
+                  </div> */}
+
+                  <span className="
+                    text-xs sm:text-sm font-medium
+                    whitespace-nowrap text-ellipsis
+                  ">
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+
+
             {/* Uncomment if needed
             <button
               onClick={scrollToSection}
