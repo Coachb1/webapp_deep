@@ -221,7 +221,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       console.log(await res.json());
       // ✅ Refetch the latest like count from API
       const updatedRes = await fetch(
-        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
       const updatedData = await updatedRes.json();
@@ -275,7 +275,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       console.log(await res.json());
       // ✅ Refetch the latest like count from API
       const updatedRes = await fetch(
-        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
       const updatedData = await updatedRes.json();
