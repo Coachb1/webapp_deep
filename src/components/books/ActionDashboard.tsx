@@ -107,9 +107,10 @@ const items: DashboardItem[] = useMemo(() => {
     return (
       <section className="bg-white border border-[#00c193] rounded-xl p-2">
         <h2 className="custom-title text-center mb-4">
-          ENTERPRISE AI ADOPTS DASHBOARD
+          Enterprise AI Adoption with AI Adopts ALIGN Framework. Learn more with <a href="https://gemini.google.com/share/c02fb7ecd439" target="_blank" rel="noopener noreferrer" className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold">Gemini.</a>
         </h2>
-
+        <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
+        <p className="custom-subtitle text-center mb-4 mt-4">The only productized AI Adoption Consulting Model from Big 4 Stack</p>
         <div className="flex flex-wrap justify-center gap-6">
           {Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="w-[260px] flex-shrink-0">
@@ -124,9 +125,10 @@ const items: DashboardItem[] = useMemo(() => {
   return (
     <section className="bg-white border border-[#00c193] rounded-md p-2">
       <h2 className="custom-title text-center mb-4">
-        ENTERPRISE AI ADOPTS DASHBOARD
+        Enterprise AI Adoption with AI Adopts ALIGN Framework. Learn more with <a href="https://gemini.google.com/share/c02fb7ecd439" target="_blank" rel="noopener noreferrer" className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold">Gemini.</a>
       </h2>
-
+      <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
+      <p className="custom-subtitle text-center mb-4 mt-4">The only productized AI Adoption Consulting Model from Big 4 Stack</p>
       <div
         className="
             grid gap-3

@@ -202,15 +202,14 @@ const BookDescription = ({
                 {/* Summary Notice Box */}
                 <div className="custom-subtitle border border-[#00c193] rounded-lg p-3 text-sm text-gray-700 leading-relaxed mt-2">
                   <p>
-                    This is summary only. The Transform IQ view provided
-                    relevance, activated during full implementation.{" "}
+                    This is a summary only. The Transform IQ view provides relevance at the Org and role level, activated during full implementation.{" "}
                     <a
                       href="https://cdn.coachbots.com/TransformationIQ/transformation%20pdf/Transform-IQ-Sample.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
                     >
-                      Sample
+                      Sample.
                     </a>
                     .
                   </p>

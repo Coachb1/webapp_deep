@@ -96,13 +96,13 @@ const SearchFilter = ({
   // Categories - MOVE HERE (before the useEffect)
   const categories = useMemo(() => {
     const normalized = allBooks.flatMap(
-      (book) => book.tag?.map((t: string) => t.toLowerCase().trim()) ?? []
+      (book) => book.tag?.map((t: string) => t.trim()) ?? []
     );
-    const unique = Array.from(new Set(normalized));
-    const capitalized = unique.map(
-      (t) => t.charAt(0).toUpperCase() + t.slice(1)
-    );
-    return capitalized;
+    // const unique = Array.from(new Set(normalized));
+    // const capitalized = unique.map(
+    //   (t) => t.charAt(0).toUpperCase() + t.slice(1)
+    // );
+    return Array.from(new Set(normalized));
   }, [allBooks]);
 
   // Build a list of suggestion candidates from books (titles, authors, list_names, tags, keywords)
