@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import { Book } from "@/lib/types";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdvMarkdownHandler from "../MarkdownAdvance";
 
 interface BookDescriptionProps {
@@ -20,17 +20,43 @@ const BookDescription = ({
 }: BookDescriptionProps) => {
   if (!book) return null;
 
-  console.info("book", book);
-  if (
-    isTransFormIQ &&
-    book?.transform_iq?.overview &&
-    book?.transform_iq?.roles
-  ) {
-    const roles = Object.keys(book.transform_iq?.roles);
-    const [selectedRole, setSelectedRole] = useState<string | null>(
-      roles.length > 0 ? roles[0] : null
-    );
+  console.debug("Rendering BookDescription for book:", book.title, book.transform_iq);
 
+  /* -----------------------------------------
+   Resolve active Transform IQ block
+  ------------------------------------------ */
+  const activeIQ = useMemo(() => {
+    if (!isTransFormIQ || !book.transform_iq) return null;
+
+    return (
+      book.transform_iq[clientName] ||
+      book.transform_iq["General"] ||
+      null
+    );
+  }, [book, clientName, isTransFormIQ]);
+
+  const roles = useMemo(
+    () => (activeIQ?.roles ? Object.keys(activeIQ.roles) : []),
+    [activeIQ]
+  );
+
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+  /* -----------------------------------------
+   Auto-select first role
+  ------------------------------------------ */
+  useEffect(() => {
+    if (roles.length > 0) {
+      setSelectedRole(roles[0]);
+    } else {
+      setSelectedRole(null);
+    }
+  }, [roles]);
+
+  /* -----------------------------------------
+   TRANSFORM IQ VIEW
+  ------------------------------------------ */
+  if (activeIQ) {
     return (
       <div
         className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
@@ -47,14 +73,13 @@ const BookDescription = ({
           "
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header (Right aligned) */}
-          <div className="flex items-center justify-end gap-3 mb-3">
+          {/* Header */}
+          <div className="flex items-center justify-end gap-3 mb-3 p-4">
             {clientName && (
               <span className="text-xl font-bold text-green-600">
                 {clientName.replaceAll("-", " ")}
               </span>
             )}
-
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-red-500 transition"
@@ -66,18 +91,19 @@ const BookDescription = ({
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             <div className="flex flex-col md:flex-row gap-6">
-              {/* Book Image */}
+              {/* Image */}
               <img
                 src={book.img}
                 alt={book.title}
                 className="w-32 sm:w-40 h-48 sm:h-56 object-cover rounded-lg shadow-md mx-auto md:mx-0"
               />
 
-              {/* Book Details */}
+              {/* Details */}
               <div className="flex flex-col text-center md:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                   {book.title}
                 </h2>
+
                 <div className="flex items-center gap-3 mb-2">
                   <h4 className="text-gray-600 text-base sm:text-sm">
                     @ {book.author}
@@ -95,62 +121,54 @@ const BookDescription = ({
                               text-sm sm:text-base text-gray-700 leading-relaxed mb-4
                               h-40 overflow-y-auto white-space: pre-line"
                 >
-                  <AdvMarkdownHandler content={book.transform_iq?.overview} />
+                  <AdvMarkdownHandler content={activeIQ.overview} />
                 </div>
 
-                {/* Transform IQ Role */}
-                {/* Transform IQ Role */}
-                <div className="flex flex-col  mb-2">
-                  <span className="font-semibold">Transform IQ Role</span>
+                {/* Roles */}
+                {roles.length > 0 && (
+                  <div className="flex flex-col">
+                    <span className="font-semibold">Transform IQ Roles</span>
 
-                  {/* Tabs Row (attached to box) */}
-                  <div className="flex items-center gap-2 border-b border-gray-300">
-                    {roles.map((role) => (
-                      <button
-                        key={role}
-                        onClick={() => setSelectedRole(role)}
-                        className={`
-                      px-4 py-2 text-sm rounded-t-lg
-                      border border-gray-300 border-b-0
-                      transition-all
-                      ${
-                        selectedRole === role
-                          ? "bg-gray-100 font-semibold" // Selected tab matches box color
-                          : "bg-white hover:bg-gray-50" // Default tab appearance
-                      }
-                    `}
-                      >
-                        {role}
-                      </button>
-                    ))}
-                  </div>
+                    {/* Tabs */}
+                    <div className="flex gap-2 border-b border-gray-300 mt-2">
+                      {roles.map((role) => (
+                        <button
+                          key={role}
+                          onClick={() => setSelectedRole(role)}
+                          className={`px-4 py-2 text-sm rounded-t-lg border border-gray-300 border-b-0 transition
+                            ${
+                              selectedRole === role
+                                ? "bg-gray-100 font-semibold"
+                                : "bg-white hover:bg-gray-50"
+                            }`}
+                        >
+                          {role}
+                        </button>
+                      ))}
+                    </div>
 
-                  {/* Role Description Box */}
-                  <div
-                    className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 
-                text-gray-700 leading-relaxed 
-                h-40 overflow-y-auto"
-                  >
-                    {selectedRole ? (
-                      <div>
-                        {/* <span className="font-semibold">{selectedRole} Overview</span> */}
+                    {/* Role Content */}
+                    <div className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 text-gray-700 leading-relaxed h-40 overflow-y-auto">
+                      {selectedRole ? (
                         <AdvMarkdownHandler
-                          content={book.transform_iq?.roles[selectedRole]}
+                          content={activeIQ.roles[selectedRole]}
                         />
-                      </div>
-                    ) : (
-                      "Please select a role."
-                    )}
+                      ) : (
+                        "Please select a role."
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
     );
-  } else {
-    return (
+  } 
+    
+  
+  return (
       <div
         className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
         onClick={onClose}
@@ -209,7 +227,7 @@ const BookDescription = ({
                       rel="noopener noreferrer"
                       className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
                     >
-                      Sample.
+                      Sample
                     </a>
                     .
                   </p>
@@ -220,7 +238,7 @@ const BookDescription = ({
         </div>
       </div>
     );
-  }
+  
 };
 
 export default BookDescription;
