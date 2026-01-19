@@ -13,7 +13,7 @@ export default function ElfsightContactFormWidget({
   useEffect(() => {
     const applyStyles = () => {
       const button = document.querySelector<HTMLElement>(
-        ".es-forms-floating-button"
+        '[class*="FloatingButton__FloatingButtonContainer"]'
       );
 
       console.debug(button, up)
@@ -23,7 +23,7 @@ export default function ElfsightContactFormWidget({
 
         button.style.setProperty(
             "margin-bottom",
-            up ? "4rem" : "0",
+            up ? "4rem" : "1rem",
             "important"
           );
 
