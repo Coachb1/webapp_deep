@@ -18,6 +18,7 @@ import ActionDashboard from "./ActionDashboard";
 import CompanyIQ from "../company-iq/companyiq";
 import { IdeaBoardReport } from "./leaderboard/ideaboardReport";
 import ConversationalForm from "../job-aid/ConversationalForm";
+import ElfsightContactFormWidget from "../ContactForm";
 
 interface BookPageClientProps {
   id: string;
@@ -337,6 +338,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                 isEmailSection={onlyClientSetup}
                 inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                 inputName={user?.user_data?.name || "User"}
+                clientId={userInfo?.clientId}
               />
             </div>
           )}
@@ -381,6 +383,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
           up={showAudioPlayer}
         />
       )}
+        <ElfsightContactFormWidget up={showAudioPlayer} />
     </div>
   );
 }

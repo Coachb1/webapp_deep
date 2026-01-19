@@ -135,20 +135,23 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
 }, []);
 
 
-    const fetchData = async () => {
+    const fetchData = async (clientId?: string) => {
       setLoading(true);
       setError(null);
 
       try {
+        console.debug("Fetching report data for jobaid:", jobaid, clientId);
+        let url = `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${clientId}`;
+
         const res = await fetch(
-          `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+          url
         );
         if (!res.ok) throw new Error("Failed to fetch report data");
         const data = await res.json();
         console.log("Fetched report data:", data);
         const mapped = mapApiToRows(data);
         setRows(mapped);
-        setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || [])]);
+        setQnaKeys(["Full Name", ...(mapped[0]?.keyOrder || [])]);
 
       } catch (err: any) {
         console.error("Error fetching data:", err);
@@ -160,8 +163,10 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
   // Fetch data
   useEffect(() => {
     if (!jobaid) return;
-    fetchData();
-  }, [jobaid]);
+    if (client){
+      fetchData(client?.clientId);
+    }
+  }, [jobaid, client]);
 
   // Map API → rows
   const mapApiToRows = (apiData: any[]): RowData[] => {
@@ -216,7 +221,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       console.log(await res.json());
       // ✅ Refetch the latest like count from API
       const updatedRes = await fetch(
-        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
       const updatedData = await updatedRes.json();
@@ -224,7 +229,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
       setRows(mapped);
-      setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || []),]);
+      setQnaKeys(["Full Name", ...(mapped[0]?.keyOrder || []),]);
     } catch (err) {
       console.error("Like API failed:", err);
       // rollback if API fails
@@ -270,7 +275,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       console.log(await res.json());
       // ✅ Refetch the latest like count from API
       const updatedRes = await fetch(
-        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}`
+        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
       const updatedData = await updatedRes.json();
@@ -278,7 +283,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
       setRows(mapped);
-      setQnaKeys(["Full Name", "Email", ...(mapped[0]?.keyOrder || []),]);
+      setQnaKeys(["Full Name", ...(mapped[0]?.keyOrder || []),]);
     } catch (err) {
       console.error("Like API failed:", err);
       // rollback if API fails
@@ -302,7 +307,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
   const exportData = rows.map(row => {
     const rowData: any = {
       "Full Name": row.full_name,
-      "Email": row.email,
+      // "Email": row.email,
       
     };
     
@@ -359,7 +364,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
     setError(null);
     setSortDir('desc');
     setSortBy('id');
-    await fetchData();
+    await fetchData(client?.clientId);
     setLoading(false);
   };
 
@@ -416,8 +421,11 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
 
         {loading && <div className="p-6 text-center text-gray-500">Loading...</div>}
         {error && <div className="p-6 text-center text-red-500">Failed: {error}</div>}
-
-        {!loading && !error && (
+        
+        {!loading && !error && paginatedRows.length === 0 && (
+          <div className="p-6 text-center text-gray-500">No data available.</div>
+        )}
+        {!loading && !error && paginatedRows.length > 0 && (
           <>
             <IdeaBoardTable
               qnaKeys={qnaKeys}

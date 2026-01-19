@@ -29,7 +29,9 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 px-4 sm:px-6 lg:px-8">
           {/* Text Content */}
           <div className="text-center md:text-left">
-            <h1 className="
+            <h1
+            style={{ fontFamily: '"PT Serif", serif' }} 
+            className="
               font-inter
               font-medium
               text-[22px]
@@ -52,6 +54,44 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
               {subTitle}
             </p>
 
+            {/* Feature Boxes */}
+            <div className="mt-5 sm:mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
+              {[
+                "AI Literacy ⬆️",
+                "Digital Tools Adoption ⬆️",
+                "Workflows Augmented ⬆️",
+                "Decision Readiness ⬆️",
+                "Project Pipeline ⬆️",
+                "Org Productivity ⬆️",
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="
+                    flex items-center gap-2
+                    bg-white text-black
+                    px-3 sm:px-4
+                    h-[44px] sm:h-[48px]
+                    transition
+                    shadow-[0_8px_20px_rgba(0,0,0,0.18),0_2px_6px_rgba(0,0,0,0.12)]
+                  "
+                  style={{ borderRadius: "6px" }}
+                >
+                  {/* <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#00c193] text-white text-sm font-bold shadow-md shrink-0">
+                    ↑
+                  </div> */}
+
+                  <span className="
+                    text-xs sm:text-sm font-medium
+                    whitespace-nowrap text-ellipsis
+                  ">
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+
+
             {/* Uncomment if needed
             <button
               onClick={scrollToSection}
@@ -71,7 +111,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
                 "https://storage.googleapis.com/publicvid/Case%20Study/WhatsApp%20Image%202025-10-14%20at%2011.39.38_475117de.jpg"
               }
               alt="Hero Art"
-              className="w-[180px] xs:w-[200px] sm:w-[240px] md:w-[260px] lg:w-[300px] xl:w-[340px] max-w-full h-auto shadow-[0_12px_28px_rgba(0,0,0,0.25)] sm:shadow-[0_16px_32px_rgba(0,0,0,0.3)] md:shadow-[0_18px_40px_rgba(0,0,0,0.35)] border border-[#00c193]"
+              className="w-[180px] xs:w-[200px] sm:w-[240px] md:w-[260px] lg:w-[300px] xl:w-[340px] max-w-full h-auto shadow-[0_6px_16px_rgba(0,0,0,0.18)] sm:shadow-[0_8px_20px_rgba(0,0,0,0.20)] md:shadow-[0_10px_24px_rgba(0,0,0,0.22)] border border-[#00c193]"
               style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
             />
           </div>

@@ -126,7 +126,8 @@ export const generateReport = async (
   answers: Record<string, string | boolean>,
   userEmail = "test@example.com",
   name:string,
-  job_aid_id: string
+  job_aid_id: string,
+  client_id?: string
 ): Promise<ReportResponse> => {
   try {
     return await fetchJson<ReportResponse>(
@@ -138,6 +139,7 @@ export const generateReport = async (
           useremail: userEmail,
           name: name,
           jobaid: job_aid_id,
+          client_id: client_id,
         }),
       }
     );
