@@ -1239,3 +1239,23 @@ export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
     return [];
   }
 };
+
+
+export const track = async (feature : string, userId:string, event_type:string='click', description?:string) => { 
+  fetch(`${baseURL}/analytics/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": basicAuth,
+    },
+    body: JSON.stringify({
+      event_type: event_type,
+      feature: feature,
+      user_id: userId,
+      metadata: {
+        page: window.location.pathname,
+        description: description
+      }
+    })
+  });
+}
