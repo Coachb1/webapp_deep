@@ -4,7 +4,7 @@ import { Book } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
-import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion } from "@/lib/api";
+import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion, track } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
 import ThumbVoteButton from "./ui/LIkeDislikeButtons";
 
@@ -189,7 +189,10 @@ const BookCard: React.FC<BookCardProps> = ({
           </p>
           {book.report &&
             <button
-              onClick={() => setIsReadModalOpen(true)}
+              onClick={() => {setIsReadModalOpen(true)
+                    track(book.title, user?.user_data?.uid, 'click', "Opened report")
+
+              }}
             className={`ml-2 custom-btn btn-sm`}
             >
               Report

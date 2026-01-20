@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import BookSection from "@/components/books/BookSection";
 import { Book, CoursePackage } from "@/lib/types";
-import { fetchBooks } from "@/lib/api";
+import { fetchBooks, track } from "@/lib/api";
 import BookDescription from "@/components/books/BookDescription";
 import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
@@ -205,6 +205,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     setCurrentBook(book);
     setCurrentBookIndex(index);
     setShowAudioPlayer(true);
+    track(book.title, user?.user_data?.uid, "click", "played book")
   };
 
   const handleClosePlayer = () => {
@@ -228,6 +229,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const handleOpenDescription = (book: Book) => {
     setSelectedBook(book);
     setShowDescription(true);
+    track(book.title, user?.user_data?.uid, "click", "TransformIQ opened")
   };
 
   const handleCloseDescription = () => {
@@ -273,6 +275,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                 .getElementById("action-section")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }, 120);
+            track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
           }}
         />
 
