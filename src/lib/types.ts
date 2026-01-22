@@ -13,6 +13,8 @@ export interface Book {
   start_up: boolean;
   keywords: string[];
   desc: string;
+  description_label?: string;
+  report_button_label?: string;
   img: string;
   audio: string;
   course_id: string;
@@ -24,7 +26,10 @@ export interface Book {
   userProgress?: Record<string, any>;
   totalLikes?: number;
 }
-
+export interface CardButtonLebals {
+    description?: string;
+    report?: string;
+  }
 export interface CoursePackage {
   package_id: string;
   package_name: string;
@@ -403,9 +408,29 @@ export interface DashboardItem {
   description: string;
   icon: React.ReactNode;
   buttons: ActionButton[];
+  type?: string;
 }
+
+export interface AnnouncementSection {
+  enabled: boolean;
+  heading: {
+    text: string;
+    link: string | null;
+    link_text: string | null;
+    append_text?: string;
+  },
+  subheading: {
+    text: string;
+    link: string | null;
+    link_text: string | null;
+    append_text?: string;
+
+  }
+}
+
 export interface UserInfoType {
   clientId?: string;
+  clientLogoUrl?: string;
   allowed_domain?: string;
   clientName: string;
   isDemoUser: boolean;
