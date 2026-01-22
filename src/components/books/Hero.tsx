@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { HeroLoader } from "./Loaders";
 
+
 interface HeroProps {
   title: string | null;
   subTitle: string | null;
   imageLink?: string | null;
+  featureBox?: string[];
 }
 
-const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
+const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink, featureBox }) => {
 
   const scrollToSection = () => {
     document.getElementById("section")?.scrollIntoView({ behavior: "smooth" });
@@ -56,14 +58,7 @@ const Hero: React.FC<HeroProps> = ({ title, subTitle, imageLink }) => {
 
             {/* Feature Boxes */}
             <div className="mt-5 sm:mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
-              {[
-                "AI Literacy ⬆️",
-                "Digital Tools Adoption ⬆️",
-                "Workflows Augmented ⬆️",
-                "Decision Readiness ⬆️",
-                "Project Pipeline ⬆️",
-                "Org Productivity ⬆️",
-              ].map((item, index) => (
+              {featureBox && featureBox.map((item, index) => (
                 <div
                   key={index}
                   className="

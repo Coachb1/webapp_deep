@@ -1,6 +1,6 @@
 "use client";
 
-import { Book } from "@/lib/types";
+import { Book, CardButtonLebals } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
@@ -18,6 +18,7 @@ interface BookCardProps {
   laterBooks: Book[];
   likedBooks: Book[];
   onlyClientSetup: boolean; // Optional prop to handle client setup
+  globalButtonLabels?: CardButtonLebals | null; // Optional global description label
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -30,6 +31,7 @@ const BookCard: React.FC<BookCardProps> = ({
   likedBooks,
   laterBooks,
   onlyClientSetup, // Default to false if not provided
+  globalButtonLabels
 }) => {
 
   const { user, userInfo } = usePortalUser()
@@ -41,6 +43,8 @@ const BookCard: React.FC<BookCardProps> = ({
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
   const [moduleLikes, setModuleLikes] = useState<number>(book.totalLikes || 0);
   const [loadingLikeDislike, setLoadingLikeDislike] = useState<boolean>(false);
+  const descriptionLabel = globalButtonLabels?.description || book?.description_label || "TransformIQ";
+  const reportLabel = globalButtonLabels?.report || book?.report_button_label || "Report";
   useEffect(()=>{
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature
       && book?.transform_iq?.overview && book?.transform_iq?.roles){
@@ -195,15 +199,15 @@ const BookCard: React.FC<BookCardProps> = ({
               }}
             className={`ml-2 custom-btn btn-sm`}
             >
-              Report
+              {reportLabel}
             </button>
           }
-          <p
+          {/* <p
             className="custom-subtitle mb-4 line-clamp-2"
             title={book.desc}
           >
             {book.desc}
-          </p>
+          </p> */}
         </div>
 
         {/* Buttons */}
@@ -225,7 +229,7 @@ const BookCard: React.FC<BookCardProps> = ({
             
             onClick={onMore}
           >
-          {showTransformIQ? "Transform IQ" : "Transform IQ"}
+          {descriptionLabel}
           </button>
         </div>
 
