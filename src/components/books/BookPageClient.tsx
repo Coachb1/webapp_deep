@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import BookSection from "@/components/books/BookSection";
-import { Book, CardButtonLebals, CoursePackage } from "@/lib/types";
+import { Book, CardButtonConfig, CoursePackage } from "@/lib/types";
 import { fetchBooks, track } from "@/lib/api";
 import BookDescription from "@/components/books/BookDescription";
 import Header from "@/components/books/Header";
@@ -56,7 +56,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
   const [actionKey, setActionKey] = useState<string | null>(null);
   const [featureBox, setFeatureBox] = useState<string[]>(DefaultFeatureBox);
-  const [cardButtonLabels, setCardButtonLabels] = useState<CardButtonLebals | null>();
+  const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig | null>();
 
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
@@ -103,8 +103,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   useEffect(() => {
     if (loading) return;
     console.log('userInfo updated:', userInfo.libraryBotConfig?.bot_config?.coaching?.show, loading);
-    if (!loading && userInfo.libraryBotConfig?.card_button_label) {
-      setCardButtonLabels(userInfo.libraryBotConfig?.card_button_label);
+    if (!loading && userInfo.libraryBotConfig?.card_button_config) {
+      setCardButtonConfig(userInfo.libraryBotConfig?.card_button_config);
     }
     setFeatureBox(userInfo.libraryBotConfig?.feature_boxs || DefaultFeatureBox);
   }, [userInfo]);
@@ -337,7 +337,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                   promptJobAidId={packageDetails?.prompt_job_aid_uid}
                   packageDetails={packageDetails}
                   onlyClientSetup={onlyClientSetup}
-                  cardButtonLabels={cardButtonLabels}
+                  cardButtonConfig={cardButtonConfig}
                 />
               )}
             </>

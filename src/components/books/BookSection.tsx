@@ -6,7 +6,7 @@ import BookCarousel from "./BookCarousel";
 import { usePathname } from "next/navigation";
 import SearchFilter from "./SearchFilter";
 import CTA from "./CTA";
-import { Book, CardButtonLebals } from "@/lib/types";
+import { Book, CardButtonConfig } from "@/lib/types";
 import { getcourseModuleLikesAndSaveLater } from "@/lib/api"; // 👈 make sure this is imported
 import Carousel from "./CarouselSlider";
 import PageRefresh from "./PageRefreshProp";
@@ -31,7 +31,7 @@ interface BookSectionProps {
   promptJobAidId?: string | null;
   packageDetails: any;
   onlyClientSetup: boolean;
-  cardButtonLabels?: CardButtonLebals | null;
+  cardButtonConfig?: CardButtonConfig | null;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -52,7 +52,7 @@ const BookSection: React.FC<BookSectionProps> = ({
   promptJobAidId,
   packageDetails,
   onlyClientSetup,
-  cardButtonLabels
+  cardButtonConfig
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
@@ -210,7 +210,7 @@ const BookSection: React.FC<BookSectionProps> = ({
         laterBooks={laterBooks}
         setViewMode={setViewMode}
         onlyClientSetup={onlyClientSetup}
-        cardButtonLabels={cardButtonLabels}
+        cardButtonConfig={cardButtonConfig}
       />
 
       <br />
