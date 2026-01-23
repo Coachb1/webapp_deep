@@ -13,8 +13,7 @@ export interface Book {
   start_up: boolean;
   keywords: string[];
   desc: string;
-  description_label?: string;
-  report_button_label?: string;
+  card_button_config?: CardButtonConfig;
   img: string;
   audio: string;
   course_id: string;
@@ -26,9 +25,19 @@ export interface Book {
   userProgress?: Record<string, any>;
   totalLikes?: number;
 }
-export interface CardButtonLebals {
-    description?: string;
-    report?: string;
+export interface CardButtonConfig {
+    description?: {
+      show: boolean;
+      label: string;
+    };
+    report?: {
+      show: boolean;
+      label: string;
+    };
+    audio_button?: {
+      show: boolean;
+      label: string;
+    };
   }
 export interface CoursePackage {
   package_id: string;
