@@ -4,8 +4,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { baseURL, basicAuth, getUserAccounts } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
-import MainLayoutComponent from "./MainLayout";
-import ConsolePatch from "./ConsolePatch";
+import ClientLayout from "./clientLayout";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -28,7 +27,7 @@ const emptyObject = {
 
 const getClientUserInfo = async (
   userEmail: string | null | undefined,
-  user: KindeUser | null
+  user: KindeUser | null,
 ) => {
   if (!userEmail) {
     return emptyObject;
@@ -55,7 +54,7 @@ const getClientUserInfo = async (
             method: "POST",
             headers: myHeaders,
             body: raw,
-          }
+          },
         );
 
         if (response.ok) {
@@ -69,7 +68,7 @@ const getClientUserInfo = async (
               headers: {
                 Authorization: basicAuth,
               },
-            }
+            },
           );
 
           if (infoResponse.ok) {
@@ -79,7 +78,7 @@ const getClientUserInfo = async (
               "isDemo user : ",
               data.data.user_info[0].is_demo_user,
               "isRestricted user : ",
-              data.data.user_info[0].is_restricted
+              data.data.user_info[0].is_restricted,
             );
             return {
               isDemoUser: data.data.user_info[0].is_demo_user,
@@ -125,19 +124,17 @@ export default async function RootLayout({
     await getClientUserInfo(user?.email, user);
 
   return (
-    <>
-    {/* to disable consoel for platform */}
-    <ConsolePatch/> 
-    
-    <MainLayoutComponent
-      user={user}
-      isDemoUser={isDemoUser}
-      isRestricted={isRestricted}
-      restrictedPages={restrictedPages}
-    >
-      {children}
-    </MainLayoutComponent>
-    </>
-
+    <html lang="en">
+      <body className={font.className} suppressHydrationWarning={true}>
+        <ClientLayout
+          user={user}
+          isDemoUser={isDemoUser}
+          isRestricted={isRestricted}
+          restrictedPages={restrictedPages}
+        >
+          {children}
+        </ClientLayout>
+      </body>
+    </html>
   );
 }

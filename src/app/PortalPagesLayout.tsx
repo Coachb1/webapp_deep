@@ -36,13 +36,11 @@ export default function PortalPageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <UserProvider>
-          <PortalPageContent>{children}</PortalPageContent>
-        </UserProvider>
-        <div id="portal-coachscribe" className="coachbots-coachscribe"></div>
-      </body>
-    </html>
+    <>
+      <UserProvider>
+        <PortalPageContent>{children}</PortalPageContent>
+      </UserProvider>
+      <div id="portal-coachscribe" className="coachbots-coachscribe"></div>
+    </>
   );
 }

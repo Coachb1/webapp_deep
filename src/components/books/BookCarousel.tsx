@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from "react";
 import Pagination from "@/components/ui/Pagenation";
 import BookCard from "./BookCard";
-import { Book } from "@/lib/types";
+import { Book, CardButtonConfig } from "@/lib/types";
 
 interface BookCarouselProps {
   books: Book[];
@@ -17,6 +17,7 @@ interface BookCarouselProps {
   laterBooks: Book[];
   likedBooks: Book[];
   onlyClientSetup: boolean;
+  cardButtonConfig?: CardButtonConfig | null;
 }
 
 const booksPerSlide = 12; // 3 rows × 4 books
@@ -32,7 +33,8 @@ const BookCarousel: React.FC<BookCarouselProps> = ({
   likedBooks,
   laterBooks,
   setViewMode,
-  onlyClientSetup
+  onlyClientSetup,
+  cardButtonConfig
 }) => {
   const totalSlides = Math.ceil(books.length / booksPerSlide);
   const paginationRef = useRef<HTMLDivElement | null>(null);
@@ -105,6 +107,7 @@ const handlePageChange = (page: number) => {
                         laterBooks={laterBooks}
                         setViewMode={setViewMode}
                         onlyClientSetup={onlyClientSetup} 
+                        globalButtonConfig={cardButtonConfig}
                       />
                     ))}
                   </div>

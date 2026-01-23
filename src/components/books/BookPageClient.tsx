@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from "react";
 import BookSection from "@/components/books/BookSection";
-import { Book, CoursePackage } from "@/lib/types";
-import { fetchBooks } from "@/lib/api";
+import { Book, CardButtonConfig, CoursePackage } from "@/lib/types";
+import { fetchBooks, track } from "@/lib/api";
 import BookDescription from "@/components/books/BookDescription";
 import Header from "@/components/books/Header";
 import Hero from "@/components/books/Hero";
@@ -20,6 +20,15 @@ import { IdeaBoardReport } from "./leaderboard/ideaboardReport";
 import ConversationalForm from "../job-aid/ConversationalForm";
 import ElfsightContactFormWidget from "../ContactForm";
 
+
+const DefaultFeatureBox = [
+                "AI Literacy ⬆️",
+                "Digital Tools Adoption ⬆️",
+                "Workflows Augmented ⬆️",
+                "Decision Readiness ⬆️",
+                "Project Pipeline ⬆️",
+                "Org Productivity ⬆️",
+              ];
 interface BookPageClientProps {
   id: string;
   onlyClientSetup?: boolean;
@@ -46,6 +55,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const [packageDetails, setPackageDetails] = useState<any>(null);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
   const [actionKey, setActionKey] = useState<string | null>(null);
+  const [featureBox, setFeatureBox] = useState<string[]>(DefaultFeatureBox);
+  const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig | null>();
 
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
@@ -90,7 +101,12 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   }, [id, user?.user_data?.uid]);
 
   useEffect(() => {
+    if (loading) return;
     console.log('userInfo updated:', userInfo.libraryBotConfig?.bot_config?.coaching?.show, loading);
+    if (!loading && userInfo.libraryBotConfig?.card_button_config) {
+      setCardButtonConfig(userInfo.libraryBotConfig?.card_button_config);
+    }
+    setFeatureBox(userInfo.libraryBotConfig?.feature_boxs || DefaultFeatureBox);
   }, [userInfo]);
 
   const handleSearch = (searchTerm: string) => {
@@ -205,6 +221,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     setCurrentBook(book);
     setCurrentBookIndex(index);
     setShowAudioPlayer(true);
+    track(book.title, user?.user_data?.uid, "click", "played book")
   };
 
   const handleClosePlayer = () => {
@@ -228,6 +245,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const handleOpenDescription = (book: Book) => {
     setSelectedBook(book);
     setShowDescription(true);
+    track(book.title, user?.user_data?.uid, "click", "TransformIQ opened")
   };
 
   const handleCloseDescription = () => {
@@ -244,8 +262,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
       }}
     >
       <main id="top">
-        <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} />
-        <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} />
+        <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} clientLogoUrl={userInfo?.clientLogoUrl}/>
+        <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} featureBox={featureBox} />
 
         {(loading || LibraryLoading) &&  (
           <div
@@ -273,6 +291,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                 .getElementById("action-section")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }, 120);
+            track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
           }}
         />
 
@@ -318,6 +337,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                   promptJobAidId={packageDetails?.prompt_job_aid_uid}
                   packageDetails={packageDetails}
                   onlyClientSetup={onlyClientSetup}
+                  cardButtonConfig={cardButtonConfig}
                 />
               )}
             </>

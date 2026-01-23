@@ -1,10 +1,10 @@
 "use client";
 
-import { Book } from "@/lib/types";
+import { Book, CardButtonConfig } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import WatchLaterButton from "./ui/watchLaterButton";
 import HeartButton from "./ui/heartbutton";
-import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion } from "@/lib/api";
+import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion, track } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
 import ThumbVoteButton from "./ui/LIkeDislikeButtons";
 
@@ -18,6 +18,22 @@ interface BookCardProps {
   laterBooks: Book[];
   likedBooks: Book[];
   onlyClientSetup: boolean; // Optional prop to handle client setup
+  globalButtonConfig?: CardButtonConfig | null; // Optional global description label
+}
+
+const defaultButtonConfig: CardButtonConfig = {
+  description: {
+    show: true,
+    label: "TransformIQ"
+  },
+  report: {
+    show: true,
+    label: "Report"
+  },
+  audio_button: {
+    show: true,
+    label: ""
+  }
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -30,6 +46,7 @@ const BookCard: React.FC<BookCardProps> = ({
   likedBooks,
   laterBooks,
   onlyClientSetup, // Default to false if not provided
+  globalButtonConfig
 }) => {
 
   const { user, userInfo } = usePortalUser()
@@ -41,6 +58,22 @@ const BookCard: React.FC<BookCardProps> = ({
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
   const [moduleLikes, setModuleLikes] = useState<number>(book.totalLikes || 0);
   const [loadingLikeDislike, setLoadingLikeDislike] = useState<boolean>(false);
+
+  const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig>(
+    defaultButtonConfig
+  );
+
+  useEffect(() => {
+    if (globalButtonConfig){
+      setCardButtonConfig(globalButtonConfig);
+    } else {
+      if (book?.card_button_config) {
+        setCardButtonConfig(book.card_button_config);
+      }
+    }
+    
+  }, [book]);
+
   useEffect(()=>{
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature
       && book?.transform_iq?.overview && book?.transform_iq?.roles){
@@ -187,43 +220,50 @@ const BookCard: React.FC<BookCardProps> = ({
           >
             {book.tag[0]}
           </p>
-          {book.report &&
+          {(cardButtonConfig?.report?.show ?? true) && book?.report &&
             <button
-              onClick={() => setIsReadModalOpen(true)}
+              onClick={() => {setIsReadModalOpen(true)
+                    track(book.title, user?.user_data?.uid, 'click', "Opened report")
+
+              }}
             className={`ml-2 custom-btn btn-sm`}
             >
-              Report
+              {cardButtonConfig?.report?.label || "Report"}
             </button>
           }
-          <p
+          {/* <p
             className="custom-subtitle mb-4 line-clamp-2"
             title={book.desc}
           >
             {book.desc}
-          </p>
+          </p> */}
         </div>
 
         {/* Buttons */}
         <div className="flex items-center justify-between gap-3 w-full mt-2">
           {/* ▶ Play Button */}
-          <button
-            className="rounded-full border border-green-500 text-green-500 
-               w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center 
-               hover:bg-green-100 transition shrink-0"
-            aria-label="Play audio"
-            onClick={onPlay}
-          >
-            ▶
-          </button>
+          { (cardButtonConfig?.audio_button?.show ?? true) &&
+            <button
+              className="rounded-full border border-green-500 text-green-500 
+                w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center 
+                hover:bg-green-100 transition shrink-0"
+              aria-label="Play audio"
+              onClick={onPlay}
+            >
+              ▶
+            </button>
+          }
 
           {/* More Button */}
+          { (cardButtonConfig?.description?.show ?? true) &&
           <button
             className={`custom-btn btn-sm`}
             
             onClick={onMore}
           >
-          {showTransformIQ? "Transform IQ" : "Transform IQ"}
+          {cardButtonConfig?.description?.label || "TransformIQ"}
           </button>
+          }
         </div>
 
 

@@ -102,7 +102,9 @@ export const getClientUserInfo = async (
                 "protected": data.data.user_info[0].leaderboard_report_protected,
                 "password": data.data.user_info[0].leaderboard_report_password
               },
-              collections: data.data.user_info[0].collections
+              collections: data.data.user_info[0].collections,
+              owner_email_id: data.data.user_info[0].owner_id,
+              clientLogoUrl: data.data.user_info[0].client_logo,
             };
           } else {
             throw new Error("Failed to fetch client information");
@@ -185,7 +187,8 @@ export const getClientbyClientId = async (
               "password": data.data.only_client_data.leaderboard_report_password
             },
             collections: data.data.only_client_data.collection_name,
-            owner_email_id: data.data.only_client_data.owner_id
+            owner_email_id: data.data.only_client_data.owner_id,
+            clientLogoUrl: data.data.only_client_data.client_logo,
           };
         } else {
           throw new Error("Failed to fetch client information");
@@ -902,6 +905,7 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
           start_up: m.startup,
           keywords: m.key_words,
           desc: m.description,
+          card_button_config: m?.card_button_config,
           audio: m.audio_link,
           img: m.image_link,
           report: m.embed_link,
@@ -1239,3 +1243,23 @@ export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
     return [];
   }
 };
+
+
+export const track = async (feature : string, userId:string, event_type:string='click', description?:string) => { 
+  fetch(`${baseURL}/analytics/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": basicAuth,
+    },
+    body: JSON.stringify({
+      event_type: event_type,
+      feature: feature,
+      user_id: userId,
+      metadata: {
+        page: window.location.pathname,
+        description: description
+      }
+    })
+  });
+}
