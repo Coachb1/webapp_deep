@@ -922,7 +922,8 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
           jobaid_id: data.jobaid_uid,
           prompt_job_aid_uid: data.prompt_job_aid_uid,
           userProgress: m.progress,
-          totalLikes: m.total_likes || 0
+          totalLikes: m.total_likes || 0,
+          sticker: m.sticker
         }))
     );
     console.log('[fetchBooks] Books:', books);
@@ -1064,10 +1065,10 @@ export const addModuleLike = async (moduleId: string, userId: string) => {
   }
 };
 
-export const addModuleTotalLike = async (moduleId: string, vote: 1 | -1) => {
+export const addModuleTotalLike = async (userId:string, moduleId: string, vote: 1 | -1) => {
   try {
-    if (!moduleId || !vote) {
-      console.error("[addModuleTotalLike] Missing required parameters : ", vote, moduleId);
+    if (!moduleId || !vote || !userId) {
+      console.error("[addModuleTotalLike] Missing required parameters : ", {vote, moduleId, userId});
       return null;
     }
 
@@ -1079,7 +1080,7 @@ export const addModuleTotalLike = async (moduleId: string, vote: 1 | -1) => {
         Authorization: basicAuth,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ client_only_likes: true,  likes: vote}),
+      body: JSON.stringify({ client_only_likes: true,  likes: vote, user_id: userId}),
     });
     console.log(response.statusText)
     if (!response.ok) {
@@ -1218,6 +1219,7 @@ export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
 
     // If backend is paginated
     const results = raw.results ?? raw;
+    console.log('results:', results)
 
     return results.map((item: any): CompanyIQ => ({
       id: item.uid,
@@ -1236,6 +1238,7 @@ export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
       source: item.source,
       approved: item.approved,
       created: item.created,
+      sticker: item.sticker,
     }));
 
   } catch (error) {

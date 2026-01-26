@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock } from "@/lib/types";
 import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
+import { Sticker } from "./sticker";
 
 const LIMIT = 10; // show first 10 items
 
@@ -162,7 +163,6 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                     style={{ borderRadius: "calc(var(--radius) - 6px)" }}
                   >
                     {collectionName}
-
                   </div>
 
                   {/* Pagination Buttons */}
@@ -213,9 +213,12 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                           setPageIndex(0);
                           setIsReadModalOpen(true);
                         }}  
-                        className="custom-btn btn-sm"
+                        className="custom-btn btn-sm relative overflow-visible"
                       >
                         {item.tab_name}
+                        <Sticker
+                          text={item.sticker}
+                        />
                       </button>
                     ))}
                   </div>

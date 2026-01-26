@@ -24,6 +24,7 @@ export interface Book {
   transform_iq?: Record<string, any>;
   userProgress?: Record<string, any>;
   totalLikes?: number;
+  sticker?: string;
 }
 export interface CardButtonConfig {
     description?: {
@@ -391,6 +392,7 @@ export interface CaseItem {
   embed_link: string;
   transform_iq?: string;
   action_name?: string;
+  sticker?: string;
 }
 
 export interface CollectionBlock {
@@ -402,6 +404,7 @@ export interface CollectionBlock {
   collection_name: string;
   case_items: CaseItem[];
   heading?:string;
+  sticker?:string;
 }
 
 export interface ActionButton {
@@ -528,6 +531,7 @@ export interface CompanyIQ {
   hq: string;
   revenue: number;
   employees: number;
+  sticker?: string;
 
   leadership?: string[];
   initiatives?: string[];
