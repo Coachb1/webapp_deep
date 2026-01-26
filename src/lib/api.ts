@@ -1064,10 +1064,10 @@ export const addModuleLike = async (moduleId: string, userId: string) => {
   }
 };
 
-export const addModuleTotalLike = async (moduleId: string, vote: 1 | -1) => {
+export const addModuleTotalLike = async (userId:string, moduleId: string, vote: 1 | -1) => {
   try {
-    if (!moduleId || !vote) {
-      console.error("[addModuleTotalLike] Missing required parameters : ", vote, moduleId);
+    if (!moduleId || !vote || !userId) {
+      console.error("[addModuleTotalLike] Missing required parameters : ", {vote, moduleId, userId});
       return null;
     }
 
@@ -1079,7 +1079,7 @@ export const addModuleTotalLike = async (moduleId: string, vote: 1 | -1) => {
         Authorization: basicAuth,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ client_only_likes: true,  likes: vote}),
+      body: JSON.stringify({ client_only_likes: true,  likes: vote, user_id: userId}),
     });
     console.log(response.statusText)
     if (!response.ok) {
