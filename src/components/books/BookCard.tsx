@@ -7,6 +7,7 @@ import HeartButton from "./ui/heartbutton";
 import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion, track } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
 import ThumbVoteButton from "./ui/LIkeDislikeButtons";
+import { Sticker } from "./sticker";
 
 interface BookCardProps {
   book: Book;
@@ -160,7 +161,10 @@ const BookCard: React.FC<BookCardProps> = ({
 
   return (
     <>
-      <article className="shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
+      <article className="relative shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
+        <Sticker
+          text={book.sticker}
+        />
         {/* Book Cover */}
         <img
           src={book.img}

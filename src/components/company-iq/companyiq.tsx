@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import AdvMarkdownHandler from "../MarkdownAdvance";
 import { useCompanyIQ } from "@/hooks/useCompanyIQ";
 import { CompanyIQLoader } from "../books/Loaders";
+import { Sticker } from "../books/sticker";
 
 /* -------------------------
    PAGINATION COMPONENT
@@ -113,6 +114,7 @@ function PaginationComponent({
 export default function CompanyIQ() {
   const { data, loading, error } = useCompanyIQ();
   const companies = data ?? [];
+  console.debug('companyiq', companies)
 
   const [activeSection, setActiveSection] = useState<
     Record<string | number, string | null>
@@ -456,9 +458,12 @@ export default function CompanyIQ() {
           {paginatedCompanies.map((company) => (
             <div
               key={company.id}
-              className="rounded-xl p-6 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+              className="relative rounded-xl p-6 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1"
               style={{ borderWidth: "1px", borderColor: "#00c193" }}
-            >
+            > 
+              <Sticker
+                text={company.sticker}
+              />
               {/* Card Header */}
               <div className="mb-4">
                 <h3 className="custom-title">
