@@ -412,6 +412,7 @@ export interface ActionButton {
   label: string;
   action?: string;
   heading?: string;
+  type?:string
 }
 
 export interface DashboardItem {

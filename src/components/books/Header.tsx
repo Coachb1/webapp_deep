@@ -16,11 +16,13 @@ const Header = ({
   jobaidId,
   onlyClientSetup,
   clientLogoUrl,
+  onAction
 }: {
   packageCourseId: string;
   jobaidId: string | null;
   onlyClientSetup: boolean;
   clientLogoUrl?: string;
+  onAction?: (action: string, type?:string) => void;
 }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showLeaderBoardButton, setShowLeaderBoardButton] = useState(false);
@@ -150,6 +152,31 @@ const Header = ({
               </div>
             ) : (
               <div className="flex gap-3">
+                {IdeaBoardButtonLabel && showIdeaBoardButton && (
+                  <Button
+                    onClick={() => {
+                      if (jobaidId) {
+                        jobaidId && onAction?.("INTERNAL_TRANSFORMATION_ALIGN")                        
+                        const url = `/library-bot/ideaboardReport/?jobaid=${encodeURIComponent(
+                          jobaidId,
+                        )}&onlyclientsetup=${encodeURIComponent(
+                          onlyClientSetup
+                        )
+                        }&email=${encodeURIComponent(
+                          user?.email!
+                        )}
+                        `;
+                        // Open in a new tab with no referrer
+                        // window.open(url, "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                    className="bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                    style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                  >
+                    {IdeaBoardButtonLabel}
+                  </Button>
+                )}
+
                 {/* Leader Board Button */}
                 {LeaderBoardButtonLabel && showLeaderBoardButton && (
                   <Button
@@ -191,7 +218,7 @@ const Header = ({
           </div>
 
           {/* Mobile Menu Button - Only show if there are buttons to display */}
-          {(showLeaderBoardButton || showAiPulseButton) && (
+          {(showLeaderBoardButton || showAiPulseButton || showIdeaBoardButton) && (
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
               className="sm:hidden flex items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -233,6 +260,32 @@ const Header = ({
               </div>
             ) : (
               <>
+                {IdeaBoardButtonLabel && showIdeaBoardButton && (
+                  <Button
+                    onClick={() => {
+                      if (jobaidId) {
+                        jobaidId && onAction?.("INTERNAL_TRANSFORMATION_ALIGN")                        
+                        const url = `/library-bot/ideaboardReport/?jobaid=${encodeURIComponent(
+                          jobaidId,
+                        )}&onlyclientsetup=${encodeURIComponent(
+                          onlyClientSetup
+                        )
+                        }&email=${encodeURIComponent(
+                          user?.email!
+                        )}
+                        `;
+                        // Open in a new tab with no referrer
+                        // window.open(url, "_blank", "noopener,noreferrer");
+                      }
+                    
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                    style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                  >
+                    {IdeaBoardButtonLabel}
+                  </Button>
+                )}
                 {/* Leader Board Button - Mobile */}
                 {LeaderBoardButtonLabel && showLeaderBoardButton && (
                   <Button
