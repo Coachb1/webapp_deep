@@ -57,6 +57,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const [actionKey, setActionKey] = useState<string | null>(null);
   const [featureBox, setFeatureBox] = useState<string[]>(DefaultFeatureBox);
   const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig | null>();
+  const [actionType, setActionType] = useState<string | null>(null);
+
 
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
@@ -252,6 +254,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     setShowDescription(false);
     setSelectedBook(null);
   };
+  console.debug("de", actionKey, actionType)
+
 
   return (
     <div
@@ -262,7 +266,23 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
       }}
     >
       <main id="top">
-        <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} clientLogoUrl={userInfo?.clientLogoUrl}/>
+        <Header packageCourseId={id} 
+        jobaidId={jobAidId} 
+        onlyClientSetup={onlyClientSetup} 
+        clientLogoUrl={userInfo?.clientLogoUrl}
+        onAction={(value, type) => {
+            setActionKey(value);
+            setActionType(type?.trim() || null);
+
+            setTimeout(() => {
+              document
+                .getElementById("action-section")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 120);
+            track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
+          }}
+        
+        />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} featureBox={featureBox} />
 
         {(loading || LibraryLoading) &&  (
@@ -283,8 +303,9 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
 
         <ActionDashboard
           selectedAction={actionKey}
-          onAction={(value) => {
+          onAction={(value, type) => {
             setActionKey(value);
+            setActionType(type?.trim() || null);
 
             setTimeout(() => {
               document
@@ -308,6 +329,25 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                 : "overflow-hidden max-h-0"}
             `}
           >
+
+            
+
+          {actionType ? (
+            <>
+            {actionType === 'jobaid' && 
+              <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+                <ConversationalForm
+                  job_aid_id={actionKey!}
+                  isEmailSection={onlyClientSetup}
+                  inputEmail={user?.user_data?.email || "undefined@gmail.com"}
+                  inputName={user?.user_data?.name || "User"}
+                  clientId={userInfo?.clientId}
+                />
+              </div>
+            }
+            </>
+          ): (
+          <>
           {actionKey?.includes("CONCEPTS") && (
             <ConceptsViewer actionKey={actionKey!} />
           )}
@@ -362,7 +402,11 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
               />
             </div>
           )}
+        </>
+          )}
+
         </div>
+        
 
       </main>
 

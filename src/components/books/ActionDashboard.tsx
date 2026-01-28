@@ -14,7 +14,7 @@ import { DashboardSkeletonCard } from "./Loaders";
 /* -------------------- TYPES -------------------- */
 
 interface ActionDashboardProps {
-  onAction?: (action: string) => void;
+  onAction?: (action: string, type?:string) => void;
   selectedAction?: string | null;
 }
 
@@ -118,7 +118,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
 
   useEffect(() => {
     if (items.length > 0) {
-      console.debug("int", initialLoading);
+      console.debug("int", initialLoading, items);
       setInitialLoading(false);
     }
   }, [items]);
@@ -275,7 +275,9 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
                 {item.buttons.map((btn: ActionButton, index: number) => (
                   <button
                     key={index}
-                    onClick={() => btn.action && onAction?.(btn.action)}
+                    onClick={() => {
+                      btn.action && onAction?.(btn.action, btn.type)
+                    }}
                     className={`custom-btn btn-sm`}
                   >
                     {btn.label}
