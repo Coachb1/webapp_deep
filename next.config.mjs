@@ -18,7 +18,23 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ["res.cloudinary.com"],
+    domains: [
+        "res.cloudinary.com",
+        "cdn.coachbots.com", // ✅ ADD THIS
+        "storage.googleapis.com"
+      ],
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "storage.googleapis.com",
+          pathname: "/**",
+        },
+        {
+          protocol: "https",
+          hostname: "cdn.coachbots.com",
+          pathname: "/**",
+        },
+      ],
   },
   env: {
     OPENAI_API_KEY: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
