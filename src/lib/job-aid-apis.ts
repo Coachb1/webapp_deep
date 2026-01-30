@@ -11,6 +11,8 @@ export interface Question {
   description: string;
   dropdowns?: string; // CSV string, e.g. "People, Tools, Budget"
   section?: string; // Optional section for grouping questions
+  is_multi_select?:boolean;
+  allow_custom_text?:boolean;
 }
 
 export interface JobAid {
