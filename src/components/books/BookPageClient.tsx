@@ -415,7 +415,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm sm:text-base leading-relaxed">
             {/* © {new Date().getFullYear()}{" "} */}
-            © 2026 <span className="font-semibold">AIAdopTs</span> previously<span className="font-semibold"> CoachBoT</span>. All rights reserved.
+            © 2026 <span className="font-semibold">AIAdopTs</span>. All rights reserved.
           </p>
           <p className="text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
             Frameworks Licenses from respective owners. Cases curated through independent research, verification, and third-party data sources.

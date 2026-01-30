@@ -4,6 +4,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import { Question } from "@/lib/job-aid-apis";
 import CopyBox from "../CopyBox";
 import AdvMarkdownHandler from "../MarkdownAdvance";
+import SearchableDropdown from "./SearchableDropdown";
 
 interface QuestionFlowProps {
   question: Question;
@@ -81,6 +82,23 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
     }
   };
 
+  // Determine if Continue button should be disabled
+  const isContinueDisabled = () => {
+    // If no answer provided, disable
+    if (!answer.trim()) {
+      return true;
+    }
+
+    // If validation is required
+    if (isValidataion && question.question_type !== 'dropdown') {
+      // Disable if answer hasn't changed from current answer
+      return (currentAnswer || "").trim() === answer.trim();
+    }
+
+    // If no validation required, enable if answer exists
+    return false;
+  };
+
   const renderInputField = () => {
     switch (question.question_type) {
       case "text":
@@ -99,23 +117,14 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 
       case "dropdown":
         return (
-          <select
+          <SearchableDropdown
+            options={question.dropdowns ? question.dropdowns.split(",").map(opt => opt.trim()) : []}
             value={answer}
-            onChange={handleAnswerChange}
-            className="w-full p-5 border-2 border-gray-200 rounded-xl text-base 
-                       bg-white cursor-pointer transition-colors
-                       focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-          >
-            <option value="" disabled>
-              Select an option...
-            </option>
-            {question.dropdowns &&
-              question.dropdowns.split(",").map((opt, i) => (
-                <option key={i} value={opt.trim()}>
-                  {opt.trim()}
-                </option>
-              ))}
-          </select>
+            onChange={setAnswer}
+            placeholder="Select an option..."
+            isMultiSelect={question.is_multi_select || false}
+            allowCustomText={question.allow_custom_text || false}
+          />
         );
 
       case "boolean":
@@ -240,7 +249,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
                 className={`custom-btn btn-sm bg-gray-200 border border-[#00c193] px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md rounded-md
           ${(currentAnswer || "").trim() !== answer.trim() || !answer.trim() ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                {questionNumber === totalQuestions ? "Submit" : "Continue"}
+                {questionNumber === totalQuestions ? "Submit" : "Ignore"}
               </button>
             </div>
           </div>
@@ -263,9 +272,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           <button
             onClick={handleContinue}
-            disabled={(currentAnswer || "").trim() === answer.trim() || !answer.trim()}
+            disabled={isContinueDisabled()}
             className={`custom-btn btn-sm
-              ${(currentAnswer || "").trim() === answer.trim() || !answer.trim()? "opacity-50 cursor-not-allowed" : ""} `}
+              ${isContinueDisabled() ? "opacity-50 cursor-not-allowed" : ""} `}
               style={{ borderRadius: "calc(var(--radius) - 6px)" }}
           >
             {getValidateContinueText()}
