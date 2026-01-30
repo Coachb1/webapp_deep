@@ -32,6 +32,7 @@ interface BookSectionProps {
   packageDetails: any;
   onlyClientSetup: boolean;
   cardButtonConfig?: CardButtonConfig | null;
+  userLogin?: boolean;
 }
 
 const BookSection: React.FC<BookSectionProps> = ({
@@ -52,7 +53,8 @@ const BookSection: React.FC<BookSectionProps> = ({
   promptJobAidId,
   packageDetails,
   onlyClientSetup,
-  cardButtonConfig
+  cardButtonConfig,
+  userLogin
 }) => {
   console.log("BookSection rendered with books:", books);
   console.log("Current slide:", currentSlide);
@@ -156,7 +158,7 @@ const BookSection: React.FC<BookSectionProps> = ({
         <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg mt-10">
           <ConversationalForm
             job_aid_id={promptJobAidId}
-            isEmailSection={onlyClientSetup ? true : false}
+            isEmailSection={userLogin}
             inputEmail={email || "undefined@gmail.com"}
             inputName={name || "User"}
           />

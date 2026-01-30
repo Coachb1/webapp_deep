@@ -32,9 +32,10 @@ const DefaultFeatureBox = [
 interface BookPageClientProps {
   id: string;
   onlyClientSetup?: boolean;
+  userLogin?: boolean;
 }
 
-export default function BookPageClient({ id, onlyClientSetup=false }: BookPageClientProps) {
+export default function BookPageClient({ id, onlyClientSetup=false, userLogin=true }: BookPageClientProps) {
   const { user, userInfo, loading } = usePortalUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
@@ -338,7 +339,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
               <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
                 <ConversationalForm
                   job_aid_id={actionKey!}
-                  isEmailSection={onlyClientSetup}
+                  isEmailSection={userLogin}
                   inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                   inputName={user?.user_data?.name || "User"}
                   clientId={userInfo?.clientId}
@@ -395,7 +396,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
             <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
               <ConversationalForm
                 job_aid_id={jobAidId}
-                isEmailSection={onlyClientSetup}
+                isEmailSection={userLogin}
                 inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                 inputName={user?.user_data?.name || "User"}
                 clientId={userInfo?.clientId}
