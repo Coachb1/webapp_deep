@@ -8,6 +8,7 @@ interface UserInfoGateProps {
   children: React.ReactNode;
   allowedDomains?: string;
   clientId?: string;
+  onlyClientSetup?: boolean;
 }
 
 const isValidEmail = (email: string) =>
@@ -15,7 +16,7 @@ const isValidEmail = (email: string) =>
 
 const SUBDOMAIN_PREFIX = "deepchat-domain"; // change if needed
 
-const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps) => {
+const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: UserInfoGateProps) => {
   const { setUser, user, refreshUserData } = usePortalUser();
 
   const [email, setEmail] = useState("");
@@ -29,6 +30,13 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
   const [apiError, setApiError] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const [showSetup, setShowSetup] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [tempAuthData, setTempAuthData] = useState<any>(null);
+  const [tempUserData, setTempUserData] = useState<any>(null);
 
   /** ---------------------------
    *  SESSION CHECK
@@ -77,6 +85,74 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
     checkSession();
   }, [setUser]);
 
+  const finalizeLogin = async (data: any, userData: any) => {
+
+    
+    // Save tokens
+    localStorage.setItem("access_token", data.access);
+    localStorage.setItem("refresh_token", data.refresh);
+
+    // Set user in context
+    const newUser = { given_name: userData.name, email: userData.email };
+
+    (window as any).user = newUser;
+
+    const fullUser = {
+        ...newUser,
+        user_data: userData,
+      };
+    console.log("Setting user:", fullUser);
+    setUser(fullUser);
+
+    await refreshUserData(fullUser);
+  };
+
+  const handleSetupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setApiError("");
+    
+    if (!newName.trim()) {
+        setApiError("Name is required.");
+        return;
+    }
+    if (newPassword.length < 6) {
+        setApiError("Password must be at least 6 characters.");
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        setApiError("Passwords do not match.");
+        return;
+    }
+
+    setLoading(true);
+
+    try {
+        const res = await fetch(`${baseURL}/webauth/reset-password/`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${tempAuthData.access}` 
+            },
+            body: JSON.stringify({
+                name: newName,
+                password: newPassword
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Update failed");
+        }
+
+        // Proceed to login with the tokens we already have
+        await finalizeLogin(tempAuthData, tempUserData);
+
+    } catch (err: any) {
+        console.error("Setup failed", err);
+        setApiError(err.message || "Failed to update profile");
+        setLoading(false);
+    }
+  };
 
   /** ---------------------------
    *  LOGIN HANDLER (DRF)
@@ -114,6 +190,7 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
             value: email,
           },
           password,
+          client_id: clientId
         }),
       });
 
@@ -126,8 +203,7 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
 
       console.log('udata    ', data)
 
-
-      // Fetch user details
+        // Fetch user details
       const userRes = await fetch(`${baseURL}/accounts/me/`, {
         headers: { Authorization: `Bearer ${data.access}` },
       });
@@ -142,35 +218,36 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
       const userData = await userRes.json();
       console.log("✅ User data:", userData);
 
-      if (clientId && userData?.client?.uid && userData?.client?.uid != clientId){
-          setPasswordError("You are not allowed! Please contact your admin.")
-          setLoading(false);
-          return;
+      if (
+        clientId &&
+        (!userData?.client?.uid ||
+        String(userData.client.uid) !== String(clientId))
+      ) {
+        throw new Error("You are not allowed! Please contact your admin.");
+      }
 
-        }
-      
-      // Save tokens
-      localStorage.setItem("access_token", data.access);
-      localStorage.setItem("refresh_token", data.refresh);
 
-      // Set user in context
-      const newUser = { given_name: userData.name, email: userData.email };
+      setTempUserData(userData);
 
-      (window as any).user = newUser;
+      if (data.auth_type === 'client_login') {
+        setTempAuthData(data);
+        setShowSetup(true);
+        setLoading(false);
+        return;
+      }
 
-      const fullUser = {
-          ...newUser,
-          user_data: userData,
-        };
-      console.log("Setting user:", fullUser);
-      setUser(fullUser);
+      await finalizeLogin(data, userData);
 
-      await refreshUserData(fullUser);
     } catch (err: any) {
       console.error("failed to log", err.message)
-      setApiError("Unable to login please try again later or contact your admin.");
-    } finally {
+      if (err.message.includes("not allowed")) {
+        setPasswordError(err.message);
+      } else {
+        setApiError("Unable to login please try again later or contact your admin.");
+      }
       setLoading(false);
+    } finally {
+      // Loading state is handled in try/catch blocks or state transitions
     }
   };
 
@@ -199,6 +276,55 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
                   </div>
                 )}
 
+                {showSetup ? (
+                  <>
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
+                      Complete Setup
+                    </h2>
+                    {apiError && (
+                      <p className="text-red-600 text-sm mb-2 text-center">
+                        {apiError}
+                      </p>
+                    )}
+                    <form onSubmit={handleSetupSubmit} className="space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-md"
+                        disabled={loading}
+                        required
+                      />
+                      <input
+                        type="password"
+                        placeholder="New Password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-md"
+                        disabled={loading}
+                        required
+                      />
+                      <input
+                        type="password"
+                        placeholder="Confirm Password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-md"
+                        disabled={loading}
+                        required
+                      />
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                      >
+                        {loading ? "Updating..." : "Update & Login"}
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                <>
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center">
                   Login
                 </h2>
@@ -255,6 +381,8 @@ const UserInfoWall = ({ children, allowedDomains, clientId }: UserInfoGateProps)
                     {loading ? "Logging in..." : "Login"}
                   </button>
                 </form>
+                </>
+                )}
               </>
             )}
           </div>
