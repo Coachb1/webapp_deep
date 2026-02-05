@@ -12,8 +12,8 @@ import {
   fetchJobAid,
   JobAid,
 } from "@/lib/job-aid-apis";
-import AdvMarkdownHandler from "../MarkdownAdvance";
 import CopyBox from "../CopyBox";
+import NewAdvMarkdown from "../NewAdvMarkdown";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
@@ -397,7 +397,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           {isReport
             ? "⏳ Generating Your Report..."
             : isPromptGenerator ?
-              "⏳ Please wait while we are generating your Blueprint..."
+              "⏳ Please wait while we are generating your Snapshot..."
               : "⏳ Submitting..."}
         </h2>
         <div className="flex justify-center">
@@ -407,7 +407,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           {isReport
             ? "Please wait while we prepare your personalized Management Action Planner."
             : isPromptGenerator
-              ? "Please wait while we are generating your Prompt."
+              ? ""
               : "Please wait while we submit your form"}
         </p>
       </div>
@@ -416,12 +416,43 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
 
   if (currentStep === "completed") {
     return (
-      <div className="pt-24 flex flex-col items-center">
+      <div className="pt-12 flex flex-col items-center">
+        {redirectURL ? (
+          <button
+            onClick={() => (window.location.href = redirectURL)}
+            className="
+                        w-full bg-gray-200 border border-[#00c193] 
+                        px-8 py-4 text-sm font-medium text-gray-800 
+                        shadow-sm transition-all duration-300 
+                        hover:border-[#00c193] hover:shadow-md 
+                        sm:w-auto
+                      "
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          >
+            Home
+          </button>
+        ) : (
+          <button
+            onClick={handleRestart}
+            className="custom-btn btn-sm
+            w-full bg-gray-200 border border-[#00c193] 
+            px-8 py-4 text-sm font-medium text-gray-800 
+            shadow-sm transition-all duration-300 
+            hover:border-[#00c193] hover:shadow-md 
+            sm:w-auto
+          "
+            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          >
+            Start Over
+          </button>
+        )}
+
+        <div className="mt-10"></div>
 
         {generatedPrompt ? (
           // 🟢 Prompt Generation Mode Output Box
           <>
-            <h2 className="custom-title mb-4">✨ Your Draft Blueprint is Ready!</h2>
+            <h2 className="custom-title mb-4">✨ Your Draft AI usecase snapshot is Ready!</h2>
             <p className="custom-subtitle mb-4 text-center">
               Copy and use it wherever you like.
             </p>
@@ -433,7 +464,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
               <CopyBox content={generatedPrompt} />
 
               {/* Render formatted content once */}
-              <AdvMarkdownHandler content={generatedPrompt} />
+              <NewAdvMarkdown content={generatedPrompt} />
             </div>
 
           </>
@@ -470,37 +501,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         )}
 
         {/* Restart or redirect button */}
-        <div className="mt-10"></div>
 
-        {redirectURL ? (
-          <button
-            onClick={() => (window.location.href = redirectURL)}
-            className="
-                        w-full bg-gray-200 border border-[#00c193] 
-                        px-8 py-4 text-sm font-medium text-gray-800 
-                        shadow-sm transition-all duration-300 
-                        hover:border-[#00c193] hover:shadow-md 
-                        sm:w-auto
-                      "
-            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-          >
-            Home
-          </button>
-        ) : (
-          <button
-            onClick={handleRestart}
-            className="custom-btn btn-sm
-            w-full bg-gray-200 border border-[#00c193] 
-            px-8 py-4 text-sm font-medium text-gray-800 
-            shadow-sm transition-all duration-300 
-            hover:border-[#00c193] hover:shadow-md 
-            sm:w-auto
-          "
-            style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-          >
-            Start Over
-          </button>
-        )}
+        
       </div>
     );
   }

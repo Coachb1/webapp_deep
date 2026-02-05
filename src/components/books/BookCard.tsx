@@ -7,6 +7,7 @@ import HeartButton from "./ui/heartbutton";
 import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion, track } from "@/lib/api";
 import { usePortalUser } from "./context/UserContext";
 import ThumbVoteButton from "./ui/LIkeDislikeButtons";
+import { Sticker } from "./sticker";
 
 interface BookCardProps {
   book: Book;
@@ -56,7 +57,7 @@ const BookCard: React.FC<BookCardProps> = ({
   const [completedDate, setCompletedDate] = useState<string | null>(null);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [showTransformIQ, setShowTransformIQ] = useState<boolean>(false);
-  const [moduleLikes, setModuleLikes] = useState<number>(book.totalLikes || 0);
+  const [moduleLikes, setModuleLikes] = useState<number>(0);
   const [loadingLikeDislike, setLoadingLikeDislike] = useState<boolean>(false);
 
   const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig>(
@@ -89,6 +90,8 @@ const BookCard: React.FC<BookCardProps> = ({
       const data = book.userProgress;
 
       if (data) {
+        console.log("Module progress data:", data);
+        setModuleLikes(data.total_like || 0);
         setProgress(data.completed_in_percentage || 0);
 
         // Normalize status
@@ -123,7 +126,7 @@ const BookCard: React.FC<BookCardProps> = ({
         return prev - 1;
       }
     });
-    await addModuleTotalLike(book.id, vote);
+    await addModuleTotalLike(user?.user_data?.uid ,book.id, vote);
     setLoadingLikeDislike(false);
   };
 
@@ -158,7 +161,10 @@ const BookCard: React.FC<BookCardProps> = ({
 
   return (
     <>
-      <article className="shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
+      <article className="relative shadow-md rounded-lg bg-white p-3 flex flex-col justify-between border border-[#00c193]">
+        <Sticker
+          text={book.sticker}
+        />
         {/* Book Cover */}
         <img
           src={book.img}

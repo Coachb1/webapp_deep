@@ -77,7 +77,23 @@ const AllowedImgDomains = [
 
 module.exports = {
   images: {
-    domains: ["cdn.coachbots.com"],
+    domains: [
+        "res.cloudinary.com",
+        "cdn.coachbots.com", // ✅ ADD THIS
+        "storage.googleapis.com"
+      ],
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "storage.googleapis.com",
+          pathname: "/**",
+        },
+        {
+          protocol: "https",
+          hostname: "cdn.coachbots.com",
+          pathname: "/**",
+        },
+      ],
   },
   async headers() {
     return [

@@ -56,7 +56,7 @@ export default async function Page({ params, searchParams }: BookPageProps) {
     return (
       <UserProvider LoginView={loginView}>
         <UserInfoGate autoLoginEmail={autoLoginEmail} LoginView={loginView}>
-          <BookPageClient id={params.id} onlyClientSetup={onlyClientSetup} />
+          <BookPageClient id={params.id} onlyClientSetup={onlyClientSetup} userLogin={false} />
         </UserInfoGate>
       </UserProvider>
     );

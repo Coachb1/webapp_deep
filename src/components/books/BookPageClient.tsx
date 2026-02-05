@@ -32,9 +32,10 @@ const DefaultFeatureBox = [
 interface BookPageClientProps {
   id: string;
   onlyClientSetup?: boolean;
+  userLogin?: boolean;
 }
 
-export default function BookPageClient({ id, onlyClientSetup=false }: BookPageClientProps) {
+export default function BookPageClient({ id, onlyClientSetup=false, userLogin=true }: BookPageClientProps) {
   const { user, userInfo, loading } = usePortalUser();
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
@@ -57,6 +58,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
   const [actionKey, setActionKey] = useState<string | null>(null);
   const [featureBox, setFeatureBox] = useState<string[]>(DefaultFeatureBox);
   const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig | null>();
+  const [actionType, setActionType] = useState<string | null>(null);
+
 
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
@@ -138,6 +141,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     });
 
     setFilteredBooks(filtered);
+    setCurrentSlide(0);
+
   };
 
   // it will get 'tag', 'list_name', 'business_outcome', 'implementation_complexity', 'unexpected_outcomes', and 'emerging_players' from the book object
@@ -190,6 +195,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     // Update state
     console.info('filter', filtered)
     setFilteredBooks(filtered);
+    setCurrentSlide(0);
+
   };
 
 
@@ -209,13 +216,14 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     const filtered = allBooks.filter((book) => {
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
-      return filters.some(
-        (f) => listName === f || tags.some((tag) => tag === f)
-      );
-    });
-
-    setFilteredBooks(filtered);
-  };
+            return filters.some(
+              (f) => listName === f || tags.some((tag) => tag === f)
+            );
+          });
+      
+          setFilteredBooks(filtered);
+          setCurrentSlide(0);
+        };
 
   const handlePlayBook = (book: Book, index: number) => {
     setCurrentBook(book);
@@ -252,6 +260,8 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
     setShowDescription(false);
     setSelectedBook(null);
   };
+  console.debug("de", actionKey, actionType)
+
 
   return (
     <div
@@ -262,7 +272,23 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
       }}
     >
       <main id="top">
-        <Header packageCourseId={id} jobaidId={jobAidId} onlyClientSetup={onlyClientSetup} clientLogoUrl={userInfo?.clientLogoUrl}/>
+        <Header packageCourseId={id} 
+        jobaidId={jobAidId} 
+        onlyClientSetup={onlyClientSetup} 
+        clientLogoUrl={userInfo?.clientLogoUrl}
+        onAction={(value, type) => {
+            setActionKey(value);
+            setActionType(type?.trim() || null);
+
+            setTimeout(() => {
+              document
+                .getElementById("action-section")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 120);
+            track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
+          }}
+        
+        />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} featureBox={featureBox} />
 
         {(loading || LibraryLoading) &&  (
@@ -283,8 +309,9 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
 
         <ActionDashboard
           selectedAction={actionKey}
-          onAction={(value) => {
+          onAction={(value, type) => {
             setActionKey(value);
+            setActionType(type?.trim() || null);
 
             setTimeout(() => {
               document
@@ -308,6 +335,25 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
                 : "overflow-hidden max-h-0"}
             `}
           >
+
+            
+
+          {actionType ? (
+            <>
+            {actionType === 'jobaid' && 
+              <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+                <ConversationalForm
+                  job_aid_id={actionKey!}
+                  isEmailSection={userLogin}
+                  inputEmail={user?.user_data?.email || "undefined@gmail.com"}
+                  inputName={user?.user_data?.name || "User"}
+                  clientId={userInfo?.clientId}
+                />
+              </div>
+            }
+            </>
+          ): (
+          <>
           {actionKey?.includes("CONCEPTS") && (
             <ConceptsViewer actionKey={actionKey!} />
           )}
@@ -355,14 +401,18 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
             <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
               <ConversationalForm
                 job_aid_id={jobAidId}
-                isEmailSection={onlyClientSetup}
+                isEmailSection={userLogin}
                 inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                 inputName={user?.user_data?.name || "User"}
                 clientId={userInfo?.clientId}
               />
             </div>
           )}
+        </>
+          )}
+
         </div>
+        
 
       </main>
 
@@ -370,7 +420,7 @@ export default function BookPageClient({ id, onlyClientSetup=false }: BookPageCl
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm sm:text-base leading-relaxed">
             {/* © {new Date().getFullYear()}{" "} */}
-            © 2026 <span className="font-semibold">AIAdopTs</span> previously<span className="font-semibold"> CoachBoT</span>. All rights reserved.
+            © 2026 <span className="font-semibold">AIAdopTs</span>. All rights reserved.
           </p>
           <p className="text-xs sm:text-sm mt-2 max-w-2xl mx-auto">
             Frameworks Licenses from respective owners. Cases curated through independent research, verification, and third-party data sources.
