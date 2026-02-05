@@ -57,6 +57,10 @@
   @apply text-xs px-3 py-1;
 }
 
+.custom-btn:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
 
 /* Medium button (default) */
 .btn-md {

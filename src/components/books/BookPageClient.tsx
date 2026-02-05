@@ -141,6 +141,8 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
     });
 
     setFilteredBooks(filtered);
+    setCurrentSlide(0);
+
   };
 
   // it will get 'tag', 'list_name', 'business_outcome', 'implementation_complexity', 'unexpected_outcomes', and 'emerging_players' from the book object
@@ -193,6 +195,8 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
     // Update state
     console.info('filter', filtered)
     setFilteredBooks(filtered);
+    setCurrentSlide(0);
+
   };
 
 
@@ -212,13 +216,14 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
     const filtered = allBooks.filter((book) => {
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
-      return filters.some(
-        (f) => listName === f || tags.some((tag) => tag === f)
-      );
-    });
-
-    setFilteredBooks(filtered);
-  };
+            return filters.some(
+              (f) => listName === f || tags.some((tag) => tag === f)
+            );
+          });
+      
+          setFilteredBooks(filtered);
+          setCurrentSlide(0);
+        };
 
   const handlePlayBook = (book: Book, index: number) => {
     setCurrentBook(book);

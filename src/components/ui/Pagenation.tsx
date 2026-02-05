@@ -60,7 +60,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Next Button */}
       <button
-        disabled={currentSlide === totalSlides - 1}
+        disabled={currentSlide >= totalSlides - 1}
         onClick={() => onPageChange(currentSlide + 1)}
         className={`custom-btn btn-sm`}
       >
