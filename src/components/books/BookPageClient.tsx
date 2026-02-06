@@ -344,7 +344,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
               <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
                 <ConversationalForm
                   job_aid_id={actionKey!}
-                  isEmailSection={userLogin}
+                  isEmailSection={!userLogin}
                   inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                   inputName={user?.user_data?.name || "User"}
                   clientId={userInfo?.clientId}
@@ -401,7 +401,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
             <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
               <ConversationalForm
                 job_aid_id={jobAidId}
-                isEmailSection={userLogin}
+                isEmailSection={!userLogin}
                 inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                 inputName={user?.user_data?.name || "User"}
                 clientId={userInfo?.clientId}
