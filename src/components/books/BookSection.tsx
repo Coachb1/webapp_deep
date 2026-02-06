@@ -158,7 +158,7 @@ const BookSection: React.FC<BookSectionProps> = ({
         <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg mt-10">
           <ConversationalForm
             job_aid_id={promptJobAidId}
-            isEmailSection={userLogin}
+            isEmailSection={!userLogin}
             inputEmail={email || "undefined@gmail.com"}
             inputName={name || "User"}
           />
