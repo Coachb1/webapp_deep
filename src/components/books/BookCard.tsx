@@ -8,6 +8,7 @@ import { addModuleLater, addModuleLike, addModuleTotalLike, getModuleCompletion,
 import { usePortalUser } from "./context/UserContext";
 import ThumbVoteButton from "./ui/LIkeDislikeButtons";
 import { Sticker } from "./sticker";
+import IframeViewer from "./IframeViewer";
 
 interface BookCardProps {
   book: Book;
@@ -325,12 +326,7 @@ const BookCard: React.FC<BookCardProps> = ({
             </div>
 
             <div className="flex-1 overflow-hidden">
-              <iframe
-                src={book.report}
-                className="w-full h-full border-0"
-                title={`Read ${book.title}`}
-                allow="fullscreen"
-              />
+              <IframeViewer url={book.report!} title={book.title} />
             </div>
           </div>
         </div>
