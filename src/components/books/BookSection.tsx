@@ -168,7 +168,11 @@ const BookSection: React.FC<BookSectionProps> = ({
 
         <h1 className="
                   custom-title leading-snug max-w-6xl mx-auto">
-          Transformation Case Library powered by CoachBoT Innovation — now evolved into AIAdopts, built for scale, metadata discovery, and enterprise-wide AI readiness.
+          {packageDetails?.report_config?.heading?.trim() ? (
+            packageDetails?.report_config?.heading
+          ) : (
+          "Transformation Case Library powered by CoachBoT Innovation — now evolved into AIAdopts, built for scale, metadata discovery, and enterprise-wide AI readiness."
+          )}
         </h1>
 
         {/* Divider */}
