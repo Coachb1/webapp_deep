@@ -75,11 +75,11 @@ const BookDescription = ({
         >
           {/* Header */}
           <div className="flex items-center justify-end gap-3 mb-3 p-4">
-            {clientName && (
+            {/* {clientName && (
               <span className="text-xl font-bold text-green-600">
                 {clientName.replaceAll("-", " ")}
               </span>
-            )}
+            )} */}
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-red-500 transition"
@@ -114,20 +114,23 @@ const BookDescription = ({
                     {book.tag.join(", ")}
                   </p>
                 </div>
-
-                <span className="font-semibold">Transform IQ Overview</span>
-                <div
-                  className="border border-gray-300 rounded-lg p-3 bg-gray-50 
+                {activeIQ.overview && (
+                  <>
+                    <span className="font-semibold">Transform IQ Overview</span>
+                    <div
+                      className="border border-gray-300 rounded-lg p-3 bg-gray-50 
                               text-sm sm:text-base text-gray-700 leading-relaxed mb-4
                               h-40 overflow-y-auto white-space: pre-line"
-                >
-                  <AdvMarkdownHandler content={activeIQ.overview} />
-                </div>
+                    >
+                      <AdvMarkdownHandler content={activeIQ.overview} />
+                    </div>
+                  </>
+                )}
 
                 {/* Roles */}
                 {roles.length > 0 && (
                   <div className="flex flex-col">
-                    <span className="font-semibold">Transform IQ Roles</span>
+                    {activeIQ.overview && <span className="font-semibold">Transform IQ Roles</span>}
 
                     {/* Tabs */}
                     <div className="flex gap-2 border-b border-gray-300 mt-2">
