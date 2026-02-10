@@ -73,6 +73,16 @@
   @apply text-base px-5 py-2;
 }
 
+.actiondashboard-btn-active {
+  border: 1px solid #00c193;
+  box-shadow:
+    0 0 0 2px rgba(0, 193, 147, 0.25),
+    0 6px 14px rgba(0, 193, 147, 0.35);
+  transform: scale(1.03);
+  font-weight: 600;
+}
+
+
 .page-btn-active {
   background-color: #00c193 !important;
   color: #ffffff !important;
