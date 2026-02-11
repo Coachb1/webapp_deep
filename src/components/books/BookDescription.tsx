@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import { Book } from "@/lib/types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AdvMarkdownHandler from "../MarkdownAdvance";
 
 interface BookDescriptionProps {
@@ -43,6 +43,12 @@ const BookDescription = ({
   );
 
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const roleContentRef = useRef<HTMLDivElement | null>(null);
+  const scrollPositions = useRef<Record<string, number>>({});
+
+  const hasOverview = !!activeIQ?.overview;
+  const hasRoles = roles.length > 0;
+  const showBoth = hasOverview && hasRoles;
 
   /* -----------------------------------------
    Auto-select first role
@@ -54,6 +60,14 @@ const BookDescription = ({
       setSelectedRole(null);
     }
   }, [roles]);
+
+  useEffect(() => {
+  if (selectedRole && roleContentRef.current) {
+    roleContentRef.current.scrollTop =
+      scrollPositions.current[selectedRole] || 0;
+  }
+}, [selectedRole]);
+
 
   /* -----------------------------------------
    TRANSFORM IQ VIEW
@@ -120,9 +134,15 @@ const BookDescription = ({
                   <>
                     <span className="font-semibold">Transform IQ Overview</span>
                     <div
-                      className="border border-gray-300 rounded-lg p-3 bg-gray-50 
+                      className={`border border-gray-300 rounded-lg p-3 bg-gray-50 
                               text-sm sm:text-base text-gray-700 leading-relaxed mb-4
-                              h-40 overflow-y-auto white-space: pre-line"
+                              overflow-y-auto white-space: pre-line
+                              ${
+                                showBoth
+                                  ? "min-h-[140px] max-h-[240px]"
+                                  : "min-h-[180px] max-h-[340px]"
+                              }
+                              `}
                     >
                       <AdvMarkdownHandler content={activeIQ.overview} />
                     </div>
@@ -141,7 +161,13 @@ const BookDescription = ({
                       {roles.map((role) => (
                         <button
                           key={role}
-                          onClick={() => setSelectedRole(role)}
+                          onClick={() => {
+                            if (selectedRole && roleContentRef.current) {
+                              scrollPositions.current[selectedRole] =
+                                roleContentRef.current.scrollTop;
+                            }
+                            setSelectedRole(role);
+                          }}
                           className={`px-4 py-2 text-sm rounded-t-lg border border-gray-300 border-b-0 transition
                             ${
                               selectedRole === role
@@ -155,7 +181,19 @@ const BookDescription = ({
                     </div>
 
                     {/* Role Content */}
-                    <div className="border border-gray-200 rounded-b-lg p-4 bg-gray-50 text-gray-700 leading-relaxed h-40 overflow-y-auto">
+                    <div
+                      key={selectedRole}
+                      ref={roleContentRef}
+                      className={`border border-gray-200 
+                    rounded-b-lg p-4 bg-gray-50 text-gray-700 leading-relaxed
+                     overflow-y-auto
+                     ${
+                       showBoth
+                         ? "min-h-[140px] max-h-[240px]"
+                         : "min-h-[180px] max-h-[340px]"
+                     }
+                     `}
+                    >
                       {selectedRole ? (
                         <AdvMarkdownHandler
                           content={activeIQ.roles[selectedRole]}
