@@ -5,6 +5,7 @@ import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock } from "@/lib/types";
 import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
 import { Sticker } from "./sticker";
+import IframeViewer from "./IframeViewer";
 
 const LIMIT = 10; // show first 10 items
 
@@ -313,12 +314,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
             {/* Body (Iframe) */}
             <div className="flex-1 overflow-hidden">
-              <iframe
-                src={links[pageIndex]}
-                className="w-full h-full border-0"
-                title={selectedTab.tab_name}
-                allow="fullscreen"
-              />
+              <IframeViewer url={links[pageIndex]} title={selectedTab.tab_name} />
             </div>
           </div>
         </div>

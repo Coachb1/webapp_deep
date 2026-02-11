@@ -158,7 +158,7 @@ const BookSection: React.FC<BookSectionProps> = ({
         <div className="flex justify-center items-center bg-gray-100 p-6 mb-6 rounded-lg mt-10">
           <ConversationalForm
             job_aid_id={promptJobAidId}
-            isEmailSection={userLogin}
+            isEmailSection={!userLogin}
             inputEmail={email || "undefined@gmail.com"}
             inputName={name || "User"}
           />
@@ -168,7 +168,11 @@ const BookSection: React.FC<BookSectionProps> = ({
 
         <h1 className="
                   custom-title leading-snug max-w-6xl mx-auto">
-          Transformation Case Library powered by CoachBoT Innovation — now evolved into AIAdopts, built for scale, metadata discovery, and enterprise-wide AI readiness.
+          {packageDetails?.report_config?.heading?.trim() ? (
+            packageDetails?.report_config?.heading
+          ) : (
+          "Transformation Case Library powered by CoachBoT Innovation — now evolved into AIAdopts, built for scale, metadata discovery, and enterprise-wide AI readiness."
+          )}
         </h1>
 
         {/* Divider */}

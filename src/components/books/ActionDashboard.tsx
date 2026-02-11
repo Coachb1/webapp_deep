@@ -14,7 +14,7 @@ import { DashboardSkeletonCard } from "./Loaders";
 /* -------------------- TYPES -------------------- */
 
 interface ActionDashboardProps {
-  onAction?: (action: string, type?:string) => void;
+  onAction?: (action: string, type?: string) => void;
   selectedAction?: string | null;
 }
 
@@ -149,16 +149,17 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
         <>
           <h2 className="custom-title text-center mb-4">
             {announcementSection.heading.text}{" "}
-            {announcementSection.heading.link && announcementSection.heading.link_text && (
-              <a
-                href={announcementSection.heading.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
-              >
-                {announcementSection.heading.link_text}
-              </a>
-            )}
+            {announcementSection.heading.link &&
+              announcementSection.heading.link_text && (
+                <a
+                  href={announcementSection.heading.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#00c193] hover:text-[#00c193]/80 underline font-semibold"
+                >
+                  {announcementSection.heading.link_text}
+                </a>
+              )}
             {announcementSection.heading.append_text && (
               <> {announcementSection.heading.append_text}</>
             )}
@@ -213,22 +214,23 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
                 w-[200px]
                 flex-shrink-0 
                 transition-all duration-300
-
+                ease-out
                 ${
                   isActive
                     ? `
-                    bg-white
-                    border border-[#00c193]
-                    shadow-[0_6px_16px_rgba(0,193,147,0.28)]
-                    scale-[1.05]
-                  `
+                      bg-[#f6fffc]
+                      border-2 border-[#00c193]
+                      shadow-[0_0_0_4px_rgba(0,193,147,0.22),0_14px_32px_rgba(0,193,147,0.45)]
+                      scale-[1.06]
+                      ring-1 ring-[#00c193]/40
+                    `
                     : `
-                    bg-white
-                    border border-[#00c193]
-                    shadow-[0_2px_6px_rgba(0,0,0,0.08)]
-                    hover:shadow-[0_8px_22px_rgba(0,193,147,0.30)]
-                    hover:scale-[1.02]
-                  `
+                      bg-white
+                      border border-[#00c193]
+                      shadow-[0_2px_6px_rgba(0,0,0,0.08)]
+                      hover:shadow-[0_8px_22px_rgba(0,193,147,0.30)]
+                      hover:scale-[1.02]
+                    `
                 }
 
 
@@ -276,9 +278,16 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
                   <button
                     key={index}
                     onClick={() => {
-                      btn.action && onAction?.(btn.action, btn.type)
+                      btn.action && onAction?.(btn.action, btn.type);
                     }}
-                    className={`custom-btn btn-sm`}
+                    className={`
+    custom-btn btn-sm
+    transition-all duration-200 ease-out
+    ${
+      btn.action === selectedAction
+        && `
+        actiondashboard-btn-active
+  `}`}
                   >
                     {btn.label}
                   </button>
