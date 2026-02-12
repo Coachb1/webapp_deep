@@ -407,12 +407,20 @@ export interface CollectionBlock {
   sticker?:string;
 }
 
+export interface IframeTablePanel {
+  iframe_link?: string;
+  iframe_title?: string;
+  iframe_subtitle?: string;
+  enable?: boolean;
+}
+
 export interface ActionButton {
   collection_name?: string;
   label: string;
   action?: string;
   heading?: string;
-  type?:string
+  type?:string;
+  iframe_table_panel?: IframeTablePanel[];
 }
 
 export interface DashboardItem {
@@ -422,6 +430,10 @@ export interface DashboardItem {
   icon: React.ReactNode;
   buttons: ActionButton[];
   type?: string;
+  iframe_config?: {
+    show_iframe_panel?: boolean;
+    use_default_iframe?: boolean;
+  }
 }
 
 export interface AnnouncementSection {

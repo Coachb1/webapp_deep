@@ -44,7 +44,9 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const accessToken = localStorage.getItem("access_token");
+        const fullPath = window.location.href;
+        const accessToken = localStorage.getItem(`${fullPath}-email_password`);
+    
 
         if (!accessToken) {
           setChecking(false);
@@ -89,7 +91,8 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
 
     
     // Save tokens
-    localStorage.setItem("access_token", data.access);
+
+    localStorage.setItem(window.location.href + '-' + 'email_password', data.access)
     localStorage.setItem("refresh_token", data.refresh);
 
     // Set user in context
