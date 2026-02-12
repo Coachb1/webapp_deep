@@ -1,8 +1,5 @@
-import { UserProvider } from "@/components/books/context/UserContext";
 import AiPulseReport from "@/components/books/AiPulseReport/AiPulseReport";
-import UserInfoGate from "@/components/books/Userinfogate";
 import { constructMetadata } from "@/lib/utils";
-import UserInfoWall from "@/components/books/UserLoginWall";
 
 
 export const metadata = constructMetadata({
