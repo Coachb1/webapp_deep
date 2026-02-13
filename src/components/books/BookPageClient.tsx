@@ -338,9 +338,8 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
 
             
 
-          {actionType ? (
+          {actionType === 'jobaid'? (
             <>
-            {actionType === 'jobaid' && 
               <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
                 <ConversationalForm
                   job_aid_id={actionKey!}
@@ -350,7 +349,6 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                   clientId={userInfo?.clientId}
                 />
               </div>
-            }
             </>
           ): (
           <>
