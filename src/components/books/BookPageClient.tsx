@@ -19,16 +19,17 @@ import CompanyIQ from "../company-iq/companyiq";
 import { IdeaBoardReport } from "./leaderboard/ideaboardReport";
 import ConversationalForm from "../job-aid/ConversationalForm";
 import ElfsightContactFormWidget from "../ContactForm";
+import React from "react";
 
 
 const DefaultFeatureBox = [
-                "AI Literacy ⬆️",
-                "Digital Tools Adoption ⬆️",
-                "Workflows Augmented ⬆️",
-                "Decision Readiness ⬆️",
-                "Project Pipeline ⬆️",
-                "Org Productivity ⬆️",
-              ];
+  "AI Literacy ⬆️",
+  "Digital Tools Adoption ⬆️",
+  "Workflows Augmented ⬆️",
+  "Decision Readiness ⬆️",
+  "Project Pipeline ⬆️",
+  "Org Productivity ⬆️",
+];
 interface BookPageClientProps {
   id: string;
   onlyClientSetup?: boolean;
@@ -59,6 +60,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   const [featureBox, setFeatureBox] = useState<string[]>(DefaultFeatureBox);
   const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig | null>();
   const [actionType, setActionType] = useState<string | null>(null);
+  const [iframeLoadingMap, setIframeLoadingMap] = useState<Record<string, boolean>>({});
 
 
   useEffect(() => {
@@ -216,14 +218,14 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
     const filtered = allBooks.filter((book) => {
       const listName = book.list_name?.toLowerCase() || "";
       const tags = book.tag?.map((t) => t.toLowerCase()) || [];
-            return filters.some(
-              (f) => listName === f || tags.some((tag) => tag === f)
-            );
-          });
-      
-          setFilteredBooks(filtered);
-          setCurrentSlide(0);
-        };
+      return filters.some(
+        (f) => listName === f || tags.some((tag) => tag === f)
+      );
+    });
+
+    setFilteredBooks(filtered);
+    setCurrentSlide(0);
+  };
 
   const handlePlayBook = (book: Book, index: number) => {
     setCurrentBook(book);
@@ -263,6 +265,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   console.debug("de", actionKey, actionType)
 
 
+
   return (
     <div
       className="main_font_family"
@@ -272,11 +275,11 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
       }}
     >
       <main id="top">
-        <Header packageCourseId={id} 
-        jobaidId={jobAidId} 
-        onlyClientSetup={onlyClientSetup} 
-        clientLogoUrl={userInfo?.clientLogoUrl}
-        onAction={(value, type) => {
+        <Header packageCourseId={id}
+          jobaidId={jobAidId}
+          onlyClientSetup={onlyClientSetup}
+          clientLogoUrl={userInfo?.clientLogoUrl}
+          onAction={(value, type) => {
             setActionKey(value);
             setActionType(type?.trim() || null);
 
@@ -287,7 +290,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
             }, 120);
             track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
           }}
-        
+
         />
         <Hero title={title} subTitle={subTitle} imageLink={heroImageLink} featureBox={featureBox} />
 
@@ -334,9 +337,9 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                 ? "overflow-hidden max-h-[3000px]"
                 : "overflow-hidden max-h-0"}
             `}
-          >
+        >
 
-            
+
 
           {actionType === 'jobaid'? (
             <>
@@ -351,66 +354,68 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
               </div>
             </>
           ): (
-          <>
-          {actionKey?.includes("CONCEPTS") && (
-            <ConceptsViewer actionKey={actionKey!} />
-          )}
-
-          {actionKey === "AI_LANDSCAPE" && <CompanyIQ />}
-
-          {actionKey === "SHOW_AI_CASES" && (
             <>
-              {LibraryLoading || loading ? (
-                <LibraryPageLoader />
-              ) : (
-                <BookSection
-                  books={filteredBooks}
-                  currentSlide={currentSlide}
-                  onSlideChange={setCurrentSlide}
-                  onSearch={handleSearch}
-                  onMultipleSearch={handleMultipleSearch}
-                  onFilterChange={handleFilterChange}
-                  onPlayBook={handlePlayBook}
-                  onOpenDescription={handleOpenDescription}
-                  setFilteredBooks={setFilteredBooks}
-                  setCurrentSlide={setCurrentSlide}
-                  name={user?.user_data?.name}
-                  email={user?.user_data?.email}
-                  all_books={allBooks}
-                  jobAidId={jobAidId}
-                  promptJobAidId={packageDetails?.prompt_job_aid_uid}
-                  packageDetails={packageDetails}
-                  onlyClientSetup={onlyClientSetup}
-                  cardButtonConfig={cardButtonConfig}
+              {actionKey?.includes("CONCEPTS") && (
+                <ConceptsViewer actionKey={actionKey!} />
+              )}
+
+              {actionKey === "AI_LANDSCAPE" && <CompanyIQ />}
+
+              {actionKey === "SHOW_AI_CASES" && (
+                <>
+                  {LibraryLoading || loading ? (
+                    <LibraryPageLoader />
+                  ) : (
+                    <BookSection
+                      books={filteredBooks}
+                      currentSlide={currentSlide}
+                      onSlideChange={setCurrentSlide}
+                      onSearch={handleSearch}
+                      onMultipleSearch={handleMultipleSearch}
+                      onFilterChange={handleFilterChange}
+                      onPlayBook={handlePlayBook}
+                      onOpenDescription={handleOpenDescription}
+                      setFilteredBooks={setFilteredBooks}
+                      setCurrentSlide={setCurrentSlide}
+                      name={user?.user_data?.name}
+                      email={user?.user_data?.email}
+                      all_books={allBooks}
+                      jobAidId={jobAidId}
+                      promptJobAidId={packageDetails?.prompt_job_aid_uid}
+                      packageDetails={packageDetails}
+                      onlyClientSetup={onlyClientSetup}
+                      cardButtonConfig={cardButtonConfig}
+                    />
+                  )}
+                </>
+              )}
+
+              {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_ALIGN" && (
+                <IdeaBoardReport
+                  jobaid={jobAidId}
+                  userEmail={user?.user_data?.email}
+                  onlyclientsetup={onlyClientSetup}
                 />
+              )}
+
+              {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
+                <>
+                  <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+                    <ConversationalForm
+                      job_aid_id={jobAidId}
+                      isEmailSection={!userLogin}
+                      inputEmail={user?.user_data?.email || "undefined@gmail.com"}
+                      inputName={user?.user_data?.name || "User"}
+                      clientId={userInfo?.clientId}
+                    />
+                  </div>
+                  <ConceptsViewer actionKey={actionKey} />
+                </>
               )}
             </>
           )}
 
-          {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_ALIGN" && (
-            <IdeaBoardReport
-              jobaid={jobAidId}
-              userEmail={user?.user_data?.email}
-              onlyclientsetup={onlyClientSetup}
-            />
-          )}
-
-          {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
-            <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-              <ConversationalForm
-                job_aid_id={jobAidId}
-                isEmailSection={!userLogin}
-                inputEmail={user?.user_data?.email || "undefined@gmail.com"}
-                inputName={user?.user_data?.name || "User"}
-                clientId={userInfo?.clientId}
-              />
-            </div>
-          )}
-        </>
-          )}
-
         </div>
-        
 
       </main>
 
@@ -451,7 +456,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
           up={showAudioPlayer}
         />
       )}
-        <ElfsightContactFormWidget up={showAudioPlayer} />
+      <ElfsightContactFormWidget up={showAudioPlayer} />
     </div>
   );
 }
