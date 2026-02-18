@@ -9,14 +9,22 @@ import IframeViewer from "./IframeViewer";
 
 const LIMIT = 10; // show first 10 items
 
-const matchesAction = (block: CollectionBlock, actionKey?: string | null) => {
-  return (
-    !actionKey ||
-    block.case_items?.some((caseItem) => {
-      return caseItem.action_name === actionKey;
-    })
+const matchesAction = (block: any, actionKey?: string | null) => {
+  if (!actionKey) return true;
+
+  // ✅ Check case_items
+  const caseMatch = block.case_items?.some(
+    (caseItem: any) => caseItem.action_name === actionKey
   );
+
+  // ✅ Check buttons
+  const buttonMatch = block.action_tab_info?.buttons?.some(
+    (btn: any) => btn.action === actionKey
+  );
+
+  return caseMatch || buttonMatch;
 };
+
 interface ConceptsViewerProps {
   actionKey?: string | null;
 }

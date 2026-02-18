@@ -264,52 +264,6 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   };
   console.debug("de", actionKey, actionType)
 
-  const iframePanels = React.useMemo(() => {
-    if (!userInfo?.collections || !actionKey) return [];
-
-    const panels: any[] = [];
-
-    userInfo.collections.forEach((block: any) => {
-
-      // 🔥 IMPORTANT: Only process matching action collection
-      const matchedButton = block.action_tab_info?.buttons?.find(
-        (btn: any) => btn.action === actionKey
-      );
-
-      if (!matchedButton) return; // 🚀 skip other collections completely
-
-      const iframeConfig = block.action_tab_info?.iframe_config || {
-        show_iframe_panel: true,
-        use_default_iframe: true,
-      };
-
-      if (iframeConfig?.show_iframe_panel === false) return;
-
-      // ✅ Priority 1: iframe_table_panel from matched button
-      if (matchedButton?.iframe_table_panel?.length) {
-        panels.push(
-          ...matchedButton.iframe_table_panel.filter(
-            (p: any) => p.iframe_link && p.enable !== false
-          )
-        );
-        return; // 🚀 stop here (important!)
-      }
-
-      // ✅ Priority 2: default iframe from THIS block only
-      if (
-        block.iframe_link &&
-        iframeConfig?.use_default_iframe !== false
-      ) {
-        panels.push({
-          iframe_link: block.iframe_link,
-          iframe_title: block.iframe_title,
-          iframe_subtitle: block.iframe_subtitle,
-        });
-      }
-    });
-
-    return panels;
-  }, [userInfo, actionKey]);
 
 
   return (
@@ -445,75 +399,23 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
               )}
 
               {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
-                <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
-                  <ConversationalForm
-                    job_aid_id={jobAidId}
-                    isEmailSection={!userLogin}
-                    inputEmail={user?.user_data?.email || "undefined@gmail.com"}
-                    inputName={user?.user_data?.name || "User"}
-                    clientId={userInfo?.clientId}
-                  />
-                </div>
+                <>
+                  <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
+                    <ConversationalForm
+                      job_aid_id={jobAidId}
+                      isEmailSection={!userLogin}
+                      inputEmail={user?.user_data?.email || "undefined@gmail.com"}
+                      inputName={user?.user_data?.name || "User"}
+                      clientId={userInfo?.clientId}
+                    />
+                  </div>
+                  <ConceptsViewer actionKey={actionKey} />
+                </>
               )}
             </>
           )}
 
         </div>
-
-        {/* ===== IFRAME SECTION ===== */}
-        {(actionType === "jobaid" || actionType === "normal") &&
-          iframePanels.length > 0 && (
-            <div className="w-full flex justify-center py-16 bg-white">
-              <div className="bg-white border border-[#00c193] rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
-
-                {iframePanels.map((panel: any, index: number) => (
-                  <div key={index} className="mb-10 last:mb-0">
-
-                    {/* Title */}
-                    <div className="text-center mb-6">
-                      <h2 className="custom-title">
-                        {panel.iframe_title || "Enterprise AI Literacy Training"}
-                      </h2>
-
-                      {panel.iframe_subtitle && (
-                        <p className="custom-subtitle mt-1">
-                          {panel.iframe_subtitle}
-                        </p>
-                      )}
-
-                      <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
-                    </div>
-
-                    {/* Iframe */}
-                    <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 min-h-[533px]">
-
-                      {iframeLoadingMap[panel.iframe_link] && (
-                        <div className="absolute inset-0 z-10 bg-white p-6">
-                          <div className="w-full h-full flex items-center justify-center">
-                            <div className="w-10 h-10 border-4 border-[#00c193] border-t-transparent rounded-full animate-spin" />
-                          </div>
-                        </div>
-                      )}
-
-                      <iframe
-                        className="w-full h-[533px]"
-                        src={panel.iframe_link}
-                        frameBorder="0"
-                        title={panel.iframe_title || `iframe-${index}`}
-                        onLoad={() =>
-                          setIframeLoadingMap((prev) => ({
-                            ...prev,
-                            [panel.iframe_link]: false,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
-                ))}
-
-              </div>
-            </div>
-          )}
 
       </main>
 
