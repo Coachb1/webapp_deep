@@ -27,9 +27,10 @@ const matchesAction = (block: any, actionKey?: string | null) => {
 
 interface ConceptsViewerProps {
   actionKey?: string | null;
+  actionType?: string | null;
 }
 
-const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
+const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType }) => {
   const [pageMap, setPageMap] = useState<Record<string, number>>({});
   const { userInfo, loading } = usePortalUser();
   const [data, setData] = useState<CollectionBlock[] | null>(null);
@@ -203,6 +204,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
               )}
 
               {/* Collection Block */}
+              {actionType !== "iframe" && (
               <div className="w-full flex justify-center mt-10 px-4">
                 <div
                   className="
@@ -281,6 +283,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                   </div>
                 </div>
               </div>
+              )}
             </React.Fragment>
           );
         })}

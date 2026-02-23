@@ -51,7 +51,7 @@ const resolveValidButtons = (col: CollectionBlock): ActionButton[] => {
   if (!buttons?.length) return [];
 
   // ✅ SYSTEM type: return all buttons, ignore case_items completely
-  if (type === "system") {
+  if (type === "system" || type === "both") {
     return buttons;
   }
 
