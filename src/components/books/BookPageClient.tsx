@@ -339,9 +339,12 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
             `}
         >
 
+          { actionType == 'iframe' && (
+            // to show only panels
+              <ConceptsViewer actionKey={actionKey} actionType={actionType} />
+          )}
 
-
-          {actionType === 'jobaid'? (
+          {actionType === 'jobaid' && (
             <>
               <div className="flex justify-center items-center bg-gray-100 p-6 rounded-lg">
                 <ConversationalForm
@@ -353,10 +356,12 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                 />
               </div>
             </>
-          ): (
+          )} 
+          
+          {actionType !== "iframe" && actionType !== "jobaid" &&(
             <>
               {actionKey?.includes("CONCEPTS") && (
-                <ConceptsViewer actionKey={actionKey!} />
+                <ConceptsViewer actionKey={actionKey!} actionType={actionType} />
               )}
 
               {actionKey === "AI_LANDSCAPE" && <CompanyIQ />}
@@ -409,12 +414,12 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                       clientId={userInfo?.clientId}
                     />
                   </div>
-                  <ConceptsViewer actionKey={actionKey} />
+                  <ConceptsViewer actionKey={actionKey} actionType={actionType} />
                 </>
               )}
             </>
           )}
-
+          
         </div>
 
       </main>
