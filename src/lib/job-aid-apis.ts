@@ -7,7 +7,7 @@ export interface Question {
   id: number;
   uid: string; // Unique identifier for the question
   question: string;
-  question_type: "text" | "dropdown" | "boolean";
+  question_type: "text" | "dropdown" | "boolean" | "editable";
   description: string;
   dropdowns?: string; // CSV string, e.g. "People, Tools, Budget"
   section?: string; // Optional section for grouping questions
@@ -195,3 +195,27 @@ export const getMockQuestions = (): Question[] => [
       "Define specific metrics and KPIs to track your progress and success.",
   },
 ];
+
+
+export const updateJobaidSessionQna = async (sessionId: string, updateQna: Record<string, string>) =>{
+  try {
+    const response = await fetch(`${API_BASE_URL}/job-aid/${sessionId}/update-session/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({qna: updateQna}),
+    });
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+  
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error updating jobaid session QNA:', error);
+    throw error;
+  
+  }
+}
