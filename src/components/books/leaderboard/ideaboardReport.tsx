@@ -18,6 +18,7 @@ export interface RowData {
   full_name: string;
   email: string;
   qna: Record<string, string>;
+  odered_qna?: Record<string, Record<string, string>>;
   likes: number;
   liked: boolean;
   keyOrder: string[];
@@ -181,9 +182,16 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({ jobaid, userEmai
           acc[q.question] = q.answer;
           return acc;
         }, {}) || {},
+      odered_qna: item.ordered_qna?.reduce((acc: Record<string, string>, q: any) => {
+          acc[q.question] = q;
+          return acc;
+        }, {}) || {},
       // Ordered question keys for display
-      keyOrder: item.ordered_qna?.map((q: any) => q.question) || [],
-      // Other fields
+      keyOrder:
+        item.ordered_qna
+          ?.filter((q: any) => q?.question)
+          ?.sort((a: any, b: any) => (a.question_id ?? 0) - (b.question_id ?? 0))
+          ?.map((q: any) => q.question) ?? [],      // Other fields
       risks: item.generated_report_data?.["2_behavioral_map"]?.["1_fear_or_risk"] || "-",
       likes: item.like_count ?? 0,
       liked: item.liked_by ? item.liked_by.includes(userEmail) : false,
@@ -438,6 +446,25 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
               sortBy={sortBy}
               sortDir={sortDir}
               toggleSortVotes={toggleSortVotes}
+              onQnaUpdated={(rowId, question, answer) => {
+                setRows(prev =>
+                  prev.map(r => {
+                    if (r.id !== rowId) return r;
+
+                    return {
+                      ...r,
+                      qna: {
+                        ...r.qna,
+                        [question]: answer.answer,
+                      },
+                      odered_qna: {
+                        ...r.odered_qna,
+                        [question]: answer,
+                      }
+                    };
+                  })
+                );
+              }}
             />
 
             <IdeaBoardPagination

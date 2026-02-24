@@ -71,7 +71,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             ...q,
             id: String(q.id),
           })
-        );
+        ).filter((question: Question) => question.question_type !== 'editable');
         setQuestions(normalizedQuestions);
         console.log("validatioan", data?.is_validation);
         setIsValidation(data?.is_validation);
