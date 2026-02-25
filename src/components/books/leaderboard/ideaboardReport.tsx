@@ -384,7 +384,7 @@ const downloadReport = (format: 'csv' | 'xlsx') => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="custom-title flex items-center gap-2">
-              <FaChartLine /> Enterprise Idea Portfolio
+              <FaChartLine /> Enterprise case log
             </h1>
             <p className="opacity-90 custom-subtitle">Enterprise Ideas log</p>
           </div>
