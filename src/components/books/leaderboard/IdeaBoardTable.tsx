@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
-import { RowData } from "./ideaboardReport";
+import { keyOrderType, RowData } from "./ideaboardReport";
 import { updateJobaidSessionQna } from "@/lib/job-aid-apis";
 import IframeViewer from "../IframeViewer";
 
 
 interface Props {
-  qnaKeys: string[];
+  qnaKeys: keyOrderType[];
   rows: RowData[];
   loadingLike: number | null;
   onLike: (row: RowData) => void;
@@ -120,12 +120,14 @@ export default function IdeaBoardTable({
           {/* ================= HEADER ================= */}
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
             <tr>
-              {qnaKeys.map((key) => {
+              {qnaKeys.map(({key, q_type}) => {
                 const sampleItem = rows[0]?.odered_qna?.[key];
 
                 const isGrayHeader =
                   key === "Innovation Score" ||
-                  sampleItem?.question_type === "resource";
+                  sampleItem?.question_type === "resource" ||
+                  q_type === "resource"
+                  ;
 
                 return (
                   <th
@@ -165,7 +167,7 @@ export default function IdeaBoardTable({
                 key={row.id}
                 className="border-b border-gray-300 hover:bg-gray-50"
               >
-                {qnaKeys.map((key) => {
+                {qnaKeys.map(({key, q_type}) => {
                   /* ---------- STATIC FIELDS ---------- */
                   if (key === "Full Name") {
                     return (
@@ -192,8 +194,10 @@ export default function IdeaBoardTable({
                   const isEditable =
                     qnaItem?.question_type === "editable";
 
+                  const isUpdatingField = q_type === "resource";
+
                   const isGrayed =
-                    key === "Innovation Score" || isResource;
+                    key === "Innovation Score" || isResource || isUpdatingField;
                   return (
                     <td
                       key={key}
@@ -206,6 +210,11 @@ export default function IdeaBoardTable({
                     >
                       {/* ===== RESOURCE COLUMN ===== */}
                       {isResource ? (
+                        <>
+                        {value === "-" ? (
+                          'Updating...'
+                        ):
+                        (
                         <button
                           onClick={() => {
                             setSelectedRow(value);
@@ -216,6 +225,8 @@ export default function IdeaBoardTable({
                         >
                           View
                         </button>
+                        )}
+                        </>
                       ) : isEditable ? (
                         /* ===== EDITABLE COLUMN ===== */
                         <div className="max-w-[220px]">
@@ -244,10 +255,10 @@ export default function IdeaBoardTable({
                         /* ===== NORMAL TEXT ===== */
                         <>
                           <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                            {value}
+                            {value === "-" && isUpdatingField ? "Updating..." : value}
                           </div>
 
-                          {value.length > 80 && (
+                          {value.length > 80 && value !== "-" && (
                             <button
                               onClick={() =>
                                 onSelectRow({ [key]: value })
