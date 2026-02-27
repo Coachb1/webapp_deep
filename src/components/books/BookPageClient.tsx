@@ -61,8 +61,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   const [cardButtonConfig, setCardButtonConfig] = useState<CardButtonConfig | null>();
   const [actionType, setActionType] = useState<string | null>(null);
   const [iframeLoadingMap, setIframeLoadingMap] = useState<Record<string, boolean>>({});
-
-
+  const [featurePath, setFeaturePath] = useState<string>("");
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature) {
@@ -231,7 +230,8 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
     setCurrentBook(book);
     setCurrentBookIndex(index);
     setShowAudioPlayer(true);
-    track(book.title, user?.user_data?.uid, "click", "played book")
+    const featurePath = `AI Landscape & Cases|Book|${book.title}`
+    track(`${featurePath.split("|").at(-1)}`, featurePath, user?.user_data?.uid, "click", "played book")
   };
 
   const handleClosePlayer = () => {
@@ -255,7 +255,9 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   const handleOpenDescription = (book: Book) => {
     setSelectedBook(book);
     setShowDescription(true);
-    track(book.title, user?.user_data?.uid, "click", "TransformIQ opened")
+    const featurePath = `AI Landscape & Cases | Book | ${book.title}`
+
+    track(`${featurePath.split("|").at(-1)}`, featurePath, user?.user_data?.uid, "click", "TransformIQ opened")
   };
 
   const handleCloseDescription = () => {
@@ -279,16 +281,17 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
           jobaidId={jobAidId}
           onlyClientSetup={onlyClientSetup}
           clientLogoUrl={userInfo?.clientLogoUrl}
-          onAction={(value, type) => {
+          onAction={(value, type, actionInfo) => {
             setActionKey(value);
             setActionType(type?.trim() || null);
+            setFeaturePath(actionInfo);
 
             setTimeout(() => {
               document
                 .getElementById("action-section")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }, 120);
-            track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
+            track(actionInfo, actionInfo , user?.user_data?.uid)
           }}
 
         />
@@ -312,16 +315,18 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
 
         <ActionDashboard
           selectedAction={actionKey}
-          onAction={(value, type) => {
+          onAction={(value, type, actionInfo) => {
             setActionKey(value);
             setActionType(type?.trim() || null);
+            setFeaturePath(actionInfo);
 
             setTimeout(() => {
               document
                 .getElementById("action-section")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }, 120);
-            track(`${value.replace("CONCEPTS_",'')}`, user?.user_data?.uid)
+
+            track(`${actionInfo.split('|').at(-1).trim()}`, actionInfo, user?.user_data?.uid)
           }}
         />
 
@@ -361,7 +366,12 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
           {actionType !== "iframe" && actionType !== "jobaid" &&(
             <>
               {actionKey?.includes("CONCEPTS") && (
-                <ConceptsViewer actionKey={actionKey!} actionType={actionType} />
+                <ConceptsViewer actionKey={actionKey!} actionType={actionType} 
+                onTrack={(workspace:string)=>{
+                  track(workspace, featurePath+`|${workspace}`, user?.user_data?.uid, "click", "opened concept tab")
+                }}
+                
+                />
               )}
 
               {actionKey === "AI_LANDSCAPE" && <CompanyIQ />}

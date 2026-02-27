@@ -28,9 +28,10 @@ const matchesAction = (block: any, actionKey?: string | null) => {
 interface ConceptsViewerProps {
   actionKey?: string | null;
   actionType?: string | null;
+  onTrack?: (workspace:string) => void;
 }
 
-const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType }) => {
+const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, onTrack }) => {
   const [pageMap, setPageMap] = useState<Record<string, number>>({});
   const { userInfo, loading } = usePortalUser();
   const [data, setData] = useState<CollectionBlock[] | null>(null);
@@ -273,6 +274,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType }
                           setSelectedTab(item);
                           setPageIndex(0);
                           setIsReadModalOpen(true);
+                          onTrack?.(item.tab_name);
                         }}
                         className="custom-btn btn-sm relative overflow-visible"
                       >
