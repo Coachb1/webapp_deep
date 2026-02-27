@@ -22,7 +22,7 @@ const Header = ({
   jobaidId: string | null;
   onlyClientSetup: boolean;
   clientLogoUrl?: string;
-  onAction?: (action: string, type?:string) => void;
+  onAction?: (action: string, type?:string, actionInfo?:any) => void;
 }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showLeaderBoardButton, setShowLeaderBoardButton] = useState(false);
@@ -157,7 +157,7 @@ const Header = ({
                   <Button
                     onClick={() => {
                       if (jobaidId) {
-                        jobaidId && onAction?.("INTERNAL_TRANSFORMATION_ALIGN")                        
+                        jobaidId && onAction?.('INTERNAL_TRANSFORMATION_ALIGN', '', `${IdeaBoardButtonLabel}`)                        
                         const url = `/library-bot/ideaboardReport/?jobaid=${encodeURIComponent(
                           jobaidId,
                         )}&onlyclientsetup=${encodeURIComponent(
