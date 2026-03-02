@@ -38,6 +38,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answerFiles, setAnswerFiles] = useState<Record<string, File[]>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   // const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
@@ -133,7 +134,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     }
   };
 
-  const handleContinue = async (answer: string) => {
+  const handleContinue = async (answer: string, attachments?: File[]) => {
     const currentQ = questions[currentQuestionIndex];
     const updatedAnswers = {
       ...answers,
@@ -141,6 +142,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     };
 
     setAnswers(updatedAnswers);
+
+    if (attachments && attachments.length > 0) {
+      setAnswerFiles((prev) => ({
+        ...prev,
+        [currentQ.question]: attachments,
+      }));
+    }
+
     if (currentQ.question_type === "dropdown" || !isValidation) {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
@@ -231,13 +240,23 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     // }
   };
 
-  const handleIgnore = async () => {
+  const handleIgnore = async (attachmentsParam?: File[]) => {
     console.log(
       "Ignoring question:",
       currentQuestionIndex,
       currentQuestionIndex + 1,
       currentQuestionIndex < questions.length - 1
     );
+    
+    // Store attachments if provided
+    const currentQ = questions[currentQuestionIndex];
+    const updatedFiles = { ...answerFiles };
+    
+    if (attachmentsParam && attachmentsParam.length > 0) {
+      updatedFiles[currentQ.question] = attachmentsParam;
+      setAnswerFiles(updatedFiles);
+    }
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
@@ -248,10 +267,10 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         if (showLoader) {
           setLoading(true);
           setCurrentStep("loading");
-          await handleValidation(answers, email, name);
+          await handleValidation(answers, email, name, updatedFiles);
           setLoading(false);
         } else {
-          await handleValidation(answers, email, name);
+          await handleValidation(answers, email, name, updatedFiles);
           setCurrentStep("completed");
         }
       }
@@ -273,7 +292,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const handleValidation = async (
     answers: Record<string, string>,
     email: string,
-    name: string
+    name: string,
+    attachments?: Record<string, File[]>
   ) => {
     setLoading(true);
     setError(null);
@@ -285,7 +305,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         email || inputEmail || "undefined@gmail.com",
         name || inputName || "sample",
         job_aid_id,
-        clientId
+        clientId,
+        attachments || answerFiles
       );
       console.log("Report generated:", reportResult);
       setReportUrl(reportResult.report_url);
@@ -339,6 +360,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           showBackButton={true}
           error={questionErrors[questions[currentQuestionIndex]?.id]}
           currentAnswer={answers[questions[currentQuestionIndex]?.question]}
+          currentAttachments={answerFiles[questions[currentQuestionIndex]?.question]}
           suggestions={suggestions[questions[currentQuestionIndex]?.id]}
           isValidataion={isValidation}
         />
