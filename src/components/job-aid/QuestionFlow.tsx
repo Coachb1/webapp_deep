@@ -5,16 +5,19 @@ import { Question } from "@/lib/job-aid-apis";
 import CopyBox from "../CopyBox";
 import AdvMarkdownHandler from "../MarkdownAdvance";
 import SearchableDropdown from "./SearchableDropdown";
+import FileAttachment from "../FileUpload";
 
 interface QuestionFlowProps {
   question: Question;
   questionNumber: number;
   totalQuestions: number;
-  onContinue: (answer: string) => void;
-  onIgnore: () => void;
+  // returns the entered text answer and optional multiple file attachments
+  onContinue: (answer: string, attachments?: File[]) => void;
+  onIgnore: (attachments?: File[]) => void;
   onGoBack?: () => void;
   error?: string;
   currentAnswer?: string;
+  currentAttachments?: File[]; // Preserved attachments for this question
   suggestions?: string; // Suggestions for the current question
   showBackButton?: boolean;
   isValidataion: boolean;
@@ -29,12 +32,14 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
   onGoBack,
   error,
   currentAnswer,
+  currentAttachments,
   suggestions,
   showBackButton,
   isValidataion
 }) => {
   const [answer, setAnswer] = useState<string>(currentAnswer || "");
   const [showError, setShowError] = useState(false);
+  const [attachments, setAttachments] = useState<File[]>(currentAttachments || []);
 
   const getValidateContinueText = () => {
     let lable = isValidataion && question.question_type !== 'dropdown' ? "Validate & " : ""
@@ -49,10 +54,10 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
 
   useEffect(() => {
     setAnswer(currentAnswer || "");
-
+    setAttachments(currentAttachments || []);
 
     console.log("Current answer updated:", currentAnswer);
-  }, [currentAnswer, question.id]);
+  }, [currentAnswer, currentAttachments, question.id]);
 
   const handleContinue = () => {
     if (!answer.trim()) {
@@ -60,7 +65,7 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
       return;
     }
     setShowError(false);
-    onContinue(answer);
+    onContinue(answer, attachments.length > 0 ? attachments : undefined);
   };
 
   const handleIgnore = () => {
@@ -69,8 +74,9 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
       return;
     }
     setAnswer("");
+    setAttachments([]);
     setShowError(false);
-    onIgnore();
+    onIgnore(attachments.length > 0 ? attachments : undefined);
   };
 
   const handleAnswerChange = (
@@ -221,6 +227,14 @@ const QuestionFlow: React.FC<QuestionFlowProps> = ({
         )}
 
         <div>{renderInputField()}</div>
+
+        {question.attachment_allowed && (
+          <FileAttachment onChange={(files) => {
+              setAttachments(files);
+            }}
+            currentAttachments={currentAttachments} />
+        )}
+        
 
         {showError && (
           <div className="bg-red-200 text-red-700 p-3 rounded-md text-center text-lg border-l-4 border-red-600">
