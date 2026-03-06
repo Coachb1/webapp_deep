@@ -3,7 +3,7 @@ import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { keyOrderType, RowData } from "./ideaboardReport";
 import { updateJobaidSessionQna } from "@/lib/job-aid-apis";
 import IframeViewer from "../IframeViewer";
-
+import { MdAttachFile } from "react-icons/md";
 
 interface Props {
   qnaKeys: keyOrderType[];
@@ -16,12 +16,7 @@ interface Props {
   sortBy: string;
   sortDir: string;
   toggleSortVotes: () => void;
-  onQnaUpdated: (
-    rowId: number,
-    question: string,
-    answer: any
-  ) => void;
-
+  onQnaUpdated: (rowId: number, question: string, answer: any) => void;
 }
 export default function IdeaBoardTable({
   qnaKeys,
@@ -50,15 +45,12 @@ export default function IdeaBoardTable({
     value: "",
   });
 
-
   const handleSaveEdit = async () => {
     if (!editModal.row || !editModal.key) return;
     setSaving(true);
     const session_id = editModal.row.uid;
-    const editableQna = Object.values(
-      editModal.row.odered_qna || {}
-    )
-      .filter(q => q.question_type !== "resource")
+    const editableQna = Object.values(editModal.row.odered_qna || {})
+      .filter((q) => q.question_type !== "resource")
       .reduce((acc: Record<string, any>, q) => {
         acc[q.question] = q.answer;
         return acc;
@@ -69,18 +61,13 @@ export default function IdeaBoardTable({
       [editModal.key]: editModal.value.answer,
     };
 
-    console.log('udpated qna', updatedQna, editableQna)
-
+    console.log("udpated qna", updatedQna, editableQna);
 
     try {
       await updateJobaidSessionQna(session_id, updatedQna);
 
       // 🔥 Optimistic local update
-      onQnaUpdated?.(
-        editModal.row.id,
-        editModal.key,
-        editModal.value
-      );
+      onQnaUpdated?.(editModal.row.id, editModal.key, editModal.value);
 
       setEditModal({ row: null, key: null, value: "" });
     } catch (err) {
@@ -89,8 +76,7 @@ export default function IdeaBoardTable({
       setSaving(false);
     }
   };
-  const wordCount =
-    editModal.value?.answer?.trim()?.split(/\s+/)?.length || 0;
+  const wordCount = editModal.value?.answer?.trim()?.split(/\s+/)?.length || 0;
 
   const shouldScroll = wordCount > 100;
   useEffect(() => {
@@ -120,15 +106,13 @@ export default function IdeaBoardTable({
           {/* ================= HEADER ================= */}
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
             <tr>
-              {qnaKeys.map(({key, q_type}) => {
+              {qnaKeys.map(({ key, q_type }) => {
                 const sampleItem = rows[0]?.odered_qna?.[key];
 
                 const isGrayHeader =
                   key === "Innovation Score" ||
                   sampleItem?.question_type === "resource" ||
-                  q_type === "resource"
-                  ;
-
+                  q_type === "resource";
                 return (
                   <th
                     key={key}
@@ -167,7 +151,7 @@ export default function IdeaBoardTable({
                 key={row.id}
                 className="border-b border-gray-300 hover:bg-gray-50"
               >
-                {qnaKeys.map(({key, q_type}) => {
+                {qnaKeys.map(({ key, q_type }) => {
                   /* ---------- STATIC FIELDS ---------- */
                   if (key === "Full Name") {
                     return (
@@ -188,11 +172,21 @@ export default function IdeaBoardTable({
                   const qnaItem = row.odered_qna?.[key];
                   const value = qnaItem?.answer || "-";
 
-                  const isResource =
-                    qnaItem?.question_type === "resource";
+                  // detect multiple file attachments (arrays of URLs or file objects)
+                  const attachmentLinks: string[] = [];
+                  const att = qnaItem?.attachments;
+                  if (att && Array.isArray(att)) {
+                    att.forEach((att: any) => {
+                      if (typeof att === "string" && att.startsWith("http")) {
+                        attachmentLinks.push(att);
+                      } else if (att?.url) {
+                        attachmentLinks.push(att.url);
+                      }
+                    });
+                  }
+                  const isResource = qnaItem?.question_type === "resource";
 
-                  const isEditable =
-                    qnaItem?.question_type === "editable";
+                  const isEditable = qnaItem?.question_type === "editable";
 
                   const isUpdatingField = q_type === "resource";
 
@@ -202,30 +196,30 @@ export default function IdeaBoardTable({
                     <td
                       key={key}
                       className={`px-6 py-4 text-center max-w-[220px]
-                      ${isGrayed
+                      ${
+                        isGrayed
                           ? "bg-gray-200/40 font-medium text-gray-700"
                           : "text-gray-600"
-                        }
+                      }
                     `}
                     >
                       {/* ===== RESOURCE COLUMN ===== */}
                       {isResource ? (
                         <>
-                        {value === "-" ? (
-                          'Updating...'
-                        ):
-                        (
-                        <button
-                          onClick={() => {
-                            setSelectedRow(value);
-                            setShowReport(true);
-                          }}
-                          className="custom-btn inline-flex items-center gap-2 px-3 py-1 
+                          {value === "-" ? (
+                            "Updating..."
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setSelectedRow(value);
+                                setShowReport(true);
+                              }}
+                              className="custom-btn inline-flex items-center gap-2 px-3 py-1 
                         bg-[#00c193] text-white rounded-md hover:bg-[#00c193]/90 transition"
-                        >
-                          View
-                        </button>
-                        )}
+                            >
+                              View
+                            </button>
+                          )}
                         </>
                       ) : isEditable ? (
                         /* ===== EDITABLE COLUMN ===== */
@@ -239,34 +233,60 @@ export default function IdeaBoardTable({
                               setEditModal({
                                 row,
                                 key,
-                              value: {...qnaItem, answer: value}
-
-                              })
-                            }
-
-                            }
+                                value: { ...qnaItem, answer: value },
+                              });
+                            }}
                             className="text-[#00c193] text-xs mt-2 hover:underline"
                           >
                             {value.length > 1 ? "Edit" : "Add"}
                           </button>
                         </div>
-
                       ) : (
                         /* ===== NORMAL TEXT ===== */
                         <>
                           <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                            {value === "-" && isUpdatingField ? "Updating..." : value}
+                            {value === "-" && isUpdatingField
+                              ? "Updating..."
+                              : value}
                           </div>
 
                           {value.length > 80 && value !== "-" && (
                             <button
-                              onClick={() =>
-                                onSelectRow({ [key]: value })
-                              }
+                              onClick={() => onSelectRow({ [key]: value })}
                               className="ml-2 text-[#00c193] underline text-sm"
                             >
                               More
                             </button>
+                          )}
+
+                          {/* File attachments section */}
+                          {attachmentLinks.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {attachmentLinks.map((att: any, idx: number) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => {
+                                    console.log("Attachment clicked:", att);
+                                    const url = typeof att === "string" ? att : att.url;
+          setSelectedRow(url);
+                                    setShowReport(true);
+                                  }}
+                                  className="
+                                    flex items-center gap-1
+                                    px-2 py-1
+                                    rounded-md
+                                    bg-[#00c193]/10
+                                    text-[#00c193]
+                                    text-xs
+                                    hover:bg-[#00c193]/20
+                                    transition
+                                  "
+                                >
+                                  <MdAttachFile size={14} />
+                                  {/* {att.name || `${idx + 1}`} */}
+                                </button>
+                              ))}
+                            </div>
                           )}
                         </>
                       )}
@@ -279,9 +299,7 @@ export default function IdeaBoardTable({
                   {onlyClientSetup ? (
                     <div className="inline-flex items-center gap-3">
                       <button
-                        onClick={() =>
-                          onThumbupOrThumbdown(row, "thumbup")
-                        }
+                        onClick={() => onThumbupOrThumbdown(row, "thumbup")}
                         className="p-2 rounded-md border"
                       >
                         <FaThumbsUp />
@@ -292,9 +310,7 @@ export default function IdeaBoardTable({
                       </span>
 
                       <button
-                        onClick={() =>
-                          onThumbupOrThumbdown(row, "thumbdown")
-                        }
+                        onClick={() => onThumbupOrThumbdown(row, "thumbdown")}
                         className="p-2 rounded-md border"
                       >
                         <FaThumbsDown />
@@ -309,18 +325,14 @@ export default function IdeaBoardTable({
                         row.liked
                           ? "bg-[#00c193]/20 border-[#00c193]"
                           : "bg-white"
-                        }`}
+                      }`}
                     >
                       <FaThumbsUp
                         className={
-                          row.liked
-                            ? "text-[#00c193]"
-                            : "text-gray-600"
+                          row.liked ? "text-[#00c193]" : "text-gray-600"
                         }
                       />
-                      <span className="font-semibold">
-                        {row.likes}
-                      </span>
+                      <span className="font-semibold">{row.likes}</span>
                     </button>
                   )}
                 </td>
@@ -328,7 +340,7 @@ export default function IdeaBoardTable({
             ))}
           </tbody>
         </table>
-        
+
         {/* ================= REPORT MODAL ================= */}
         {showReport && (
           <div
@@ -341,9 +353,7 @@ export default function IdeaBoardTable({
             >
               {/* Header */}
               <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="text-xl font-bold text-gray-800">
-                  Preview
-                </h3>
+                <h3 className="text-xl font-bold text-gray-800">Preview</h3>
 
                 <button
                   onClick={() => setShowReport(false)}
@@ -355,10 +365,7 @@ export default function IdeaBoardTable({
 
               {/* Body (Iframe) */}
               <div className="flex-1 overflow-hidden">
-                <IframeViewer
-                  url={selectedRow!}
-                  title="Resource Preview"
-                />
+                <IframeViewer url={selectedRow!} title="Resource Preview" />
               </div>
             </div>
           </div>
@@ -367,9 +374,7 @@ export default function IdeaBoardTable({
         {editModal.row && editModal.key && (
           <div
             className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center"
-            onClick={() =>
-              setEditModal({ row: null, key: null, value: "" })
-            }
+            onClick={() => setEditModal({ row: null, key: null, value: "" })}
           >
             <div
               className="bg-white w-[90vw] max-w-[900px] rounded-xl shadow-xl p-6"
@@ -388,10 +393,11 @@ export default function IdeaBoardTable({
                     value: { ...prev.value, answer: e.target.value },
                   }))
                 }
-                className={`w-full min-h-[100px] border rounded-md p-3 focus:ring-2 focus:ring-[#00c193] ${shouldScroll
-                  ? "max-h-[50vh] overflow-y-auto"
-                  : "overflow-hidden"
-                  }`}
+                className={`w-full min-h-[100px] border rounded-md p-3 focus:ring-2 focus:ring-[#00c193] ${
+                  shouldScroll
+                    ? "max-h-[50vh] overflow-y-auto"
+                    : "overflow-hidden"
+                }`}
               />
 
               <div className="flex justify-end gap-3 mt-4">
