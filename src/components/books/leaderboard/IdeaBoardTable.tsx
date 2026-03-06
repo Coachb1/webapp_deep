@@ -92,6 +92,19 @@ export default function IdeaBoardTable({
   const wordCount =
     editModal.value?.answer?.trim()?.split(/\s+/)?.length || 0;
 
+  // Calculate gray header columns
+  const grayHeaderColumns = qnaKeys.filter(({key, q_type}) => {
+    return key === "Innovation Score" || q_type === "resource";
+  });
+
+  const grayHeaderCount = grayHeaderColumns.length;
+  const grayHeaderStartIndex = qnaKeys.findIndex(({key, q_type}) => {
+    return key === "Innovation Score" || q_type === "resource";
+  });
+
+  const beforeGrayCount = grayHeaderStartIndex >= 0 ? grayHeaderStartIndex : 0;
+  const afterGrayCount = grayHeaderStartIndex >= 0 ? qnaKeys.length - grayHeaderStartIndex - grayHeaderCount : 0;
+
   const shouldScroll = wordCount > 100;
   useEffect(() => {
     if (textareaRef.current) {
@@ -121,18 +134,20 @@ export default function IdeaBoardTable({
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
             {/* ===== GROUP HEADER ROW ===== */}
             <tr>
-              <th colSpan={4}></th>
+              {beforeGrayCount > 0 && <th colSpan={beforeGrayCount}></th>}
 
-              <th
-                colSpan={5}
-                className="text-center"
-              >
-                <div className="bg-gray-300 t font-bold py-2 rounded-md">
-                  Enterprise Context Graph
-                </div>
-              </th>
+              {grayHeaderCount > 0 && (
+                <th
+                  colSpan={grayHeaderCount}
+                  className="text-center"
+                >
+                  <div className="bg-gray-300 t font-bold py-2 rounded-md">
+                    Enterprise Context Graph
+                  </div>
+                </th>
+              )}
 
-              <th colSpan={4}></th>
+              {afterGrayCount > 0 && <th colSpan={afterGrayCount}></th>}
 
               <th></th>
             </tr>
