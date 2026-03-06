@@ -119,6 +119,23 @@ export default function IdeaBoardTable({
         <table className="w-full text-sm">
           {/* ================= HEADER ================= */}
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
+            {/* ===== GROUP HEADER ROW ===== */}
+            <tr>
+              <th colSpan={4}></th>
+
+              <th
+                colSpan={5}
+                className="text-center"
+              >
+                <div className="bg-gray-300 t font-bold py-2 rounded-md">
+                  Enterprise Context Graph
+                </div>
+              </th>
+
+              <th colSpan={4}></th>
+
+              <th></th>
+            </tr>
             <tr>
               {qnaKeys.map(({key, q_type}) => {
                 const sampleItem = rows[0]?.odered_qna?.[key];
@@ -211,21 +228,21 @@ export default function IdeaBoardTable({
                       {/* ===== RESOURCE COLUMN ===== */}
                       {isResource ? (
                         <>
-                        {value === "-" ? (
-                          'Updating...'
+                          {value === "-" ? (
+                            'Updating...'
                         ):
-                        (
-                        <button
-                          onClick={() => {
-                            setSelectedRow(value);
-                            setShowReport(true);
-                          }}
-                          className="custom-btn inline-flex items-center gap-2 px-3 py-1 
+                            (
+                              <button
+                                onClick={() => {
+                                  setSelectedRow(value);
+                                  setShowReport(true);
+                                }}
+                                className="custom-btn inline-flex items-center gap-2 px-3 py-1 
                         bg-[#00c193] text-white rounded-md hover:bg-[#00c193]/90 transition"
-                        >
-                          View
-                        </button>
-                        )}
+                              >
+                                View
+                              </button>
+                            )}
                         </>
                       ) : isEditable ? (
                         /* ===== EDITABLE COLUMN ===== */
@@ -328,7 +345,7 @@ export default function IdeaBoardTable({
             ))}
           </tbody>
         </table>
-        
+
         {/* ================= REPORT MODAL ================= */}
         {showReport && (
           <div
