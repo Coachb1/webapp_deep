@@ -1,10 +1,12 @@
+// components/IframeViewer.tsx
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Download } from "lucide-react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+import { useReadingProgress } from "@/hooks/useReadingProgress";
+import PdfViewer from "./PDFViewe";
+import ReadingProgressBar from "./ReadingProgressBar";
 
 export interface ScrollCompletionEvent {
   percent: number;
@@ -17,42 +19,88 @@ interface IframeViewerProps {
   useProxy?: boolean;
   onScrollProgress?: (e: ScrollCompletionEvent) => void;
   onMilestoneReached?: (milestone: number, e: ScrollCompletionEvent) => void;
-  /** Enable verbose console logging. Default: true in development */
   debug?: boolean;
+  enableTracking?: boolean;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const MILESTONES = [25, 50, 75, 100];
-
 const NON_DISPLAYABLE_EXTS = [
-  ".zip", ".rar", ".7z", ".tar", ".gz",
-  ".exe", ".dmg", ".pkg", ".app", ".apk",
-  ".doc", ".docx", ".xls", ".xlsx", ".csv",
-  ".ppt", ".pptx", ".xlsm", ".docm", ".pptm",
+  ".zip",
+  ".rar",
+  ".7z",
+  ".tar",
+  ".gz",
+  ".exe",
+  ".dmg",
+  ".pkg",
+  ".app",
+  ".apk",
+  ".doc",
+  ".docx",
+  ".xls",
+  ".xlsx",
+  ".csv",
+  ".ppt",
+  ".pptx",
+  ".xlsm",
+  ".docm",
+  ".pptm",
 ];
 
-// ─── Logger ───────────────────────────────────────────────────────────────────
+// UI milestones used by the visual tracker
+const MILESTONES = [25, 50, 75, 100];
 
 type LogLevel = "info" | "warn" | "error" | "success" | "scroll";
 
 const LOG_STYLES: Record<LogLevel, string> = {
-  info:    "background:#1d4ed8;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
-  warn:    "background:#d97706;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
-  error:   "background:#dc2626;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
-  success: "background:#16a34a;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
-  scroll:  "background:#7c3aed;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
+  info: "background:#1d4ed8;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
+  warn: "background:#d97706;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
+  error:
+    "background:#dc2626;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
+  success:
+    "background:#16a34a;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
+  scroll:
+    "background:#7c3aed;color:#fff;padding:2px 6px;border-radius:3px;font-weight:bold",
 };
 
 function createLogger(enabled: boolean, componentId: string) {
   const prefix = `[IframeViewer#${componentId}]`;
   return {
-    info:    (msg: string, data?: unknown) => enabled && console.log   (`%c${prefix} ℹ ${msg}`, LOG_STYLES.info,    ...(data !== undefined ? [data] : [])),
-    warn:    (msg: string, data?: unknown) => enabled && console.warn  (`%c${prefix} ⚠ ${msg}`, LOG_STYLES.warn,    ...(data !== undefined ? [data] : [])),
-    error:   (msg: string, data?: unknown) => enabled && console.error (`%c${prefix} ✖ ${msg}`, LOG_STYLES.error,   ...(data !== undefined ? [data] : [])),
-    success: (msg: string, data?: unknown) => enabled && console.log   (`%c${prefix} ✔ ${msg}`, LOG_STYLES.success, ...(data !== undefined ? [data] : [])),
-    scroll:  (msg: string, data?: unknown) => enabled && console.log   (`%c${prefix} ↕ ${msg}`, LOG_STYLES.scroll,  ...(data !== undefined ? [data] : [])),
-    group:   (label: string, fn: () => void) => {
+    info: (msg: string, data?: unknown) =>
+      enabled &&
+      console.log(
+        `%c${prefix} ℹ ${msg}`,
+        LOG_STYLES.info,
+        ...(data !== undefined ? [data] : []),
+      ),
+    warn: (msg: string, data?: unknown) =>
+      enabled &&
+      console.warn(
+        `%c${prefix} ⚠ ${msg}`,
+        LOG_STYLES.warn,
+        ...(data !== undefined ? [data] : []),
+      ),
+    error: (msg: string, data?: unknown) =>
+      enabled &&
+      console.error(
+        `%c${prefix} ✖ ${msg}`,
+        LOG_STYLES.error,
+        ...(data !== undefined ? [data] : []),
+      ),
+    success: (msg: string, data?: unknown) =>
+      enabled &&
+      console.log(
+        `%c${prefix} ✔ ${msg}`,
+        LOG_STYLES.success,
+        ...(data !== undefined ? [data] : []),
+      ),
+    scroll: (msg: string, data?: unknown) =>
+      enabled &&
+      console.log(
+        `%c${prefix} ↕ ${msg}`,
+        LOG_STYLES.scroll,
+        ...(data !== undefined ? [data] : []),
+      ),
+    group: (label: string, fn: () => void) => {
       if (!enabled) return;
       console.groupCollapsed(`${prefix} ${label}`);
       fn();
@@ -60,8 +108,6 @@ function createLogger(enabled: boolean, componentId: string) {
     },
   };
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 let instanceCounter = 0;
 
@@ -72,38 +118,39 @@ export default function IframeViewer({
   onScrollProgress,
   onMilestoneReached,
   debug = process.env.NODE_ENV === "development",
+  enableTracking = false,
 }: IframeViewerProps) {
-  // Stable ID per mount for log disambiguation
   const instanceId = useRef(String(++instanceCounter)).current;
   const log = useRef(createLogger(debug, instanceId)).current;
 
-  const iframeRef        = useRef<HTMLIFrameElement>(null);
-  const cleanupRef       = useRef<() => void>(() => {});
-  const throttleRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const milestonesHitRef = useRef<Set<number>>(new Set());
-
-  const [loading,       setLoading]       = useState(true);
-  const [key,           setKey]           = useState(0);
-  const [progress,      setProgress]      = useState(10);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const cleanupRef = useRef<() => void>(() => {});
+  const [loading, setLoading] = useState(true);
+  const [key, setKey] = useState(0);
+  const [progress, setProgress] = useState(10);
   const [scrollPercent, setScrollPercent] = useState(0);
 
-  // ── Derived values ──────────────────────────────────────────────────────────
-  
-  
-  const baseUrl          = url?.split("?")[0].toLowerCase();
-  const isPdf = baseUrl.toLowerCase().endsWith(".pdf");
-  const isNonDisplayable = NON_DISPLAYABLE_EXTS.some((ext) => baseUrl.endsWith(ext));
+  const baseUrl = url?.split("?")[0].toLowerCase() ?? "";
+  const isPdf = baseUrl.endsWith(".pdf");
+  const isNonDisplayable = NON_DISPLAYABLE_EXTS.some((ext) =>
+    baseUrl.endsWith(ext),
+  );
 
   const proxiedUrl = useProxy
-  ? `/api/proxy?url=${encodeURIComponent(url)}`
-  : url;
+    ? `/api/proxy?url=${encodeURIComponent(url)}`
+    : url;
 
-  // Log props on every meaningful change
+  // shared reading progress hook
+  const { updateProgress, reset } = useReadingProgress(
+    onScrollProgress,
+    onMilestoneReached,
+  );
+
   useEffect(() => {
     log.group("Props snapshot", () => {
       console.table({ url, useProxy, isNonDisplayable, proxiedUrl, debug });
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, useProxy]);
 
   const getFileName = () => {
@@ -114,62 +161,59 @@ export default function IframeViewer({
     }
   };
 
-  // ── Scroll tracking ─────────────────────────────────────────────────────────
-
-  const handleScroll = useCallback(
-    (scrollingEl: Element | null) => {
-      if (!scrollingEl) {
-        log.warn("handleScroll called but scrollingEl is null — skipping");
-        return;
-      }
-
-      if (throttleRef.current) return; // silently skip — too noisy to log
-
-      throttleRef.current = setTimeout(() => {
-        throttleRef.current = null;
-
-        const { scrollTop, scrollHeight, clientHeight } = scrollingEl;
-        const maxScroll  = scrollHeight - clientHeight;
-        const rawPercent = maxScroll <= 0 ? 100 : (scrollTop / maxScroll) * 100;
-        const percent    = Math.min(100, Math.max(0, Math.round(rawPercent)));
-
-        log.scroll(`scrollTop=${scrollTop} scrollHeight=${scrollHeight} clientHeight=${clientHeight} maxScroll=${maxScroll} → ${percent}%`);
-
-        setScrollPercent(percent);
-
-        const newMilestones = MILESTONES.filter(
-          (m) => percent >= m && !milestonesHitRef.current.has(m)
-        );
-
-        if (newMilestones.length) {
-          newMilestones.forEach((m) => milestonesHitRef.current.add(m));
-          log.success(`Milestones reached: ${newMilestones.join(", ")}%`, {
-            allReached: [...milestonesHitRef.current],
-          });
-        }
-
-        const event: ScrollCompletionEvent = {
-          percent,
-          milestonesReached: [...milestonesHitRef.current].sort((a, b) => a - b),
-        };
-
-        onScrollProgress?.(event);
-        newMilestones.forEach((m) => onMilestoneReached?.(m, event));
-      }, 200);
-    },
-    [onScrollProgress, onMilestoneReached, log]
+  // ---------- Instance-scoped refs for per-iframe isolation ----------
+  const chunkTimersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>(
+    {},
   );
+  const chunkReadRef = useRef<Set<number>>(new Set());
+  const lastConfirmedChunkRef = useRef<number>(-1);
+  const rafHandleRef = useRef<number | null>(null);
 
-  // ── Attach scroll listener ──────────────────────────────────────────────────
+  // ---------- helper: detect best scroll element ----------
+  function detectScrollElement(doc: Document): HTMLElement {
+    const candidates: HTMLElement[] = [
+      ...(doc.scrollingElement ? [doc.scrollingElement as HTMLElement] : []),
+      ...(doc.documentElement ? [doc.documentElement as HTMLElement] : []),
+      ...(doc.body ? [doc.body as HTMLElement] : []),
+    ].filter(Boolean) as HTMLElement[];
 
+    // add likely containers (limited to avoid perf hit)
+    const extra = Array.from(
+      doc.querySelectorAll("div, main, section, article"),
+    ).slice(0, 200) as HTMLElement[];
+    candidates.push(...extra);
+
+    let best = candidates[0] || (doc.documentElement as HTMLElement);
+    let maxScrollable = 0;
+
+    for (const el of candidates) {
+      try {
+        const scrollable = Math.max(
+          0,
+          (el.scrollHeight || 0) - (el.clientHeight || 0),
+        );
+        if (scrollable > maxScrollable) {
+          maxScrollable = scrollable;
+          best = el;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return best;
+  }
+
+  // ---------- attach scroll-based chunk tracker ----------
   const attachScrollListener = useCallback(() => {
-    log.info("attachScrollListener called");
+    log.info("attachScrollListener called (scroll-based chunk tracker)");
 
-    // Always clean up previous listener first
+    // cleanup previous
     cleanupRef.current();
 
     if (!useProxy) {
-      log.warn("useProxy=false — iframe is cross-origin; scroll tracking disabled");
+      log.warn(
+        "useProxy=false — iframe is cross-origin; scroll tracking disabled",
+      );
       return;
     }
 
@@ -182,76 +226,214 @@ export default function IframeViewer({
     const win = iframe.contentWindow;
     const doc = iframe.contentDocument;
 
-    log.group("iframe contentWindow/Document check", () => {
-      console.log("contentWindow :", win);
-      console.log("contentDocument :", doc);
-      console.log("contentDocument.readyState:", doc?.readyState);
-      console.log("contentDocument.URL :", doc?.URL);
-    });
-
     if (!win || !doc) {
-      log.error("contentWindow or contentDocument is null — possible cross-origin block even with proxy", {
-        hasContentWindow: !!win,
-        hasContentDocument: !!doc,
-        iframeSrc: iframe.src,
-      });
+      log.error(
+        "contentWindow or contentDocument missing — cannot attach chunk tracker",
+      );
       return;
     }
 
-    // Diagnose which element actually scrolls
-    const elInfo = {
-      documentElement: {
-        scrollHeight: doc.documentElement.scrollHeight,
-        clientHeight: doc.documentElement.clientHeight,
-        overflow: getComputedStyle(doc.documentElement).overflow,
-      },
-      body: {
-        scrollHeight: doc.body?.scrollHeight,
-        clientHeight: doc.body?.clientHeight,
-        overflow: doc.body ? getComputedStyle(doc.body).overflow : "n/a",
-      },
-    };
-    log.group("Scroll target diagnosis", () => console.table(elInfo));
+    try {
+      const scrollingEl = detectScrollElement(doc);
+      const scrollHeight = scrollingEl.scrollHeight || 0;
+      const clientHeight = scrollingEl.clientHeight || win.innerHeight || 1;
 
-    const getScrollTarget = () =>
-      doc.documentElement.scrollHeight > doc.documentElement.clientHeight
-        ? doc.documentElement
-        : doc.body;
+      log.info("Detected scroll element", {
+        tag: scrollingEl.tagName,
+        scrollHeight,
+        clientHeight,
+      });
 
-    const chosenTarget = getScrollTarget();
-    log.info(`Scroll target selected: ${chosenTarget === doc.documentElement ? "documentElement" : "body"}`);
+      if (!scrollHeight || !clientHeight) {
+        log.warn(
+          "Could not determine scrollHeight/clientHeight, falling back to percent-based scroll listener",
+        );
+        let fallbackThrottle: number | null = null;
+        const fallbackListener = () => {
+          if (fallbackThrottle !== null) return;
+          fallbackThrottle = window.setTimeout(() => {
+            fallbackThrottle = null;
+            const st =
+              (scrollingEl.scrollTop ?? 0) ||
+              (doc.documentElement?.scrollTop ?? 0) ||
+              (doc.body?.scrollTop ?? 0) ||
+              (win.scrollY ?? 0);
+            const max = Math.max(
+              1,
+              (scrollingEl.scrollHeight || 1) - (scrollingEl.clientHeight || 1),
+            );
+            const percent = Math.round((st / max) * 100);
+            setScrollPercent(percent);
+            updateProgress(percent);
+          }, 250);
+        };
+        scrollingEl.addEventListener("scroll", fallbackListener, {
+          passive: true,
+        });
+        // also attach to iframe window
+        win.addEventListener("scroll", fallbackListener, { passive: true });
 
-    const listener = () => handleScroll(getScrollTarget());
-    win.addEventListener("scroll", listener, { passive: true });
-    log.success("Scroll listener attached to iframe contentWindow");
-
-    // Fire once immediately (handles short pages = 100% immediately)
-    log.info("Firing initial scroll check…");
-    listener();
-
-    cleanupRef.current = () => {
-      try {
-        win.removeEventListener("scroll", listener);
-        log.info("Scroll listener removed (cleanup)");
-      } catch (err) {
-        log.warn("Could not remove scroll listener (iframe may have navigated away)", err);
+        cleanupRef.current = () => {
+          try {
+            scrollingEl.removeEventListener("scroll", fallbackListener);
+          } catch {}
+          try {
+            win.removeEventListener("scroll", fallbackListener);
+          } catch {}
+          log.info("Fallback scroll listener removed");
+        };
+        return;
       }
-    };
-  }, [useProxy, handleScroll, log]);
 
-  // ── Refresh ─────────────────────────────────────────────────────────────────
+      // compute chunks (cap high counts)
+      const approxChunks = Math.max(1, Math.ceil(scrollHeight / clientHeight));
+      const CHUNK_CAP = 30;
+      const chunkCount = Math.min(approxChunks, CHUNK_CAP);
 
+      // instance-scoped state
+      const chunkTimers = chunkTimersRef.current;
+      const chunkRead = chunkReadRef.current;
+      const READ_DELAY_MS = 2000;
+
+      const getScrollTop = () => {
+        return (
+          (scrollingEl.scrollTop ?? 0) ||
+          (doc.documentElement?.scrollTop ?? 0) ||
+          (doc.body?.scrollTop ?? 0) ||
+          (win.scrollY ?? 0) ||
+          0
+        );
+      };
+
+      const computePercent = (st: number) => {
+        const max = Math.max(1, scrollHeight - clientHeight);
+        if (max <= 0) return 100;
+        return Math.min(100, Math.max(0, Math.round((st / max) * 100)));
+      };
+
+      const computeChunkIndex = (percent: number) => {
+        const bucket = 100 / Math.max(1, chunkCount);
+        return Math.min(
+          chunkCount - 1,
+          Math.max(0, Math.floor(percent / bucket)),
+        );
+      };
+
+      const confirmChunk = (idx: number) => {
+        if (chunkRead.has(idx)) return;
+        if (idx < lastConfirmedChunkRef.current) {
+          log.scroll(
+            `Ignoring backward chunk confirm (${idx} < ${lastConfirmedChunkRef.current})`,
+          );
+          return;
+        }
+        chunkRead.add(idx);
+        lastConfirmedChunkRef.current = Math.max(
+          lastConfirmedChunkRef.current,
+          idx,
+        );
+        const percent = Math.round((chunkRead.size / chunkCount) * 100);
+        log.success(`Chunk ${idx} read → ${percent}%`);
+        setScrollPercent(percent);
+        updateProgress(percent);
+      };
+
+      // rAF throttled onScroll
+      let pending = false;
+      const onScroll = () => {
+        if (pending) return;
+        pending = true;
+        rafHandleRef.current = window.requestAnimationFrame(() => {
+          pending = false;
+          const st = getScrollTop();
+          const percent = computePercent(st);
+          const idx = computeChunkIndex(percent);
+
+          log.scroll("scroll debug", {
+            scrollTop: st,
+            percent,
+            chunk: idx,
+            lastConfirmedChunk: lastConfirmedChunkRef.current,
+          });
+
+          // if already read, update display percent and return
+          if (chunkRead.has(idx)) {
+            setScrollPercent(Math.round((chunkRead.size / chunkCount) * 100));
+            return;
+          }
+
+          // start timer for current chunk; clear other pending timers
+          if (!chunkTimers[idx]) {
+            Object.keys(chunkTimers).forEach((k) => {
+              const ki = Number(k);
+              if (ki !== idx && chunkTimers[ki]) {
+                clearTimeout(chunkTimers[ki]);
+                delete chunkTimers[ki];
+              }
+            });
+
+            chunkTimers[idx] = setTimeout(() => {
+              confirmChunk(idx);
+              delete chunkTimers[idx];
+            }, READ_DELAY_MS);
+          }
+        });
+      };
+
+      // attach listeners to both element and iframe window
+      scrollingEl.addEventListener("scroll", onScroll, { passive: true });
+      win.addEventListener("scroll", onScroll, { passive: true });
+
+      log.info("Scroll listeners attached", { element: scrollingEl.tagName });
+
+      // initial kick (capture initial viewport)
+      onScroll();
+
+      cleanupRef.current = () => {
+        try {
+          scrollingEl.removeEventListener("scroll", onScroll);
+        } catch {}
+        try {
+          win.removeEventListener("scroll", onScroll);
+        } catch {}
+        if (rafHandleRef.current) {
+          try {
+            window.cancelAnimationFrame(rafHandleRef.current);
+          } catch {}
+          rafHandleRef.current = null;
+        }
+        Object.values(chunkTimersRef.current).forEach(clearTimeout);
+        chunkTimersRef.current = {};
+        log.info("Scroll-based chunk tracker cleaned");
+      };
+
+      log.success(
+        "Scroll-based chunk tracker attached (chunkCount=" + chunkCount + ")",
+      );
+    } catch (err) {
+      log.error("Error while attaching scroll-based chunk tracker", err);
+      cleanupRef.current();
+    }
+  }, [useProxy, log, updateProgress]);
+
+  // ── Refresh / reset ──────────────────────────────────────────────────────────
   const refreshIframe = () => {
     log.info("Manual refresh triggered — resetting state");
-    milestonesHitRef.current = new Set();
+
+    if (enableTracking) {
+      reset();
+      chunkTimersRef.current = {};
+      chunkReadRef.current = new Set<number>();
+      lastConfirmedChunkRef.current = -1;
+    }
+
     setScrollPercent(0);
     setLoading(true);
     setProgress(10);
     setKey((prev) => prev + 1);
   };
 
-  // ── Loading progress bar ─────────────────────────────────────────────────────
-
+  // Loading progress animation
   useEffect(() => {
     if (!loading) return;
     const interval = setInterval(() => {
@@ -260,65 +442,49 @@ export default function IframeViewer({
     return () => clearInterval(interval);
   }, [loading]);
 
-  // ── Mount / unmount ──────────────────────────────────────────────────────────
-
+  // mount/unmount
   useEffect(() => {
     log.info(`Mounted — url="${url}" useProxy=${useProxy} key=${key}`);
     return () => {
-      log.info("Unmounting — running scroll listener cleanup");
+      log.info("Unmounting — running cleanup");
       cleanupRef.current();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Key change (refresh / re-render) ────────────────────────────────────────
-
   useEffect(() => {
-    if (key > 0) log.info(`iframe key changed to ${key} — iframe will remount`);
+    if (key > 0) log.info(`key changed to ${key} — viewer will remount`);
   }, [key, log]);
 
-  // ─── Render ──────────────────────────────────────────────────────────────────
+  // determine if we should show progress UI
+  const showProgressUI = enableTracking && !loading && !isNonDisplayable;
 
+  // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="relative w-full h-full">
-      {isNonDisplayable ? (
-        <div className="flex flex-col items-center justify-center w-full h-[600px] border-0 rounded-xl bg-gradient-to-br from-white to-[#E6F7F2]">
-          <div className="text-center">
-            <p className="text-sm font-medium mb-2" style={{ color: "#2DC092" }}>
-              This file cannot be displayed. Please download to view the content.
-            </p>
-            <p className="text-xs text-gray-600 mb-6">{getFileName()}</p>
-            <Button
-              onClick={() => {
-                log.info(`Download triggered for: ${getFileName()}`);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = getFileName();
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-              }}
-              className="bg-white border rounded-lg px-4 py-2 text-sm shadow hover:bg-gray-50"
-              variant="outline"
-              size="sm"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download File
-            </Button>
-          </div>
-        </div>
-      ) : (
+      {isPdf ? (
         <>
           <div className="absolute top-7 right-4 z-20 flex items-center gap-2">
-            {useProxy && (
+            <div className="flex items-center gap-2">
               <span
-                className="text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow"
+                className={`text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow ${!enableTracking || loading ? "hidden" : ""}`}
                 style={{ color: "#2DC092" }}
-                aria-label={`Read ${scrollPercent}%`}
               >
                 {scrollPercent}% read
               </span>
-            )}
+
+              {/* completion checkmark */}
+              {showProgressUI && scrollPercent === 100 && (
+                <span
+                  title="Completed"
+                  className="text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow"
+                  style={{ color: "#16a34a" }}
+                >
+                  ✓
+                </span>
+              )}
+            </div>
+
             <Button
               className="bg-white border rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-50"
               variant="outline"
@@ -341,8 +507,124 @@ export default function IframeViewer({
 
           {loading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-white to-[#E6F7F2] z-10">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#2DC092" }} />
-              <p className="mt-3 text-sm font-medium" style={{ color: "#2DC092" }}>
+              <Loader2
+                className="w-8 h-8 animate-spin"
+                style={{ color: "#2DC092" }}
+              />
+              <p
+                className="mt-3 text-sm font-medium"
+                style={{ color: "#2DC092" }}
+              >
+                Preparing document…
+              </p>
+            </div>
+          )}
+
+          <PdfViewer
+            key={key}
+            url={proxiedUrl}
+            onLoad={() => {
+              setProgress(100);
+              setTimeout(() => setLoading(false), 250);
+            }}
+            onScrollProgress={(e) => {
+              if (!enableTracking) return;
+              setScrollPercent(e.percent);
+              onScrollProgress?.(e);
+            }}
+            onMilestoneReached={(m, e) => {
+              if (!enableTracking) return;
+              onMilestoneReached?.(m, e);
+            }}
+          />
+
+          {/* Progress bar + milestone dots (PDF view) */}
+          {showProgressUI && <ReadingProgressBar percent={scrollPercent} />}
+        </>
+      ) : isNonDisplayable ? (
+        <div className="flex flex-col items-center justify-center w-full h-[600px] border-0 rounded-xl bg-gradient-to-br from-white to-[#E6F7F2]">
+          <div className="text-center">
+            <p
+              className="text-sm font-medium mb-2"
+              style={{ color: "#2DC092" }}
+            >
+              This file cannot be displayed. Please download to view the
+              content.
+            </p>
+            <p className="text-xs text-gray-600 mb-6">{getFileName()}</p>
+            <Button
+              onClick={() => {
+                log.info(`Download triggered for: ${getFileName()}`);
+                const link = document.createElement("a");
+                link.href = url!;
+                link.download = getFileName();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              className="bg-white border rounded-lg px-4 py-2 text-sm shadow hover:bg-gray-50"
+              variant="outline"
+              size="sm"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download File
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="absolute top-7 right-4 z-20 flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              {useProxy && (
+                <span
+                  className={`text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow ${loading || !enableTracking ? "hidden" : ""}`}
+                  style={{ color: "#2DC092" }}
+                  aria-label={`Read ${scrollPercent}%`}
+                >
+                  {scrollPercent}% read
+                </span>
+              )}
+
+              {/* completion checkmark */}
+              {showProgressUI && scrollPercent === 100 && (
+                <span
+                  title="Completed"
+                  className="text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow"
+                  style={{ color: "#16a34a" }}
+                >
+                  ✓
+                </span>
+              )}
+            </div>
+
+            <Button
+              className="bg-white border rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-50"
+              variant="outline"
+              size="sm"
+              onClick={refreshIframe}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+            </Button>
+          </div>
+
+          {loading && (
+            <div className="absolute top-0 left-0 w-full h-1 bg-[#E6F7F2] z-20">
+              <div
+                className="h-1 transition-all duration-300"
+                style={{ width: `${progress}%`, backgroundColor: "#2DC092" }}
+              />
+            </div>
+          )}
+
+          {loading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-white to-[#E6F7F2] z-10">
+              <Loader2
+                className="w-8 h-8 animate-spin"
+                style={{ color: "#2DC092" }}
+              />
+              <p
+                className="mt-3 text-sm font-medium"
+                style={{ color: "#2DC092" }}
+              >
                 Preparing document…
               </p>
             </div>
@@ -358,20 +640,21 @@ export default function IframeViewer({
             allow="fullscreen"
             onLoad={() => {
               log.success(`iframe onLoad fired — src="${proxiedUrl}"`);
-              log.group("iframe load details", () => {
-                const iframe = iframeRef.current;
-                console.log("readyState :", iframe?.contentDocument?.readyState);
-                console.log("doc URL    :", iframe?.contentDocument?.URL);
-                console.log("doc title  :", iframe?.contentDocument?.title);
-              });
               setProgress(100);
               setTimeout(() => {
-                log.info("250 ms post-load delay elapsed — hiding loader & attaching scroll listener");
+                log.info(
+                  "250 ms post-load delay elapsed — hiding loader & attaching chunk listener",
+                );
                 setLoading(false);
-                attachScrollListener();
+                if (enableTracking) {
+                  attachScrollListener();
+                }
               }, 250);
             }}
           />
+
+          {/* Progress bar + milestone dots (iframe view) */}
+          {showProgressUI && <ReadingProgressBar percent={scrollPercent} />}
         </>
       )}
     </div>

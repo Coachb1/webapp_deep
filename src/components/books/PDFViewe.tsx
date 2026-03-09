@@ -1,105 +1,171 @@
+// components/PdfViewer.tsx
 "use client";
 
 import { Document, Page, pdfjs } from "react-pdf";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ZoomIn, ZoomOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useReadingProgress } from "@/hooks/useReadingProgress";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-export default function PdfViewer({ url }: { url: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const scrollPosRef = useRef(0);
-  const initialized = useRef(false);
+interface PdfViewerProps {
+  url: string;
+  onLoad?: () => void;
+  onScrollProgress?: (e: any) => void;
+  onMilestoneReached?: (milestone: number, e: any) => void;
+}
 
-  const [width, setWidth] = useState(800);
+const READ_DELAY = 2000; // ms
+
+export default function PdfViewer({
+  url,
+  onLoad,
+  onScrollProgress,
+  onMilestoneReached,
+}: PdfViewerProps) {
   const [numPages, setNumPages] = useState(0);
-  const [visiblePages, setVisiblePages] = useState(3);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(1.2);
+  const [loaded, setLoaded] = useState(false);
 
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const timersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
+  const pagesViewedRef = useRef<Set<number>>(new Set());
 
-  /* ---------- prevent Document reload ---------- */
-  const file = useMemo(() => ({ url }), [url]);
+  const { updateProgress, reset } = useReadingProgress(
+    onScrollProgress,
+    onMilestoneReached,
+  );
 
-  /* ---------- responsive width ---------- */
   useEffect(() => {
-    const updateWidth = () => {
-      if (!containerRef.current) return;
-      setWidth(containerRef.current.offsetWidth - 32);
-    };
+    // reset when URL changes
+    pagesViewedRef.current = new Set();
+    Object.values(timersRef.current).forEach(clearTimeout);
+    timersRef.current = {};
+    reset();
+  }, [url, reset]);
 
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
+  function onLoadSuccess({ numPages }: { numPages: number }) {
+    setNumPages(numPages);
+    onLoad?.();
+    // clear refs for previously mounted pages
+    pageRefs.current = new Array(numPages).fill(null);
+    pagesViewedRef.current = new Set();
+    setLoaded(true);
+  }
 
-  /* ---------- infinite scroll ---------- */
-  const handleScroll = () => {
-    const el = containerRef.current;
-    if (!el) return;
+  const markPageRead = (pageNumber: number) => {
+    if (!numPages) return;
+    if (pagesViewedRef.current.has(pageNumber)) return;
+    pagesViewedRef.current.add(pageNumber);
 
-    scrollPosRef.current = el.scrollTop;
-
-    const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 200;
-
-    if (nearBottom && visiblePages < numPages) {
-      setVisiblePages((p) => Math.min(p + 2, numPages));
-    }
+    const percent = Math.round((pagesViewedRef.current.size / numPages) * 100);
+    updateProgress(percent);
   };
 
-  /* ---------- restore scroll after render ---------- */
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = scrollPosRef.current;
-    }
-  }, [visiblePages]);
+    if (!containerRef.current || numPages === 0) return;
+
+    const root = containerRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLElement;
+          const pageAttr = el.getAttribute("data-page");
+          const pageNumber = pageAttr ? Number(pageAttr) : NaN;
+          if (!pageNumber) return;
+
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            // start timer for that page (if not already)
+            if (
+              !timersRef.current[pageNumber] &&
+              !pagesViewedRef.current.has(pageNumber)
+            ) {
+              timersRef.current[pageNumber] = setTimeout(() => {
+                markPageRead(pageNumber);
+                delete timersRef.current[pageNumber];
+              }, READ_DELAY);
+            }
+          } else {
+            // stop timer if leaving early
+            if (timersRef.current[pageNumber]) {
+              clearTimeout(timersRef.current[pageNumber]);
+              delete timersRef.current[pageNumber];
+            }
+          }
+        });
+      },
+      {
+        root,
+        threshold: 0.6,
+      },
+    );
+
+    // observe page containers
+    pageRefs.current.forEach((p) => {
+      if (p) observer.observe(p);
+    });
+
+    return () => {
+      observer.disconnect();
+      Object.values(timersRef.current).forEach(clearTimeout);
+      timersRef.current = {};
+    };
+  }, [numPages, updateProgress]);
+
+  const zoomIn = () => setScale((s) => Math.min(3, s + 0.2));
+  const zoomOut = () => setScale((s) => Math.max(0.6, s - 0.2));
 
   return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      className="h-[600px] overflow-auto bg-gray-50 rounded-xl p-4"
-    >
-      <Document
-        file={file}
-        loading={
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-white to-[#E6F7F2] z-10">
-            <Loader2
-              className="w-8 h-8 animate-spin"
-              style={{ color: "#2DC092" }}
-            />
-          </div>
-        }
-        onLoadSuccess={async (pdf) => {
-  setNumPages(pdf.numPages);
+    <div className="relative w-full h-full">
+      {/* Zoom controls (styled to match IframeViewer) */}
+      <div className={`absolute top-7 left-4 z-20 flex items-center gap-2 ${!loaded ? "hidden" : ""}`}>
+        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow text-gray-600">
+          {(scale * 100).toFixed(0)}%
+        </span>
 
-  const page = await pdf.getPage(1);
-  const viewport = page.getViewport({ scale: 1 });
+        <Button
+          size="sm"
+          variant="outline"
+          className="bg-white border shadow hover:bg-gray-50"
+          onClick={zoomOut}
+        >
+          <ZoomOut className="w-4 h-4" />
+        </Button>
 
-  if (containerRef.current) {
-    const containerWidth = containerRef.current.offsetWidth - 32;
-    setScale(containerWidth / viewport.width);
-  }
+        <Button
+          size="sm"
+          variant="outline"
+          className="bg-white border shadow hover:bg-gray-50"
+          onClick={zoomIn}
+        >
+          <ZoomIn className="w-4 h-4" />
+        </Button>
+      </div>
 
-  if (!initialized.current) {
-    setVisiblePages(3);
-    initialized.current = true;
-  }
-}}
-
-      >
-        {Array.from({ length: visiblePages }, (_, index) => (
-          <div key={index} className="mb-4 flex justify-center">
-            <Page
-              pageNumber={index + 1}
-            //   width={width}
-              scale={scale}
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-              loading={<div className="h-[500px]" />}
-            />
-          </div>
-        ))}
-      </Document>
+      <div ref={containerRef} className="w-full h-full overflow-y-auto">
+        <div className="flex flex-col items-center gap-6 py-8">
+          <Document file={url} onLoadSuccess={onLoadSuccess} loading="">
+            {Array.from({ length: numPages }, (_, i) => (
+              <div
+                key={i}
+                ref={(el) => (pageRefs.current[i] = el)}
+                data-page={i + 1}
+                className="shadow-lg bg-white rounded-md"
+                style={{ width: "fit-content" }}
+              >
+                <Page
+                  pageNumber={i + 1}
+                  scale={scale}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                />
+              </div>
+            ))}
+          </Document>
+        </div>
+      </div>
     </div>
   );
 }
