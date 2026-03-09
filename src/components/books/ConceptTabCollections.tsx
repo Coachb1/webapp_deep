@@ -382,6 +382,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, 
               <IframeViewer
                 url={links[pageIndex]}
                 title={selectedTab.tab_name}
+                enableTracking={true}
               />
             </div>
           </div>
