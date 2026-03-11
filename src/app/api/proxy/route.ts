@@ -202,17 +202,17 @@ export async function GET(req: NextRequest) {
   headers.set("content-type", "text/html; charset=utf-8");
   headers.set("cache-control", "no-store"); // don't cache proxied content
   // Allow this response to be framed by your own origin
-  headers.set("x-frame-options", "SAMEORIGIN");
+  // headers.set("x-frame-options", "SAMEORIGIN");
 
-  // Forward safe upstream headers, strip dangerous ones
-  for (const [key, value] of upstream.headers.entries()) {
-    if (!HEADERS_TO_STRIP.has(key.toLowerCase())) {
-      // Only forward a safe subset
-      if (["content-language", "last-modified", "etag"].includes(key.toLowerCase())) {
-        headers.set(key, value);
-      }
-    }
-  }
+  // // Forward safe upstream headers, strip dangerous ones
+  // for (const [key, value] of upstream.headers.entries()) {
+  //   if (!HEADERS_TO_STRIP.has(key.toLowerCase())) {
+  //     // Only forward a safe subset
+  //     if (["content-language", "last-modified", "etag"].includes(key.toLowerCase())) {
+  //       headers.set(key, value);
+  //     }
+  //   }
+  // }
 
   return new NextResponse(html, { status: 200, headers });
 }
