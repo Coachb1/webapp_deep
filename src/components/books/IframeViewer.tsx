@@ -17,10 +17,10 @@ interface IframeViewerProps {
   url: string;
   title?: string;
   useProxy?: boolean;
-  onScrollProgress?: (e: ScrollCompletionEvent) => void;
-  onMilestoneReached?: (milestone: number, e: ScrollCompletionEvent) => void;
   debug?: boolean;
   enableTracking?: boolean;
+  userId?: string; // Added userId for tracking
+  case_mapping_id?: string; // Added case_mapping_id for tracking
 }
 
 const NON_DISPLAYABLE_EXTS = [
@@ -115,10 +115,10 @@ export default function IframeViewer({
   url,
   title,
   useProxy = true,
-  onScrollProgress,
-  onMilestoneReached,
   debug = process.env.NODE_ENV === "development",
   enableTracking = false,
+  userId,
+  case_mapping_id,
 }: IframeViewerProps) {
   const instanceId = useRef(String(++instanceCounter)).current;
   const log = useRef(createLogger(debug, instanceId)).current;
@@ -140,10 +140,37 @@ export default function IframeViewer({
     ? `/api/proxy?url=${encodeURIComponent(url)}`
     : url;
 
+  const onScrollProgress = useCallback(
+    (e: ScrollCompletionEvent) => {
+      log.info(`Scroll progress: ${e.percent}%`, {
+        milestonesReached: e.milestonesReached,
+      });
+      if (enableTracking) { 
+        setScrollPercent(e.percent);
+      }
+    },
+    [log],
+  );
+
+  const onMilestoneReached = useCallback(
+    (milestone: number, e: ScrollCompletionEvent) => {
+      log.info(`Milestone reached: ${milestone}%`, {
+        event: e,
+      });
+      if (enableTracking) {
+        setScrollPercent(milestone);
+        chunkReadRef.current.add(milestone); // Mark milestone as read for visual tracker
+      }
+    },
+    [log],
+  );
+
   // shared reading progress hook
   const { updateProgress, reset } = useReadingProgress(
     onScrollProgress,
     onMilestoneReached,
+    userId,
+    case_mapping_id,
   );
 
   useEffect(() => {
@@ -295,6 +322,27 @@ export default function IframeViewer({
       const chunkRead = chunkReadRef.current;
       const READ_DELAY_MS = 2000;
 
+      // Initialize chunkRead and lastConfirmedChunk based on current scrollPercent
+      // This is crucial for synchronizing with fetched progress
+      chunkRead.clear(); // Clear any previous state
+      lastConfirmedChunkRef.current = -1;
+
+      const computeChunkIndex = (percent: number) => {
+        const bucket = 100 / Math.max(1, chunkCount);
+        return Math.min(
+          chunkCount - 1,
+          Math.max(0, Math.floor(percent / bucket)),
+        );
+      };
+      // Mark chunks as read up to the initial scrollPercent
+      const initialChunkIndex = computeChunkIndex(scrollPercent);
+      for (let i = 0; i <= initialChunkIndex; i++) {
+        chunkRead.add(i);
+      }
+      lastConfirmedChunkRef.current = initialChunkIndex;
+
+      log.info("Initialized chunkRead and lastConfirmedChunk", { initialScrollPercent: scrollPercent, initialChunkIndex, chunkRead: [...chunkRead], lastConfirmedChunk: lastConfirmedChunkRef.current });
+
       const getScrollTop = () => {
         return (
           (scrollingEl.scrollTop ?? 0) ||
@@ -311,13 +359,7 @@ export default function IframeViewer({
         return Math.min(100, Math.max(0, Math.round((st / max) * 100)));
       };
 
-      const computeChunkIndex = (percent: number) => {
-        const bucket = 100 / Math.max(1, chunkCount);
-        return Math.min(
-          chunkCount - 1,
-          Math.max(0, Math.floor(percent / bucket)),
-        );
-      };
+      
 
       const confirmChunk = (idx: number) => {
         if (chunkRead.has(idx)) return;
@@ -474,7 +516,7 @@ export default function IframeViewer({
               </span>
 
               {/* completion checkmark */}
-              {showProgressUI && scrollPercent === 100 && (
+              {showProgressUI && scrollPercent >=80 && (
                 <span
                   title="Completed"
                   className="text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow"
@@ -523,6 +565,8 @@ export default function IframeViewer({
           <PdfViewer
             key={key}
             url={proxiedUrl}
+            userId={userId}
+            case_mapping_id={case_mapping_id}
             onLoad={() => {
               setProgress(100);
               setTimeout(() => setLoading(false), 250);
@@ -531,6 +575,8 @@ export default function IframeViewer({
               if (!enableTracking) return;
               setScrollPercent(e.percent);
               onScrollProgress?.(e);
+              // The userId and case_mapping_id are passed to PdfViewer, which then passes them to useReadingProgress
+              // No direct action needed here for tracking in IframeViewer's onScrollProgress for PDF.
             }}
             onMilestoneReached={(m, e) => {
               if (!enableTracking) return;
@@ -585,7 +631,7 @@ export default function IframeViewer({
               )}
 
               {/* completion checkmark */}
-              {showProgressUI && scrollPercent === 100 && (
+              {showProgressUI && scrollPercent >= 100 && (
                 <span
                   title="Completed"
                   className="text-xs font-semibold px-2 py-1 rounded-full bg-white border shadow"

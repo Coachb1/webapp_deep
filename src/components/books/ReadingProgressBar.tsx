@@ -1,10 +1,11 @@
 "use client";
 
+import { MILESTONES } from "@/hooks/useReadingProgress";
+
 interface ReadingProgressBarProps {
   percent: number;
 }
 
-const MILESTONES = [25, 50, 75, 100];
 
 export default function ReadingProgressBar({ percent }: ReadingProgressBarProps) {
   return (

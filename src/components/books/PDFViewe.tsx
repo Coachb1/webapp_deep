@@ -14,6 +14,8 @@ interface PdfViewerProps {
   onLoad?: () => void;
   onScrollProgress?: (e: any) => void;
   onMilestoneReached?: (milestone: number, e: any) => void;
+  userId?: string; // Added userId for tracking
+  case_mapping_id?: string; // Added case_mapping_id for tracking
 }
 
 const READ_DELAY = 2000; // ms
@@ -23,6 +25,8 @@ export default function PdfViewer({
   onLoad,
   onScrollProgress,
   onMilestoneReached,
+  userId,
+  case_mapping_id,
 }: PdfViewerProps) {
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(1.2);
@@ -36,6 +40,8 @@ export default function PdfViewer({
   const { updateProgress, reset } = useReadingProgress(
     onScrollProgress,
     onMilestoneReached,
+    userId,
+    case_mapping_id,
   );
 
   useEffect(() => {

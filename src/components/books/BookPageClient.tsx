@@ -346,7 +346,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
 
           { actionType == 'iframe' && (
             // to show only panels
-              <ConceptsViewer actionKey={actionKey} actionType={actionType} />
+              <ConceptsViewer actionKey={actionKey} actionType={actionType} userId={user?.user_data?.uid}/>
           )}
 
           {actionType === 'jobaid' && (
@@ -366,7 +366,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
           {actionType !== "iframe" && actionType !== "jobaid" &&(
             <>
               {actionKey?.includes("CONCEPTS") && (
-                <ConceptsViewer actionKey={actionKey!} actionType={actionType} 
+                <ConceptsViewer actionKey={actionKey!} actionType={actionType} userId={user?.user_data?.uid}
                 onTrack={(workspace:string)=>{
                   track(workspace, featurePath+`|${workspace}`, user?.user_data?.uid, "click", "opened concept tab")
                 }}
@@ -424,7 +424,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                       clientId={userInfo?.clientId}
                     />
                   </div>
-                  <ConceptsViewer actionKey={actionKey} actionType={actionType} />
+                  <ConceptsViewer actionKey={actionKey} actionType={actionType} userId={user?.user_data?.uid}/>
                 </>
               )}
             </>
