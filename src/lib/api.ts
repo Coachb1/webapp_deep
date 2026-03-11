@@ -1249,11 +1249,12 @@ export const getCompanyIQData = async (): Promise<CompanyIQ[]> => {
 
 
 export const track = async (feature : string, featurePath:string, userId:string, event_type:string='click', description?:string) => { 
-  fetch(`${baseURL}/analytics/`, {
-    method: "POST",
+  try {
+      console.debug("TRACK FIRED");
+      const response = await fetch(`${baseURL}/analytics-events/`, {    
+        method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": basicAuth,
     },
     body: JSON.stringify({
       event_type: event_type,
@@ -1266,4 +1267,100 @@ export const track = async (feature : string, featurePath:string, userId:string,
       }
     })
   });
+
+
+  console.debug("TRACK RESPONSE", response);
+} catch (error) {
+  console.error("Error tracking event:", error);
+}
+}
+
+export const trackConceptProgressStart = async (userId:string, case_mapping_id:string) => { 
+  try {
+      console.debug("trackConceptProgressStart FIRED", {userId, case_mapping_id});
+      const response = await fetch(`${baseURL}/analytics-progress/start/`, {    
+        method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      case_mapping_id: case_mapping_id,
+    })
+  });
+
+
+  console.debug("trackConceptProgressStart RESPONSE", response);
+} catch (error) {
+  console.error("Error trackConceptProgressStart:", error);
+}
+}
+
+export const trackConceptProgressUpdate = async (userId:string, case_mapping_id:string, percentage:number) => { 
+  try {
+      console.debug("concpet progress update", {userId, case_mapping_id, percentage});
+      const response = await fetch(`${baseURL}/analytics-progress/update/`, {    
+        method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      case_mapping_id: case_mapping_id,
+      completion_percentage: percentage
+    })
+  });
+
+
+  console.debug("trackConceptProgressUpdate RESPONSE", response);
+} catch (error) {
+  console.error("Error trackConceptProgressUpdate:", error);
+}
+}
+
+export const trackConceptProgressComplete = async (userId:string, case_mapping_id:string) => { 
+  try {
+      console.debug("trackConceptProgressComplete fired", {userId, case_mapping_id});
+      const response = await fetch(`${baseURL}/analytics-progress/complete/`, {    
+        method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      case_mapping_id: case_mapping_id,
+    })
+  });
+
+
+  console.debug("TtrackConceptProgressComplete", response);
+} catch (error) {
+  console.error("Error trackConceptProgressComplete:", error);
+}
+}
+
+export const getTrackedConceptProgress = async (userId:string, case_mapping_id:string) => { 
+  try {
+      console.debug("Fetching tracked concept progress for userId:", userId, "case_mapping_id:", case_mapping_id);
+      const response = await fetch(`${baseURL}/analytics-progress/concept-session/?user_id=${userId}&case_mapping_id=${case_mapping_id}`, {    
+        method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": basicAuth
+    },
+  });
+
+
+  console.debug("Tracked concept progress response:", response);
+  if (!response.ok) {
+    console.error("Failed to fetch tracked concept progress:", response.statusText);
+    return null;
+  }
+  const data = await response.json();
+  console.debug("Tracked concept progress data:", data);
+  return data; // Assuming data contains completion_percentage
+} catch (error) {
+  console.error("Error tracking event:", error);
+  return null;
+}
 }

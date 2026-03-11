@@ -393,6 +393,7 @@ export interface CaseItem {
   transform_iq?: string;
   action_name?: string;
   sticker?: string;
+  uid?: string;
 }
 
 export interface CollectionBlock {

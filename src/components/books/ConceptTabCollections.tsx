@@ -29,9 +29,10 @@ interface ConceptsViewerProps {
   actionKey?: string | null;
   actionType?: string | null;
   onTrack?: (workspace:string) => void;
+  userId?: string; // Added userId for tracking
 }
 
-const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, onTrack }) => {
+const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, onTrack, userId }) => {
   const [pageMap, setPageMap] = useState<Record<string, number>>({});
   const { userInfo, loading } = usePortalUser();
   const [data, setData] = useState<CollectionBlock[] | null>(null);
@@ -383,6 +384,8 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, 
                 url={links[pageIndex]}
                 title={selectedTab.tab_name}
                 enableTracking={true}
+                userId={userId!} // Pass userId for tracking
+                case_mapping_id={selectedTab.uid} // Pass case_mapping_id for tracking
               />
             </div>
           </div>
