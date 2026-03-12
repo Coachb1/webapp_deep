@@ -41,6 +41,7 @@ export interface ReportResponse {
   generated_prompt: string;
   report_url: string;
   session_id?: string;
+  output?: string; // Optional field to hold any additional output from the report generation
 }
 
 // ---------- Env Vars ----------

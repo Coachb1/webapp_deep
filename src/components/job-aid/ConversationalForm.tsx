@@ -13,6 +13,7 @@ import {
   JobAid,
 } from "@/lib/job-aid-apis";
 import CopyBox from "../CopyBox";
+import TransformationProgram from "./TransformationProgram";
 import NewAdvMarkdown from "../NewAdvMarkdown";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
@@ -45,6 +46,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
   const [isReport, setIsReport] = useState<boolean>(true);
   const [isPromptGenerator, setIsPromptGenerator] = useState<boolean>(false);
+  const [isTransformationProgram, setIsTransformationProgram] = useState<boolean>(false);
 
   const [copied, setCopied] = useState<boolean>(false);
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>(
@@ -81,6 +83,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           data.is_prompt_generation !== undefined
             ? data.is_prompt_generation
             : data?.job_aid_type === "prompt_generator"
+        );
+        setIsTransformationProgram(
+          data?.job_aid_type === "transformation_program"
         );
       } catch (err: any) {
         setError(err.message ?? "Failed to fetch job aid.");
@@ -336,6 +341,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
 
 
   // --- UI Rendering ---
+  if (isTransformationProgram) {    
+    if (!jobAid) return <div className="flex items-center justify-center w-full h-screen bg-white">
+        <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
+      </div>; // or a loader
+
+    return <TransformationProgram jobAid={jobAid} jobaidID={job_aid_id} inputEmail={inputEmail} inputName={inputName} clientId={clientId} />;
+  }
+
   if (currentStep === "welcome") {
     return (
       <WelcomePage
