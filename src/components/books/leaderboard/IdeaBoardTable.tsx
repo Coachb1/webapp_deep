@@ -79,13 +79,13 @@ export default function IdeaBoardTable({
   const wordCount = editModal.value?.answer?.trim()?.split(/\s+/)?.length || 0;
 
   // Calculate gray header columns
-  const grayHeaderColumns = qnaKeys.filter(({key, q_type}) => {
-    return key === "Innovation Score" || q_type === "resource";
+  const grayHeaderColumns = qnaKeys.filter(({ key, q_type }) => {
+    return q_type === "innovation_score" || q_type === "resource";
   });
 
   const grayHeaderCount = grayHeaderColumns.length;
-  const grayHeaderStartIndex = qnaKeys.findIndex(({key, q_type}) => {
-    return key === "Innovation Score" || q_type === "resource";
+  const grayHeaderStartIndex = qnaKeys.findIndex(({ key, q_type }) => {
+    return q_type === "innovation_score" || q_type === "resource";
   });
 
   const beforeGrayCount = grayHeaderStartIndex >= 0 ? grayHeaderStartIndex : 0;
@@ -138,21 +138,38 @@ export default function IdeaBoardTable({
               <th></th>
             </tr>
             <tr>
-              {qnaKeys.map(({ key, q_type }) => {
+              {qnaKeys.map(({ key, q_type, info }) => {
                 const sampleItem = rows[0]?.odered_qna?.[key];
 
                 const isGrayHeader =
-                  key === "Innovation Score" ||
                   sampleItem?.question_type === "resource" ||
+                  q_type === "innovation_score" ||
                   q_type === "resource";
                 return (
                   <th
                     key={key}
-                    className={`px-3 py-2 text-center w-[160px]
-                    ${isGrayHeader ? "bg-gray-200" : ""}
-                  `}
+                    className={`px-3 py-2 text-center w-[160px]  ${
+                      isGrayHeader ? "bg-gray-200" : ""
+                    }`}
                   >
-                    {key === "Innovation Score" ? "Align Priority" : key}
+                    <div className="flex items-center justify-center gap-1 relative group">
+                      <span>{key}</span>
+
+                      {info && (
+                        <>
+                          <span className="text-gray-400 cursor-help text-xs">
+                            ⓘ
+                          </span>
+
+                          <div
+                            className="absolute z-20 hidden group-hover:block top-[-36px] left-1/2 -translate-x-1/2 
+                bg-gray-900 text-white text-xs px-2 py-1 rounded-md shadow-md whitespace-nowrap"
+                          >
+                            {info}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </th>
                 );
               })}
@@ -220,10 +237,13 @@ export default function IdeaBoardTable({
 
                   const isEditable = qnaItem?.question_type === "editable";
 
+                  const isInnovationScore =
+                    qnaItem?.question_type === "innovation_score";
+
                   const isUpdatingField = q_type === "resource";
 
                   const isGrayed =
-                    key === "Innovation Score" || isResource || isUpdatingField;
+                    isInnovationScore || isResource || isUpdatingField;
                   return (
                     <td
                       key={key}
@@ -299,8 +319,9 @@ export default function IdeaBoardTable({
                                   key={idx}
                                   onClick={() => {
                                     console.log("Attachment clicked:", att);
-                                    const url = typeof att === "string" ? att : att.url;
-          setSelectedRow(url);
+                                    const url =
+                                      typeof att === "string" ? att : att.url;
+                                    setSelectedRow(url);
                                     setShowReport(true);
                                   }}
                                   className="

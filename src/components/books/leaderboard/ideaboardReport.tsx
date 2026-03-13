@@ -1,6 +1,5 @@
 "use client";
 
-import { baseURL } from "@/lib/utils";
 import { useState, useEffect, useMemo } from "react";
 import {
   FaChartLine,
@@ -17,10 +16,12 @@ import * as XLSX from "xlsx";
 import { UserInfoType } from "@/lib/types";
 import { getClientUserInfo } from "@/lib/api";
 import ProtectedSection from "../protectedSection";
+import { API_BASE_URL } from "@/lib/job-aid-apis";
 
 export interface keyOrderType {
   key: string;
   q_type: string;
+  info?: string;
 }
 
 // Row type
@@ -57,7 +58,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
   const [qnaKeys, setQnaKeys] = useState<keyOrderType[]>([]);
   const [currentDate, setCurrentDate] = useState("");
   const [selectedRow, setSelectedRow] = useState<object | null>(null);
-  const getMergedKeyOrder = (mapped: RowData[]): keyOrderType[] => {
+  const getMergedKeyOrder = (mapped: RowData[], client_resources?: any): keyOrderType[] => {
     const buckets: Record<string, keyOrderType[]> = {
       normal: [],
       innovation: [],
@@ -83,6 +84,19 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
         }
       });
     });
+
+    if (buckets.resource.length === 0 && client_resources) {
+      client_resources.forEach((res: any) => {
+        const new_res = {
+          key: res.question,
+          q_type: "resource",
+          info: res.info,
+        };
+        if (seen.has(new_res.key)) return;
+        seen.add(new_res.key);
+        buckets.resource.push(new_res);
+      });
+    }
 
     return [
       ...buckets.normal,
@@ -191,18 +205,21 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
 
     try {
       console.debug("Fetching report data for jobaid:", jobaid, clientId);
-      let url = `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${clientId}`;
+      let url = `${API_BASE_URL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${clientId}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch report data");
       const data = await res.json();
       console.log("Fetched report data:", data);
+      const client_resources = data[0].client_resources || [];
+      console.log("Client resources:", client_resources);
       const mapped = mapApiToRows(data);
       setRows(mapped);
       setQnaKeys([
         { key: "Full Name", q_type: "normal" },
-        ...getMergedKeyOrder(mapped),
+        ...getMergedKeyOrder(mapped, client_resources),
       ]);
+
     } catch (err: any) {
       console.error("Error fetching data:", err);
       setError(err.message || "Something went wrong");
@@ -246,6 +263,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
           ?.map((q: any) => ({
             key: q.question,
             q_type: q.question_type,
+            info: q.info,
           })) ?? [], // Other fields
       risks:
         item.generated_report_data?.["2_behavioral_map"]?.["1_fear_or_risk"] ||
@@ -276,7 +294,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
     setLoadingLike(id);
 
     try {
-      const res = await fetch(`${baseURL}/job-aid/job-aid-leaderboard/like/`, {
+      const res = await fetch(`${API_BASE_URL}/job-aid/job-aid-leaderboard/like/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -290,17 +308,19 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
       console.log(await res.json());
       // ✅ Refetch the latest like count from API
       const updatedRes = await fetch(
-        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`,
+        `${API_BASE_URL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`,
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
       const updatedData = await updatedRes.json();
+      const client_resources = updatedData[0].client_resources || [];
+
 
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
       setRows(mapped);
       setQnaKeys([
         { key: "Full Name", q_type: "normal" },
-        ...getMergedKeyOrder(mapped),
+        ...getMergedKeyOrder(mapped, client_resources),
       ]);
     } catch (err) {
       console.error("Like API failed:", err);
@@ -340,7 +360,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
     setLoadingLike(id);
 
     try {
-      const res = await fetch(`${baseURL}/job-aid/job-aid-leaderboard/like/`, {
+      const res = await fetch(`${API_BASE_URL}/job-aid/job-aid-leaderboard/like/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -354,17 +374,18 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
       console.log(await res.json());
       // ✅ Refetch the latest like count from API
       const updatedRes = await fetch(
-        `${baseURL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`,
+        `${API_BASE_URL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`,
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
       const updatedData = await updatedRes.json();
+        const client_resources = updatedData[0].client_resources || [];
 
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
       setRows(mapped);
       setQnaKeys([
         { key: "Full Name", q_type: "normal" },
-        ...getMergedKeyOrder(mapped),
+        ...getMergedKeyOrder(mapped, client_resources),
       ]);
     } catch (err) {
       console.error("Like API failed:", err);
