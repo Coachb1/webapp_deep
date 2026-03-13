@@ -152,7 +152,7 @@ export default function IdeaBoardTable({
                     ${isGrayHeader ? "bg-gray-200" : ""}
                   `}
                   >
-                    {key === "Innovation Score" ? "Align Score" : key}
+                    {key === "Innovation Score" ? "Align Priority" : key}
                   </th>
                 );
               })}
