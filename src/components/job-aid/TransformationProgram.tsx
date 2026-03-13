@@ -1,5 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { generateReport, JobAid, Question } from "@/lib/job-aid-apis";
+import copy from "copy-to-clipboard";
+import CopyBox from "../CopyBox";
+
+type UseCase = {
+  name: string;
+  problem_it_solves: string;
+  ai_approach: string;
+  key_data_required: string[] | string;
+  standalone_value: string;
+  dependency_note?: string;
+};
 
 // -------------------------
 // Color tokens (kept for exact color fidelity)
@@ -49,7 +60,8 @@ function Pill({
 function ComplexityPill({ level }: { level: "Low" | "Medium" | "High" }) {
   const map: any = { Low: T.low, Medium: T.medium, High: T.high };
   const c = map[level] || T.medium;
-  return <Pill label={level} color={c.text} bg={c.bg} border={c.border} />;
+  // return <Pill label={level} color={c.text} bg={c.bg} border={c.border} />;
+  return ""
 }
 
 function TealPill({ label }: { label: string }) {
@@ -63,12 +75,71 @@ function SectionLabel({ icon, text }: { icon: string; text: string }) {
   return (
     <div className="flex items-center gap-2 mb-1">
       <span className="text-sm">{icon}</span>
-      <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6B7E93]">
+      <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#6B7E93]">
         {text}
       </span>
     </div>
   );
 }
+
+function CopyIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-slate-500"
+    >
+      <path
+        d="M10.6667 1.33331H3.33333C2.59695 1.33331 2 1.93027 2 2.66665V10.6666C2 11.403 2.59695 12 3.33333 12H10.6667C11.403 12 12 11.403 12 10.6666V2.66665C12 1.93027 11.403 1.33331 10.6667 1.33331Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 5.33331V13.3333C14 14.0697 13.403 14.6666 12.6667 14.6666H5.33333"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+const convertMarkdownToPlainText = (markdown: string): string => {
+  return markdown
+    .replace(/^\s*-\s/gm, "• ")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .trim();
+};
+
+const handleCopy = (
+  setCopied: React.Dispatch<React.SetStateAction<boolean>>,
+  uc: UseCase
+) => {
+
+  const keyData = Array.isArray(uc.key_data_required)
+    ? uc.key_data_required.map(d => `- ${d}`).join("\n")
+    : `- ${uc.key_data_required}`;
+
+  const markdownText = `**Use Case:** ${uc.name}
+**Problem it Solves:** ${uc.problem_it_solves}
+**AI Approach:** ${uc.ai_approach}
+**Key Data Required:**
+${keyData}
+**Standalone Value:** ${uc.standalone_value}
+**Dependency Note:** ${uc.dependency_note ?? "Fully standalone — no dependencies."}`;
+
+  const plainText = convertMarkdownToPlainText(markdownText);
+
+  if (copy(plainText)) {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+};
 
 // -------------------------
 // Use case card (collapsible)
@@ -83,6 +154,8 @@ function UCCard({
   total: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   return (
     <div
       className={`flex gap-4 animate-fadeUp`}
@@ -139,6 +212,19 @@ function UCCard({
               AI
             </span>
             <ComplexityPill level={uc.implementation_complexity} />
+            <button
+              onClick={()=> {
+                handleCopy(setCopied, uc)
+              }}
+              title="Copy details"
+              className="w-6 h-6 rounded-full border flex items-center justify-center text-xs transition-colors hover:bg-slate-50"
+            >
+              {copied ? (
+                <span className="text-xs text-teal-600">✓</span>
+              ) : (
+                <CopyIcon />
+              )}
+            </button>
             <div
               className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs transition-transform ${open ? "rotate-180" : ""}`}
             >
@@ -149,7 +235,7 @@ function UCCard({
 
         {open && (
           <div className="p-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4"> */}
               <div>
                 <SectionLabel icon="🤖" text="AI Approach" />
                 <p className="text-sm text-[#1A2B3C] leading-relaxed">
@@ -157,13 +243,13 @@ function UCCard({
                 </p>
               </div>
 
-              <div>
+              {/* <div>
                 <SectionLabel icon="🔧" text="Implementation Complexity" />
                 <div className="mb-2">
                   <ComplexityPill level={uc.implementation_complexity} />
                 </div>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
 
             <div
               className="border-t"
@@ -277,7 +363,7 @@ function ResultsView({
             <span className="text-xs font-semibold px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700">
               {uc.length} Use Cases
             </span>
-            <div className="flex gap-2 text-xs font-semibold">
+            {/* <div className="flex gap-2 text-xs font-semibold">
               {counts.low > 0 && (
                 <span className="px-2 py-1 rounded bg-green-50 border border-green-200 text-green-700">
                   {counts.low} Low
@@ -293,7 +379,7 @@ function ResultsView({
                   {counts.high} High
                 </span>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -315,15 +401,27 @@ function ResultsView({
       </div>
 
       {result.decomposition_logic && (
-        <div className="mt-8 bg-teal-50 border border-teal-200 rounded-lg p-6">
-          <div className="text-xs font-semibold text-teal-700 uppercase mb-2">
-            Decomposition Logic
-          </div>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            {result.decomposition_logic}
-          </p>
-        </div>
-      )}
+  <div className="mt-8 bg-teal-50 border border-teal-200 rounded-lg p-6">
+
+    <div className="flex items-center justify-between mb-3">
+      <div className="text-xs font-semibold text-teal-700 uppercase tracking-wide">
+        Decomposition Logic
+      </div>
+
+
+    </div>
+
+    <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+      {result.decomposition_logic}
+      <CopyBox
+        content={result.decomposition_logic}
+        className="p-1.5 ml-2 rounded-md text-gray-500 hover:text-gray-800  transition"
+    />
+    </p>
+    
+
+  </div>
+)}
     </div>
   );
 }
