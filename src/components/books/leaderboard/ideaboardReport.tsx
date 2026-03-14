@@ -31,6 +31,7 @@ export interface RowData {
   full_name: string;
   email: string;
   qna: Record<string, string>;
+  created_at: string;
   odered_qna?: Record<string, Record<string, string>>;
   likes: number;
   liked: boolean;
@@ -243,6 +244,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
       // Q&A object (question: answer)
       full_name: item.full_name || "-",
       email: item.email || "-",
+      created_at: item.created_at || "",
       qna:
         item.ordered_qna?.reduce((acc: Record<string, string>, q: any) => {
           acc[q.question] = q.answer;

@@ -150,7 +150,7 @@ export default function IdeaBoardTable({
                     key={key}
                     className={`px-3 py-2 text-center w-[160px]  ${
                       isGrayHeader ? "bg-gray-200" : ""
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-center gap-1 relative group">
                       <span>{key}</span>
@@ -173,9 +173,11 @@ export default function IdeaBoardTable({
                   </th>
                 );
               })}
-
+              <th className="px-3 py-2 text-center w-[140px]">
+                Log Date
+              </th>
               {/* Vote column */}
-              <th className="px-3 py-2 text-center w-[120px]">
+              {/* <th className="px-3 py-2 text-center w-[120px]">
                 <button
                   onClick={toggleSortVotes}
                   className="inline-flex items-center gap-2"
@@ -189,7 +191,8 @@ export default function IdeaBoardTable({
                     <span className="text-xs">(↑↓)</span>
                   )}
                 </button>
-              </th>
+              </th> */}
+
             </tr>
           </thead>
 
@@ -252,7 +255,7 @@ export default function IdeaBoardTable({
                         isGrayed
                           ? "bg-gray-200/40 font-medium text-gray-700"
                           : "text-gray-600"
-                      }
+                        }
                     `}
                     >
                       {/* ===== RESOURCE COLUMN ===== */}
@@ -346,9 +349,12 @@ export default function IdeaBoardTable({
                     </td>
                   );
                 })}
-
+                {/* Created Date Column */}
+                <td className="px-6 py-4 text-center whitespace-nowrap">
+                  {new Date(row.created_at).toLocaleDateString()}
+                </td>
                 {/* ================= VOTES ================= */}
-                <td className="px-6 py-4 text-center">
+                {/* <td className="px-6 py-4 text-center">
                   {onlyClientSetup ? (
                     <div className="inline-flex items-center gap-3">
                       <button
@@ -388,7 +394,7 @@ export default function IdeaBoardTable({
                       <span className="font-semibold">{row.likes}</span>
                     </button>
                   )}
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
@@ -450,7 +456,7 @@ export default function IdeaBoardTable({
                   shouldScroll
                     ? "max-h-[50vh] overflow-y-auto"
                     : "overflow-hidden"
-                }`}
+                  }`}
               />
 
               <div className="flex justify-end gap-3 mt-4">
