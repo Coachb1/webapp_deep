@@ -16,7 +16,7 @@ import * as XLSX from "xlsx";
 import { UserInfoType } from "@/lib/types";
 import { getClientUserInfo } from "@/lib/api";
 import ProtectedSection from "../protectedSection";
-import { API_BASE_URL } from "@/lib/job-aid-apis";
+import { API_BASE_URL, LOCAL_API_BASE_URL } from "@/lib/job-aid-apis";
 
 export interface keyOrderType {
   key: string;
@@ -54,6 +54,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isProtected, setIsProtected] = useState(false);
   const [correctPassword, setCorrectPassword] = useState("");
+  const [sessionVoting, setSessionVoting] = useState(true);
 
   const [rows, setRows] = useState<RowData[]>([]);
   const [qnaKeys, setQnaKeys] = useState<keyOrderType[]>([]);
@@ -210,7 +211,9 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch report data");
-      const data = await res.json();
+      const resPonse = await res.json();
+      const data = resPonse.sessions || resPonse;
+      setSessionVoting(resPonse.session_voting_enabled)
       console.log("Fetched report data:", data);
       const client_resources = data[0].client_resources || [];
       console.log("Client resources:", client_resources);
@@ -313,7 +316,9 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
         `${API_BASE_URL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`,
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
-      const updatedData = await updatedRes.json();
+      const resPonse = await updatedRes.json();
+      const updatedData = resPonse.sessions;
+      setSessionVoting(resPonse.session_voting_enabled)
       const client_resources = updatedData[0].client_resources || [];
 
 
@@ -379,8 +384,10 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
         `${API_BASE_URL}/job-aid/job-aid-leaderboard/?jobaid_id=${jobaid}&client_id=${client?.clientId}`,
       );
       if (!updatedRes.ok) throw new Error("Failed to refresh data");
-      const updatedData = await updatedRes.json();
-        const client_resources = updatedData[0].client_resources || [];
+      const resPonse = await updatedRes.json();
+      const updatedData = resPonse.sessions;
+      setSessionVoting(resPonse.session_voting_enabled)
+      const client_resources = updatedData[0].client_resources || [];
 
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
@@ -538,6 +545,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
         {!loading && !error && paginatedRows.length > 0 && (
           <>
             <IdeaBoardTable
+              sessionVoting={sessionVoting}
               qnaKeys={qnaKeys}
               rows={paginatedRows}
               loadingLike={loadingLike}

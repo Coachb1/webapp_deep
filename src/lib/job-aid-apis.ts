@@ -46,7 +46,7 @@ export interface ReportResponse {
 
 // ---------- Env Vars ----------
 export const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
-// export const API_BASE_URL = "http://localhost:8001/api/v1";
+export const LOCAL_API_BASE_URL = "http://localhost:8001/api/v1";
 
 console.log("API_BASE_URL:", API_BASE_URL);
 

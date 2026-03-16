@@ -17,6 +17,7 @@ interface Props {
   sortDir: string;
   toggleSortVotes: () => void;
   onQnaUpdated: (rowId: number, question: string, answer: any) => void;
+  sessionVoting: boolean;
 }
 export default function IdeaBoardTable({
   qnaKeys,
@@ -30,6 +31,7 @@ export default function IdeaBoardTable({
   sortDir,
   toggleSortVotes,
   onQnaUpdated,
+  sessionVoting = true
 }: Props) {
   const [showReport, setShowReport] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
@@ -89,7 +91,10 @@ export default function IdeaBoardTable({
   });
 
   const beforeGrayCount = grayHeaderStartIndex >= 0 ? grayHeaderStartIndex : 0;
-  const afterGrayCount = grayHeaderStartIndex >= 0 ? qnaKeys.length - grayHeaderStartIndex - grayHeaderCount : 0;
+  let afterGrayCount = grayHeaderStartIndex >= 0 ? qnaKeys.length - grayHeaderStartIndex - grayHeaderCount : 0;
+  if (sessionVoting){
+    afterGrayCount += 1;
+  }
 
   const shouldScroll = wordCount > 100;
   useEffect(() => {
@@ -177,7 +182,8 @@ export default function IdeaBoardTable({
                 Log Date
               </th>
               {/* Vote column */}
-              {/* <th className="px-3 py-2 text-center w-[120px]">
+              {sessionVoting && (
+              <th className="px-3 py-2 text-center w-[120px]">
                 <button
                   onClick={toggleSortVotes}
                   className="inline-flex items-center gap-2"
@@ -191,7 +197,8 @@ export default function IdeaBoardTable({
                     <span className="text-xs">(↑↓)</span>
                   )}
                 </button>
-              </th> */}
+              </th>
+              )}
 
             </tr>
           </thead>
@@ -354,7 +361,8 @@ export default function IdeaBoardTable({
                   {new Date(row.created_at).toLocaleDateString()}
                 </td>
                 {/* ================= VOTES ================= */}
-                {/* <td className="px-6 py-4 text-center">
+                {sessionVoting && (
+                <td className="px-6 py-4 text-center">
                   {onlyClientSetup ? (
                     <div className="inline-flex items-center gap-3">
                       <button
@@ -394,7 +402,8 @@ export default function IdeaBoardTable({
                       <span className="font-semibold">{row.likes}</span>
                     </button>
                   )}
-                </td> */}
+                </td>
+                )}
               </tr>
             ))}
           </tbody>
