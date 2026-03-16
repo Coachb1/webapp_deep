@@ -17,6 +17,7 @@ interface Props {
   sortDir: string;
   toggleSortVotes: () => void;
   onQnaUpdated: (rowId: number, question: string, answer: any) => void;
+  sessionVoting: boolean;
 }
 export default function IdeaBoardTable({
   qnaKeys,
@@ -30,6 +31,7 @@ export default function IdeaBoardTable({
   sortDir,
   toggleSortVotes,
   onQnaUpdated,
+  sessionVoting = true
 }: Props) {
   const [showReport, setShowReport] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
@@ -89,7 +91,10 @@ export default function IdeaBoardTable({
   });
 
   const beforeGrayCount = grayHeaderStartIndex >= 0 ? grayHeaderStartIndex : 0;
-  const afterGrayCount = grayHeaderStartIndex >= 0 ? qnaKeys.length - grayHeaderStartIndex - grayHeaderCount : 0;
+  let afterGrayCount = grayHeaderStartIndex >= 0 ? qnaKeys.length - grayHeaderStartIndex - grayHeaderCount : 0;
+  if (sessionVoting){
+    afterGrayCount += 1;
+  }
 
   const shouldScroll = wordCount > 100;
   useEffect(() => {
@@ -150,7 +155,7 @@ export default function IdeaBoardTable({
                     key={key}
                     className={`px-3 py-2 text-center w-[160px]  ${
                       isGrayHeader ? "bg-gray-200" : ""
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-center gap-1 relative group">
                       <span>{key}</span>
@@ -173,8 +178,11 @@ export default function IdeaBoardTable({
                   </th>
                 );
               })}
-
+              <th className="px-3 py-2 text-center w-[140px]">
+                Log Date
+              </th>
               {/* Vote column */}
+              {sessionVoting && (
               <th className="px-3 py-2 text-center w-[120px]">
                 <button
                   onClick={toggleSortVotes}
@@ -190,6 +198,8 @@ export default function IdeaBoardTable({
                   )}
                 </button>
               </th>
+              )}
+
             </tr>
           </thead>
 
@@ -252,7 +262,7 @@ export default function IdeaBoardTable({
                         isGrayed
                           ? "bg-gray-200/40 font-medium text-gray-700"
                           : "text-gray-600"
-                      }
+                        }
                     `}
                     >
                       {/* ===== RESOURCE COLUMN ===== */}
@@ -346,8 +356,12 @@ export default function IdeaBoardTable({
                     </td>
                   );
                 })}
-
+                {/* Created Date Column */}
+                <td className="px-6 py-4 text-center whitespace-nowrap">
+                  {new Date(row.created_at).toLocaleDateString()}
+                </td>
                 {/* ================= VOTES ================= */}
+                {sessionVoting && (
                 <td className="px-6 py-4 text-center">
                   {onlyClientSetup ? (
                     <div className="inline-flex items-center gap-3">
@@ -389,6 +403,7 @@ export default function IdeaBoardTable({
                     </button>
                   )}
                 </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -450,7 +465,7 @@ export default function IdeaBoardTable({
                   shouldScroll
                     ? "max-h-[50vh] overflow-y-auto"
                     : "overflow-hidden"
-                }`}
+                  }`}
               />
 
               <div className="flex justify-end gap-3 mt-4">

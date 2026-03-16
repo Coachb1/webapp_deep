@@ -436,6 +436,7 @@ function WizardForm({
   onChange,
   onContinue,
   onBack,
+  jobAid
 }: {
   step: number;
   steps: any[];
@@ -443,6 +444,7 @@ function WizardForm({
   onChange: (id: string, val: string) => void;
   onContinue: () => void;
   onBack: () => void;
+  jobAid: JobAid;
 }) {
   const current = steps[step];
   const value = answers[current.id] || "";
@@ -469,7 +471,7 @@ function WizardForm({
             ‹ Back
           </button>
           <span className="text-xs text-[#6B7E93] font-medium">
-            Use Case Decomposer
+            {jobAid.title || "Use Case Decomposer"}
           </span>
         </div>
 
@@ -644,8 +646,8 @@ export default function TransformationProgram({
             />
           </svg>
         </div>
-        <span className="font-bold text-sm">Transformation Program</span>
-        <span
+        <span className="font-bold text-sm">{jobAid.description || "Break down major program goals into manageable use cases"}</span>
+        {/* <span
           className="text-xs font-bold ml-3"
           style={{
             color: T.teal,
@@ -656,7 +658,7 @@ export default function TransformationProgram({
           }}
         >
           EPIC LEVEL
-        </span>
+        </span> */}
       </header>
 
       <main className="flex items-center justify-center p-8">
@@ -669,6 +671,7 @@ export default function TransformationProgram({
               onChange={handleChange}
               onContinue={handleContinue}
               onBack={goBack}
+              jobAid={jobAid}
             />
           )}
 
