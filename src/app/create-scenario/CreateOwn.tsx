@@ -753,14 +753,14 @@ const CreateOwn = ({
       console.log(searchInputText);
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=AIzaSyBGfMVl2m4HwOpv9MS2J3hBAbd4YMYS7vo`,
         {
           method: "GET",
         }
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          console.log("tedx", data);
 
           if (data.pageInfo.resultsPerPage > 0) {
             const formattedVideos = data.items.map((item: any) => ({
@@ -783,14 +783,14 @@ const CreateOwn = ({
     } else if (searchMode === "curated-learning") {
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en&videoEmbeddable=true`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyBGfMVl2m4HwOpv9MS2J3hBAbd4YMYS7vo&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en&videoEmbeddable=true`,
         {
           method: "GET",
         }
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          console.log("youtube",data);
           if (data.pageInfo.resultsPerPage > 0) {
             const formattedVideos = data.items.map((item: any) => ({
               video_id: item.id.videoId,

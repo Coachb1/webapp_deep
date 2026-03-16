@@ -2,30 +2,37 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { usePortalUser } from "./context/UserContext";
-import { CaseItem, CollectionBlock } from "@/lib/types";
+import { CaseItem, CollectionBlock, IframeTablePanel } from "@/lib/types";
 import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
 import { Sticker } from "./sticker";
 import IframeViewer from "./IframeViewer";
 
 const LIMIT = 10; // show first 10 items
 
-const matchesAction = (
-  block: CollectionBlock,
-  actionKey?: string | null
-) => {
-  return !actionKey ||
-  block.case_items?.some(
-    (caseItem) => 
-      {        
-        return caseItem.action_name === actionKey
-      }
+const matchesAction = (block: any, actionKey?: string | null) => {
+  if (!actionKey) return true;
+
+  // ✅ Check case_items
+  const caseMatch = block.case_items?.some(
+    (caseItem: any) => caseItem.action_name === actionKey
   );
-}
+
+  // ✅ Check buttons
+  const buttonMatch = block.action_tab_info?.buttons?.some(
+    (btn: any) => btn.action === actionKey
+  );
+
+  return caseMatch || buttonMatch;
+};
+
 interface ConceptsViewerProps {
   actionKey?: string | null;
+  actionType?: string | null;
+  onTrack?: (workspace:string) => void;
+  userId?: string; // Added userId for tracking
 }
 
-const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
+const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, onTrack, userId }) => {
   const [pageMap, setPageMap] = useState<Record<string, number>>({});
   const { userInfo, loading } = usePortalUser();
   const [data, setData] = useState<CollectionBlock[] | null>(null);
@@ -38,7 +45,9 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
   const [activeBlockForMore, setActiveBlockForMore] =
     useState<CollectionBlock | null>(null);
   const [moreSearch, setMoreSearch] = useState("");
-
+  const [iframeLoadingMap, setIframeLoadingMap] = useState<
+    Record<string, boolean>
+  >({});
 
   // Pagination helpers (per collection block)
   const getPage = (blockId: string) => pageMap[blockId] ?? 0;
@@ -50,9 +59,9 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
     }));
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     setPageMap({});
-  }, [actionKey])
+  }, [actionKey]);
   // Normalize the 2 links (clean helper)
   const getLinks = (item: CaseItem | null) => {
     if (!item) return [];
@@ -64,22 +73,69 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
   };
 
   const links = getLinks(selectedTab);
-  const activeIframeBlock = useMemo(
-  () =>
-    data?.find(
-      (block) =>
-        block.iframe_link && matchesAction(block, actionKey)
-    ),
-  [data, actionKey]
-);
+  const iframePanels = useMemo(() => {
+    if (!data) return [];
 
-  const [iframeLoading, setIframeLoading] = useState(true);
+    const panels: IframeTablePanel[] = [];
+
+    
+
+    data.forEach((block) => {
+      if (!matchesAction(block, actionKey)) return;
+
+      const defaultIframe = block.iframe_link ? [{
+          iframe_link: block.iframe_link,
+          iframe_title: block.iframe_title,
+          iframe_subtitle: block.iframe_subtitle,
+        }] : [];
+      
+      const iframeConfig = block.action_tab_info?.iframe_config || {
+        show_iframe_panel: true,
+        use_default_iframe: true,
+      };
+      
+      if (iframeConfig?.show_iframe_panel === false){
+        return;
+      }
+
+      const matchedButton = block.action_tab_info?.buttons?.find(
+        (btn) => btn.action === actionKey,
+      );
+
+      if (matchedButton?.iframe_table_panel?.length) {
+        const validIframe = matchedButton.iframe_table_panel.filter(
+          (panel) => panel.iframe_link && panel.enable !== false,
+        );
+        if (validIframe.length > 0) {
+          panels.push(...validIframe);
+        }
+      }
+
+      if (panels.length === 0 && block.iframe_link && iframeConfig?.use_default_iframe !== false) {
+        panels.push(...defaultIframe);
+      }
+    });
+
+    return panels;
+  }, [data, actionKey]);
 
   useEffect(() => {
-    if (activeIframeBlock?.iframe_link) {
-      setIframeLoading(true);
-    }
-  }, [activeIframeBlock?.iframe_link]);
+  setIframeLoadingMap((prev) => {
+    const next = { ...prev };
+
+    iframePanels.forEach((panel) => {
+      if (!panel.iframe_link) return;
+
+      // Only initialize if not already tracked
+      if (!(panel.iframe_link in next)) {
+        next[panel.iframe_link] = true;
+      }
+    });
+
+    return next;
+  });
+}, [iframePanels]);
+
 
   // Load from userInfo
   useEffect(() => {
@@ -107,9 +163,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
           const end = start + LIMIT;
 
           const filteredCaseItems = actionKey
-            ? block.case_items.filter(
-                (item) => item.action_name === actionKey
-              )
+            ? block.case_items.filter((item) => item.action_name === actionKey)
             : block.case_items;
 
           const visibleItems = filteredCaseItems.slice(start, end);
@@ -117,10 +171,10 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
           const hasNext = end < filteredCaseItems.length;
           const hasPrev = page > 0;
 
-          let heading = block.heading
+          let heading = block.heading;
           if (actionKey && block.action_tab_info?.buttons?.length > 0) {
             const matchedButton = block.action_tab_info.buttons.find(
-              (btn) => btn.action === actionKey
+              (btn) => btn.action === actionKey,
             );
 
             if (matchedButton?.heading) {
@@ -131,7 +185,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
           if (actionKey && block.action_tab_info?.buttons?.length > 0) {
             const matchedButton = block.action_tab_info.buttons.find(
-              (btn) => btn.action === actionKey
+              (btn) => btn.action === actionKey,
             );
 
             if (matchedButton?.collection_name) {
@@ -152,12 +206,15 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
               )}
 
               {/* Collection Block */}
+              {actionType !== "iframe" && (
               <div className="w-full flex justify-center mt-10 px-4">
-                  <div className="
+                <div
+                  className="
                     relative bg-white border border-[#00c193] rounded-2xl
                     px-6 pb-6 pt-16
                     shadow-sm w-full max-w-6xl
-                  ">
+                  "
+                >
                   {/* Collection name (centered) */}
                   <div
                     className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 border border-[#00c193] px-5 py-[6px] shadow-sm custom-title"
@@ -168,19 +225,23 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
                   {/* Pagination Buttons */}
                   {block.case_items.length > LIMIT && (
-                    <div className="
+                    <div
+                      className="
                       mt-4 flex justify-center gap-3
                       sm:absolute sm:-top-3 sm:right-4 sm:mt-0
-                    ">
+                    "
+                    >
                       <button
                         disabled={!hasPrev}
                         onClick={() => setPage(block.collection_name, page - 1)}
                         className={`
                           border border-[#00c193] text-xs font-medium px-4 py-1.5
                           rounded-md shadow-sm
-                          ${hasPrev
-                            ? "bg-white hover:bg-gray-100"
-                            : "bg-gray-200 text-gray-400 cursor-not-allowed"}
+                          ${
+                            hasPrev
+                              ? "bg-white hover:bg-gray-100"
+                              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          }
                         `}
                       >
                         Prev
@@ -193,16 +254,17 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                         className={`
                           border border-[#00c193] text-xs font-medium px-4 py-1.5
                           rounded-md shadow-sm
-                          ${hasNext
-                            ? "bg-white hover:bg-gray-100"
-                            : "bg-gray-200 text-gray-400 cursor-not-allowed"}
+                          ${
+                            hasNext
+                              ? "bg-white hover:bg-gray-100"
+                              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          }
                         `}
                       >
                         Next
                       </button>
                     </div>
                   )}
-
 
                   {/* Tabs */}
                   <div className="flex flex-wrap justify-center gap-x-4 gap-y-4 mt-8 sm:mt-0">
@@ -213,66 +275,70 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
                           setSelectedTab(item);
                           setPageIndex(0);
                           setIsReadModalOpen(true);
-                        }}  
+                          onTrack?.(item.tab_name);
+                        }}
                         className="custom-btn btn-sm relative overflow-visible"
                       >
                         {item.tab_name}
-                        <Sticker
-                          text={item.sticker}
-                        />
+                        <Sticker text={item.sticker} />
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-
-
+              )}
             </React.Fragment>
           );
         })}
 
       {/* ---------------- DO MORE (DYNAMIC IFRAME) ---------------- */}
-      {activeIframeBlock?.iframe_link && (
+      {iframePanels.length > 0 && (
         <div className="w-full flex justify-center mt-14 px-4">
           <div className="bg-white border border-[#00c193] rounded-2xl px-6 py-6 shadow-sm w-full max-w-6xl">
+            {iframePanels.map((panel, index) => (
+              <div key={index} className="mb-10 last:mb-0">
+                {/* Section Heading */}
+                <div className="text-center mb-6">
+                  <h2 className="custom-title">
+                    {panel.iframe_title || "Enterprise AI Literacy Training"}
+                  </h2>
 
-            {/* Section Heading */}
-            <div className="text-center mb-6">
-              <h2 className="custom-title">
-                {activeIframeBlock?.iframe_title || "Enterprise AI Literacy Training & Course Catalogue"}
-              </h2>
-              <p className="custom-subtitle mt-1">
-                {activeIframeBlock?.iframe_subtitle || "Curated collection of free & paid AI training courses"}
-              </p>
-              <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
-            </div>
+                  {panel.iframe_subtitle && (
+                    <p className="custom-subtitle mt-1">
+                      {panel.iframe_subtitle}
+                    </p>
+                  )}
 
-            {/* Dynamic Iframe */}
-            <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 min-h-[533px]">
-
-              {/* Loader */}
-              {iframeLoading && (
-                <div className="absolute inset-0 z-10 bg-white p-6">
-                  <IframeGridLoader />
+                  <div className="mx-auto mt-4 h-[1.5px] bg-gray-300 max-w-xl opacity-70"></div>
                 </div>
-              )}
 
-              {/* Iframe */}
-              <iframe
-                className="w-full h-[533px]"
-                src={activeIframeBlock.iframe_link}
-                frameBorder="0"
-                title="Enterprise AI Courses"
-                onLoad={() => setIframeLoading(false)}
-              />
-            </div>
+                {/* Iframe */}
+                <div className="relative w-full overflow-hidden rounded-xl border border-gray-300 min-h-[533px]">
+                  {iframeLoadingMap[panel.iframe_link!] && (
+                    <div className="absolute inset-0 z-10 bg-white p-6">
+                      <IframeGridLoader />
+                    </div>
+                  )}
 
-
+                  <iframe
+                    key={panel.iframe_link}
+                    className="w-full h-[533px]"
+                    src={panel.iframe_link}
+                    frameBorder="0"
+                    title={panel.iframe_title || `iframe-${index}`}
+                    onLoad={() =>
+                      setIframeLoadingMap((prev) => ({
+                        ...prev,
+                        [panel.iframe_link!]: false,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
-
-
 
       {/* READ MODAL */}
       {isReadModalOpen && selectedTab && (
@@ -314,7 +380,13 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey }) => {
 
             {/* Body (Iframe) */}
             <div className="flex-1 overflow-hidden">
-              <IframeViewer url={links[pageIndex]} title={selectedTab.tab_name} />
+              <IframeViewer
+                url={links[pageIndex]}
+                title={selectedTab.tab_name}
+                enableTracking={true}
+                userId={userId!} // Pass userId for tracking
+                case_mapping_id={selectedTab.uid} // Pass case_mapping_id for tracking
+              />
             </div>
           </div>
         </div>

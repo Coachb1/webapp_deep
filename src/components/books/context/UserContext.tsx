@@ -172,14 +172,12 @@ export const UserProvider = ({ children, LoginView }: { children: ReactNode, Log
   useEffect(() => {
     let token: string | null = null;
     const fullPath = window.location.href;
+    token = localStorage.getItem(`${fullPath}-${LoginView || "jwt_token"}`);
     if (LoginView && LoginView === 'email_password') {
       console.debug("Library Bot detected, using access token");
-      token = localStorage.getItem("access_token");
       if (!token) {
         setLoading(false);
         return;
-
-        
       }
 
     fetch(`${baseURL}/accounts/me/`, { headers: { Authorization: `Bearer ${token}` } })
@@ -217,7 +215,6 @@ export const UserProvider = ({ children, LoginView }: { children: ReactNode, Log
       
     } else {
       console.debug("Regular user session detected, using JWT token");
-      token = localStorage.getItem(`${fullPath}-${LoginView || "jwt_token"}`);
       if (!token) {
         setLoading(false);
         return;

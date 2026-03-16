@@ -7,12 +7,15 @@ export interface Question {
   id: number;
   uid: string; // Unique identifier for the question
   question: string;
-  question_type: "text" | "dropdown" | "boolean";
+  question_type: "text" | "dropdown" | "boolean" | "editable" | "resource";
   description: string;
   dropdowns?: string; // CSV string, e.g. "People, Tools, Budget"
   section?: string; // Optional section for grouping questions
   is_multi_select?:boolean;
   allow_custom_text?:boolean;
+
+  // new fields for attachment support
+  attachment_allowed?: boolean;
 }
 
 export interface JobAid {
@@ -38,11 +41,12 @@ export interface ReportResponse {
   generated_prompt: string;
   report_url: string;
   session_id?: string;
+  output?: string; // Optional field to hold any additional output from the report generation
 }
 
 // ---------- Env Vars ----------
-const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
-// const API_BASE_URL = "http://localhost:8001/api/v1";
+export const API_BASE_URL = baseURL || "http://localhost:8001/api/v1";
+export const LOCAL_API_BASE_URL = "http://localhost:8001/api/v1";
 
 console.log("API_BASE_URL:", API_BASE_URL);
 
@@ -129,9 +133,58 @@ export const generateReport = async (
   userEmail = "test@example.com",
   name:string,
   job_aid_id: string,
-  client_id?: string
+  client_id?: string,
+  attachments?: Record<string, File[]>
 ): Promise<ReportResponse> => {
   try {
+    // if we have at least one file use FormData
+    const hasFile = attachments
+      ? Object.values(attachments).some((files) => files && files.length > 0)
+      : false;
+
+    if (hasFile) {
+      const formData = new FormData();
+      formData.append(
+        "qna",
+        JSON.stringify(answers),
+      );
+      formData.append("useremail", userEmail);
+      formData.append("name", name);
+      formData.append("jobaid", job_aid_id);
+      if (client_id) formData.append("client_id", client_id);
+
+      // append all files keyed by question and file index
+      Object.entries(attachments || {}).forEach(([question, files]) => {
+        if (files && files.length > 0) {
+          // Backend processes one file per question key (upload_image called once per key)
+          // Send only the first file per question, or send all under indexed keys
+          files.forEach((file, idx) => {
+            const key =
+              files.length === 1
+                ? `file_upload[${question}]`
+                : `file_upload[${question}_${idx}]`;
+            formData.append(key, file);
+          });
+        }
+      });
+      
+      // Use native fetch to avoid forcing application/json header
+      const res = await fetch(`${API_BASE_URL}/job-aid/generate-report/`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        let errMsg = `HTTP ${res.status}: ${res.statusText}`;
+        try {
+          const errorData = await res.json();
+          errMsg += ` - ${errorData.message || JSON.stringify(errorData)}`;
+        } catch {}
+        throw new Error(errMsg);
+      }
+      return (await res.json()) as ReportResponse;
+    }
+
+    // fallback to plain JSON request
     return await fetchJson<ReportResponse>(
       `${API_BASE_URL}/job-aid/generate-report/`,
       {
@@ -195,3 +248,27 @@ export const getMockQuestions = (): Question[] => [
       "Define specific metrics and KPIs to track your progress and success.",
   },
 ];
+
+
+export const updateJobaidSessionQna = async (sessionId: string, updateQna: Record<string, string>) =>{
+  try {
+    const response = await fetch(`${API_BASE_URL}/job-aid/${sessionId}/update-session/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({qna: updateQna}),
+    });
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+  
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error updating jobaid session QNA:', error);
+    throw error;
+  
+  }
+}

@@ -13,6 +13,7 @@ import {
   JobAid,
 } from "@/lib/job-aid-apis";
 import CopyBox from "../CopyBox";
+import TransformationProgram from "./TransformationProgram";
 import NewAdvMarkdown from "../NewAdvMarkdown";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
@@ -38,12 +39,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answerFiles, setAnswerFiles] = useState<Record<string, File[]>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   // const [isJobAid, setIsJobAid] = useState<boolean>(false); // Check if this is a job aid or not
   const [isValidation, setIsValidation] = useState<boolean>(true); // Check if this is a job aid or not
   const [isReport, setIsReport] = useState<boolean>(true);
   const [isPromptGenerator, setIsPromptGenerator] = useState<boolean>(false);
+  const [isTransformationProgram, setIsTransformationProgram] = useState<boolean>(false);
 
   const [copied, setCopied] = useState<boolean>(false);
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>(
@@ -71,7 +74,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
             ...q,
             id: String(q.id),
           })
-        );
+        ).filter((question: Question) => question.question_type !== 'editable');
         setQuestions(normalizedQuestions);
         console.log("validatioan", data?.is_validation);
         setIsValidation(data?.is_validation);
@@ -80,6 +83,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           data.is_prompt_generation !== undefined
             ? data.is_prompt_generation
             : data?.job_aid_type === "prompt_generator"
+        );
+        setIsTransformationProgram(
+          data?.job_aid_type === "transformation_program"
         );
       } catch (err: any) {
         setError(err.message ?? "Failed to fetch job aid.");
@@ -133,7 +139,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     }
   };
 
-  const handleContinue = async (answer: string) => {
+  const handleContinue = async (answer: string, attachments?: File[]) => {
     const currentQ = questions[currentQuestionIndex];
     const updatedAnswers = {
       ...answers,
@@ -141,6 +147,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     };
 
     setAnswers(updatedAnswers);
+
+    if (attachments && attachments.length > 0) {
+      setAnswerFiles((prev) => ({
+        ...prev,
+        [currentQ.question]: attachments,
+      }));
+    }
+
     if (currentQ.question_type === "dropdown" || !isValidation) {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
@@ -231,13 +245,23 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
     // }
   };
 
-  const handleIgnore = async () => {
+  const handleIgnore = async (attachmentsParam?: File[]) => {
     console.log(
       "Ignoring question:",
       currentQuestionIndex,
       currentQuestionIndex + 1,
       currentQuestionIndex < questions.length - 1
     );
+    
+    // Store attachments if provided
+    const currentQ = questions[currentQuestionIndex];
+    const updatedFiles = { ...answerFiles };
+    
+    if (attachmentsParam && attachmentsParam.length > 0) {
+      updatedFiles[currentQ.question] = attachmentsParam;
+      setAnswerFiles(updatedFiles);
+    }
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
@@ -248,10 +272,10 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         if (showLoader) {
           setLoading(true);
           setCurrentStep("loading");
-          await handleValidation(answers, email, name);
+          await handleValidation(answers, email, name, updatedFiles);
           setLoading(false);
         } else {
-          await handleValidation(answers, email, name);
+          await handleValidation(answers, email, name, updatedFiles);
           setCurrentStep("completed");
         }
       }
@@ -273,7 +297,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   const handleValidation = async (
     answers: Record<string, string>,
     email: string,
-    name: string
+    name: string,
+    attachments?: Record<string, File[]>
   ) => {
     setLoading(true);
     setError(null);
@@ -285,7 +310,8 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         email || inputEmail || "undefined@gmail.com",
         name || inputName || "sample",
         job_aid_id,
-        clientId
+        clientId,
+        attachments || answerFiles
       );
       console.log("Report generated:", reportResult);
       setReportUrl(reportResult.report_url);
@@ -315,6 +341,14 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
 
 
   // --- UI Rendering ---
+  if (isTransformationProgram) {    
+    if (!jobAid) return <div className="flex items-center justify-center w-full h-screen bg-white">
+        <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
+      </div>; // or a loader
+
+    return <TransformationProgram jobAid={jobAid} jobaidID={job_aid_id} inputEmail={inputEmail} inputName={inputName} clientId={clientId} />;
+  }
+
   if (currentStep === "welcome") {
     return (
       <WelcomePage
@@ -339,6 +373,7 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
           showBackButton={true}
           error={questionErrors[questions[currentQuestionIndex]?.id]}
           currentAnswer={answers[questions[currentQuestionIndex]?.question]}
+          currentAttachments={answerFiles[questions[currentQuestionIndex]?.question]}
           suggestions={suggestions[questions[currentQuestionIndex]?.id]}
           isValidataion={isValidation}
         />
