@@ -426,8 +426,9 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
           rowData[key] = row.qna[key] || "-";
         }
       });
-      rowData["Likes"] = row.likes;
-
+      if (sessionVoting)      rowData["Likes"] = row.likes;
+      rowData["Log Date"] = new Date(row.created_at).toLocaleDateString();
+      
       return rowData;
     });
 
