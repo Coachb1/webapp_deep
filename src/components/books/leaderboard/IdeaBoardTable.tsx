@@ -92,7 +92,7 @@ export default function IdeaBoardTable({
 
   const beforeGrayCount = grayHeaderStartIndex >= 0 ? grayHeaderStartIndex : 0;
   let afterGrayCount = grayHeaderStartIndex >= 0 ? qnaKeys.length - grayHeaderStartIndex - grayHeaderCount : 0;
-  if (sessionVoting){
+  if (sessionVoting) {
     afterGrayCount += 1;
   }
 
@@ -120,7 +120,7 @@ export default function IdeaBoardTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs table-fixed">
           {/* ================= HEADER ================= */}
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
             {/* ===== GROUP HEADER ROW ===== */}
@@ -153,8 +153,7 @@ export default function IdeaBoardTable({
                 return (
                   <th
                     key={key}
-                    className={`px-3 py-2 text-center w-[160px]  ${
-                      isGrayHeader ? "bg-gray-200" : ""
+                    className={`px-3 py-2 text-center w-[20px]  ${isGrayHeader ? "bg-gray-200" : ""
                       }`}
                   >
                     <div className="flex items-center justify-center gap-1 relative group">
@@ -183,21 +182,21 @@ export default function IdeaBoardTable({
               </th>
               {/* Vote column */}
               {sessionVoting && (
-              <th className="px-3 py-2 text-center w-[120px]">
-                <button
-                  onClick={toggleSortVotes}
-                  className="inline-flex items-center gap-2"
-                >
-                  Vote
-                  {sortBy === "votes" ? (
-                    <span className="text-xs">
-                      ({sortDir === "asc" ? "↑" : "↓"})
-                    </span>
-                  ) : (
-                    <span className="text-xs">(↑↓)</span>
-                  )}
-                </button>
-              </th>
+                <th className="px-3 py-2 text-center w-[120px]">
+                  <button
+                    onClick={toggleSortVotes}
+                    className="inline-flex items-center gap-2"
+                  >
+                    Vote
+                    {sortBy === "votes" ? (
+                      <span className="text-xs">
+                        ({sortDir === "asc" ? "↑" : "↓"})
+                      </span>
+                    ) : (
+                      <span className="text-xs">(↑↓)</span>
+                    )}
+                  </button>
+                </th>
               )}
 
             </tr>
@@ -211,12 +210,15 @@ export default function IdeaBoardTable({
                 className="border-b border-gray-300 hover:bg-gray-50"
               >
                 {qnaKeys.map(({ key, q_type }) => {
+                  const isImpactArea = key === "Impact Area";
+                  const isMultiLineColumn =
+                    key === "Initiative" || key === "Project Description";
                   /* ---------- STATIC FIELDS ---------- */
                   if (key === "Full Name") {
                     return (
                       <td
                         key={key}
-                        className="px-6 py-4 text-left font-medium text-gray-800 whitespace-nowrap"
+                        className="px-2 py-4 text-left font-medium text-gray-800 "
                       >
                         {row.full_name}
                       </td>
@@ -257,9 +259,8 @@ export default function IdeaBoardTable({
                   return (
                     <td
                       key={key}
-                      className={`px-6 py-4 text-center max-w-[220px]
-                      ${
-                        isGrayed
+                      className={`px-2 py-4 text-center max-w-[220px]
+                      ${isGrayed
                           ? "bg-gray-200/40 font-medium text-gray-700"
                           : "text-gray-600"
                         }
@@ -306,7 +307,14 @@ export default function IdeaBoardTable({
                       ) : (
                         /* ===== NORMAL TEXT ===== */
                         <>
-                          <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                          <div
+                            className={`leading-6 break-words ${isMultiLineColumn
+                                ? "line-clamp-3"
+                                : isImpactArea
+                                  ? "line-clamp-2"
+                                  : "whitespace-nowrap overflow-hidden text-ellipsis"
+                              }`}
+                          >
                             {value === "-" && isUpdatingField
                               ? "Updating..."
                               : value}
@@ -357,52 +365,51 @@ export default function IdeaBoardTable({
                   );
                 })}
                 {/* Created Date Column */}
-                <td className="px-6 py-4 text-center whitespace-nowrap">
+                <td className="px-2 py-4 text-left align-top whitespace-nowrap">
                   {new Date(row.created_at).toLocaleDateString()}
                 </td>
                 {/* ================= VOTES ================= */}
                 {sessionVoting && (
-                <td className="px-6 py-4 text-center">
-                  {onlyClientSetup ? (
-                    <div className="inline-flex items-center gap-3">
-                      <button
-                        onClick={() => onThumbupOrThumbdown(row, "thumbup")}
-                        className="p-2 rounded-md border"
-                      >
-                        <FaThumbsUp />
-                      </button>
+                  <td className="px-2 py-4 text-left align-top">
+                    {onlyClientSetup ? (
+                      <div className="inline-flex items-center gap-3">
+                        <button
+                          onClick={() => onThumbupOrThumbdown(row, "thumbup")}
+                          className="p-2 rounded-md border"
+                        >
+                          <FaThumbsUp />
+                        </button>
 
-                      <span className="font-semibold text-gray-700 w-6 text-center">
-                        {row.likes}
-                      </span>
+                        <span className="font-semibold text-gray-700 w-6 text-left align-top">
+                          {row.likes}
+                        </span>
 
+                        <button
+                          onClick={() => onThumbupOrThumbdown(row, "thumbdown")}
+                          className="p-2 rounded-md border"
+                        >
+                          <FaThumbsDown />
+                        </button>
+                      </div>
+                    ) : (
                       <button
-                        onClick={() => onThumbupOrThumbdown(row, "thumbdown")}
-                        className="p-2 rounded-md border"
+                        onClick={() => onLike(row)}
+                        disabled={loadingLike === row.id}
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border
+                      ${row.liked
+                            ? "bg-[#00c193]/20 border-[#00c193]"
+                            : "bg-white"
+                          }`}
                       >
-                        <FaThumbsDown />
+                        <FaThumbsUp
+                          className={
+                            row.liked ? "text-[#00c193]" : "text-gray-600"
+                          }
+                        />
+                        <span className="font-semibold">{row.likes}</span>
                       </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => onLike(row)}
-                      disabled={loadingLike === row.id}
-                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border
-                      ${
-                        row.liked
-                          ? "bg-[#00c193]/20 border-[#00c193]"
-                          : "bg-white"
-                      }`}
-                    >
-                      <FaThumbsUp
-                        className={
-                          row.liked ? "text-[#00c193]" : "text-gray-600"
-                        }
-                      />
-                      <span className="font-semibold">{row.likes}</span>
-                    </button>
-                  )}
-                </td>
+                    )}
+                  </td>
                 )}
               </tr>
             ))}
@@ -461,10 +468,9 @@ export default function IdeaBoardTable({
                     value: { ...prev.value, answer: e.target.value },
                   }))
                 }
-                className={`w-full min-h-[100px] border rounded-md p-3 focus:ring-2 focus:ring-[#00c193] ${
-                  shouldScroll
-                    ? "max-h-[50vh] overflow-y-auto"
-                    : "overflow-hidden"
+                className={`w-full min-h-[100px] border rounded-md p-3 focus:ring-2 focus:ring-[#00c193] ${shouldScroll
+                  ? "max-h-[50vh] overflow-y-auto"
+                  : "overflow-hidden"
                   }`}
               />
 
