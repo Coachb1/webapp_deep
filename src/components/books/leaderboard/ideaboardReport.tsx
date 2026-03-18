@@ -12,7 +12,7 @@ import {
 import IdeaBoardTable from "./IdeaBoardTable";
 import IdeaBoardPagination from "./IdeaBoardPagination";
 import IdeaBoardModal from "./IdeaboardModel";
-import * as XLSX from "xlsx";
+import * as XLSX from "sheetjs-style";
 import { UserInfoType } from "@/lib/types";
 import { getClientUserInfo } from "@/lib/api";
 import ProtectedSection from "../protectedSection";
@@ -413,41 +413,82 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
 
   // ADD THIS ENTIRE FUNCTION HERE (after handleLike, before pagination helpers)
   const downloadReport = (format: "csv" | "xlsx") => {
-    // Prepare data for export
-    const exportData = rows.map((row) => {
-      const rowData: any = {
-        "Full Name": row.full_name,
-        // "Email": row.email,
+  const exportData = rows.map((row) => {
+    const rowData: any = {
+      "Full Name": row.full_name,
+      // "Email": row.email,
+
+    };
+
+    qnaKeys.forEach(({ key }) => {
+      if (key !== "Full Name" && key !== "Email") {
+        rowData[key] = row.qna?.[key] || "-";
+      }
+    });
+
+    if (sessionVoting) rowData["Likes"] = row.likes ?? 0;
+
+    rowData["Log Date"] = new Date(row.created_at).toLocaleDateString();
+
+    return rowData;
+  });
+
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const headers = Object.keys(exportData[0]);
+
+  /* ---------------- Header Style ---------------- */
+  headers.forEach((_, colIndex) => {
+    const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colIndex });
+
+    if (ws[cellAddress]) {
+      ws[cellAddress].s = {
+        font: { bold: true },
+        alignment: {
+          horizontal: "center",
+          vertical: "center",
+          wrapText: true,
+        },
       };
+    }
+  });
 
-      // Add all Q&A columns
-      qnaKeys.forEach(({ key, q_type }) => {
-        if (key !== "Full Name" && key !== "Email") {
-          rowData[key] = row.qna[key] || "-";
-        }
+  /* ---------------- Wrap + Align Content ---------------- */
+  exportData.forEach((row, rowIndex) => {
+    headers.forEach((header, colIndex) => {
+      const cellAddress = XLSX.utils.encode_cell({
+        r: rowIndex + 1,
+        c: colIndex,
       });
-      if (sessionVoting)      rowData["Likes"] = row.likes;
-      rowData["Log Date"] = new Date(row.created_at).toLocaleDateString();
-      
-      return rowData;
+
+      if (ws[cellAddress]) {
+        ws[cellAddress].s = {
+          alignment: {
+            vertical: "top",
+            wrapText: true,
+          },
+        };
+      }
     });
+  });
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(exportData);
+  /* ---------------- Column Width (Header Driven) ---------------- */
+  ws["!cols"] = headers.map((header) => ({
+    wch: Math.max(header.length + 2, 20), // minimum readable width
+  }));
 
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "IdeaBoard Report");
+  /* ---------------- Freeze Header Row ---------------- */
+  ws["!freeze"] = { xSplit: 0, ySplit: 1 };
 
-    // Generate filename with timestamp
-    const timestamp = new Date().toISOString().split("T")[0];
-    const filename = `ideaboard_report_${timestamp}.${format}`;
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "IdeaBoard Report");
 
-    // Download file
-    XLSX.writeFile(wb, filename, {
-      bookType: format === "csv" ? "csv" : "xlsx",
-    });
-  };
+  const timestamp = new Date().toISOString();
+  const filename = `ideaboard_report_${timestamp}.${format}`;
+
+  XLSX.writeFile(wb, filename, {
+    bookType: format === "csv" ? "csv" : "xlsx",
+  });
+};
 
   // Pagination helpers
   const totalPages = Math.max(1, Math.ceil(sortedRows.length / rowsPerPage));
