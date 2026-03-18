@@ -411,8 +411,9 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
     }
   };
 
-  // ADD THIS ENTIRE FUNCTION HERE (after handleLike, before pagination helpers)
-  const downloadReport = (format: "csv" | "xlsx") => {
+// ADD THIS ENTIRE FUNCTION HERE (after handleLike, before pagination helpers)
+const downloadReport = (format: "csv" | "xlsx") => {
+
   const exportData = rows.map((row) => {
     const rowData: any = {
       "Full Name": row.full_name,
@@ -436,48 +437,67 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
   const ws = XLSX.utils.json_to_sheet(exportData);
   const headers = Object.keys(exportData[0]);
 
-  /* ---------------- Header Style ---------------- */
-  headers.forEach((_, colIndex) => {
-    const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colIndex });
+  /* -------- HEADER STYLE -------- */
 
-    if (ws[cellAddress]) {
-      ws[cellAddress].s = {
+  headers.forEach((_, colIndex) => {
+    const cell = XLSX.utils.encode_cell({ r: 0, c: colIndex });
+
+    if (ws[cell]) {
+      ws[cell].s = {
         font: { bold: true },
+        fill: {
+          fgColor: { rgb: "D9D9D9" }, // gray header
+        },
         alignment: {
-          horizontal: "center",
+          horizontal: "left",
           vertical: "center",
           wrapText: true,
+        },
+        border: {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
         },
       };
     }
   });
 
-  /* ---------------- Wrap + Align Content ---------------- */
-  exportData.forEach((row, rowIndex) => {
-    headers.forEach((header, colIndex) => {
-      const cellAddress = XLSX.utils.encode_cell({
-        r: rowIndex + 1,
-        c: colIndex,
-      });
+  /* -------- DATA STYLE -------- */
 
-      if (ws[cellAddress]) {
-        ws[cellAddress].s = {
+  exportData.forEach((row, r) => {
+    headers.forEach((header, c) => {
+
+      const cell = XLSX.utils.encode_cell({ r: r + 1, c });
+
+      if (ws[cell]) {
+        ws[cell].s = {
           alignment: {
             vertical: "top",
+            horizontal: "left",
             wrapText: true,
+          },
+          border: {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
           },
         };
       }
+
     });
   });
 
-  /* ---------------- Column Width (Header Driven) ---------------- */
-  ws["!cols"] = headers.map((header) => ({
-    wch: Math.max(header.length + 2, 20), // minimum readable width
+  /* -------- COLUMN WIDTH -------- */
+
+  ws["!cols"] = headers.map((h) => ({
+    wch: Math.max(h.length + 5, 25),
   }));
 
-  /* ---------------- Freeze Header Row ---------------- */
-  ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+  /* -------- FREEZE HEADER -------- */
+
+  ws["!freeze"] = { ySplit: 1 };
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "IdeaBoard Report");
