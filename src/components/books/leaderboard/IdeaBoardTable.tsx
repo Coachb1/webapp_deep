@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { keyOrderType, RowData } from "./ideaboardReport";
 import { updateJobaidSessionQna } from "@/lib/job-aid-apis";
-import IframeViewer from "../IframeViewer";
 import { MdAttachFile } from "react-icons/md";
+import DocumentModal from "../DocumentViewer";
 
 interface Props {
   qnaKeys: keyOrderType[];
@@ -35,6 +35,7 @@ export default function IdeaBoardTable({
 }: Props) {
   const [showReport, setShowReport] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
+  const [selectedRowObj, setSelectedRowObj] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [editModal, setEditModal] = useState<{
@@ -274,6 +275,7 @@ export default function IdeaBoardTable({
                             <button
                               onClick={() => {
                                 setSelectedRow(value);
+                                setSelectedRowObj(qnaItem);
                                 setShowReport(true);
                               }}
                               className="custom-btn inline-flex items-center gap-2 px-3 py-1 
@@ -332,6 +334,8 @@ export default function IdeaBoardTable({
                                     const url =
                                       typeof att === "string" ? att : att.url;
                                     setSelectedRow(url);
+                                    setSelectedRowObj(qnaItem)
+
                                     setShowReport(true);
                                   }}
                                   className="
@@ -410,34 +414,20 @@ export default function IdeaBoardTable({
         </table>
 
         {/* ================= REPORT MODAL ================= */}
-        {showReport && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowReport(false)}
-          >
-            <div
-              className="bg-white rounded-lg w-full h-[100vh] flex flex-col shadow-xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="text-xl font-bold text-gray-800">Preview</h3>
-
-                <button
-                  onClick={() => setShowReport(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Body (Iframe) */}
-              <div className="flex-1 overflow-hidden">
-                <IframeViewer url={selectedRow!} title="Resource Preview" />
-              </div>
-            </div>
-          </div>
-        )}
+        <DocumentModal
+          isOpen={showReport}
+          onClose={() => {
+            setShowReport(false);
+          }}
+          tab={{
+            uid: selectedRowObj?.question,
+            embed_link: selectedRow!,
+            transform_iq: "",
+            tab_name: selectedRowObj?.question,
+            id: 1
+          }}
+        />
+        
 
         {editModal.row && editModal.key && (
           <div

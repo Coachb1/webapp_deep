@@ -14,6 +14,7 @@ import PortalPageLayout from "./PortalPagesLayout";
 import { NetworkProvider } from "@/network/NetworkContext";
 import { GlobalNetworkGuard } from "@/network/globalNetworkGuard";
 import { OfflineBanner } from "@/components/system/offlineBanner";
+import DevToolsBlocker from "@/components/devToolBlocker";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -54,6 +55,7 @@ const MainLayoutComponent = ({
   if (pathname.includes("/library-bot")) {
     return (
       <>
+        <DevToolsBlocker />
         <NetworkProvider>
           <GlobalNetworkGuard />
           <OfflineBanner />
