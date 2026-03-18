@@ -340,7 +340,6 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, 
         </div>
       )}
 
-      {/* Simple, unchanged — DocumentModal handles everything else internally */}
       <DocumentModal
         isOpen={isReadModalOpen}
         onClose={() => {
@@ -349,6 +348,7 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, 
         }}
         tab={selectedTab}
         userId={userId}
+        enableTracking={true}
       />
     </>
   );

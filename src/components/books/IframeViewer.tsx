@@ -677,7 +677,7 @@ export default function IframeViewer({
             ref={iframeRef}
             key={key}
             src={proxiedUrl}
-            className="w-full h-[100%] border-0 rounded-xl"
+            className="w-full h-[100%]"
             title={`Read ${title || ""}`}
             loading="lazy"
             allow="fullscreen"

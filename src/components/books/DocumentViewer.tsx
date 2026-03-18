@@ -32,6 +32,7 @@ export interface DocumentModalProps {
   /** The tab the parent wants to open. Changing this opens a new doc. */
   tab: CaseItem | null;
   userId?: string;
+  enableTracking?: boolean;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -47,6 +48,7 @@ export default function DocumentModal({
   onClose,
   tab,
   userId,
+  enableTracking = false
 }: DocumentModalProps) {
   // Internal list — one entry per concurrently open document
   const [openDocs, setOpenDocs] = useState<OpenDoc[]>([]);
@@ -105,6 +107,7 @@ export default function DocumentModal({
           onViewMode={(mode) => setDocViewMode(doc.tab.uid!, mode)}
           onPageIndex={(idx) => setDocPageIndex(doc.tab.uid!, idx)}
           onClose={() => closeDoc(doc.tab.uid!)}
+          enableTracking={enableTracking}
         />
       ))}
 
@@ -125,9 +128,10 @@ interface DocInstanceProps {
   onViewMode: (mode: ViewMode) => void;
   onPageIndex: (idx: 0 | 1) => void;
   onClose: () => void;
+  enableTracking: boolean;
 }
 
-function DocInstance({ doc, userId, onViewMode, onPageIndex, onClose }: DocInstanceProps) {
+function DocInstance({ doc, userId, onViewMode, onPageIndex, onClose, enableTracking }: DocInstanceProps) {
   const { tab, viewMode, pageIndex } = doc;
   const links     = getLinks(tab);
   const activeUrl = links[pageIndex] ?? "";
@@ -285,7 +289,7 @@ function DocInstance({ doc, userId, onViewMode, onPageIndex, onClose }: DocInsta
           <IframeViewer
             url={activeUrl}
             title={title}
-            enableTracking
+            enableTracking={enableTracking}
             userId={userId}
             case_mapping_id={tab.uid}
           />
