@@ -396,7 +396,12 @@ export default function IdeaBoardTable({
                         onClick={() => onLike(row)}
                         disabled={loadingLike === row.id}
                         className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border
+<<<<<<< Updated upstream
                       ${row.liked
+=======
+                      ${
+                        row.liked
+>>>>>>> Stashed changes
                             ? "bg-[#00c193]/20 border-[#00c193]"
                             : "bg-white"
                           }`}
@@ -468,7 +473,12 @@ export default function IdeaBoardTable({
                     value: { ...prev.value, answer: e.target.value },
                   }))
                 }
+<<<<<<< Updated upstream
                 className={`w-full min-h-[100px] border rounded-md p-3 focus:ring-2 focus:ring-[#00c193] ${shouldScroll
+=======
+                className={`w-full min-h-[100px] border rounded-md p-3 focus:ring-2 focus:ring-[#00c193] ${
+                  shouldScroll
+>>>>>>> Stashed changes
                   ? "max-h-[50vh] overflow-y-auto"
                   : "overflow-hidden"
                   }`}
