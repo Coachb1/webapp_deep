@@ -121,7 +121,7 @@ export default function IdeaBoardTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs table-fixed">
           {/* ================= HEADER ================= */}
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
             {/* ===== GROUP HEADER ROW ===== */}
@@ -154,8 +154,7 @@ export default function IdeaBoardTable({
                 return (
                   <th
                     key={key}
-                    className={`px-3 py-2 text-center w-[160px]  ${
-                      isGrayHeader ? "bg-gray-200" : ""
+                    className={`px-3 py-2 text-center w-[20px]  ${isGrayHeader ? "bg-gray-200" : ""
                       }`}
                   >
                     <div className="flex items-center justify-center gap-1 relative group">
@@ -212,12 +211,15 @@ export default function IdeaBoardTable({
                 className="border-b border-gray-300 hover:bg-gray-50"
               >
                 {qnaKeys.map(({ key, q_type }) => {
+                  const isImpactArea = key === "Impact Area";
+                  const isMultiLineColumn =
+                    key === "Initiative" || key === "Project Description";
                   /* ---------- STATIC FIELDS ---------- */
                   if (key === "Full Name") {
                     return (
                       <td
                         key={key}
-                        className="px-6 py-4 text-left font-medium text-gray-800 whitespace-nowrap"
+                        className="px-2 py-4 text-left font-medium text-gray-800 "
                       >
                         {row.full_name}
                       </td>
@@ -258,7 +260,7 @@ export default function IdeaBoardTable({
                   return (
                     <td
                       key={key}
-                      className={`px-6 py-4 text-center max-w-[220px]
+                      className={`px-2 py-4 text-center max-w-[220px]
                       ${
                         isGrayed
                           ? "bg-gray-200/40 font-medium text-gray-700"
@@ -308,7 +310,14 @@ export default function IdeaBoardTable({
                       ) : (
                         /* ===== NORMAL TEXT ===== */
                         <>
-                          <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                          <div
+                            className={`leading-6 break-words ${isMultiLineColumn
+                                ? "line-clamp-3"
+                                : isImpactArea
+                                  ? "line-clamp-2"
+                                  : "whitespace-nowrap overflow-hidden text-ellipsis"
+                              }`}
+                          >
                             {value === "-" && isUpdatingField
                               ? "Updating..."
                               : value}
@@ -361,7 +370,7 @@ export default function IdeaBoardTable({
                   );
                 })}
                 {/* Created Date Column */}
-                <td className="px-6 py-4 text-center whitespace-nowrap">
+                <td className="px-2 py-4 text-left align-top whitespace-nowrap">
                   {new Date(row.created_at).toLocaleDateString()}
                 </td>
                 {/* ================= VOTES ================= */}
