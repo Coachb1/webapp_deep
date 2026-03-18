@@ -725,7 +725,7 @@ const CreateOwn = ({
       console.log(searchInputText);
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/customsearch/v1?key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&cx=74697a1c8338d4d9a&num=10&q=${searchInputText}`,
+        `https://www.googleapis.com/customsearch/v1?key=${process.env.GEMINI_API_KEY}&cx=74697a1c8338d4d9a&num=10&q=${searchInputText}`,
         {
           method: "GET",
         }
@@ -753,7 +753,7 @@ const CreateOwn = ({
       console.log(searchInputText);
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=AIzaSyBGfMVl2m4HwOpv9MS2J3hBAbd4YMYS7vo`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=${process.env.GEMINI_API_KEY}`,
         {
           method: "GET",
         }
@@ -783,7 +783,7 @@ const CreateOwn = ({
     } else if (searchMode === "curated-learning") {
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyBGfMVl2m4HwOpv9MS2J3hBAbd4YMYS7vo&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en&videoEmbeddable=true`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=${process.env.GEMINI_API_KEY}&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en&videoEmbeddable=true`,
         {
           method: "GET",
         }
