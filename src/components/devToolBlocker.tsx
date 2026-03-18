@@ -4,6 +4,13 @@ import { useEffect } from "react";
 
 export default function DevToolsKeyBlocker() {
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const isProd = window.location.hostname === "platform.coachbots.com";
+
+    // Do nothing if not production
+    if (!isProd) return;
+    
     const prevent = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
 
