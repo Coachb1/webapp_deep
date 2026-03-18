@@ -5,7 +5,7 @@ import { usePortalUser } from "./context/UserContext";
 import { CaseItem, CollectionBlock, IframeTablePanel } from "@/lib/types";
 import { ConceptsBoxLoader, IframeGridLoader } from "./Loaders";
 import { Sticker } from "./sticker";
-import IframeViewer from "./IframeViewer";
+import DocumentModal from "./DocumentViewer";
 
 const LIMIT = 10; // show first 10 items
 
@@ -340,57 +340,16 @@ const ConceptsViewer: React.FC<ConceptsViewerProps> = ({ actionKey, actionType, 
         </div>
       )}
 
-      {/* READ MODAL */}
-      {isReadModalOpen && selectedTab && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          onClick={() => setIsReadModalOpen(false)}
-        >
-          <div
-            className="bg-white rounded-lg w-full  h-[100vh] flex flex-col shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="custom-title text-xl font-bold text-gray-800">
-                {selectedTab.tab_name}
-              </h3>
-
-              <div className="flex items-center gap-4">
-                {/* 🟢 Transform IQ Button */}
-                {selectedTab.transform_iq && (
-                  <button
-                    onClick={() => setPageIndex(pageIndex === 0 ? 1 : 0)}
-                    className="custom-btn btn-sm w-full bg-gray-200 border border-[#00c193] px-6 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-all duration-300 hover:border-[#00c193] hover:shadow-md sm:w-auto"
-                    style={{ borderRadius: "calc(var(--radius) - 6px)" }}
-                  >
-                    {pageIndex === 0 ? "Transform IQ" : "Overview"}
-                  </button>
-                )}
-
-                {/* Close */}
-                <button
-                  onClick={() => setIsReadModalOpen(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-
-            {/* Body (Iframe) */}
-            <div className="flex-1 overflow-hidden">
-              <IframeViewer
-                url={links[pageIndex]}
-                title={selectedTab.tab_name}
-                enableTracking={true}
-                userId={userId!} // Pass userId for tracking
-                case_mapping_id={selectedTab.uid} // Pass case_mapping_id for tracking
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <DocumentModal
+        isOpen={isReadModalOpen}
+        onClose={() => {
+          setIsReadModalOpen(false);
+          setTimeout(() => setSelectedTab(null), 250);
+        }}
+        tab={selectedTab}
+        userId={userId}
+        enableTracking={true}
+      />
     </>
   );
 };

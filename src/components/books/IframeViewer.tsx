@@ -533,9 +533,8 @@ export default function IframeViewer({
               size="sm"
               onClick={refreshIframe}
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
+              <RefreshCw className="w-4 h-4" />
+              </Button>
           </div>
 
           {loading && (
@@ -575,8 +574,6 @@ export default function IframeViewer({
               if (!enableTracking) return;
               setScrollPercent(e.percent);
               onScrollProgress?.(e);
-              // The userId and case_mapping_id are passed to PdfViewer, which then passes them to useReadingProgress
-              // No direct action needed here for tracking in IframeViewer's onScrollProgress for PDF.
             }}
             onMilestoneReached={(m, e) => {
               if (!enableTracking) return;
@@ -648,7 +645,7 @@ export default function IframeViewer({
               size="sm"
               onClick={refreshIframe}
             >
-              <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+              <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
 
@@ -680,7 +677,7 @@ export default function IframeViewer({
             ref={iframeRef}
             key={key}
             src={proxiedUrl}
-            className="w-full h-[100%] border-0 rounded-xl"
+            className="w-full h-[100%]"
             title={`Read ${title || ""}`}
             loading="lazy"
             allow="fullscreen"

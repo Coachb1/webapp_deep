@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { keyOrderType, RowData } from "./ideaboardReport";
 import { updateJobaidSessionQna } from "@/lib/job-aid-apis";
-import IframeViewer from "../IframeViewer";
 import { MdAttachFile } from "react-icons/md";
+import DocumentModal from "../DocumentViewer";
 
 interface Props {
   qnaKeys: keyOrderType[];
@@ -35,6 +35,7 @@ export default function IdeaBoardTable({
 }: Props) {
   const [showReport, setShowReport] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
+  const [selectedRowObj, setSelectedRowObj] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [editModal, setEditModal] = useState<{
@@ -120,7 +121,7 @@ export default function IdeaBoardTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs table-fixed">
           {/* ================= HEADER ================= */}
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs font-bold custom-title border-b border-gray-200">
             {/* ===== GROUP HEADER ROW ===== */}
@@ -153,8 +154,7 @@ export default function IdeaBoardTable({
                 return (
                   <th
                     key={key}
-                    className={`px-3 py-2 text-center w-[160px]  ${
-                      isGrayHeader ? "bg-gray-200" : ""
+                    className={`px-3 py-2 text-center w-[20px]  ${isGrayHeader ? "bg-gray-200" : ""
                       }`}
                   >
                     <div className="flex items-center justify-center gap-1 relative group">
@@ -211,12 +211,15 @@ export default function IdeaBoardTable({
                 className="border-b border-gray-300 hover:bg-gray-50"
               >
                 {qnaKeys.map(({ key, q_type }) => {
+                  const isImpactArea = key === "Impact Area";
+                  const isMultiLineColumn =
+                    key === "Initiative" || key === "Project Description";
                   /* ---------- STATIC FIELDS ---------- */
                   if (key === "Full Name") {
                     return (
                       <td
                         key={key}
-                        className="px-6 py-4 text-left font-medium text-gray-800 whitespace-nowrap"
+                        className="px-2 py-4 text-left font-medium text-gray-800 "
                       >
                         {row.full_name}
                       </td>
@@ -257,7 +260,7 @@ export default function IdeaBoardTable({
                   return (
                     <td
                       key={key}
-                      className={`px-6 py-4 text-center max-w-[220px]
+                      className={`px-2 py-4 text-center max-w-[220px]
                       ${
                         isGrayed
                           ? "bg-gray-200/40 font-medium text-gray-700"
@@ -274,6 +277,7 @@ export default function IdeaBoardTable({
                             <button
                               onClick={() => {
                                 setSelectedRow(value);
+                                setSelectedRowObj(qnaItem);
                                 setShowReport(true);
                               }}
                               className="custom-btn inline-flex items-center gap-2 px-3 py-1 
@@ -306,7 +310,14 @@ export default function IdeaBoardTable({
                       ) : (
                         /* ===== NORMAL TEXT ===== */
                         <>
-                          <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                          <div
+                            className={`leading-6 break-words ${isMultiLineColumn
+                                ? "line-clamp-3"
+                                : isImpactArea
+                                  ? "line-clamp-2"
+                                  : "whitespace-nowrap overflow-hidden text-ellipsis"
+                              }`}
+                          >
                             {value === "-" && isUpdatingField
                               ? "Updating..."
                               : value}
@@ -332,6 +343,8 @@ export default function IdeaBoardTable({
                                     const url =
                                       typeof att === "string" ? att : att.url;
                                     setSelectedRow(url);
+                                    setSelectedRowObj(qnaItem)
+
                                     setShowReport(true);
                                   }}
                                   className="
@@ -357,7 +370,7 @@ export default function IdeaBoardTable({
                   );
                 })}
                 {/* Created Date Column */}
-                <td className="px-6 py-4 text-center whitespace-nowrap">
+                <td className="px-2 py-4 text-left align-top whitespace-nowrap">
                   {new Date(row.created_at).toLocaleDateString()}
                 </td>
                 {/* ================= VOTES ================= */}
@@ -410,34 +423,20 @@ export default function IdeaBoardTable({
         </table>
 
         {/* ================= REPORT MODAL ================= */}
-        {showReport && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowReport(false)}
-          >
-            <div
-              className="bg-white rounded-lg w-full h-[100vh] flex flex-col shadow-xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="text-xl font-bold text-gray-800">Preview</h3>
-
-                <button
-                  onClick={() => setShowReport(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Body (Iframe) */}
-              <div className="flex-1 overflow-hidden">
-                <IframeViewer url={selectedRow!} title="Resource Preview" />
-              </div>
-            </div>
-          </div>
-        )}
+        <DocumentModal
+          isOpen={showReport}
+          onClose={() => {
+            setShowReport(false);
+          }}
+          tab={{
+            uid: selectedRowObj?.question,
+            embed_link: selectedRow!,
+            transform_iq: "",
+            tab_name: selectedRowObj?.question,
+            id: 1
+          }}
+        />
+        
 
         {editModal.row && editModal.key && (
           <div

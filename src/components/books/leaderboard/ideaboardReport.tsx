@@ -12,7 +12,7 @@ import {
 import IdeaBoardTable from "./IdeaBoardTable";
 import IdeaBoardPagination from "./IdeaBoardPagination";
 import IdeaBoardModal from "./IdeaboardModel";
-import * as XLSX from "xlsx";
+import * as XLSX from "sheetjs-style";
 import { UserInfoType } from "@/lib/types";
 import { getClientUserInfo } from "@/lib/api";
 import ProtectedSection from "../protectedSection";
@@ -411,42 +411,104 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
     }
   };
 
-  // ADD THIS ENTIRE FUNCTION HERE (after handleLike, before pagination helpers)
-  const downloadReport = (format: "csv" | "xlsx") => {
-    // Prepare data for export
-    const exportData = rows.map((row) => {
-      const rowData: any = {
-        "Full Name": row.full_name,
-        // "Email": row.email,
+// ADD THIS ENTIRE FUNCTION HERE (after handleLike, before pagination helpers)
+const downloadReport = (format: "csv" | "xlsx") => {
+
+  const exportData = rows.map((row) => {
+    const rowData: any = {
+      "Full Name": row.full_name,
+      // "Email": row.email,
+
+    };
+
+    qnaKeys.forEach(({ key }) => {
+      if (key !== "Full Name" && key !== "Email") {
+        rowData[key] = row.qna?.[key] || "-";
+      }
+    });
+
+    if (sessionVoting) rowData["Likes"] = row.likes ?? 0;
+
+    rowData["Log Date"] = new Date(row.created_at).toLocaleDateString();
+
+    return rowData;
+  });
+
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const headers = Object.keys(exportData[0]);
+
+  /* -------- HEADER STYLE -------- */
+
+  headers.forEach((_, colIndex) => {
+    const cell = XLSX.utils.encode_cell({ r: 0, c: colIndex });
+
+    if (ws[cell]) {
+      ws[cell].s = {
+        font: { bold: true },
+        fill: {
+          fgColor: { rgb: "D9D9D9" }, // gray header
+        },
+        alignment: {
+          horizontal: "left",
+          vertical: "center",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        },
       };
+    }
+  });
 
-      // Add all Q&A columns
-      qnaKeys.forEach(({ key, q_type }) => {
-        if (key !== "Full Name" && key !== "Email") {
-          rowData[key] = row.qna[key] || "-";
-        }
-      });
-      rowData["Likes"] = row.likes;
+  /* -------- DATA STYLE -------- */
 
-      return rowData;
+  exportData.forEach((row, r) => {
+    headers.forEach((header, c) => {
+
+      const cell = XLSX.utils.encode_cell({ r: r + 1, c });
+
+      if (ws[cell]) {
+        ws[cell].s = {
+          alignment: {
+            vertical: "top",
+            horizontal: "left",
+            wrapText: true,
+          },
+          border: {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
+          },
+        };
+      }
+
     });
+  });
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(exportData);
+  /* -------- COLUMN WIDTH -------- */
 
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "IdeaBoard Report");
+  ws["!cols"] = headers.map((h) => ({
+    wch: Math.max(h.length + 5, 25),
+  }));
 
-    // Generate filename with timestamp
-    const timestamp = new Date().toISOString().split("T")[0];
-    const filename = `ideaboard_report_${timestamp}.${format}`;
+  /* -------- FREEZE HEADER -------- */
 
-    // Download file
-    XLSX.writeFile(wb, filename, {
-      bookType: format === "csv" ? "csv" : "xlsx",
-    });
-  };
+  ws["!freeze"] = { ySplit: 1 };
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "IdeaBoard Report");
+
+  const timestamp = new Date().toISOString();
+  const filename = `ideaboard_report_${timestamp}.${format}`;
+
+  XLSX.writeFile(wb, filename, {
+    bookType: format === "csv" ? "csv" : "xlsx",
+  });
+};
 
   // Pagination helpers
   const totalPages = Math.max(1, Math.ceil(sortedRows.length / rowsPerPage));
