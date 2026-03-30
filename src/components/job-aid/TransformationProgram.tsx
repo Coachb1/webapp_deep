@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { generateReport, JobAid, Question } from "@/lib/job-aid-apis";
 import copy from "copy-to-clipboard";
 import CopyBox from "../CopyBox";
+import { trackJobaidSessionCompletion } from "@/lib/api";
 
 type UseCase = {
   name: string;
@@ -539,6 +540,9 @@ interface TransformationProgramProps {
   inputEmail?: string;
   clientId?: string;
   jobaidID?: string;
+  userId?: string;
+  tracking?: boolean;
+  collection_id?: string;
 }
 
 // -------------------------
@@ -550,6 +554,9 @@ export default function TransformationProgram({
   inputName,
   inputEmail,
   clientId,
+  userId,
+  collection_id,
+  tracking = true,
 }: TransformationProgramProps) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -596,6 +603,14 @@ export default function TransformationProgram({
           ? JSON.parse(reportResult.output || "{}")
           : reportResult.output || {};
       setResult(parsedResult);
+      if (tracking) {
+        trackJobaidSessionCompletion(
+          userId!,
+          reportResult.session_id!,
+          collection_id!,
+        )
+      }
+      
     } catch (err: any) {
       setError(err.message || "Something went wrong generating use cases.");
     } finally {

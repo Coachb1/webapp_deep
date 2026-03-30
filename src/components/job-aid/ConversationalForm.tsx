@@ -15,6 +15,7 @@ import {
 import CopyBox from "../CopyBox";
 import TransformationProgram from "./TransformationProgram";
 import NewAdvMarkdown from "../NewAdvMarkdown";
+import { trackJobaidSessionCompletion } from "@/lib/api";
 
 type Step = "welcome" | "questions" | "email" | "loading" | "completed";
 
@@ -25,6 +26,8 @@ interface ConversationalFormProps {
   inputEmail?: string;
   redirectURL?: string;
   clientId?: string;
+  userId?: string;
+  collection_id?: string;
 }
 
 const ConversationalForm: React.FC<ConversationalFormProps> = ({
@@ -33,7 +36,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
   inputName,
   inputEmail,
   redirectURL,
-  clientId
+  clientId,
+  userId,
+  collection_id,
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -314,6 +319,11 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         attachments || answerFiles
       );
       console.log("Report generated:", reportResult);
+      trackJobaidSessionCompletion(
+        userId!,
+        reportResult.session_id!,
+        collection_id!
+      )
       setReportUrl(reportResult.report_url);
       setGeneratedPrompt(reportResult.generated_prompt);
       setCurrentStep("completed");
@@ -346,7 +356,9 @@ const ConversationalForm: React.FC<ConversationalFormProps> = ({
         <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-b-4 border-[#00c193]"></div>
       </div>; // or a loader
 
-    return <TransformationProgram jobAid={jobAid} jobaidID={job_aid_id} inputEmail={inputEmail} inputName={inputName} clientId={clientId} />;
+    return <TransformationProgram jobAid={jobAid} jobaidID={job_aid_id} inputEmail={inputEmail} inputName={inputName} clientId={clientId} 
+    userId={userId} collection_id={collection_id} tracking={true}
+    />;
   }
 
   if (currentStep === "welcome") {

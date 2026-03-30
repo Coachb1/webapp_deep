@@ -62,6 +62,7 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   const [actionType, setActionType] = useState<string | null>(null);
   const [iframeLoadingMap, setIframeLoadingMap] = useState<Record<string, boolean>>({});
   const [featurePath, setFeaturePath] = useState<string>("");
+  const [collectionId, setCollectionId] = useState<string>("");
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature) {
@@ -315,10 +316,11 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
 
         <ActionDashboard
           selectedAction={actionKey}
-          onAction={(value, type, actionInfo) => {
+          onAction={(value, type, actionInfo, collectionId) => {
             setActionKey(value);
             setActionType(type?.trim() || null);
             setFeaturePath(actionInfo);
+            setCollectionId(collectionId || "");
 
             setTimeout(() => {
               document
@@ -358,6 +360,8 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                   inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                   inputName={user?.user_data?.name || "User"}
                   clientId={userInfo?.clientId}
+                  userId={user?.user_data.uid}
+                  collection_id={collectionId}
                 />
               </div>
             </>
@@ -422,6 +426,8 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                       inputEmail={user?.user_data?.email || "undefined@gmail.com"}
                       inputName={user?.user_data?.name || "User"}
                       clientId={userInfo?.clientId}
+                      userId={user?.user_data.uid}
+                      collection_id={collectionId}
                     />
                   </div>
                   <ConceptsViewer actionKey={actionKey} actionType={actionType} userId={user?.user_data?.uid}/>
