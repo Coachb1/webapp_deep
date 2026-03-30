@@ -426,6 +426,7 @@ export interface ActionButton {
 
 export interface DashboardItem {
   id: string;
+  uid?: string;
   title: string;
   description: string;
   icon: React.ReactNode;

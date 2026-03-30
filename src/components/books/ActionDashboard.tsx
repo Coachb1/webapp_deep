@@ -14,7 +14,7 @@ import { DashboardSkeletonCard } from "./Loaders";
 /* -------------------- TYPES -------------------- */
 
 interface ActionDashboardProps {
-  onAction?: (action: string, type?: string, actionInfo?:any) => void;
+  onAction?: (action: string, type?: string, actionInfo?:any, collectionId?: string) => void;
   selectedAction?: string | null;
 }
 
@@ -283,7 +283,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
                       if (!btn.action) return;
                       const collectionName = btn.collection_name || item.title || "";
                       const actionInfo = `${collectionName}|${btn.label}`;
-                      onAction?.(btn.action, btn.type, actionInfo);
+                      onAction?.(btn.action, btn.type, actionInfo, item.uid);
                     }}
                     className={`
     custom-btn btn-sm

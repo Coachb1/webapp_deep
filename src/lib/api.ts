@@ -1364,3 +1364,78 @@ export const getTrackedConceptProgress = async (userId:string, case_mapping_id:s
   return null;
 }
 }
+
+export const trackJobaidSessionCompletion = async (userId:string, jobaid_session_id:string, collection_id:string) => { 
+  try {
+      console.debug("Fetching tracked concept progress for userId:", userId, "jobaid_session_id:", jobaid_session_id);
+      const response = await fetch(`${baseURL}/analytics-progress/track-jobaid-session-completion/`, {    
+        method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": basicAuth,
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      jobaid_session_id: jobaid_session_id,
+      collection_id: collection_id
+    })
+  });
+  console.debug("trackJobaidSessionCompletion response:", response);
+  if (!response.ok) {
+    console.error("Failed to track jobaid session completion:", response.statusText);
+    return null;
+  }
+  const data = await response.json();
+  console.debug("trackJobaidSessionCompletion data:", data);
+  return data;
+
+
+  } catch (error) {
+  console.error("Error tracking event:", error);
+  return null;
+}
+}
+
+export const downloadTrackedReports = async (client_id: string, days = 30) => {
+  try {
+    console.debug("Fetching tracked concept progress for client_id:", client_id, "days:", days);
+
+    const response = await fetch(
+      `${baseURL}/analytics/export-all-analytics-data/?client_id=${client_id}&days=${days}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": basicAuth
+        },
+      }
+    );
+
+    console.log("downloadTrackedReports response:", response);
+
+    if (!response.ok) {
+      throw new Error("Failed to download file");
+    }
+
+    // 👇 Convert to blob
+    const blob = await response.blob();
+
+    // 👇 Create download URL
+    const url = window.URL.createObjectURL(blob);
+
+    // 👇 Create temp anchor
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `analytics_reports_${client_id}_${days}days.zip`; // filename
+
+    document.body.appendChild(a);
+    a.click();
+
+    // 👇 Cleanup
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error("Error downloading analytics data:", error);
+  }
+};

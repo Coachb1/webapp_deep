@@ -10,6 +10,7 @@ import { Input } from "@/components/books/ui/input";
 import { usePortalUser } from "./context/UserContext";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
+import { downloadTrackedReports } from "@/lib/api";
 
 const Header = ({
   packageCourseId,
@@ -26,6 +27,7 @@ const Header = ({
 }) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showLeaderBoardButton, setShowLeaderBoardButton] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const [showAiPulseButton, setShowAiPulseButton] = useState(false);
   const [showIdeaBoardButton, setShowIdeaBoardButton] = useState(false);
   const [LeaderBoardButtonLabel, setLeaderBoardButtonLabel] =
@@ -34,6 +36,9 @@ const Header = ({
     useState("AI Pulse Report");
   const [IdeaBoardButtonLabel, setIdeaBoardButtonLabel] =
     useState("Idea Board");
+  const [ReportButtonLabel, setReportButtonLabel] =
+    useState("Reports");
+  const [showReportButton, setShowReportButton] = useState(false);
 
   const [password, setPassword] = useState("");
   const { user, loading, userInfo } = usePortalUser(); // Assuming useUser is imported from context
@@ -71,29 +76,37 @@ const Header = ({
       userInfo?.libraryBotConfig?.feature_and_button_controls?.idea_board_button
         ?.label ?? "Idea Board",
     );
+
+    setShowReportButton(
+      userInfo?.libraryBotConfig?.feature_and_button_controls?.analytics_report_button
+        ?.show ?? false,
+    );
+    setReportButtonLabel(
+      userInfo?.libraryBotConfig?.feature_and_button_controls?.analytics_report_button
+        ?.label ?? "Reports",
+    );
+    
   }, [userInfo, loading]);
 
   // ✅ Leader Board login check
-  const handlePasswordSubmit = (packageCourseId: string) => {
-    // if (password === "bookdemo#12345") {
-    const newWindow = window.open(
-      `/library-bot/leaderBoardReport/?package_course_id=${packageCourseId}&client_id=${userInfo.clientId}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
-    if (newWindow) newWindow.opener = null; // extra safety
+  const handlePasswordSubmit = async () => {
+    setShowLoader(true);
+    if (password === userInfo?.libraryBotConfig?.feature_and_button_controls?.analytics_report_button?.password) {
+      await downloadTrackedReports(userInfo.clientId || "", 30);
     setShowReportDialog(false);
     setPassword("");
-    // } else {
-    //   alert("❌ Wrong password, try again!");
-    //   setPassword("");
-    // }
+    setShowLoader(false);
+    } else {
+      alert("❌ Wrong password, try again!");
+      setPassword("");
+      setShowLoader(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handlePasswordSubmit(packageCourseId);
+      handlePasswordSubmit();
     }
   }
 
@@ -214,6 +227,17 @@ const Header = ({
                     {AiPulseButtonLabel}
                   </Button>
                 )}
+                {ReportButtonLabel && showReportButton && (
+                  <Button
+                    onClick={() => {
+                      setShowReportDialog(true);
+                    }}
+                    className="bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                    style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                  >
+                    {ReportButtonLabel}
+                  </Button>
+                )}  
               </div>
             )}
           </div>
@@ -324,6 +348,19 @@ const Header = ({
                     {AiPulseButtonLabel}
                   </Button>
                 )}
+                
+                {ReportButtonLabel && showReportButton && (
+                  <Button
+                    onClick={() => {
+                      setShowReportDialog(true);
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                    style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                  >
+                    {ReportButtonLabel}
+                  </Button>
+                )}
               </>
             )}
           </div>
@@ -349,8 +386,9 @@ const Header = ({
               className="w-full"
             />
             <Button
-              onClick={() => handlePasswordSubmit(packageCourseId)}
-              className="w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473]"
+              onClick={() => handlePasswordSubmit()}
+              className={`w-full rounded-lg bg-[#00c193] px-5 py-2 text-sm font-bold text-white shadow-md transition-colors duration-300 hover:bg-[#069473]
+                ${showLoader ? "opacity-50 cursor-not-allowed" : ""}}`}
             >
               Enter
             </Button>

@@ -322,9 +322,11 @@ const BookCard: React.FC<BookCardProps> = ({
           uid: book.id,
           embed_link: book.report!,
           transform_iq: "",
-          tab_name: book.title,
+          tab_name: `${book.author} - ${book.title}`,
           id: Number(book.id),
         }}
+        enableTracking={true}
+        userId={user_id}
       />
     </>
   );
