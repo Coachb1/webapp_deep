@@ -894,6 +894,7 @@ export const fetchBooks = async (coursePackageId: string, userId?: string): Prom
         .filter((m: any) => m.chapter_type === "BOOK")
         .map((m: any) => ({
           id: m.uid,
+          uid: m.uid,
           title: m.title,
           author: m.author,
           tag: m.tag? m.tag?.split(',') : [],
@@ -1395,46 +1396,76 @@ export const trackJobaidSessionCompletion = async (userId:string, jobaid_session
   return null;
 }
 }
+const getFilenameFromDisposition = (disposition: string | null) => {
+  if (!disposition) return null;
+
+  // Handles: attachment; filename="report.xlsx"
+  const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) return decodeURIComponent(utf8Match[1]);
+
+  const asciiMatch = disposition.match(/filename="?([^"]+)"?/i);
+  return asciiMatch?.[1] ?? null;
+};
+
+const getExtensionFromMime = (mime: string | null) => {
+  const map: Record<string, string> = {
+    "application/zip": "zip",
+    "text/csv": "csv",
+    "application/csv": "csv",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+    "application/pdf": "pdf",
+    "application/json": "json",
+  };
+
+  return map[mime || ""] || "bin";
+};
 
 export const downloadTrackedReports = async (client_id: string, days = 30) => {
   try {
-    console.debug("Fetching tracked concept progress for client_id:", client_id, "days:", days);
-
     const response = await fetch(
       `${baseURL}/analytics/export-all-analytics-data/?client_id=${client_id}&days=${days}`,
       {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": basicAuth
+          Accept: "*/*",
+          Authorization: basicAuth,
         },
       }
     );
 
-    console.log("downloadTrackedReports response:", response);
-
     if (!response.ok) {
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const err = await response.json();
+        throw new Error(err?.detail || err?.message || "Failed to download file");
+      }
       throw new Error("Failed to download file");
     }
 
-    // 👇 Convert to blob
     const blob = await response.blob();
 
-    // 👇 Create download URL
+    const disposition = response.headers.get("content-disposition");
+    const filenameFromHeader = getFilenameFromDisposition(disposition);
+
+    const contentType = response.headers.get("content-type");
+    const extension = getExtensionFromMime(contentType);
+
+    const filename =
+      filenameFromHeader ||
+      `analytics_reports_${client_id}_${days}days.${extension}`;
+
     const url = window.URL.createObjectURL(blob);
 
-    // 👇 Create temp anchor
     const a = document.createElement("a");
     a.href = url;
-    a.download = `analytics_reports_${client_id}_${days}days.zip`; // filename
+    a.download = filename;
+    a.rel = "noopener";
 
     document.body.appendChild(a);
     a.click();
-
-    // 👇 Cleanup
     a.remove();
-    window.URL.revokeObjectURL(url);
 
+    window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Error downloading analytics data:", error);
   }
