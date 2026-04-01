@@ -319,7 +319,7 @@ const BookCard: React.FC<BookCardProps> = ({
           setIsReadModalOpen(false);
         }}
         tab={{
-          uid: book.id,
+          uid: book.uid,
           embed_link: book.report!,
           transform_iq: "",
           tab_name: `${book.author} - ${book.title}`,
