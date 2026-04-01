@@ -319,12 +319,14 @@ const BookCard: React.FC<BookCardProps> = ({
           setIsReadModalOpen(false);
         }}
         tab={{
-          uid: book.id,
+          uid: book.uid,
           embed_link: book.report!,
           transform_iq: "",
-          tab_name: book.title,
+          tab_name: `${book.author} - ${book.title}`,
           id: Number(book.id),
         }}
+        enableTracking={true}
+        userId={user_id}
       />
     </>
   );

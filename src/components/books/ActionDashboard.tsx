@@ -14,7 +14,7 @@ import { DashboardSkeletonCard } from "./Loaders";
 /* -------------------- TYPES -------------------- */
 
 interface ActionDashboardProps {
-  onAction?: (action: string, type?: string, actionInfo?:any) => void;
+  onAction?: (action: string, type?: string, actionInfo?:any, collectionId?: string) => void;
   selectedAction?: string | null;
 }
 
@@ -52,7 +52,7 @@ const resolveValidButtons = (col: CollectionBlock): ActionButton[] => {
 
   // ✅ SYSTEM type: return all buttons, ignore case_items completely
   if (type === "system" || type === "both") {
-    return buttons.map((b) => ({ ...b, collection_name: col.collection_name }));
+    return buttons.map((b) => ({ ...b, collection_name: col.collection_name, uid: col.uid }));
   }
 
   // ❌ Non-system: no case items → no buttons
@@ -65,7 +65,7 @@ const resolveValidButtons = (col: CollectionBlock): ActionButton[] => {
   // Only allow buttons that exist in case items — and attach collection name
   return buttons
     .filter((btn) => caseActionSet.has(btn.action))
-    .map((b) => ({ ...b, collection_name: col.collection_name }));
+    .map((b) => ({ ...b, collection_name: col.collection_name, uid: col.uid }));
 };
 
 /* -------------------- COMPONENT -------------------- */
@@ -283,7 +283,7 @@ const ActionDashboard: React.FC<ActionDashboardProps> = ({
                       if (!btn.action) return;
                       const collectionName = btn.collection_name || item.title || "";
                       const actionInfo = `${collectionName}|${btn.label}`;
-                      onAction?.(btn.action, btn.type, actionInfo);
+                      onAction?.(btn.action, btn.type, actionInfo, btn.uid);
                     }}
                     className={`
     custom-btn btn-sm

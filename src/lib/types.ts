@@ -2,6 +2,7 @@
 export interface Book {
   report: string | undefined;
   id: string;
+  uid?: string;
   title: string;
   author: string;
   tag: string[];
@@ -406,6 +407,7 @@ export interface CollectionBlock {
   case_items: CaseItem[];
   heading?:string;
   sticker?:string;
+  uid?: string;
 }
 
 export interface IframeTablePanel {
@@ -417,6 +419,7 @@ export interface IframeTablePanel {
 
 export interface ActionButton {
   collection_name?: string;
+  uid?: string;
   label: string;
   action?: string;
   heading?: string;
@@ -426,6 +429,7 @@ export interface ActionButton {
 
 export interface DashboardItem {
   id: string;
+  uid?: string;
   title: string;
   description: string;
   icon: React.ReactNode;
