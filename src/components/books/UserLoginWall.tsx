@@ -189,7 +189,7 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
         body: JSON.stringify({
           subdomain_prefix: SUBDOMAIN_PREFIX,
           identity_context: {
-            identity_type: "email",
+            identity_type: "deepchat_unique_id",
             value: email,
           },
           password,
