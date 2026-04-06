@@ -36,6 +36,15 @@ const sanitize = (str: string) =>
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+export const clearCookieAndLocalStorage = () => {
+  // Clear cookie by setting it to an empty value and expiring it immediately
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+  // Clear localStorage
+  localStorage.clear();
+  console.log("Cleared JWT token from cookies and localStorage");
+}
+
 const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, clientId}: UserInfoGateProps) => {
   const { setUser, refreshUserData , user} = usePortalUser();
 
@@ -63,10 +72,12 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, cli
             // if (!data.user?.user_data && !data.user?.user_data?.id) await refreshUserData(data.user);
           };
         } else {
+          clearCookieAndLocalStorage();
           console.error("Failed to fetch user data", await res.text());
         }
       } catch (err) {
         console.error("Error fetching session:", err);
+        clearCookieAndLocalStorage()
         setApiError("Failed to fetch session. Please refresh.");
       } finally {
         setChecking(false);
@@ -114,8 +125,8 @@ const UserInfoGate = ({ children, autoLoginEmail, LoginView, allowedDomains, cli
 
     setLoading(true);
 
-    const newUser = { given_name: tempName, email: tempEmail };
-
+    const newUser = { given_name: sanitizedName, email: sanitizedEmail };
+    console.log("Creating/fetching user account for:", newUser);
     getUserAccount(newUser)
       .then((response) => response.json())
       .then(async(data) => {

@@ -17,6 +17,7 @@ import {
   getAttemptedTestsList,
 } from "@/lib/api";
 import { UserInfoType } from "@/lib/types";
+import { clearCookieAndLocalStorage } from "../Userinfogate";
 
 interface User {
   given_name: string;
@@ -182,7 +183,8 @@ export const UserProvider = ({ children, LoginView }: { children: ReactNode, Log
 
     fetch(`${baseURL}/accounts/me/`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
-        if (res.status === 403) {
+        console.log("Session response for library bot:", res);
+        if ([401, 403].includes(res.status) || !res.ok) {
           console.log("Access token expired");
           localStorage.removeItem("access_token");
           localStorage.removeItem("refresh_token");
@@ -195,7 +197,12 @@ export const UserProvider = ({ children, LoginView }: { children: ReactNode, Log
       })
       .then(async (data) => {
         if (!data) return; // Token was expired
-        console.debug("User data from session:", data);
+        console.debug("User data from session:", data, data.ok);
+        if (data.detail){
+          console.error("Error in fetching user data:", data.detail);
+          setLoading(false);
+          return;
+        }
         
         const newUser = { given_name: data.name, email: data.email };
 
@@ -221,11 +228,28 @@ export const UserProvider = ({ children, LoginView }: { children: ReactNode, Log
       }
       console.log(pathname)
       fetch("/api/session", { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          console.error("Failed to fetch session data, status:", res.status);
+          localStorage.removeItem(`${fullPath}-${LoginView || "jwt_token"}`);
+          setUser(null);
+          (window as any).user = null;
+          setLoading(false);
+          clearCookieAndLocalStorage();
+          return null;
+        }
+        return res.json()
+      })
       .then(async (data) => {
         setUser(data.user);
         (window as any).user = data.user;
         await fetchUserData(data.user);
+      })
+      .catch((err) => {
+        console.error("Error fetching session:", err);
+        setUser(null);
+        (window as any).user = null;
+        clearCookieAndLocalStorage();
       })
       .finally(() => setLoading(false));
     }
