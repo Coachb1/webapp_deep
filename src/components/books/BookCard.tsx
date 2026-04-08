@@ -42,6 +42,10 @@ const defaultButtonConfig: CardButtonConfig = {
     show: true,
     label: "",
   },
+  like_button: {
+    show: true,
+    label: "",
+  },
 };
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -201,22 +205,26 @@ const BookCard: React.FC<BookCardProps> = ({
           {/* The Watchlater button is commented for specific purpose to be uncommented later */}
 
           {/* Heart */}
-          {onlyClientSetup ? (
-            <ThumbVoteButton
-              count={moduleLikes || 0}
-              onVote={(value) => handleLikeDisLike(book, value)}
-              loading={loadingLikeDislike}
-            />
-          ) : (
-            <button
-              onClick={() => handleToggleLike(book)}
-              className="shrink-0 md:-ml-1 lg:ml-auto"
-            >
-              <HeartButton
-                isActive={likedBooks.some((b) => b.title === book.title)}
-                onToggle={() => {}}
-              />
-            </button>
+          {(cardButtonConfig?.like_button?.show ?? true) && (
+            <>
+              {onlyClientSetup ? (
+                <ThumbVoteButton
+                  count={moduleLikes || 0}
+                  onVote={(value) => handleLikeDisLike(book, value)}
+                  loading={loadingLikeDislike}
+                />
+              ) : (
+                <button
+                  onClick={() => handleToggleLike(book)}
+                  className="shrink-0 md:-ml-1 lg:ml-auto"
+                >
+                  <HeartButton
+                    isActive={likedBooks.some((b) => b.title === book.title)}
+                    onToggle={() => {}}
+                  />
+                </button>
+              )}
+            </>
           )}
         </div>
 
@@ -228,31 +236,51 @@ const BookCard: React.FC<BookCardProps> = ({
           <p className="text-gray-600 mb-2 truncate" title={book.author}>
             {book.author}
           </p>
-          <p
-            className="
-              inline-block mb-2 px-3 py-1
-              bg-gray-200 text-gray-700 text-xs font-semibold
-              rounded-full
-            "
-          >
-            {book.tag[0]}
-          </p>
-          {(cardButtonConfig?.report?.show ?? true) && book?.report && (
-            <button
-              onClick={() => {
-                setIsReadModalOpen(true);
-                track(
-                  book.title,
-                  user?.user_data?.uid,
-                  "click",
-                  "Opened report",
-                );
-              }}
-              className={`ml-2 custom-btn btn-sm`}
+          <div className="flex flex-col items-start gap-2 mb-2">
+            {/* Keyword */}
+            <p
+              className="
+                inline-block px-3 py-1
+                bg-gray-200 text-gray-700 text-xs font-semibold
+                rounded-full
+              "
             >
-              {cardButtonConfig?.report?.label || "Report"}
-            </button>
-          )}
+              {book?.keywords?.length > 0
+                ? book.keywords.map(x => "#" + x.trim()).join(" ")
+                : "Extracting..."}
+            </p>
+
+            {/* Report + TransformIQ in SAME ROW */}
+            <div className="flex items-center gap-2">
+              {/* Report Button */}
+              {(cardButtonConfig?.report?.show ?? true) && book?.report && (
+                <button
+                  onClick={() => {
+                    setIsReadModalOpen(true);
+                    track(
+                      book.title,
+                      user?.user_data?.uid,
+                      "click",
+                      "Opened report",
+                    );
+                  }}
+                  className="custom-btn btn-sm"
+                >
+                  {cardButtonConfig?.report?.label || "Report"}
+                </button>
+              )}
+
+              {/* TransformIQ Button */}
+              {(cardButtonConfig?.description?.show ?? true) && (
+                <button
+                  className="custom-btn btn-sm"
+                  onClick={onMore}
+                >
+                  {cardButtonConfig?.description?.label || "TransformIQ"}
+                </button>
+              )}
+            </div>
+          </div>
           {/* <p
             className="custom-subtitle mb-4 line-clamp-2"
             title={book.desc}
@@ -276,12 +304,6 @@ const BookCard: React.FC<BookCardProps> = ({
             </button>
           )}
 
-          {/* More Button */}
-          {(cardButtonConfig?.description?.show ?? true) && (
-            <button className={`custom-btn btn-sm`} onClick={onMore}>
-              {cardButtonConfig?.description?.label || "TransformIQ"}
-            </button>
-          )}
         </div>
 
         {/* This section is commented to hide progress bar and finished status to be uncommented later. */}

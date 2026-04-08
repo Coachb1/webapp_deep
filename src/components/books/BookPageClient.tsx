@@ -128,16 +128,16 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
       .filter((f) => f.length > 0);
 
     const filtered = allBooks.filter((book) => {
-      const title = book.title?.toLowerCase() || "";
-      const author = book.author?.toLowerCase() || "";
-      const listName = book.list_name?.toLowerCase() || "";
-      const tags = book.tag?.map((t) => t.toLowerCase()) || [];
+      // const title = book.title?.toLowerCase() || "";
+      // const author = book.author?.toLowerCase() || "";
+      // const listName = book.list_name?.toLowerCase() || "";
+      // const tags = book.tag?.map((t) => t.toLowerCase()) || [];
       const key_words = book.keywords?.map((k) => k.toLowerCase().trim()) || [];
 
       return queries.some(
         (query) =>
-          title.includes(query) ||
-          author === query ||
+          // title.includes(query) ||
+          // author === query ||
           key_words.some((keyword) => keyword === query)
       );
     });

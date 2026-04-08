@@ -110,8 +110,8 @@ const SearchFilter = ({
     const items: string[] = [];
     console.log
     allBooks.forEach((book) => {
-      if (book.title) items.push(book.title.trim());
-      if (book.author) items.push(book.author.trim());
+      // if (book.title) items.push(book.title.trim());
+      // if (book.author) items.push(book.author.trim());
       // if (book.list_name) items.push(book.list_name.trim());
       // if (Array.isArray(book.tag)) items.push(...book.tag.map((t) => t.trim()));
       if (Array.isArray(book.keywords)) items.push(...book.keywords.map((k) => k.trim()));
@@ -544,22 +544,13 @@ const SearchFilter = ({
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
-        {/* Reset */}
-        <Button
-          className={`custom-btn btn-md ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}
-          // style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
-          onClick={handleResetLibraryOptimized}
-          disabled={isResetting}
-        >
-          {isResetting ? 'Resetting...' : 'Reset'}
-        </Button>
         
         {/* Search */}
         <div className="flex items-center gap-2 bg-white rounded-full px-3 py-2 shadow border border-gray-200 w-full sm:max-w-md">
           <div className="relative flex-grow" ref={suggestionsRef}>
             <Input
               type="text"
-              placeholder="What are you looking for?"
+              placeholder="Capability Search like #AI  #Cloud #ML etc."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -607,6 +598,7 @@ const SearchFilter = ({
               </ul>
             )}
           </div>
+          
           <Button
             onClick={handleSearch}
             className="flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 transition border border-[#00c193]"
@@ -628,7 +620,15 @@ const SearchFilter = ({
           </Button>
 
         </div>
-        
+        {/* Reset */}
+        <Button
+          className={`custom-btn btn-md ${isResetting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          // style={{ borderRadius: 'calc(var(--radius) - 6px)' }}
+          onClick={handleResetLibraryOptimized}
+          disabled={isResetting}
+        >
+          {isResetting ? 'Resetting...' : 'Reset'}
+        </Button>
         {/* --->For Specific Purpose the Like And Lets discuss Commented to be uncommented later */}
 
         {/* Like + Later */}
