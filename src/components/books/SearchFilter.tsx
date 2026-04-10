@@ -79,20 +79,6 @@ const SearchFilter = ({
   >({});
   const [showSecondFilter, setShowSecondFilter] = useState(true);
 
-  // Debounced search
-  const debouncedSearch = useRef(
-    debounce((term: string) => {
-      onSearch(term);
-    }, 300)
-  ).current;
-
-  // Cleanup debounce
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
-
   // Categories - MOVE HERE (before the useEffect)
   const categories = useMemo(() => {
     const normalized = allBooks.flatMap(
@@ -128,10 +114,8 @@ const SearchFilter = ({
   useEffect(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) {
-      setSuggestions([]);
-      setShowSuggestions(false);
+      setSuggestions(suggestionCandidates.slice(0, 8))
       setActiveSuggestionIndex(-1);
-      debouncedSearch(""); // Clear search immediately
       return;
     }
 
@@ -142,9 +126,7 @@ const SearchFilter = ({
     setSuggestions(matched);
     setShowSuggestions(matched.length > 0);
     setActiveSuggestionIndex(-1);
-        // Use debounced search instead of immediate
-    debouncedSearch(searchTerm);
-  }, [searchTerm, suggestionCandidates, debouncedSearch]);
+  }, [searchTerm, suggestionCandidates]);
 
   const functions = useMemo(() => {
     const normalized = allBooks.flatMap(
@@ -550,12 +532,19 @@ const SearchFilter = ({
           <div className="relative flex-grow" ref={suggestionsRef}>
             <Input
               type="text"
-              placeholder="Capability Search like #AI  #Cloud #ML etc."
+              placeholder="Capability search like AI, ML, Cloud etc."
               value={searchTerm}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
+                const value = e.target.value;
+                setSearchTerm(value);
 
-                // 🔥 Clear filters on typing
+                if (value === "") {
+                  setSuggestions(suggestionCandidates.slice(0, 8));
+                  setShowSuggestions(true); // ✅ OPEN automatically
+                  setActiveSuggestionIndex(-1);
+                }
+
+                // reset filters
                 setSelectedFilters({});
                 setEmergingPlayersChecked(false);
                 setStartUpChecked(false);
@@ -564,7 +553,11 @@ const SearchFilter = ({
 
               }}
               onKeyDown={handleKeyPress}
-              onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
+              onFocus={() => {
+                setSuggestions([...suggestionCandidates.slice(0, 8)]);
+                setShowSuggestions(true);
+                setActiveSuggestionIndex(-1);
+              }}
               className="w-full  focus:ring-0 text-base sm:text-sm border border-[#00c193]"
               aria-autocomplete="list"
               aria-haspopup="true"
@@ -588,7 +581,7 @@ const SearchFilter = ({
                     onClick={() => {
                       setSearchTerm(sugg);
                       setShowSuggestions(false);
-                      onSearch(sugg);
+                      // onSearch(sugg);
                     }}
                     onMouseEnter={() => setActiveSuggestionIndex(idx)}
                   >
