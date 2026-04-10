@@ -40,6 +40,10 @@ export interface CardButtonConfig {
       show: boolean;
       label: string;
     };
+    like_button?: {
+      show: boolean;
+      label: string;
+    };
   }
 export interface CoursePackage {
   package_id: string;
