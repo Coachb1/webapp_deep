@@ -233,7 +233,7 @@ const BookCard: React.FC<BookCardProps> = ({
           {/* <h4 className="font-bold text-lg mb-1 truncate" title={book.title}>
           {book.title}
         </h4> */}
-          <p className="text-gray-600 mb-2 truncate" title={book.author}>
+          <p className="text-gray-600 text-lg mb-2 truncate" title={book.author}>
             {book.author}
           </p>
           <div className="flex flex-col items-start gap-2 mb-2">
@@ -241,7 +241,7 @@ const BookCard: React.FC<BookCardProps> = ({
             <p
               className="
                 inline-block px-3 py-1
-                bg-gray-200 text-gray-700 text-xs font-semibold
+                bg-gray-200 text-gray-700 text-sm font-semibold
                 rounded-full
               "
             >
@@ -264,7 +264,7 @@ const BookCard: React.FC<BookCardProps> = ({
                       "Opened report",
                     );
                   }}
-                  className="custom-btn btn-sm"
+                  className="custom-btn text-sm px-4 py-2 rounded-lg"
                 >
                   {cardButtonConfig?.report?.label || "Report"}
                 </button>
@@ -273,7 +273,7 @@ const BookCard: React.FC<BookCardProps> = ({
               {/* TransformIQ Button */}
               {(cardButtonConfig?.description?.show ?? true) && (
                 <button
-                  className="custom-btn btn-sm"
+                  className="custom-btn text-sm px-5 py-2 rounded-lg"
                   onClick={onMore}
                 >
                   {cardButtonConfig?.description?.label || "TransformIQ"}

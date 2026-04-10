@@ -30,6 +30,10 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
   const [apiError, setApiError] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [enteredKey, setEnteredKey] = useState("");
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
 
   const [showSetup, setShowSetup] = useState(false);
   const [newName, setNewName] = useState("");
@@ -37,6 +41,8 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
   const [confirmPassword, setConfirmPassword] = useState("");
   const [tempAuthData, setTempAuthData] = useState<any>(null);
   const [tempUserData, setTempUserData] = useState<any>(null);
+  const [showSecurityPopup, setShowSecurityPopup] = useState(false);
+  const [securityKey, setSecurityKey] = useState("");
 
   /** ---------------------------
    *  SESSION CHECK
@@ -143,19 +149,31 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
         });
 
         if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.detail || "Update failed");
+          const err = await res.json();
+          throw new Error(err.detail || "Update failed");
         }
 
-        // Proceed to login with the tokens we already have
-        await finalizeLogin(tempAuthData, tempUserData);
+        // ✅ SHOW POPUP
+        setShowSecurityPopup(true);
+
+        // ✅ HIDE SETUP
+        setShowSetup(false);
+
+        // stop loading
+        setLoading(false);
+
+        // ❌ remove return if you want auto login later
+        return;
+
+        // 👉 Later we will enable this again
+        // await finalizeLogin(tempAuthData, tempUserData);
 
     } catch (err: any) {
         console.error("Setup failed", err);
         setApiError(err.message || "Failed to update profile");
         setLoading(false);
     }
-  };
+};
 
   /** ---------------------------
    *  LOGIN HANDLER (DRF)
@@ -181,7 +199,7 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
     if (!valid) return;
 
     setLoading(true);
-
+    
     try {
       const res = await fetch(`${baseURL}/webauth/login/`, {
         method: "POST",
@@ -235,9 +253,15 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
       if (data.auth_type === 'client_login') {
         setTempAuthData(data);
         setShowSetup(true);
+
+        // ✅ ADD THIS HERE
+        if (data.secret_code) {
+          setSecurityKey(data.secret_code);
+        }
+
         setLoading(false);
         return;
-      }
+      } 
 
       await finalizeLogin(data, userData);
 
@@ -253,6 +277,12 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
       // Loading state is handled in try/catch blocks or state transitions
     }
   };
+  const handleSecurityClose = async () => {
+  setShowSecurityPopup(false);
+
+  // ✅ now login automatically
+  await finalizeLogin(tempAuthData, tempUserData);
+};
 
   return (
     <div className="relative">
@@ -262,7 +292,7 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
       </div>
 
       {/* Login Modal */}
-      {!user && (
+      {!user && !showForgot && !showSecurityPopup &&( 
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
 
@@ -383,11 +413,176 @@ const UserInfoWall = ({ children, allowedDomains, clientId, onlyClientSetup }: U
                   >
                     {loading ? "Logging in..." : "Login"}
                   </button>
+                  <p
+                    className="text-sm text-blue-500 mt-2 cursor-pointer text-center"
+                    onClick={() => setShowForgot(true)}
+                  >
+                    Forgot Password?
+                  </p>
                 </form>
                 </>
                 )}
               </>
             )}
+          </div>
+        </div>
+      )}
+      {showForgot && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
+          <div className="bg-white p-6 rounded-xl w-[320px] text-center">
+
+            <h3 className="mb-3 font-semibold">Reset Password</h3>
+
+            {/* Security Key */}
+            <input
+              type="text"
+              placeholder="Enter Security Key"
+              value={enteredKey}
+              onChange={(e) => setEnteredKey(e.target.value)}
+              className="border px-3 py-2 w-full mb-3 rounded"
+            />
+            {/* Email */}
+            <input
+              type="email"
+              placeholder="Enter Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border px-3 py-2 w-full mb-3 rounded"
+            />
+
+            {/* New Password */}
+            <input
+              type="password"
+              placeholder="New Password"
+              value={resetPassword}
+              onChange={(e) => setResetPassword(e.target.value)}
+              className="border px-3 py-2 w-full mb-3 rounded"
+            />
+
+            {/* Confirm Password */}
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={resetConfirmPassword}
+              onChange={(e) => setResetConfirmPassword(e.target.value)}
+              className="border px-3 py-2 w-full mb-3 rounded"
+            />
+
+            {/* RESET BUTTON */}
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+              onClick={async () => {
+                try {
+                  if (!enteredKey) {
+                    alert("Enter security key");
+                    return;
+                  }
+
+                  if (!email || !isValidEmail(email)) {
+                    alert("Enter email");
+                    return;
+                  }
+
+                  if (resetPassword.length < 6) {
+                    alert("Password must be at least 6 characters");
+                    return;
+                  }
+
+                  if (resetPassword !== resetConfirmPassword) {
+                    alert("Passwords do not match");
+                    return;
+                  }
+
+                  const res = await fetch(`${baseURL}/webauth/reset-password-secret/`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      subdomain_prefix: SUBDOMAIN_PREFIX,
+                      identity_context: {
+                        identity_type: "deepchat_unique_id",
+                        value: email,
+                      },
+                      new_password: resetPassword,
+                      secret_code: enteredKey,
+                    }),
+                  });
+
+                  if (!res.ok) {
+                    throw new Error("Invalid or expired key");
+                  }
+
+                  alert("Password reset successful ✅");
+
+                  // reset fields
+                  setEnteredKey("");
+                  setResetPassword("");
+                  setResetConfirmPassword("");
+
+                  // back to login
+                  setShowForgot(false);
+
+                } catch (err) {
+                  alert("Invalid or expired key ❌");
+                }
+              }}
+            >
+              Reset
+            </button>
+
+            {/* CANCEL */}
+            <button
+              className="block w-full mt-2 text-sm text-gray-500"
+              onClick={() => setShowForgot(false)}
+            >
+              Cancel
+            </button>
+
+          </div>
+        </div>
+      )}
+      {showSecurityPopup && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50">
+          <div className="bg-white p-6 rounded-xl shadow-xl text-center w-[340px]">
+
+            <h3 className="text-lg font-semibold mb-3">Security Key</h3>
+
+            <p className="text-blue-600 font-mono text-lg mb-3">
+              {securityKey}
+            </p>
+
+            {/* ✅ NOTICE */}
+            <p className="text-sm text-red-500 mb-4">
+              ⚠️ Please save this code carefully. It will be required for password recovery.
+            </p>
+
+            {/* ✅ DOWNLOAD BUTTON */}
+            <button
+              className="bg-green-600 text-white px-4 py-2 rounded mb-2 w-full"
+              onClick={() => {
+                const blob = new Blob(
+                  [`Your Security Key:\n\n${securityKey}`],
+                  { type: "text/plain" }
+                );
+
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "security-key.txt";
+                link.click();
+              }}
+            >
+              Download Key
+            </button>
+
+            {/* CLOSE BUTTON */}
+            <button
+              className="block w-full mt-2 text-sm text-gray-500"
+              onClick={handleSecurityClose}
+            >
+              Close
+            </button>
+
           </div>
         </div>
       )}
