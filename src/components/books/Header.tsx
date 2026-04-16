@@ -11,6 +11,7 @@ import { usePortalUser } from "./context/UserContext";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { downloadTrackedReports } from "@/lib/api";
+import IframeViewer from "./IframeViewer";
 
 const Header = ({
   packageCourseId,
@@ -43,7 +44,9 @@ const Header = ({
   const [password, setPassword] = useState("");
   const { user, loading, userInfo } = usePortalUser(); // Assuming useUser is imported from context
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
+  const [showIframe, setShowIframe] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
+  
   useEffect(() => {
     if (onlyClientSetup) {
       setShowLeaderBoardButton(false);
@@ -237,7 +240,17 @@ const Header = ({
                   >
                     {ReportButtonLabel}
                   </Button>
-                )}  
+                )}
+                <Button
+                  onClick={() => {
+                    setIframeUrl("https://storage.googleapis.com/aiadopts-preview-v1/Resources/AI-Design-Risk-and-Governance-View.pdf"); // 👉 replace later with backend URL
+                    setShowIframe(true);
+                  }}
+                  className="bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                  style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                >
+                  Static Report
+                </Button>  
               </div>
             )}
           </div>
@@ -255,6 +268,8 @@ const Header = ({
               )}
             </button>
           )}
+
+          
         </div>
 
         {/* Mobile Menu */}
@@ -361,6 +376,17 @@ const Header = ({
                     {ReportButtonLabel}
                   </Button>
                 )}
+                <Button
+                  onClick={() => {
+                    setIframeUrl("https://example.com");
+                    setShowIframe(true);
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                  style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                >
+                  Static Report
+                </Button>
               </>
             )}
           </div>
@@ -395,8 +421,28 @@ const Header = ({
           </div>
         </DialogContent>
       </Dialog>
+      {showIframe && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          
+          {/* Close button */}
+          <button
+            onClick={() => setShowIframe(false)}
+            className="absolute top-4 right-4 z-50 bg-red-500 text-white px-3 py-1 rounded"
+          >
+            ✕
+          </button>
+
+          {/* Iframe Viewer */}
+          <div className="w-[90%] h-[90%] bg-white rounded-xl overflow-hidden">
+            <IframeViewer url={iframeUrl} />
+          </div>
+
+        </div>
+      )}
     </>
+    
   );
+  
 };
 
 export default Header;
