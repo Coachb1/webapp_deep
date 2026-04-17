@@ -18,6 +18,7 @@ interface Props {
   toggleSortVotes: () => void;
   onQnaUpdated: (rowId: number, question: string, answer: any) => void;
   sessionVoting: boolean;
+  isGenerating:boolean;
 }
 export default function IdeaBoardTable({
   qnaKeys,
@@ -31,7 +32,8 @@ export default function IdeaBoardTable({
   sortDir,
   toggleSortVotes,
   onQnaUpdated,
-  sessionVoting = true
+  sessionVoting = true,
+  isGenerating = false
 }: Props) {
   const [showReport, setShowReport] = useState(false);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
@@ -47,6 +49,19 @@ export default function IdeaBoardTable({
     key: null,
     value: "",
   });
+
+
+  const normalizeDisplayValue = (value?: string, fallback = "-") => {
+    if (isGenerating) return "Generating...";
+    if (!value || value.trim() === "" || value.trim() === "-") return fallback;
+    return value;
+  };
+
+  const formatLogDate = (value?: string) => {
+    if (isGenerating) return "Generating...";
+    const date = new Date(value || "");
+    return Number.isNaN(date.valueOf()) ? "-" : date.toLocaleDateString();
+  };
 
   const handleSaveEdit = async () => {
     if (!editModal.row || !editModal.key) return;
@@ -221,19 +236,19 @@ export default function IdeaBoardTable({
                         key={key}
                         className="px-2 py-4 text-left font-medium text-gray-800 "
                       >
-                        {row.full_name}
+                        {normalizeDisplayValue(row.full_name)}
                       </td>
                     );
                   }
 
                   if (key === "Email") {
-                    return <td key={key}>{row.email}</td>;
+                    return <td key={key}>{normalizeDisplayValue(row.email)}</td>;
                   }
 
                   /* ---------- DYNAMIC QNA ---------- */
                   const qnaItem = row.odered_qna?.[key];
-                  const value = qnaItem?.answer || "-";
-
+                  const rawValue = qnaItem?.answer;
+                  const value = normalizeDisplayValue(rawValue);
                   // detect multiple file attachments (arrays of URLs or file objects)
                   const attachmentLinks: string[] = [];
                   const att = qnaItem?.attachments;
@@ -293,7 +308,7 @@ export default function IdeaBoardTable({
                           <div className="text-left font-medium text-gray-800 line-clamp-2 break-words">
                             {value || "—"}
                           </div>
-
+                          {!isGenerating && (
                           <button
                             onClick={() => {
                               setEditModal({
@@ -306,6 +321,7 @@ export default function IdeaBoardTable({
                           >
                             {value.length > 1 ? "Edit" : "Add"}
                           </button>
+                          )}
                         </div>
                       ) : (
                         /* ===== NORMAL TEXT ===== */
@@ -371,7 +387,7 @@ export default function IdeaBoardTable({
                 })}
                 {/* Created Date Column */}
                 <td className="px-2 py-4 text-left align-top whitespace-nowrap">
-                  {new Date(row.created_at).toLocaleDateString()}
+                  {formatLogDate(row.created_at)}
                 </td>
                 {/* ================= VOTES ================= */}
                 {sessionVoting && (
