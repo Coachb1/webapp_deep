@@ -55,6 +55,7 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
   const [isProtected, setIsProtected] = useState(false);
   const [correctPassword, setCorrectPassword] = useState("");
   const [sessionVoting, setSessionVoting] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const [rows, setRows] = useState<RowData[]>([]);
   const [qnaKeys, setQnaKeys] = useState<keyOrderType[]>([]);
@@ -212,10 +213,15 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch report data");
       const resPonse = await res.json();
+      console.log("API response for report data:", resPonse);
       const data = resPonse.sessions || resPonse;
       setSessionVoting(resPonse.session_voting_enabled)
       console.log("Fetched report data:", data);
-      const client_resources = data[0].client_resources || [];
+      let client_resources = []
+      if (data.length >0) {
+         client_resources = data[0].client_resources || [];
+          setIsGenerating(data[0].is_generating || false);
+      }
       console.log("Client resources:", client_resources);
       const mapped = mapApiToRows(data);
       setRows(mapped);
@@ -319,7 +325,11 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
       const resPonse = await updatedRes.json();
       const updatedData = resPonse.sessions;
       setSessionVoting(resPonse.session_voting_enabled)
-      const client_resources = updatedData[0].client_resources || [];
+      let client_resources = []
+      if (updatedData.length >0) {
+         client_resources = updatedData[0].client_resources || [];
+          setIsGenerating(updatedData[0].is_generating || false);
+      }
 
 
       // Re-map API data to rows
@@ -387,7 +397,11 @@ export const IdeaBoardReport: React.FC<IdeaboardPageProps> = ({
       const resPonse = await updatedRes.json();
       const updatedData = resPonse.sessions;
       setSessionVoting(resPonse.session_voting_enabled)
-      const client_resources = updatedData[0].client_resources || [];
+      let client_resources = []
+      if (updatedData.length >0) {
+         client_resources = updatedData[0].client_resources || [];
+          setIsGenerating(updatedData[0].is_generating || false);
+      }
 
       // Re-map API data to rows
       const mapped = mapApiToRows(updatedData);
@@ -593,7 +607,9 @@ const downloadReport = (format: "csv" | "xlsx") => {
         </div>
 
         {loading && (
-          <div className="p-6 text-center text-gray-500">Loading...</div>
+          <div className="p-6 text-center text-gray-500">
+            {isGenerating ? `Full Generating... (Log Date: ${currentDate})` : "Loading..."}
+          </div>
         )}
         {error && (
           <div className="p-6 text-center text-red-500">Failed: {error}</div>
@@ -607,6 +623,7 @@ const downloadReport = (format: "csv" | "xlsx") => {
         {!loading && !error && paginatedRows.length > 0 && (
           <>
             <IdeaBoardTable
+              isGenerating={isGenerating}
               sessionVoting={sessionVoting}
               qnaKeys={qnaKeys}
               rows={paginatedRows}

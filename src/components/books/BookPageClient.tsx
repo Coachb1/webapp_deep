@@ -20,6 +20,7 @@ import { IdeaBoardReport } from "./leaderboard/ideaboardReport";
 import ConversationalForm from "../job-aid/ConversationalForm";
 import ElfsightContactFormWidget from "../ContactForm";
 import React from "react";
+import SmartIframe from "./smartIframe";
 
 
 const DefaultFeatureBox = [
@@ -63,6 +64,9 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
   const [iframeLoadingMap, setIframeLoadingMap] = useState<Record<string, boolean>>({});
   const [featurePath, setFeaturePath] = useState<string>("");
   const [collectionId, setCollectionId] = useState<string>("");
+  const [staticReportUrl, setStaticReportUrl] = useState<string>("");
+  const [staticReportLable, setStaticReportLable] = useState("Static Report")
+
   useEffect(() => {
     console.info('transformiq', userInfo.libraryBotConfig)
     if (userInfo.libraryBotConfig?.feature_and_button_controls?.transform_iq_feature) {
@@ -285,14 +289,22 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
           onAction={(value, type, actionInfo) => {
             setActionKey(value);
             setActionType(type?.trim() || null);
-            setFeaturePath(actionInfo);
+
+            if (value === "STATIC-REPORTS") {
+              const jsonInfo = typeof actionInfo === "string" ? JSON.parse(actionInfo) : actionInfo;
+              setStaticReportUrl(jsonInfo.url || "");
+              setFeaturePath(jsonInfo.name || "Static Report");
+              setStaticReportLable(jsonInfo.heading)
+            } else {
+              setFeaturePath(actionInfo);
+            }
 
             setTimeout(() => {
               document
                 .getElementById("action-section")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" });
             }, 120);
-            track(actionInfo, actionInfo , user?.user_data?.uid)
+            track(featurePath, featurePath , user?.user_data?.uid)
           }}
 
         />
@@ -416,6 +428,14 @@ export default function BookPageClient({ id, onlyClientSetup=false, userLogin=tr
                   onlyclientsetup={onlyClientSetup}
                 />
               )}
+
+              {!loading && actionKey === "STATIC-REPORTS" &&  staticReportUrl && (
+                <SmartIframe
+                link={staticReportUrl}
+                name={staticReportLable}
+              />
+               
+              ) }
 
               {!loading && jobAidId && actionKey === "INTERNAL_TRANSFORMATION_PROPOSE" && (
                 <>
