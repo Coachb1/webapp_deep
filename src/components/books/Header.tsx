@@ -39,6 +39,10 @@ const Header = ({
   const [ReportButtonLabel, setReportButtonLabel] =
     useState("Reports");
   const [showReportButton, setShowReportButton] = useState(false);
+  const [StaticButtonLabel, setStaticButtonLabel] =
+    useState("Static Report");
+  const [showStaticButton, setshowStaticButton] = useState(false);
+  const [staticReportUrl, setStaticReportUrl] = useState("");
 
   const [password, setPassword] = useState("");
   const { user, loading, userInfo } = usePortalUser(); // Assuming useUser is imported from context
@@ -84,6 +88,19 @@ const Header = ({
     setReportButtonLabel(
       userInfo?.libraryBotConfig?.feature_and_button_controls?.analytics_report_button
         ?.label ?? "Reports",
+    );
+
+    setshowStaticButton(
+      userInfo?.libraryBotConfig?.feature_and_button_controls?.static_button
+        ?.show ?? false,
+    );
+    setStaticButtonLabel(
+      userInfo?.libraryBotConfig?.feature_and_button_controls?.static_button
+        ?.label ?? "Static Reports",
+    );
+    setStaticReportUrl(
+      userInfo?.libraryBotConfig?.feature_and_button_controls?.static_button
+        ?.link ?? "",
     );
     
   }, [userInfo, loading]);
@@ -237,7 +254,23 @@ const Header = ({
                   >
                     {ReportButtonLabel}
                   </Button>
-                )}  
+                )}
+
+                {StaticButtonLabel && showStaticButton && (
+                  <Button
+                      onClick={() => {
+                        onAction?.('STATIC-REPORTS', '', {
+                          url: staticReportUrl,
+                          name: StaticButtonLabel,
+                          heading: userInfo?.libraryBotConfig?.feature_and_button_controls?.static_button?.header || "Static Report"
+                        })                       
+                      }}
+                      className="bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                      style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                    >
+                      {StaticButtonLabel}
+                    </Button>
+                )}
               </div>
             )}
           </div>
@@ -255,6 +288,8 @@ const Header = ({
               )}
             </button>
           )}
+
+          
         </div>
 
         {/* Mobile Menu */}
@@ -355,6 +390,23 @@ const Header = ({
                       setShowReportDialog(true);
                       setShowMobileMenu(false);
                     }}
+                    className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
+                    style={{ borderRadius: "calc(var(--radius) - 6px)" }}
+                  >
+                    {ReportButtonLabel}
+                  </Button>
+                )}
+                
+                {StaticButtonLabel && showStaticButton && (
+                  <Button
+                    onClick={() => {
+                        onAction?.('STATIC-REPORTS', '', {
+                          url: staticReportUrl,
+                          name: StaticButtonLabel,
+                          heading: userInfo?.libraryBotConfig?.feature_and_button_controls?.static_button?.header || "Static Report"
+
+                        })                        
+                      }}
                     className="w-full bg-gray-200 border-2 border-[#00c193] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-all duration-300 hover:bg-gray-300"
                     style={{ borderRadius: "calc(var(--radius) - 6px)" }}
                   >
