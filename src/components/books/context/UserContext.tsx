@@ -283,6 +283,60 @@ export const UserProvider = ({ children, LoginView }: { children: ReactNode, Log
     ]
   );
 
+  useEffect(() => {
+    // in case of teams sso, coming from wraper html
+    const handleTeamsAuthMessage = async (event: MessageEvent) => {
+      if (["https://preview.aiadopts.com"].includes(event.origin )) return;
+
+      const data = event.data;
+      if (data?.type !== "AI_ADOPTS_AUTH") return;
+
+      const { access_token, refresh_token, user: authUser } = data.payload || {};
+      if (!access_token || !refresh_token || !authUser) return;
+
+      const fullPath = window.location.href;
+      localStorage.setItem(`${fullPath}-email_password`, access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("user", JSON.stringify(authUser));
+
+      const currentUser = {
+        given_name: authUser.name || authUser.given_name || authUser.email?.split("@")[0] || "",
+        email: authUser.email,
+        user_data: authUser.user_data || null,
+      };
+
+      setUser(currentUser);
+
+      if (currentUser.user_data?.uid) {
+        await refreshUserData(currentUser);
+      } else {
+        try {
+          setLoading(true);
+          const res = await fetch(`${baseURL}/accounts/me/`, {
+            headers: { Authorization: `Bearer ${access_token}` },
+          });
+          if (res.ok) {
+            const userData = await res.json();
+            const fullUser = {
+              given_name: userData.name,
+              email: userData.email,
+              user_data: userData,
+            };
+            setUser(fullUser);
+            await refreshUserData(fullUser);
+          }
+        } catch (err) {
+          console.error("Failed to complete Teams auth user fetch:", err);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleTeamsAuthMessage);
+    return () => window.removeEventListener("message", handleTeamsAuthMessage);
+  }, [refreshUserData]);
+
   // 🚨 Show loader for /portal/ routes
 
   const allowedPagesForLoader = ["/portal/", "/library-bot/leaderBoardReport"];
